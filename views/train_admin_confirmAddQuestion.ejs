@@ -1,0 +1,80 @@
+<!-- This page is for admins to confirm the addition of new questions to the question bank -->
+
+<!-- ARGUMENTS:
+    type - a string which is either mc, sa, or fr (multiple choice, select all, free response)
+    question - a string which is the question statement
+    choices - array of answer choices if its mc or sa
+    answer - array of the answer(s)
+    answer_ex - the answer explanation
+    tags - a string of tags (process it before)
+    ext_source - source of this problem
+    rating - rating of the problem
+    subject - a string of subject(s) this belongs to (process it before)
+    units - a string of unit(s) this subject belongs to (process it before) -->
+
+<%- include("partials/header") -%>
+<%- include("partials/navigation") -%>
+
+
+<h1 class="my-5 container">ADMIN PAGE: Confirm New Question</h1>
+
+<div class="jumbotron container">
+    
+    <h3>Question Display</h3>
+    
+    <h6>Question statement:</h6>
+    <p><%= question %></p>
+    
+    <% var choice_number = 0; %>
+    <% if(type == "mc") { %>
+        <div class = "mt-4">
+            <h6>Choices & answer (multiple choice):</h6>
+            <% choices.forEach((choice) => { %>
+                <% choice_number += 1 %>
+                <% if(answer.includes(choice_number)) { %>
+                    <p><font color="green"><%= choice %></font></p>
+                <% } else { %>
+                    <p><font color="red"><%= choice %></font></p>
+                <% } %>
+            <% }) %>
+        </div>
+    <% } else if(type == "sa") { %>
+        <div class = "mt-4">
+            <h6>Choices & answer(s) (select all):</h6>
+            <% choices.forEach((choice) => { %>
+                <% choice_number += 1 %>
+                <% if(answer.includes(choice_number)) { %>
+                    <p><font color="green"><%= choice %></font></p>
+                <% } else { %>
+                    <p><font color="red"><%= choice %></font></p>
+                <% } %>
+            <% }) %>
+        </div>
+    <% } else if(type == "fr") { %>
+        <div class = "mt-4">
+            <h6>Answer:</h6>
+            <p><%= answer %></p>
+        </div>
+    <% } %>
+
+    <h6>Answer explanation:</h6>
+    <p><%= answer_ex %></p>
+</div>
+
+<div class="jumbotron container">
+    
+    <h3>Question Metadata</h3>
+    <p>Rating: <%= rating %></p>
+    <p>Source: <%= ext_source %></p>
+    <p>Subject: <%= subject %></p>
+    <p>Units: <%= units %></p>
+    <p>Tags: <%= tags %></p>
+
+</div>
+
+<div class = "container mt-4 mb-5">
+    <button type="button" class="btn btn-secondary" id="back">Back</button>
+    <button type="button" class="btn btn-primary" id="next">Confirm</button>
+</div>
+
+<%- include("partials/footer") -%>

@@ -1,0 +1,26 @@
+<!-- This is the page on which you choose the units you want to train on -->
+
+<!-- ARGUMENTS:
+    units - a list of subjects to train on -->
+
+<%- include("partials/header") -%>
+<%- include("partials/navigation") -%>
+    
+<div class="jumbotron container mt-5">
+    
+    <h3>Please select the units you wish to include in your training:</h3>
+        
+    <% units.forEach((unit) => { %>
+        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+            <input type="checkbox" class="custom-control-input" id="<%= unit %>">
+            <label class="custom-control-label" for="<%= unit %>"><%= unit %></label>
+        </div>
+    <% }) %>
+
+    <div class = "mt-4">
+        <button type="button" class="btn btn-secondary" id="previous">Previous</button>
+        <button type="button" class="btn btn-primary" id="next">Next</button>
+    </div>
+</div>
+    
+<%- include("partials/footer") -%>
