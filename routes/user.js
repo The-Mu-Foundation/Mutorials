@@ -1,6 +1,6 @@
 const express = require("express");
 const { check, validationResult} = require("express-validator/check");
-const bcrypt = require("bcryptjs");
+const bCrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 
@@ -9,7 +9,8 @@ const User = require("../models/User");
 router.post(
     "/signup",
     [
-        check("username", "Please enter a Valid Username")
+        //keys for signup
+        check("username", "Please enter a Valid Username") 
         .not()
         .isEmpty(),
         check("email", "Please enter a valid email").isEmail(),
@@ -31,7 +32,7 @@ router.post(
             password
         } = req.body;
         try {
-            let User = await User.findOne({
+            let user = await User.findOne({
                 email
             })
             if(user){
@@ -69,7 +70,7 @@ router.post(
 
         } catch (err) {
             console.log(err.message);
-            res.status(500).send("Error in Saving");
+            res.status(500).send(err.toString());
         }
     }
 
@@ -79,6 +80,7 @@ module.exports = router;
 router.post(
     "/login",
     [
+      //key for login
       check("email", "Please enter a valid email!").isEmail(),
       check("password", "Please enter a valid password!").isLength({
           min: 4
