@@ -27,7 +27,7 @@
                 email = $("#signupEmail").val();
                 user = $("#signupUser").val();
                 pass = $("#signupPassword").val();
-                $.post(window.location.href + "signup", { signupEmail: email, signupUsername: user, signupPassword: pass }, function (data) {
+                $.post("/user/signup", { email: email, username: user, password: pass }, function (data) {
                     location.reload(true);
                 });
             });
@@ -38,7 +38,7 @@
             $("#loginSubmit").click(function () {
                 email = $("#loginEmail").val();
                 pass = $("#loginPassword").val();
-                $.post(window.location.href + "login", { email: email, password: pass }, function (data) {
+                $.post("/user/login", { email: email, password: pass }, function (data) {
                     location.reload(true);
                 });
             });
@@ -67,7 +67,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form action="/user/login">
                         <div class="form-group">
                             <input type="text" class="form-control" id="loginEmail" placeholder="Email Address">
                         </div>
@@ -98,7 +98,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form action="/user/signup">
                         <div class="form-group">
                             <input type="text" class="form-control" id="signupEmail" placeholder="Email Address">
                         </div>

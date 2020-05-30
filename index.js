@@ -1,8 +1,9 @@
+const mongoose = require('mongoose'); 
 const express = require("express");
 const bodyParser = require("body-parser");
 const user = require("./routes/user");
 const InitiateMongoServer = require("./config/db")
-
+var db = mongoose.connection;
 
 // start server
 InitiateMongoServer();
@@ -13,7 +14,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 //middleware
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 
 app.get("/", (req, res) => {
   res.json({ message: "API Working" });
@@ -38,7 +40,28 @@ app.get("/AdminAdd", (req, res) => {
 app.get("/signup", (req, res) => {
   res.render(__dirname + '/views/' + 'index.ejs');
 });
+/*
+app.post('/user', function(req,res){ 
+  var username = req.body.username; 
+  var email =req.body.email; 
+  var password = req.body.password; 
+  //var phone =req.body.phone; 
 
+  var data = { 
+      "username": username, 
+      "email":email, 
+      "password":password, 
+      //"phone":phone 
+  } 
+  db.collection('test.users').insertOne(data,function(err, collection){ 
+      if (err) throw err; 
+      console.log("Record inserted Successfully"); 
+            
+  }); 
+        
+  return res.redirect('./views/train.ejs'); 
+}) 
+*/
 app.use('/user', user); //user path to get to signin/login
 
 app.listen(PORT, (req, res) => {
