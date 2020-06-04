@@ -18,7 +18,7 @@ router.post(
             min: 4
         })
     ],
-    async (req, res) => {
+    async (req, res) => { //below is forming response
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             return res.status(400).json({
@@ -57,7 +57,7 @@ router.post(
             jwt.sign(
                 payload,
                 "randomString",{
-                    expiresIn: 10000
+                    expiresIn: 10000 //how long before sign in again
                 },
                 (err, token) => {
                     if (err) throw err;

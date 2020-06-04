@@ -1,10 +1,12 @@
 //middleware auth use in route.js
-
+//checks login token, know when redirect to login
 const jwt = require("jsonwebtoken");
 
 module.exports = function(req, res, next){
     const token = req.header("token");
-    if(!token) return res.status(401).json({ message: "Authentication Error"});
+    if(!token) {
+        res.redirect("/signup");
+    }
 
     try {
         const decoded = jwt.verify(token, "randomString");
@@ -12,6 +14,7 @@ module.exports = function(req, res, next){
         next();
     } catch (e) {
         console.error(e);
-        res.status(500).send({message: "Invalid token"});
+        res.redirect("/signup");
     }
+    //add redirect here
 };

@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 const express = require("express");
 const bodyParser = require("body-parser");
 const user = require("./routes/user");
-const InitiateMongoServer = require("./config/db")
+const InitiateMongoServer = require("./config/db");
+const auth = require("./middleware/auth");
 var db = mongoose.connection;
 
 // start server
@@ -25,7 +26,8 @@ app.get("/homepage", (req, res) => {
   res.render(__dirname + '/views/' + 'homepage.ejs');
 });
 
-app.get("/train", (req, res) => {
+app.get("/train", auth, (req, res) => {
+  
   res.render(__dirname + '/views/' + 'train.ejs');
 });
 
