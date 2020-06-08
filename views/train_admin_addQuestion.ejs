@@ -7,13 +7,43 @@
 <%- include("partials/navigation") -%>
 
 
+
+<!-- send to backend -->
+<script>
+	$(document).ready(function () {
+		var type, question, choices, tags, ext_source, rating, subject, units, answer, answer_ex, author;
+		$("#submit").click(function () {
+			question = $("#question").val();
+			choices = $("#answerchoices").val();
+			tags = $("#tags").val();
+			rating = $("#rating").val();
+			answer = $("#correctanswer").val();
+			answer_ex = $("#answerexplanation").val();
+			author = $("#author").val();
+
+			type = $("#XXX").val(); // sketch
+			ext_source = $("#XXX").val(); // sketch
+			units = $("#XXX").val(); // sketch
+			subject = $("#XXX").val(); // sketch
+
+			/*$.post("/user/signp", { email: email, username: user, password: pass }, function (data) {
+				location.reload(true);
+			});*/
+
+			alert(question + choices + tags + rating);
+		});
+	});
+</script>
+
+
+
 <h1 class="my-5 container">ADMIN PAGE: Add Question</h1>
 
 <div class="jumbotron container">
 
 	<h3>Question Display</h3>
     <!-- FORMAT -->
-	<div class="form-group">
+	<form id="question-format">
 		<p>What is the format of this question?</p>
 		<div class="form-check">
 			<input class="form-check-input" type="radio" name="answerChoice" id="mc" value="mc">
@@ -27,7 +57,7 @@
 			<input class="form-check-input" type="radio" name="answerChoice" id="sa" value="sa">
 			<label class="form-check-label" for="sa">Select All</label>
 		</div>
-    </div>
+    </form>
     <!-- QUESTION STATEMENT -->
 	<div class="form-group">
 		<p>What is the question?</p>
@@ -123,5 +153,9 @@
 	
 </div>
 
+<div class = "container mt-4 mb-5">
+    <button type="button" class="btn btn-secondary" id="cancel">Cancel</button>
+    <button type="button" class="btn btn-primary" id="submit">Submit</button>
+</div>
 
 <%- include("partials/footer") -%>
