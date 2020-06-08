@@ -138,6 +138,14 @@ app.get("/", (req, res) => {
   res.json({ message: "API Working" });
 });
 
+app.get("/signin", (req, res) => {
+  res.render(__dirname + '/views/public/' + 'login.ejs');
+});
+
+app.get("/signup", (req, res) => {
+  res.render(__dirname + '/views/public/' + 'signup.ejs');
+});
+
 app.get("/homepage", (req, res) => {
   res.render(__dirname + '/views/' + 'homepage.ejs');
 });
