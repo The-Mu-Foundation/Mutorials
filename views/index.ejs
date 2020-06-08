@@ -22,23 +22,23 @@
     <script>
         // SIGNUP
         $(document).ready(function () {
-            var email, user, pass;
+            var username, user, pass;
             $("#signupSubmit").click(function () {
-                email = $("#signupEmail").val();
+                username = $("#signupEmail").val();
                 user = $("#signupUser").val();
                 pass = $("#signupPassword").val();
-                $.post("/user/signup", { email: email, username: user, password: pass }, function (data) {
+                $.post("/register", { username: username, password: pass }, function (data) {
                     location.reload(true);
                 });
             });
         });
         // LOGIN
         $(document).ready(function () {
-            var email, pass;
+            var username, pass;
             $("#loginSubmit").click(function () {
-                email = $("#loginEmail").val();
+                username = $("#loginEmail").val();
                 pass = $("#loginPassword").val();
-                $.post("/user/login", { email: email, password: pass }, function (data) {
+                $.post("/login", { username: username, password: pass }, function (data) {
                     location.reload(true);
                 });
             });
@@ -67,7 +67,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="/user/login">
+                    <form action="/login">
                         <div class="form-group">
                             <input type="text" class="form-control" id="loginEmail" placeholder="Email Address">
                         </div>
@@ -98,7 +98,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="/user/signup">
+                    <form action="/register">
                         <div class="form-group">
                             <input type="text" class="form-control" id="signupEmail" placeholder="Email Address">
                         </div>
