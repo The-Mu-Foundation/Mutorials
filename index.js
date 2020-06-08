@@ -92,7 +92,14 @@ passport.deserializeUser(function(id, cb) {
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded());
+
+
+
+
+
 //webpages
+
+// POST ROUTES
 
 app.post('/login', passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }),
  //passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
@@ -119,6 +126,14 @@ app.post('/register', (req, res, next) => {
       });
   res.redirect('/train');
 });
+
+app.post('/admin/addquestion', (req, res, next) => {
+  // ADD TO DATABASE
+  // REDIRECT TO admin/confirmaddquestion to confirm to see if additional changes need to be made
+});
+
+// GET ROUTES
+
 app.get("/", (req, res) => {
   res.json({ message: "API Working" });
 });
@@ -145,7 +160,7 @@ app.get("/AdminAdd", (req, res) => {
 });
 
 app.get("/home", (req, res) => {
-  res.render(__dirname + '/views/' + 'index.ejs');
+  res.render(__dirname + '/views/public' + 'index.ejs');
 });
 
 app.use('/user', user); //user path to get to signin/login
