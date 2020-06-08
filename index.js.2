@@ -23,7 +23,7 @@ const MongoStore = require("connect-mongo")(session);
 
 //this is variables, see if user.js works first
 const UserSchema = new mongoose.Schema({
-  username: String,
+  email: String,
   hash: String,
   salt: String
 });
@@ -61,8 +61,8 @@ function genPassword(password) {
 }
 //called when passport.authenticate is used()
 passport.use(new LocalStrategy(
-  function(username, password, cb) {
-      User.findOne({ username: username })
+  function(email, password, cb) {
+      User.findOne({ email: email })
           .then((user) => {
               if (!user) { return cb(null, false) }
               
@@ -94,13 +94,11 @@ app.use(passport.session());
 app.use(bodyParser.urlencoded());
 //webpages
 
-app.post('/login', passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }),
- //passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
- ( req, res, next) => {
+app.post('/login',
+ passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
+ (err, req, res, next) => {
    console.log("Oh hi");
-   //const pw = passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' });
-   //pw(req, res, next); 
- // if (err) next(err);
+  if (err) next(err);
 });
 app.post('/register', (req, res, next) => {
     
@@ -109,7 +107,7 @@ app.post('/register', (req, res, next) => {
   const salt = saltHash.salt;
   const hash = saltHash.hash;
   const newUser = new User({
-      username: req.body.username,
+      email: req.body.email,
       hash: hash,
       salt: salt
   });
