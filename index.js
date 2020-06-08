@@ -160,7 +160,7 @@ app.get("/AdminAdd", (req, res) => {
 });
 
 app.get("/home", (req, res) => {
-  res.render(__dirname + '/views/public' + 'index.ejs');
+  res.render(__dirname + '/views/public/' + 'index.ejs');
 });
 
 app.use('/user', user); //user path to get to signin/login

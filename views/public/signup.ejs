@@ -1,0 +1,45 @@
+<!-- this is code for the signup page -->
+
+<%- include("../partials/header") -%>
+
+<!-- send to backend -->
+<script>
+
+    // SIGNUP
+    $(document).ready(function () {
+        var username, user, pass;
+        $("#signupSubmit").click(function () {
+            username = $("#signupEmail").val();
+            user = $("#signupUser").val();
+            pass = $("#signupPassword").val();
+            $.post("/register", { username: username, password: pass }, function (data) {
+                location.reload(true);
+            });
+        });
+    });
+</script>
+
+<h1 class="my-5 container">Sign up to Mutorials!</h1>
+
+<div class="jumbotron container">
+
+	<form action="/register">
+		<div class="form-group">
+			<input type="text" class="form-control" id="signupEmail" placeholder="Email Address">
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" id="signupUser" placeholder="Username">
+		</div>
+		<div class="form-group">
+			<input type="password" class="form-control" id="signupPassword" placeholder="Password">
+		</div>
+	</form>
+
+</div>
+
+<div class = "container mt-4 mb-5">
+    <button type="button" class="btn btn-secondary" id="cancel">Cancel</button>
+    <button type="button" class="btn btn-primary" id="signupSubmit">Sign Up</button>
+</div>
+
+<%- include("../partials/footer") -%>
