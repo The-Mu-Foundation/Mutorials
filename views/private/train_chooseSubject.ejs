@@ -1,0 +1,18 @@
+<!-- This is the page on which you choose the subject you want to train on -->
+
+<!-- ARGUMENTS:
+    subjects - a list of subjects to train on -->
+
+<%- include("../partials/header") -%>
+<%- include("../partials/navigation") -%>
+
+<div class="jumbotron container mt-5">
+
+	<h3>Please select a subject below to train on:</h3>
+    
+    <% subjects.forEach((subject) => { %>
+        <button type="button" class="btn btn-primary btn-lg btn-block" id="<%= subject %>"><%= subject %></button>
+    <% }) %>
+</div>
+
+<%- include("../partials/footer") -%>
