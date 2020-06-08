@@ -1,11 +1,11 @@
-<!-- this is code for the login page -->
+<!-- this is code for the signin/login page -->
 
 <%- include("../partials/header") -%>
 
 <!-- send to backend -->
 <script>
 
-    // LOGIN
+    // SIGNIN
     $(document).ready(function () {
         var username, pass;
         $("#loginSubmit").click(function () {
@@ -18,7 +18,7 @@
     });
 </script>
 
-<h1 class="my-5 container">Log in to Mutorials!</h1>
+<h1 class="my-5 container">Sign in to Mutorials!</h1>
 
 <div class="jumbotron container">
 
@@ -31,15 +31,15 @@
 		</div>
 		<div class="form-check">
 			<input type="checkbox" class="form-check-input" id="stayLoggedIn">
-			<label class="form-check-label">Keep me logged in</label>
+			<label class="form-check-label">Keep me signed in</label>
 		</div>
 	</form>
 
 </div>
 
 <div class = "container mt-4 mb-5">
-    <button type="button" class="btn btn-secondary" id="cancel">Cancel</button>
-    <button type="button" class="btn btn-primary" id="loginSubmit">Log In</button>
+    <a type="button" class="btn btn-secondary" id="cancel" href="/">Cancel</a>
+    <button type="button" class="btn btn-primary" id="loginSubmit">Sign In</button>
 </div>
 
 <%- include("../partials/footer") -%>
