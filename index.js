@@ -6,11 +6,12 @@ const passport = require("passport");
 const crypto = require("crypto");
 const LocalStrategy = require('passport-local').Strategy;
 //const flash = require("connect-flash");
-const mongoose = require('mongoose'); 
+const mongoose = require("mongoose"); 
 const express = require("express");
 const session = require("express-session");
 var db = mongoose.connection;
 const InitiateMongoServer = require("./config/db");
+const subjects = require("./models/subjects")
 
 // start server
 InitiateMongoServer();
@@ -130,8 +131,9 @@ app.post('/register', (req, res, next) => {
 });
 
 app.post('/admin/addquestion', (req, res, next) => {
-  // ADD TO DATABASE
-  // REDIRECT TO admin/confirmaddquestion to confirm to see if additional changes need to be made
+  // ADD TO DATABASE or redirect to admin/confirmaddquestion if you want
+  // deliminator parsing method is at bottom of this file, use it to parse strings like the answers or answer choices
+  // friendly reminder that all input in the body is a string except for subjects and units, which are array
 });
 
 // GET ROUTES/webpages
@@ -170,8 +172,9 @@ app.get("/settings", (req, res) => {
   }
 });
 
-app.get("/AdminAdd", (req, res) => {
-  res.render(__dirname + '/views/private/' + 'train_admin_addQuestion.ejs');
+            // ADD QUESTION GET ROUTE IS HERE
+app.get("/admin/addquestion", (req, res) => {
+  res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
 });
 
 app.get("/home", (req, res) => {
@@ -183,3 +186,18 @@ app.use('/user', user); //user path to get to signin/login
 app.listen(PORT, (req, res) => {
   console.log(`Server Started at PORT ${PORT}`);
 });
+
+
+
+
+
+
+
+// deliminator parsing method is here for now, you can copy it somewhere else to make it all more organized
+// input is a string, output is an array of the values
+function parseDelimiter(input) {
+  return input.split("@");
+}
+// oops turned out to be more simple than i thought
+
+console.log(parseDelimiter("I like pie@I dont know@@3@4"));
