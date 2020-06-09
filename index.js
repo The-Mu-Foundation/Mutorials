@@ -1,11 +1,11 @@
 
 const bodyParser = require("body-parser");
 const user = require("./routes/user");
-const auth = require("./middleware/auth");
+//const auth = require("./middleware/auth");
 const passport = require("passport");
 const crypto = require("crypto");
 const LocalStrategy = require('passport-local').Strategy;
-
+//const flash = require("connect-flash");
 const mongoose = require('mongoose'); 
 const express = require("express");
 const session = require("express-session");
@@ -43,12 +43,6 @@ app.use(session({
 
 //passport
 
-//checks to see if its a valid password or not @hash is the stored pass, password is user inputted
-function validPassword(password, hash, salt) {
-  var hashVerify = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
-  return hash === hashVerify;
-}
-
 //generates plain text password to hash
 function genPassword(password) {
   var salt = crypto.randomBytes(32).toString('hex');
@@ -59,40 +53,48 @@ function genPassword(password) {
     hash: genHash
   };
 }
+//checks to see if its a valid password or not @hash is the stored pass, password is user inputted
+function validPassword(password, hash, salt) {
+  var hashVerify = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+  return hash === hashVerify;
+}
+
+
 //called when passport.authenticate is used()
 passport.use(new LocalStrategy(
   function(username, password, cb) {
-      User.findOne({ username: username })
+      User.find({ username: username })
           .then((user) => {
               if (!user) { return cb(null, false) }
               
               // Function defined at bottom of app.js
-              const isValid = validPassword(password, user.hash, user.salt);
+              const isValid = validPassword(password, user[0].hash, user[0].salt);
               
               if (isValid) {
-                  return cb(null, user);
+                  return cb(null, user[0]);
               } else {
+
                   return cb(null, false);
               }
           })
           .catch((err) => {   
-              cb(err);
+            cb(err);
           });
 }));
-passport.serializeUser(function(user, cb) {
+passport.serializeUser(function(user,cb) {
   cb(null, user.id);
 });
-passport.deserializeUser(function(id, cb) {
+passport.deserializeUser(function(id,cb) {
   User.findById(id, function (err, user) {
       if (err) { return cb(err); }
-      cb(null, user);
+    cb(null, user);
   });
 });
 
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded());
-
+//app.use(flash);
 
 
 
@@ -101,7 +103,7 @@ app.use(bodyParser.urlencoded());
 
 // POST ROUTES
 
-app.post('/login', passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }),
+app.post('/login', passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/train'}),
  //passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
  ( req, res, next) => {
    console.log("Oh hi");
@@ -124,7 +126,7 @@ app.post('/register', (req, res, next) => {
       .then((user) => {
           console.log(user);
       });
-  res.redirect('/train');
+  //res.redirect('/train');
 });
 
 app.post('/admin/addquestion', (req, res, next) => {
@@ -132,14 +134,14 @@ app.post('/admin/addquestion', (req, res, next) => {
   // REDIRECT TO admin/confirmaddquestion to confirm to see if additional changes need to be made
 });
 
-// GET ROUTES
+// GET ROUTES/webpages
 
 app.get("/", (req, res) => {
   res.json({ message: "API Working" });
 });
 
 app.get("/signin", (req, res) => {
-  res.render(__dirname + '/views/public/' + 'login.ejs');
+  res.render(__dirname + '/views/public/' + 'signin.ejs');
 });
 
 app.get("/signup", (req, res) => {
@@ -152,19 +154,24 @@ app.get("/homepage", (req, res) => {
 
 app.get("/train", (req, res) => {
   if(req.isAuthenticated()){
-    res.render(__dirname + '/views/' + 'train.ejs');
+    res.render(__dirname + '/views/private/' + 'train.ejs');
   }
   else{
-    res.redirect("/home");
+    res.redirect("/signin");
   }
 });
 
 app.get("/settings", (req, res) => {
-  res.render(__dirname + '/views/' + 'settings.ejs');
+  if(req.isAuthenticated()){
+    res.render(__dirname + '/views/private/' + 'settings.ejs');
+  }
+  else{
+    res.redirect("/signin");
+  }
 });
 
 app.get("/AdminAdd", (req, res) => {
-  res.render(__dirname + '/views/' + 'train_admin_addQuestion.ejs');
+  res.render(__dirname + '/views/private/' + 'train_admin_addQuestion.ejs');
 });
 
 app.get("/home", (req, res) => {
