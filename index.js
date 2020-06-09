@@ -6,11 +6,12 @@ const passport = require("passport");
 const crypto = require("crypto");
 const LocalStrategy = require('passport-local').Strategy;
 //const flash = require("connect-flash");
-const mongoose = require('mongoose'); 
+const mongoose = require("mongoose"); 
 const express = require("express");
 const session = require("express-session");
 var db = mongoose.connection;
 const InitiateMongoServer = require("./config/db");
+const subjects = require("./models/subjects")
 
 // start server
 InitiateMongoServer();
@@ -171,7 +172,7 @@ app.get("/settings", (req, res) => {
 });
 
 app.get("/AdminAdd", (req, res) => {
-  res.render(__dirname + '/views/private/' + 'train_admin_addQuestion.ejs');
+  res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
 });
 
 app.get("/home", (req, res) => {
