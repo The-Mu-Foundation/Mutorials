@@ -26,10 +26,26 @@ const MongoStore = require("connect-mongo")(session);
 const UserSchema = new mongoose.Schema({
   username: String,
   hash: String,
-  salt: String
+  salt: String,
+  rating: String
 });
-const User = db.model('User', UserSchema);
 
+const qSchema = new mongoose.Schema({
+  question: String,
+  choices: String,
+  tags: String,
+  rating: String,
+  answer: String,
+  answer_ex: String,
+  author: String,
+  type: String,
+  ext_source: String,
+  subject: Array,
+  units: Array
+})
+const Ques = db.model('Ques', qSchema, 'questions');
+const User = db.model('User', UserSchema);
+//session collection
 const sessionStore = new MongoStore({mongooseConnection: db, collection: 'sessions'});
 app.use(session({
   secret: "blahblah",
@@ -118,10 +134,12 @@ app.post('/register', (req, res, next) => {
   
   const salt = saltHash.salt;
   const hash = saltHash.hash;
+  const rating = "0";
   const newUser = new User({
       username: req.body.username,
       hash: hash,
-      salt: salt
+      salt: salt,
+      rating: rating
   });
   newUser.save()
       .then((user) => {
@@ -129,11 +147,28 @@ app.post('/register', (req, res, next) => {
       });
   //res.redirect('/train');
 });
-
+//const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
 app.post('/admin/addquestion', (req, res, next) => {
   // ADD TO DATABASE or redirect to admin/confirmaddquestion if you want
   // deliminator parsing method is at bottom of this file, use it to parse strings like the answers or answer choices
   // friendly reminder that all input in the body is a string except for subjects and units, which are array
+  //const collection = db.collection('questions');
+
+  const newQ = new Ques({
+    question: req.body.question,
+    choices: parseDelimiter(req.body.choices).toString(),
+    tags: parseDelimiter(req.body.tags).toString(),
+    rating: req.body.rating,
+    answer: req.body.answer,
+    answer_ex: req.body.answer_ex,
+    author: req.body.author,
+    type: req.body.type,
+    ext_source: req.body.ext_source,
+    subject: req.body.subject,
+    units: req.body.units
+  })
+  //collection.insertOne({})
+  newQ.save();
 });
 
 // GET ROUTES/webpages
