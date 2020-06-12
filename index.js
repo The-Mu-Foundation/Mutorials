@@ -32,8 +32,8 @@ const UserSchema = new mongoose.Schema({
 
 const qSchema = new mongoose.Schema({
   question: String,
-  choices: String,
-  tags: String,
+  choices: Array,
+  tags: Array,
   rating: String,
   answer: String,
   answer_ex: String,
@@ -156,8 +156,8 @@ app.post('/admin/addquestion', (req, res, next) => {
 
   const newQ = new Ques({
     question: req.body.question,
-    choices: parseDelimiter(req.body.choices).toString(),
-    tags: parseDelimiter(req.body.tags).toString(),
+    choices: parseDelimiter(req.body.choices),
+    tags: parseDelimiter(req.body.tags),
     rating: req.body.rating,
     answer: req.body.answer,
     answer_ex: req.body.answer_ex,
