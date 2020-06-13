@@ -1,9 +1,11 @@
 {
   "name": "mutorials.org",
   "version": "0.0.0",
-  "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "12.16.1"
   },
   "dependencies": {
     "bcrypt": "^4.0.1",
