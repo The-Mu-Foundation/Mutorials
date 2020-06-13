@@ -235,4 +235,4 @@ function parseDelimiter(input) {
 }
 // oops turned out to be more simple than i thought
 
-console.log(parseDelimiter("I like pie@I dont know@@3@4"));
+//console.log(parseDelimiter("I like pie@I dont know@@3@4"));
