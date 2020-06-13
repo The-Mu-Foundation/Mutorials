@@ -8,7 +8,6 @@
     "node": "12.16.1"
   },
   "dependencies": {
-    "bcrypt": "^4.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
