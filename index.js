@@ -1,6 +1,6 @@
 
 const bodyParser = require("body-parser");
-const user = require("./routes/user");
+//const user = require("./routes/user");
 //const auth = require("./middleware/auth");
 const passport = require("passport");
 const crypto = require("crypto");
@@ -216,7 +216,7 @@ app.get("/home", (req, res) => {
   res.render(__dirname + '/views/public/' + 'index.ejs');
 });
 
-app.use('/user', user); //user path to get to signin/login
+//app.use('/user', user); //user path to get to signin/login
 
 app.listen(PORT, (req, res) => {
   console.log(`Server Started at PORT ${PORT}`);
@@ -235,4 +235,4 @@ function parseDelimiter(input) {
 }
 // oops turned out to be more simple than i thought
 
-console.log(parseDelimiter("I like pie@I dont know@@3@4"));
+//console.log(parseDelimiter("I like pie@I dont know@@3@4"));
