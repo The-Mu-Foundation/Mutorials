@@ -108,9 +108,10 @@ passport.deserializeUser(function(id,cb) {
   });
 });
 
+app.use(bodyParser.urlencoded());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(bodyParser.urlencoded());
+
 //app.use(flash);
 
 
@@ -141,19 +142,25 @@ app.post('/register', (req, res, next) => {
       salt: salt,
       rating: rating
   });
-  newUser.save()
-      .then((user) => {
-          console.log(user);
-      });
-  //res.redirect('/train');
+  //dupe user?
+  db.collection('users').findOne({username: req.body.username}).then((user) => {
+    if(user){
+      console.log("used");
+    }
+    else{
+      console.log("new one");
+      newUser.save()
+          .then((user) => {
+              //passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/train'});
+              console.log(user);
+          });
+    }
+    res.redirect('/signin');
+    });
 });
+
 //const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
 app.post('/admin/addquestion', (req, res, next) => {
-  // ADD TO DATABASE or redirect to admin/confirmaddquestion if you want
-  // deliminator parsing method is at bottom of this file, use it to parse strings like the answers or answer choices
-  // friendly reminder that all input in the body is a string except for subjects and units, which are array
-  //const collection = db.collection('questions');
-
   const newQ = new Ques({
     question: req.body.question,
     choices: parseDelimiter(req.body.choices),
@@ -173,8 +180,9 @@ app.post('/admin/addquestion', (req, res, next) => {
 
 // GET ROUTES/webpages
 
+//public
 app.get("/", (req, res) => {
-  res.json({ message: "API Working" });
+  res.render(__dirname + '/views/public/' + 'index.ejs');
 });
 
 app.get("/signin", (req, res) => {
@@ -185,6 +193,7 @@ app.get("/signup", (req, res) => {
   res.render(__dirname + '/views/public/' + 'signup.ejs');
 });
 
+//private
 app.get("/homepage", (req, res) => {
   res.render(__dirname + '/views/' + 'homepage.ejs');
 });
@@ -194,7 +203,7 @@ app.get("/train", (req, res) => {
     res.render(__dirname + '/views/private/' + 'train.ejs');
   }
   else{
-    res.redirect("/signin");
+    res.redirect("/");
   }
 });
 
@@ -203,18 +212,23 @@ app.get("/settings", (req, res) => {
     res.render(__dirname + '/views/private/' + 'settings.ejs');
   }
   else{
-    res.redirect("/signin");
+    res.redirect("/");
   }
 });
 
+app.get("/logout", (req, res) => {
+  if(req.isAuthenticated()){
+    req.logout();
+  }
+  res.redirect("/");
+});
+//admin
             // ADD QUESTION GET ROUTE IS HERE
 app.get("/admin/addquestion", (req, res) => {
   res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
 });
 
-app.get("/home", (req, res) => {
-  res.render(__dirname + '/views/public/' + 'index.ejs');
-});
+
 
 //app.use('/user', user); //user path to get to signin/login
 
