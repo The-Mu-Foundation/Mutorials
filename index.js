@@ -121,7 +121,7 @@ app.use(passport.session());
 
 // POST ROUTES
 
-app.post('/login', passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/train'}),
+app.post('/login', passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/homepage'}),
  //passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
  ( req, res, next) => {
    console.log("Oh hi");
@@ -195,7 +195,12 @@ app.get("/signup", (req, res) => {
 
 //private
 app.get("/homepage", (req, res) => {
-  res.render(__dirname + '/views/' + 'homepage.ejs');
+  if(req.isAuthenticated()){
+    res.render(__dirname + '/views/private/' + 'homepage.ejs');
+  }
+  else{
+    res.redirect("/");
+  }
 });
 
 app.get("/train", (req, res) => {
@@ -215,6 +220,33 @@ app.get("/settings", (req, res) => {
     res.redirect("/");
   }
 });
+
+app.get("/train/choose_subject", (req, res) => {
+  if(req.isAuthenticated()){
+    res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs',  {subjects: subjects.subjectUnitDictionary});
+  }
+  else{
+    res.redirect("/");
+  }
+})
+
+app.get("/train/proficiency", (req, res) => {
+  if(req.isAuthenticated()){
+    res.render(__dirname + '/views/private/' + 'train_onetime_setProficiency.ejs');
+  }
+  else{
+    res.redirect("/");
+  }
+})
+
+app.get("/train/choose_units", (req, res) => {
+  if(req.isAuthenticated()){
+    res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs');
+  }
+  else{
+    res.redirect("/");
+  }
+})
 
 app.get("/logout", (req, res) => {
   if(req.isAuthenticated()){

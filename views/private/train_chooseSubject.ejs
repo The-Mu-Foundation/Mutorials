@@ -10,7 +10,7 @@
 
 	<h3>Please select a subject below to train on:</h3>
     
-    <% subjects.forEach((subject) => { %>
+    <% Object.keys(subjects).forEach((subject) => { %>
         <button type="button" class="btn btn-primary btn-lg btn-block" id="<%= subject %>"><%= subject %></button>
     <% }) %>
 </div>
