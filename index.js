@@ -228,6 +228,9 @@ app.get("/admin/addquestion", (req, res) => {
   res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
 });
 
+app.get("/admin/addedSuccess", (req, res) => {
+  res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
+});
 
 
 //app.use('/user', user); //user path to get to signin/login
