@@ -35,7 +35,7 @@ const qSchema = new mongoose.Schema({
   choices: Array,
   tags: Array,
   rating: String,
-  answer: String,
+  answer: Array,
   answer_ex: String,
   author: String,
   type: String,
@@ -166,7 +166,7 @@ app.post('/admin/addquestion', (req, res, next) => {
     choices: parseDelimiter(req.body.choices),
     tags: parseDelimiter(req.body.tags),
     rating: req.body.rating,
-    answer: req.body.answer,
+    answer: parseDelimiter(req.body.answer),
     answer_ex: req.body.answer_ex,
     author: req.body.author,
     type: req.body.type,
@@ -176,7 +176,7 @@ app.post('/admin/addquestion', (req, res, next) => {
   })
   //collection.insertOne({})
   newQ.save();
-  //res.redirect("/admin/addedSuccess");
+
 });
 
 // GET ROUTES/webpages
@@ -255,6 +255,7 @@ app.get("/logout", (req, res) => {
   }
   res.redirect("/");
 });
+
 //admin
             // ADD QUESTION GET ROUTE IS HERE
 app.get("/admin/addquestion", (req, res) => {
