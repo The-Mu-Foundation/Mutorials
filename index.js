@@ -177,7 +177,6 @@ app.post('/admin/addquestion', (req, res, next) => {
   //collection.insertOne({})
   newQ.save();
 
-  res.redirect("/admin/addedSuccess");
 });
 
 // GET ROUTES/webpages
