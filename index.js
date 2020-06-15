@@ -255,6 +255,7 @@ app.get("/logout", (req, res) => {
   }
   res.redirect("/");
 });
+
 //admin
             // ADD QUESTION GET ROUTE IS HERE
 app.get("/admin/addquestion", (req, res) => {

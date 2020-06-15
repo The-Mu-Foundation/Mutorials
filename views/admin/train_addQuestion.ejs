@@ -77,6 +77,19 @@
 <h1 class="my-5 container">ADMIN PAGE: Add Question</h1>
 
 <div class="jumbotron container">
+	
+	<div class="form-group">
+		<h3>LaTeX Compiler - NOT PART OF THE QUESTION</h3>
+		<textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click Render"></textarea>
+    </div>
+	
+	<p id="rendersandbox">[Sample rendered LaTeX goes here - did you know $F = ma$ ?]</p>
+	
+	<button type="button" class="btn btn-primary" id="render" onclick="document.getElementById('rendersandbox').innerHTML = document.getElementById('latexcompiler').value; MathJax.typeset();">Render</button>
+
+</div>
+
+<div class="jumbotron container">
 
 	<h3>Question Display</h3>
     <!-- FORMAT -->
