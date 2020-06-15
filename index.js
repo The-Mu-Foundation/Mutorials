@@ -259,11 +259,21 @@ app.get("/logout", (req, res) => {
 //admin
             // ADD QUESTION GET ROUTE IS HERE
 app.get("/admin/addquestion", (req, res) => {
-  res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
+  if(req.isAuthenticated()&&(req.user.username=="mutorialsproject@gmail.com")){
+    res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
+  }
+  else{
+    res.redirect("/");
+  }
 });
 
 app.get("/admin/addedSuccess", (req, res) => {
-  res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
+  if(req.isAuthenticated()&&(req.user.username=="mutorialsproject@gmail.com")){
+    res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
+  }
+  else{
+    res.redirect("/");
+  }
 });
 
 
