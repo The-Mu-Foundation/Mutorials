@@ -204,15 +204,6 @@ app.get("/homepage", (req, res) => {
   }
 });
 
-app.get("/train", (req, res) => {
-  if(req.isAuthenticated()){
-    res.render(__dirname + '/views/private/' + 'train.ejs');
-  }
-  else{
-    res.redirect("/");
-  }
-});
-
 app.get("/settings", (req, res) => {
   if(req.isAuthenticated()){
     res.render(__dirname + '/views/private/' + 'settings.ejs');
@@ -222,16 +213,25 @@ app.get("/settings", (req, res) => {
   }
 });
 
+app.get("/train", (req, res) => {
+  if(req.isAuthenticated()){
+    res.render(__dirname + '/views/private/' + 'train.ejs');
+  }
+  else{
+    res.redirect("/");
+  }
+});
+
 app.get("/train/choose_subject", (req, res) => {
   if(req.isAuthenticated()){
-    res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs',  {subjects: subjects.subjectUnitDictionary});
+    res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs', { subjects: subjects.subjectUnitDictionary});
   }
   else{
     res.redirect("/");
   }
 })
 
-app.get("/train/proficiency", (req, res) => {
+app.get("/train/:subject/proficiency", (req, res) => {
   if(req.isAuthenticated()){
     res.render(__dirname + '/views/private/' + 'train_onetime_setProficiency.ejs');
   }
@@ -240,9 +240,23 @@ app.get("/train/proficiency", (req, res) => {
   }
 })
 
-app.get("/train/choose_units", (req, res) => {
+app.get("/train/:subject/choose_units", (req, res) => {
+  if(req.isAuthenticated()) {
+
+    // DO A CHECK HERE, IF NO RATING REDIRECT TO SET PROFICIENCY PAGE BEFORE THIS PAGE
+
+    res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { units: subjects.subjectUnitDictionary[req.params.subject]});
+    
+  }
+  else{
+    res.redirect("/");
+  }
+})
+
+app.get("/train/:subject/display_question", (req, res) => {
   if(req.isAuthenticated()){
-    res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs');
+    // PASS IN PARAMETERS BELOW
+    //res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { type: type, question: question, choices: choices, source: source, rating: rating});
   }
   else{
     res.redirect("/");
