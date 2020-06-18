@@ -303,6 +303,16 @@ app.get("/train/:subject/display_question", (req, res) => {
   }
 })
 
+app.get("/train/:subject/answer_explanation", (req, res) => {
+  if(req.isAuthenticated()){
+    // PASS IN PARAMETERS BELOW
+    //res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { PARAMETERS GO HERE });
+  }
+  else{
+    res.redirect("/");
+  }
+})
+
 app.get("/logout", (req, res) => {
   if(req.isAuthenticated()){
     req.logout();
