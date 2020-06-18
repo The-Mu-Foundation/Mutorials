@@ -11,8 +11,8 @@ const express = require("express");
 const session = require("express-session");
 var db = mongoose.connection;
 const InitiateMongoServer = require("./config/db");
-const subjects = require("./models/subjects")
-
+const subjects = require("./models/subjects");
+//const ratings = require("./models/userRatings");
 // start server
 InitiateMongoServer();
 const PORT = process.env.PORT || 3000;
@@ -27,7 +27,14 @@ const UserSchema = new mongoose.Schema({
   username: String,
   hash: String,
   salt: String,
-  rating: String
+  rating: {
+    physics: Number,
+    chemistry: Number,
+    biology: Number,
+    physicsRate: Number,
+    chemistryRate: Number,
+    biologyRate: Number
+  } //first index is phys, then chem, then bio; fourth index is 1/0 for proficiency
 });
 
 const qSchema = new mongoose.Schema({
@@ -135,12 +142,15 @@ app.post('/register', (req, res, next) => {
   
   const salt = saltHash.salt;
   const hash = saltHash.hash;
-  const rating = "0";
   const newUser = new User({
       username: req.body.username,
       hash: hash,
       salt: salt,
-      rating: rating
+      rating: {
+        physics: -1,
+        chemistry: -1,
+        biology: -1
+      }
   });
   //dupe user?
   db.collection('users').findOne({username: req.body.username}).then((user) => {
@@ -161,24 +171,40 @@ app.post('/register', (req, res, next) => {
 
 //const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
 app.post('/admin/addquestion', (req, res, next) => {
-  const newQ = new Ques({
-    question: req.body.question,
-    choices: parseDelimiter(req.body.choices),
-    tags: parseDelimiter(req.body.tags),
-    rating: req.body.rating,
-    answer: parseDelimiter(req.body.answer),
-    answer_ex: req.body.answer_ex,
-    author: req.body.author,
-    type: req.body.type,
-    ext_source: req.body.ext_source,
-    subject: req.body.subject,
-    units: req.body.units
-  })
-  //collection.insertOne({})
-  newQ.save();
-
+  if(req.isAuthenticated()){
+    const newQ = new Ques({
+      question: req.body.question,
+      choices: parseDelimiter(req.body.choices),
+      tags: parseDelimiter(req.body.tags),
+      rating: req.body.rating,
+      answer: parseDelimiter(req.body.answer),
+      answer_ex: req.body.answer_ex,
+      author: req.body.author,
+      type: req.body.type,
+      ext_source: req.body.ext_source,
+      subject: req.body.subject,
+      units: req.body.units
+    })
+    //collection.insertOne({})
+    newQ.save();
+  }
+  else{
+    res.redirect("/");
+  }
 });
 
+//initial ratings set proficiency
+app.post('/private/initialRating', (req, res, next) => {
+  //req.params.level, req.params.subject
+  if(req.isAuthenticated()){
+    req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, {$set: {rating: req.user.rating}});
+    res.redirect("/train/" + req.body.subject + "/choose_units");
+  }
+  else{
+    res.redirect("/");
+  }
+});
 // GET ROUTES/webpages
 
 //public
@@ -231,9 +257,18 @@ app.get("/train/choose_subject", (req, res) => {
   }
 })
 
+//checks to see if prof visited before
 app.get("/train/:subject/proficiency", (req, res) => {
   if(req.isAuthenticated()){
-    res.render(__dirname + '/views/private/' + 'train_onetime_setProficiency.ejs');
+    if(req.user.rating[req.params.subject.toLowerCase()] == -1){
+        req.user.rating[req.params.subject.toLowerCase()] = 0;
+        //req.user.save();
+        db.collection("users").findOneAndUpdate({ username: req.user.username }, {$set: {rating: req.user.rating}});
+        res.render(__dirname + '/views/private/' + 'train_onetime_setProficiency.ejs', { subject: req.params.subject});
+    }
+    else{
+      res.redirect("/train");
+    }
   }
   else{
     res.redirect("/");
@@ -241,12 +276,17 @@ app.get("/train/:subject/proficiency", (req, res) => {
 })
 
 app.get("/train/:subject/choose_units", (req, res) => {
-  if(req.isAuthenticated()) {
-
-    // DO A CHECK HERE, IF NO RATING REDIRECT TO SET PROFICIENCY PAGE BEFORE THIS PAGE
-
-    res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { units: subjects.subjectUnitDictionary[req.params.subject]});
+  if(req.isAuthenticated()){
+    if(req.user.rating[req.params.subject.toLowerCase()] == -1){ //check to see if redir needed
+      res.redirect("/train/"+req.params.subject+"/proficiency"); //ROUTING FIX
+    }
     
+    else {
+
+      // DO A CHECK HERE, IF NO RATING REDIRECT TO SET PROFICIENCY PAGE BEFORE THIS PAGE
+        res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { units: subjects.subjectUnitDictionary[req.params.subject]});
+
+    }
   }
   else{
     res.redirect("/");
