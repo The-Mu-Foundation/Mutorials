@@ -6,7 +6,7 @@ const passport = require("passport");
 const crypto = require("crypto");
 const LocalStrategy = require('passport-local').Strategy;
 //const flash = require("connect-flash");
-const mongoose = require("mongoose"); 
+const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
 var db = mongoose.connection;
@@ -53,7 +53,7 @@ const qSchema = new mongoose.Schema({
 const Ques = db.model('Ques', qSchema, 'questions');
 const User = db.model('User', UserSchema);
 //session collection
-const sessionStore = new MongoStore({mongooseConnection: db, collection: 'sessions'});
+const sessionStore = new MongoStore({ mongooseConnection: db, collection: 'sessions' });
 app.use(session({
   secret: "blahblah",
   resave: false,
@@ -71,7 +71,7 @@ app.use(session({
 function genPassword(password) {
   var salt = crypto.randomBytes(32).toString('hex');
   var genHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
-  
+
   return {
     salt: salt,
     hash: genHash
@@ -86,31 +86,31 @@ function validPassword(password, hash, salt) {
 
 //called when passport.authenticate is used()
 passport.use(new LocalStrategy(
-  function(username, password, cb) {
-      User.find({ username: username })
-          .then((user) => {
-              if (!user) { return cb(null, false) }
-              
-              // Function defined at bottom of app.js
-              const isValid = validPassword(password, user[0].hash, user[0].salt);
-              
-              if (isValid) {
-                  return cb(null, user[0]);
-              } else {
+  function (username, password, cb) {
+    User.find({ username: username })
+      .then((user) => {
+        if (!user) { return cb(null, false) }
 
-                  return cb(null, false);
-              }
-          })
-          .catch((err) => {   
-            cb(err);
-          });
-}));
-passport.serializeUser(function(user,cb) {
+        // Function defined at bottom of app.js
+        const isValid = validPassword(password, user[0].hash, user[0].salt);
+
+        if (isValid) {
+          return cb(null, user[0]);
+        } else {
+
+          return cb(null, false);
+        }
+      })
+      .catch((err) => {
+        cb(err);
+      });
+  }));
+passport.serializeUser(function (user, cb) {
   cb(null, user.id);
 });
-passport.deserializeUser(function(id,cb) {
+passport.deserializeUser(function (id, cb) {
   User.findById(id, function (err, user) {
-      if (err) { return cb(err); }
+    if (err) { return cb(err); }
     cb(null, user);
   });
 });
@@ -128,50 +128,50 @@ app.use(passport.session());
 
 // POST ROUTES
 
-app.post('/login', passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/homepage'}),
- //passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
- ( req, res, next) => {
-   console.log("Oh hi");
-   //const pw = passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' });
-   //pw(req, res, next); 
- // if (err) next(err);
-});
+app.post('/login', passport.authenticate('local', { failureRedirect: "/signin", successRedirect: '/homepage' }),
+  //passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
+  (req, res, next) => {
+    console.log("Oh hi");
+    //const pw = passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' });
+    //pw(req, res, next); 
+    // if (err) next(err);
+  });
 app.post('/register', (req, res, next) => {
-    
+
   const saltHash = genPassword(req.body.password);
-  
+
   const salt = saltHash.salt;
   const hash = saltHash.hash;
   const newUser = new User({
-      username: req.body.username,
-      hash: hash,
-      salt: salt,
-      rating: {
-        physics: -1,
-        chemistry: -1,
-        biology: -1
-      }
+    username: req.body.username,
+    hash: hash,
+    salt: salt,
+    rating: {
+      physics: -1,
+      chemistry: -1,
+      biology: -1
+    }
   });
   //dupe user?
-  db.collection('users').findOne({username: req.body.username}).then((user) => {
-    if(user){
+  db.collection('users').findOne({ username: req.body.username }).then((user) => {
+    if (user) {
       console.log("used");
     }
-    else{
+    else {
       console.log("new one");
       newUser.save()
-          .then((user) => {
-              //passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/train'});
-              console.log(user);
-          });
+        .then((user) => {
+          //passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/train'});
+          console.log(user);
+        });
     }
     res.redirect('/signin');
-    });
+  });
 });
 
 //const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
 app.post('/admin/addquestion', (req, res, next) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     const newQ = new Ques({
       question: req.body.question,
       choices: parseDelimiter(req.body.choices),
@@ -188,7 +188,7 @@ app.post('/admin/addquestion', (req, res, next) => {
     //collection.insertOne({})
     newQ.save();
   }
-  else{
+  else {
     res.redirect("/");
   }
 });
@@ -196,12 +196,12 @@ app.post('/admin/addquestion', (req, res, next) => {
 //initial ratings set proficiency
 app.post('/private/initialRating', (req, res, next) => {
   //req.params.level, req.params.subject
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
-    db.collection("users").findOneAndUpdate({ username: req.user.username }, {$set: {rating: req.user.rating}});
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
     res.redirect("/train/" + req.body.subject + "/choose_units");
   }
-  else{
+  else {
     res.redirect("/");
   }
 });
@@ -222,120 +222,120 @@ app.get("/signup", (req, res) => {
 
 //private
 app.get("/homepage", (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     res.render(__dirname + '/views/private/' + 'homepage.ejs');
   }
-  else{
+  else {
     res.redirect("/");
   }
 });
 
 app.get("/settings", (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     res.render(__dirname + '/views/private/' + 'settings.ejs');
   }
-  else{
+  else {
     res.redirect("/");
   }
 });
 
 app.get("/train", (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     res.render(__dirname + '/views/private/' + 'train.ejs');
   }
-  else{
+  else {
     res.redirect("/");
   }
 });
 
 app.get("/train/choose_subject", (req, res) => {
-  if(req.isAuthenticated()){
-    res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs', { subjects: subjects.subjectUnitDictionary});
+  if (req.isAuthenticated()) {
+    res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs', { subjects: subjects.subjectUnitDictionary });
   }
-  else{
+  else {
     res.redirect("/");
   }
 })
 
 //checks to see if prof visited before
 app.get("/train/:subject/proficiency", (req, res) => {
-  if(req.isAuthenticated()){
-    if(req.user.rating[req.params.subject.toLowerCase()] == -1){
-        req.user.rating[req.params.subject.toLowerCase()] = 0;
-        //req.user.save();
-        db.collection("users").findOneAndUpdate({ username: req.user.username }, {$set: {rating: req.user.rating}});
-        res.render(__dirname + '/views/private/' + 'train_onetime_setProficiency.ejs', { subject: req.params.subject});
+  if (req.isAuthenticated()) {
+    if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
+      req.user.rating[req.params.subject.toLowerCase()] = 0;
+      //req.user.save();
+      db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+      res.render(__dirname + '/views/private/' + 'train_onetime_setProficiency.ejs', { subject: req.params.subject });
     }
-    else{
+    else {
       res.redirect("/train");
     }
   }
-  else{
+  else {
     res.redirect("/");
   }
 })
 
 app.get("/train/:subject/choose_units", (req, res) => {
-  if(req.isAuthenticated()){
-    if(req.user.rating[req.params.subject.toLowerCase()] == -1){ //check to see if redir needed
-      res.redirect("/train/"+req.params.subject+"/proficiency"); //ROUTING FIX
+  if (req.isAuthenticated()) {
+    if (req.user.rating[req.params.subject.toLowerCase()] == -1) { //check to see if redir needed
+      res.redirect("/train/" + req.params.subject + "/proficiency"); //ROUTING FIX
     }
-    
+
     else {
 
       // DO A CHECK HERE, IF NO RATING REDIRECT TO SET PROFICIENCY PAGE BEFORE THIS PAGE
-        res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { units: subjects.subjectUnitDictionary[req.params.subject]});
+      res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { units: subjects.subjectUnitDictionary[req.params.subject] });
 
     }
   }
-  else{
+  else {
     res.redirect("/");
   }
 })
 
 app.get("/train/:subject/display_question", (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     // PASS IN PARAMETERS BELOW
     //res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { type: type, question: question, choices: choices, source: source, rating: rating});
   }
-  else{
+  else {
     res.redirect("/");
   }
 })
 
 app.get("/train/:subject/answer_explanation", (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     // PASS IN PARAMETERS BELOW
     //res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { PARAMETERS GO HERE });
   }
-  else{
+  else {
     res.redirect("/");
   }
 })
 
 app.get("/logout", (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     req.logout();
   }
   res.redirect("/");
 });
 
 //admin
-            // ADD QUESTION GET ROUTE IS HERE
+// ADD QUESTION GET ROUTE IS HERE
 app.get("/admin/addquestion", (req, res) => {
-  if(req.isAuthenticated()&&(req.user.username=="mutorialsproject@gmail.com")){
+  if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
     res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
   }
-  else{
+  else {
     res.redirect("/");
   }
 });
 
 app.get("/admin/addedSuccess", (req, res) => {
-  if(req.isAuthenticated()&&(req.user.username=="mutorialsproject@gmail.com")){
+  if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
     res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
   }
-  else{
+  else {
     res.redirect("/");
   }
 });
@@ -353,11 +353,36 @@ app.listen(PORT, (req, res) => {
 
 
 
-// deliminator parsing method is here for now, you can copy it somewhere else to make it all more organized
-// input is a string, output is an array of the values
+// delimiter parsing method: input is a string, output is an array of the values
 function parseDelimiter(input) {
   return input.split("@");
 }
-// oops turned out to be more simple than i thought
 
-//console.log(parseDelimiter("I like pie@I dont know@@3@4"));
+
+
+// FUNCTIONS TO IMPLEMENT
+
+
+// input a string (the question ID), return a question entry. idk how to phrase this
+function getQuestion(id) {
+
+}
+
+// input a rating range (as floor and ceiling values), return a range of questions
+function getQuestions(ratingFloor, ratingCeiling) {
+
+}
+
+// return rating of the user logged in right now
+function getRating() {
+  // if you write method below this too, you can just call getRating([ID of user logged in rn]);
+}
+// or write a method which gets the rating of a user given the ID
+function getRating(id) {
+
+}
+
+// set the rating of the person logged in rn
+function setRating(subject, newRating) {
+  
+}

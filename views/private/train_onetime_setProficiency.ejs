@@ -8,7 +8,7 @@
 
 <div class="jumbotron container mt-5">
     
-		<h3>What is your estimated proficiency level in <%= subject %>?</h3>
+	<h3>What is your estimated proficiency level in <%= subject %>?</h3>
 	<form action="/private/initialRating" method="POST">	
 		<input class="btn btn-primary" type="submit" value="Beginner">
 		<input type="hidden" name="subject" value="<%=subject%>">
@@ -24,13 +24,13 @@
 		<input type="hidden" name="subject" value="<%=subject%>">
 		<input type="hidden" name="level" value="1500">
 	</form>
-		<h3 class="mt-4">What do these levels mean?</h3>
-		<h6>Beginner:</h6>
-		<p>Equivalent to starters, or those who take courses on a middle school level</p>
-		<h6>Intermediate:</h6>
-		<p>Equivalent to those who take Honors program courses or in general, courses on a high school level</p>
-		<h6>Advanced:</h6>
-		<p>Equivalent to students enrolled in an AP level course or above</p>
+	<h3 class="mt-4">What do these levels mean?</h3>
+	<h6>Beginner:</h6>
+	<p>Equivalent to starters, or those who take courses on a middle school level</p>
+	<h6>Intermediate:</h6>
+	<p>Equivalent to those who take Honors program courses or in general, courses on a high school level</p>
+	<h6>Advanced:</h6>
+	<p>Equivalent to students enrolled in an AP level course or above</p>
 </div>
     
 <%- include("../partials/footer") -%>
