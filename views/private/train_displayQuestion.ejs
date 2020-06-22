@@ -1,6 +1,7 @@
 <!-- This is the page to display questions on -->
 
 <!-- ARGUMENTS:
+    id - question ID
     type - a string which is either "mc" (multiple choice), "sa" (select all), or "fr" (free response)
     question - a string which is the question statement
     choices - if type = "mc" or "sa", this is an array of the possible answer choices; otherwise, pass in empty array or nothing at all
@@ -10,23 +11,98 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
+<!-- javascript code -->
+<script>
+
+    $(document).ready(function () {
+
+        // obtain hidden tag info
+        var id = $("#hiddenidtag").text();
+        var type = $("#hiddentypetag").text();
+
+        // hide empty response messages
+        $("#fr-answerblank").hide();
+        $("#mc-answerblank").hide();
+
+        // upon hitting submit button
+        var response = "";
+        $("#next").click(function () {
+            if(type == "mc") {
+
+                // MULTIPLE CHOICE RESPONSE CHECK
+                var choices = document.getElementById("mc-choices").elements;
+                for(let i = 0; i < choices.length; i++) {
+                    if(choices[i].checked) {
+                        response = choices[i].id;
+                    }
+                }
+
+                if(response == "") {
+                    $("#mc-answerblank").show(1000);
+                    return;
+                }
+            } else if(type == "sa") {
+
+                // SELECT ALL REPSONSE CHECK
+                response = [];
+                var choices = document.getElementById("sa-choices").elements;
+                for(let i = 0; i < choices.length; i++) {
+                    if(choices[i].checked) {
+                        respones.push(choices[i].id);
+                    }
+                }
+
+                if(response.length == 0) {
+                    $("#mc-answerblank").show(1000);
+                    return;
+                }
+            } else if(type == "fr") {
+
+                // FREE RESPONSE RESPONSE CHECK
+                response = $("#fr-answer").val();
+                
+                if(response == "") {
+                    $("#fr-answerblank").show(1000);
+                    return;
+                }
+            }
+            
+
+
+            
+            // THERE IS ONE VARIABLE CALLED "response" THAT NEEDS TO BE PASSED TO BACKEND
+            //
+            /*$.post("/login", { username: username, password: pass }, function (data) {
+                location.reload(true);
+            });*/
+        });
+    });
+
+</script>
+
 <div class="jumbotron container mt-5">
 
     <h3>Question Info</h3>
     <p>Rating: <%= rating %></p>
     <p>Source: <%= source%></p>
 
+    <!-- HIDDEN TAGS -->
+    <p hidden id="hiddentypetag"><%= type %></p>
+    <p hidden id="hiddenidtag"><%= id %></p>
+
     <% if(type == "mc") { %>
         <!-- CODE FOR MULTIPLE CHOICE -->
         <h3>Please read the following question and select the best answer:</h3>
         <p><%= question %></p>
 
-        <div class = "mt-4">
+        <div class="mt-4" id="mc-choices">
+            <% var choiceIndex = 1; %>
             <% choices.forEach((choice) => { %>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="answerChoice" id="<%= choice %>" value="<%= choice %>">
-                    <label class="form-check-label" for="<%= choice %>"><%= choice %></label>
+                    <input class="form-check-input" type="radio" name="answerChoice" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
+                    <label class="form-check-label" for="<%= choiceIndex %>"><%= choice %></label>
                 </div>
+                <% choiceIndex++; %>
             <% }) %>
         </div>
     <% } else if(type == "sa") { %>
@@ -34,12 +110,14 @@
         <h3>Please read the following and select ALL choices that apply:</h3>
         <p><%= question %></p>
 
-        <div class = "mt-4">
+        <div class="mt-4" id="sa-choices">
+            <% var choiceIndex = 1; %>
             <% choices.forEach((choice) => { %>
                 <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                    <input type="checkbox" class="custom-control-input" id="<%= choice %>">
-                    <label class="custom-control-label" for="<%= choice %>"><%= choice %></label>
+                    <input type="checkbox" class="custom-control-input" id="<%= choiceIndex %>">
+                    <label class="custom-control-label" for="<%= choiceIndex %>"><%= choice %></label>
                 </div>
+                <% choiceIndex++; %>
             <% }) %>
         </div>
     <% } else if(type == "fr") { %>
@@ -47,9 +125,9 @@
         <h3>Please read the following question and enter your answer in the box:</h3>
         <p><%= question %></p>
 
-        <div class = "mt-4">
+        <div class="mt-4">
             <div class="form-group">
-                <input type="number" class="form-control" id="answer" placeholder="Enter your answer here">
+                <input type="number" class="form-control" id="fr-answer" placeholder="Enter your answer here">
             </div>
         </div>
     <% } else { %>
@@ -60,6 +138,9 @@
     <div class = "mt-4">
         <button type="button" class="btn btn-primary" id="next">Submit</button>
     </div>
+
+    <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
+    <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
     
 </div>
 
