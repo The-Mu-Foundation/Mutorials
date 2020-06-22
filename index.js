@@ -295,8 +295,9 @@ app.get("/train/:subject/choose_units", (req, res) => {
 
 app.get("/train/:subject/display_question", (req, res) => {
   if (req.isAuthenticated()) {
-    // PASS IN PARAMETERS BELOW
-    //res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { type: type, question: question, choices: choices, source: source, rating: rating});
+    const newQuestion = getQuestion("5ef044b61b4590329c4c8458").then(newQuestion => {
+      res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: newQuestion});
+    });
   }
   else {
     res.redirect("/");
