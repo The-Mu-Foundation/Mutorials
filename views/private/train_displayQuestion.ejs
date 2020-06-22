@@ -1,12 +1,7 @@
 <!-- This is the page to display questions on -->
 
 <!-- ARGUMENTS:
-    id - question ID
-    type - a string which is either "mc" (multiple choice), "sa" (select all), or "fr" (free response)
-    question - a string which is the question statement
-    choices - if type = "mc" or "sa", this is an array of the possible answer choices; otherwise, pass in empty array or nothing at all
-    rating - a number, question rating
-    source - a string, question source -->
+    newQues - question object passed in to be displayed -->
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
@@ -39,7 +34,7 @@
 
                 if(response == "") {
                     $("#mc-answerblank").show(1000);
-                    return;
+                    //return;
                 }
             } else if(type == "sa") {
 
@@ -54,7 +49,7 @@
 
                 if(response.length == 0) {
                     $("#mc-answerblank").show(1000);
-                    return;
+                    //return;
                 }
             } else if(type == "fr") {
 
@@ -63,18 +58,11 @@
                 
                 if(response == "") {
                     $("#fr-answerblank").show(1000);
-                    return;
+                    //return;
                 }
             }
             
-
-
-            
-            // THERE IS ONE VARIABLE CALLED "response" THAT NEEDS TO BE PASSED TO BACKEND
-            //
-            /*$.post("/login", { username: username, password: pass }, function (data) {
-                location.reload(true);
-            });*/
+            // NOT POSTING WITH JQUERY; but if we did a post message would go here
         });
     });
 
@@ -84,11 +72,13 @@
     
     <h3>Question Info</h3>
     <p>Rating: <%= newQues.rating %></p>
-    <p>Source: <%= newQues.ext_source%></p>
+    <p>Source: <%= newQues.ext_source %></p>
 
     <!-- HIDDEN TAGS -->
-    <input type="hidden" name="id" value="<%=newQues.type%>">
+    <input type="hidden" name="id" value="<%=newQues.type %>">
     <input type="hidden" name="type" value="<%= newQues._id %>">
+
+    <!-- DISPLAY QUESTION -->
     <% if(newQues.type == "mc") { %>
         <!-- CODE FOR MULTIPLE CHOICE -->
         <h3>Please read the following question and select the best answer:</h3>
