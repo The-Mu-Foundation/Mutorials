@@ -41,7 +41,7 @@ const qSchema = new mongoose.Schema({
   question: String,
   choices: Array,
   tags: Array,
-  rating: String,
+  rating: Number,
   answer: Array,
   answer_ex: String,
   author: String,
@@ -349,7 +349,17 @@ app.listen(PORT, (req, res) => {
 
 
 
-
+app.get("/test", (req, res) => {
+  const qs = getQuestions(50, 300).then(qs => { //copy exact then format for getquestion(s) for it to work
+    console.log(qs.toString());
+  });
+  const q = (getQuestion("5eed7e4d4c9d7f16ec0768b9")).then(q => {
+    console.log(q.toString());
+  });
+  console.log(getRating("Physics", req));
+  setRating("Physics", 5000, req); //works
+  console.log(getRating("Physics", req));
+});
 
 
 
@@ -365,24 +375,25 @@ function parseDelimiter(input) {
 
 // input a string (the question ID), return a question entry. idk how to phrase this
 function getQuestion(id) {
-
+  return Ques.findById(id).exec();
 }
 
 // input a rating range (as floor and ceiling values), return a range of questions
 function getQuestions(ratingFloor, ratingCeiling) {
-
+  const gotQ = Ques.find({rating: { $gte: ratingFloor, $lte: ratingCeiling}});
+  return gotQ.exec();
 }
 
 // return rating of the user logged in right now
-function getRating() {
+function getRating(subject, req) {
   // if you write method below this too, you can just call getRating([ID of user logged in rn]);
+  const rate = req.user.rating[subject.toLowerCase()];
+  return rate;
 }
 // or write a method which gets the rating of a user given the ID
-function getRating(id) {
-
-}
 
 // set the rating of the person logged in rn
-function setRating(subject, newRating) {
-  
+function setRating(subject, newRating, req) { //NEEDS TO BE POST
+  req.user.rating[subject.toLowerCase()] = newRating;
+  db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } }); //universal code for updating ratings
 }
