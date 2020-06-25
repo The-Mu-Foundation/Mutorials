@@ -3,14 +3,10 @@
 <!-- ARGUMENTS:
     correct - a boolean saying whether or not the user got the question correct
     userRating - new user rating
-    questionRating - new question rating
-    source - string, where this question is from
-    tags - array of tags in this question
-    question - a string which is the question statement
     useranswer - what the user answered, array if select all
-    answer - the answer to the question, array if select all
-    choices - array of the choices of the question
-    explanation - a string containing the answer explanation -->
+
+    newQues - a question object with attributes of rating, ext_source, tags, question, answer, choices, answer_ex
+        Note some attributes are arrays -->
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
@@ -27,16 +23,16 @@
 
     <div class="mb-4">
         <h5>Your new rating is: <%= userRating %></h5>
-        <h5>This question is rated: <%= questionRating %></h5>
+        <h5>This question is rated: <%= newQues.rating %></h5>
     </div>
 
     <div class="mb-4">
-        <h5>Question Source: <%= source %></h5>
+        <h5>Question Source: <%= newQues.ext_source %></h5>
     </div>
 
     <div>
         <h5>Question Tags:</h5>
-        <% tags.forEach((tag) => { %>
+        <% newQues.tags.forEach((tag) => { %>
             <button class="btn btn-info btn-sm" disabled><%= tag %></button>
         <% }) %>
     </div>
@@ -47,15 +43,15 @@
 
     <div class="mb-4">
         <h3>Question Statement:</h3>
-        <p><%= question %></p>
+        <p><%= newQues.question %></p>
     </div>
 
     <% if(type == "mc") { %>
         <div class="mb-4">
             <h5>Answer Choices:</h5>
             <% var i = 1; %>
-            <% choices.forEach((choice) => { %>
-                <% if(answer == i) { %>
+            <% newQues.choices.forEach((choice) => { %>
+                <% if(newQues.answer == i) { %>
                     <p><font color="green"><%= choice %></font></p>
                 <% } else if(useranswer == i) { %>
                     <p><font color="red"><%= choice %></font></p>
@@ -69,8 +65,8 @@
         <div class="mb-4">
             <h5>Answer Choices:</h5>
             <% var i = 1; %>
-            <% choices.forEach((choice) => { %>
-                <% if(answer.includes(i)) { %>
+            <% newQues.choices.forEach((choice) => { %>
+                <% if(newQues.answer.includes(i)) { %>
                     <p><font color="green"><%= choice %></font></p>
                 <% } else if(useranswer.includes(i)) { %>
                     <p><font color="red"><%= choice %></font></p>
@@ -83,13 +79,13 @@
     <% } else if(type == "fr") { %>
         <div class="mb-4">
             <h5>You answered: <%= useranswer %></h5>
-            <h5>The correct answer is: <%= answer %></h5>
+            <h5>The correct answer is: <%= newQues.answer %></h5>
         </div>
     <% } %>
 
     <div>
         <h3>Answer Explanation:</h3>
-        <p><%= explanation %></p>
+        <p><%= newQues.answer_ex %></p>
     </div>
 
 </div>
