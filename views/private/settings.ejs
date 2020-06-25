@@ -24,9 +24,9 @@
 
 <!-- logout button -->
 <div class = "container">
-	<a href="/logout"><button type="button" class="btn btn-secondary mb-5" data-toggle="modal" data-target="#signoutModal">Log Out</button></a>
+	<button type="button" class="btn btn-secondary mb-5" data-toggle="modal" data-target="#signoutModal">Log Out</button>
 </div>
-<!--
+
 <div class="modal fade" id="signoutModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -38,10 +38,10 @@
             </div>
             <div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" id="signupSubmit">Yes</button>
+                <a href="/logout"><button type="button" class="btn btn-primary" id="signoutConfirm">Yes</button></a>
             </div>
         </div>
     </div>
 </div>
--->
+
 <%- include("../partials/footer") -%>
