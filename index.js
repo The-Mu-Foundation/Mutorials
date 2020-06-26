@@ -246,15 +246,30 @@ app.post("/private/checkAnswer", (req, res, next) => {
 
 //public
 app.get("/", (req, res) => {
-  res.render(__dirname + '/views/public/' + 'index.ejs');
+  if (!req.isAuthenticated()) {
+    res.render(__dirname + '/views/public/' + 'index.ejs');
+  }
+  else {
+    res.redirect("/homepage");
+  }
 });
 
 app.get("/signin", (req, res) => {
-  res.render(__dirname + '/views/public/' + 'signin.ejs');
+  if (!req.isAuthenticated()) {
+    res.render(__dirname + '/views/public/' + 'signin.ejs');
+  }
+  else {
+    res.redirect("/homepage");
+  }
 });
 
 app.get("/signup", (req, res) => {
-  res.render(__dirname + '/views/public/' + 'signup.ejs');
+  if (!req.isAuthenticated()) {
+    res.render(__dirname + '/views/public/' + 'signup.ejs');
+  }
+  else {
+    res.redirect("/homepage");
+  }
 });
 
 //private
