@@ -20,3 +20,5 @@ function calculateRatings(userRating, questionRating, correct) {
 
 	return {newUserRating: userRating, newQuestionRating: questionRating}
 }
+
+module.exports = { calculateRatings : calculateRatings };

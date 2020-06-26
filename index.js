@@ -12,6 +12,7 @@ const session = require("express-session");
 var db = mongoose.connection;
 const InitiateMongoServer = require("./config/db");
 const subjects = require("./models/subjects");
+const ratings = require("./models/ratings");
 //const ratings = require("./models/userRatings");
 // start server
 InitiateMongoServer();
