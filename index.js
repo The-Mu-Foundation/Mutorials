@@ -254,6 +254,15 @@ app.get("/settings", (req, res) => {
   }
 });
 
+
+
+// TESTING ROUTE FOR STATS PAGE
+app.get("/stats/:username", (req, res) => {
+  res.render(__dirname + '/views/private/' + 'stats.ejs');
+});
+
+
+
 app.get("/train", (req, res) => {
   if (req.isAuthenticated()) {
     res.render(__dirname + '/views/private/' + 'train.ejs');

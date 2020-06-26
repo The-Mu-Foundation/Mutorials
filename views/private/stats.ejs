@@ -1,8 +1,45 @@
 <!-- This is the page for displaying stats -->
 
+<!-- ARGUMENTS:
+    none yet -->
+
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
 <!-- IN DEVELOPMENT -->
+<script type="text/javascript">
+    $(function () {
+    //Better to construct options first and then pass it as a parameter
+        var options = { 
+            data: [
+                {
+                    type: "splineArea", //change it to column, spline, line, pie, etc
+                    dataPoints: [
+                        { x: 10, y: 10 },
+                        { x: 20, y: 14 },
+                        { x: 30, y: 18 },
+                        { x: 40, y: 22 },
+                        { x: 50, y: 18 },
+                        { x: 60, y: 28 }
+                    ]
+                }
+            ]
+        };
+    
+        $("#chartContainer").CanvasJSChart(options);
+    
+    
+        $("#addDataPoint").click(function () {
+            var chart = $("#chartContainer").CanvasJSChart();
+            var length = chart.options.data[0].dataPoints.length;
+            chart.options.data[0].dataPoints.push({ x: (length + 1) * 10, y: Math.round((30 - Math.random() * 10)) });
+            chart.render();
+        });
+    });
+</script>
+
+<div id="chartContainer" style="width:100%; height:280px;"></div>
+<button id="addDataPoint" style="position:absolute;right:0px;margin-right:10px;">Add Data Point</button>
+
 
 <%- include("../partials/footer") -%>
