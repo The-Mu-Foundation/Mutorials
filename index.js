@@ -216,6 +216,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
           isRight = true;
         }
         console.log(isRight);
+        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
     }
     else if(req.body.type == "sa"){
@@ -223,6 +224,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
       const antsy = getQuestion(req.body.id).then(antsy => {
         isRight = arraysEqual(antsy.answer, req.body.saChoice);
         console.log(isRight);
+        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {userAnswer: req.body.saChoice,  userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
     }
     else if(req.body.type == "fr"){
@@ -232,10 +234,8 @@ app.post("/private/checkAnswer", (req, res, next) => {
           isRight = true;
         }
         console.log(isRight);
+        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
-    }
-    else{
-      res.redirect("/train")
     }
   }
   else{
@@ -351,7 +351,7 @@ app.get("/train/:subject/display_question", (req, res) => {
     const qs = getQuestions(50, 500).then(qs => { //copy exact then format for getquestion(s) for it to work
 
       curQ = qs[Math.floor(Math.random() * qs.length)];
-      res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: curQ }, {subject: req.params.subject});
+      res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: curQ , subject: req.params.subject});
     });
     /*
     const newQuestion = getQuestion("5ef044b61b4590329c4c8458").then(newQuestion => {
@@ -367,7 +367,7 @@ app.get("/train/:subject/display_question", (req, res) => {
 app.get("/train/:subject/answer_explanation", (req, res) => {
   if (req.isAuthenticated()) {
     // PASS IN PARAMETERS BELOW
-    //res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { PARAMETERS GO HERE });
+    res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {subject: req.params.subject, newQues: antsy, correct: isRight});
   }
   else {
     res.redirect("/");

@@ -95,7 +95,7 @@
             </div>
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
-            <input type="hidden" name="type" value="<%= subject %>">
+            <input type="hidden" name="subject" value="<%= subject %>">
         </form>
     <% } else if(newQues.type == "sa") { %>
         <!-- CODE FOR<input type="hidden" name="type" value="<%= subject %>"> SELECT ALL  -->
@@ -115,7 +115,7 @@
             </div>
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
-            <input type="hidden" name="type" value="<%= subject %>">
+            <input type="hidden" name="subject" value="<%= subject %>">
         </form>
     <% } else if(newQues.type == "fr") { %>
         <!-- CODE FOR FREE RESPONSE -->
@@ -130,7 +130,7 @@
             </div>
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
-            <input type="hidden" name="type" value="<%= subject %>">
+            <input type="hidden" name="subject" value="<%= subject %>">
         </form>
     <% } else { %>
         <!-- ERROR CODE -->

@@ -3,7 +3,7 @@
 <!-- ARGUMENTS:
     correct - a boolean saying whether or not the user got the question correct
     userRating - new user rating
-    useranswer - what the user answered, array if select all
+    userAnswer - what the user answered, array if select all
 
     newQues - a question object with attributes of rating, ext_source, tags, question, answer, choices, answer_ex
         Note some attributes are arrays -->
@@ -46,14 +46,14 @@
         <p><%= newQues.question %></p>
     </div>
 
-    <% if(type == "mc") { %>
+    <% if(newQues.type == "mc") { %>
         <div class="mb-4">
             <h5>Answer Choices:</h5>
             <% var i = 1; %>
             <% newQues.choices.forEach((choice) => { %>
                 <% if(newQues.answer == i) { %>
                     <p><font color="green"><%= choice %></font></p>
-                <% } else if(useranswer == i) { %>
+                <% } else if(userAnswer == i) { %>
                     <p><font color="red"><%= choice %></font></p>
                 <% } else { %>
                     <p><%= choice %></p>
@@ -61,14 +61,14 @@
                 <% i++; %>
             <% }) %>
         </div>
-    <% } else if(type == "sa") { %>
+    <% } else if(newQues.type == "sa") { %>
         <div class="mb-4">
             <h5>Answer Choices:</h5>
             <% var i = 1; %>
             <% newQues.choices.forEach((choice) => { %>
                 <% if(newQues.answer.includes(i)) { %>
                     <p><font color="green"><%= choice %></font></p>
-                <% } else if(useranswer.includes(i)) { %>
+                <% } else if(userAnswer.includes(i)) { %>
                     <p><font color="red"><%= choice %></font></p>
                 <% } else { %>
                     <p><%= choice %></p>
@@ -76,9 +76,9 @@
                 <% i++; %>
             <% }) %>
         </div>
-    <% } else if(type == "fr") { %>
+    <% } else if(newQues.type == "fr") { %>
         <div class="mb-4">
-            <h5>You answered: <%= useranswer %></h5>
+            <h5>You answered: <%= userAnswer %></h5>
             <h5>The correct answer is: <%= newQues.answer %></h5>
         </div>
     <% } %>
@@ -93,7 +93,7 @@
 <!-- REMEMBER TO ADD HREF FOR SECOND BUTTON -->
 <div class = "container mb-5">
     <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
-    <a href=""><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
+    <a href="/train/<%= subject %>/display_question"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
 </div>
 
 <%- include("../partials/footer") -%>
