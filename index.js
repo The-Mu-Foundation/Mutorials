@@ -205,6 +205,43 @@ app.post('/private/initialRating', (req, res, next) => {
     res.redirect("/");
   }
 });
+
+//answer check
+app.post("/private/checkAnswer", (req, res, next) => {
+  if(req.isAuthenticated()){
+    if(req.body.type == "mc"){
+      var isRight = false;
+      const antsy = getQuestion(req.body.id).then(antsy => {
+        if(antsy.answer[0] == req.body.answerChoice){
+          isRight = true;
+        }
+        console.log(isRight);
+      });
+    }
+    else if(req.body.type == "sa"){
+      var isRight = false;
+      const antsy = getQuestion(req.body.id).then(antsy => {
+        isRight = arraysEqual(antsy.answer, req.body.saChoice);
+        console.log(isRight);
+      });
+    }
+    else if(req.body.type == "fr"){
+      var isRight = false;
+      const antsy = getQuestion(req.body.id).then(antsy => {
+        if(antsy.answer[0] == req.body.freeAnswer){
+          isRight = true;
+        }
+        console.log(isRight);
+      });
+    }
+    else{
+      res.redirect("/train")
+    }
+  }
+  else{
+    res.redirect("/");
+  }
+});
 // GET ROUTES/webpages
 
 //public
@@ -294,10 +331,18 @@ app.get("/train/:subject/choose_units", (req, res) => {
 })
 
 app.get("/train/:subject/display_question", (req, res) => {
+  var curQ = null;
   if (req.isAuthenticated()) {
+    const qs = getQuestions(50, 500).then(qs => { //copy exact then format for getquestion(s) for it to work
+
+      curQ = qs[Math.floor(Math.random() * qs.length)];
+      res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: curQ }, {subject: req.params.subject});
+    });
+    /*
     const newQuestion = getQuestion("5ef044b61b4590329c4c8458").then(newQuestion => {
       res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: newQuestion });
     });
+    */
   }
   else {
     res.redirect("/");
@@ -350,7 +395,7 @@ app.listen(PORT, (req, res) => {
 
 
 
-app.get("/test", (req, res) => {
+app.get("/test", (req, res) => { 
   const qs = getQuestions(50, 300).then(qs => { //copy exact then format for getquestion(s) for it to work
     console.log(qs.toString());
   });
@@ -386,7 +431,7 @@ function getQuestions(ratingFloor, ratingCeiling) {
 }
 
 // return rating of the user logged in right now
-function getRating(subject, req) {
+function getRating(subject, req) { //only works w new registered emails
   // if you write method below this too, you can just call getRating([ID of user logged in rn]);
   const rate = req.user.rating[subject.toLowerCase()];
   return rate;
@@ -394,7 +439,23 @@ function getRating(subject, req) {
 // or write a method which gets the rating of a user given the ID
 
 // set the rating of the person logged in rn
-function setRating(subject, newRating, req) { //NEEDS TO BE POST
+function setRating(subject, newRating, req) { ////only works w new registered emails
   req.user.rating[subject.toLowerCase()] = newRating;
   db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } }); //universal code for updating ratings
+}
+
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
+
+  // If you don't care about the order of the elements inside
+  // the array, you should sort both arrays here.
+  // Please note that calling sort on an array will modify that array.
+  // you might want to clone your array first.
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
