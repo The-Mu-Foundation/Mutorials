@@ -25,7 +25,18 @@ var subjectUnitDictionary = {
                 "Quantum Physics",
                 "Nuclear Energy and Elementary Particles"
             ],
-    "Chemistry": ["Unit 1", "Unit 2", "Unit 3+"],
+    "Chemistry": ["Stoichiometry",
+                "Gases",
+                "Thermochemistry",
+                "Atomic Structure",
+                "Bonding",
+                "Chemical Kinetics",
+                "Chemical Equilibrium",
+                "Acids and Bases",
+                "Solubility",
+                "Spontaneity",
+                "Electrochemistry",
+                "Organic Chemistry"],
     "Biology": ["Unit 1", "Unit 2", "Unit 3+"]
 }
 
