@@ -1,30 +1,64 @@
 <!-- This is the page on which you choose the units you want to train on -->
 
 <!-- ARGUMENTS:
-    units - a list of subjects to train on -->
+    units - a list of units to train on -->
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
-    
+
+<script>
+
+    $(document).ready(function () {
+
+        // show "no units selected" message when submit button is clicked and no unit is seleted
+        $("#no-units-selected").hide();
+
+        $("#next").click(function () {
+            
+            selection = "";
+            var choices = document.querySelectorAll('#checkboxes input[type="checkbox"]');
+            
+            console.log(choices);
+            for(let i = 0; i < choices.length; i++) {
+                if(choices[i].checked) {
+                    selection = choices[i].id;
+                }
+            }
+
+            if(selection == "") {
+                $("#no-units-selected").show(1000);
+            }
+        });
+
+    });
+
+</script>
+
 <div class="jumbotron container mt-5">
     
     <h3>Please select the units you wish to include in your training:</h3>
-    <form action="/selQ" method="POST"> 
-        <% units.forEach((unit) => { %>
-            <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                <input type="checkbox" name="unitChoice" class="custom-control-input" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
-                <label class="custom-control-label" for="<%= unit %>"><%= unit %></label>
-            </div>
-        <% }) %>
+    <form action="/selQ" method="POST">
+        <div id="checkboxes">
+            <% units.forEach((unit) => { %>
+                <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                    <input type="checkbox" name="unitChoice" class="custom-control-input" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
+                    <label class="custom-control-label" for="<%= unit %>"><%= unit %></label>
+                </div>
+            <% }) %>
+        </div>
 
         <div class = "mt-4">
             <a href="/train/<%=subject%>/choose_subject"><button type="button" class="btn btn-secondary" id="previous">Previous</button></a>
-            
+            <input type="submit" class="btn btn-primary" id="next" value="Next">
         </div>
-        <input type="hidden" name="qNum" value="<%=qNum%>">
-        <input type="hidden" name="subj" value="<%=subject%>">
-        <input type="submit" class="btn btn-primary" id="next" value="Next">
-    </form> 
+
+        <input type="hidden" name="qNum" value="<%= qNum %>">
+        <input type="hidden" name="subj" value="<%= subject %>">
+
+    </form>
+
+    <h4 class="my-4" id="no-units-selected"><font color="red">You haven't selected any units yet!</font></h4>
+
 </div>
-    
+
 <%- include("../partials/footer") -%>
