@@ -25,7 +25,8 @@
             if(type == "mc") {
 
                 // MULTIPLE CHOICE RESPONSE CHECK
-                var choices = document.getElementById("mc-choices").elements;
+                //var choices = document.getElementById("mc-choices").elements;
+                var choices = document.querySelectorAll('#mc-choices input[type="radio"]');
                 for(let i = 0; i < choices.length; i++) {
                     if(choices[i].checked) {
                         response = choices[i].id;
@@ -40,7 +41,8 @@
 
                 // SELECT ALL REPSONSE CHECK
                 response = [];
-                var choices = document.getElementById("sa-choices").elements;
+                //var choices = document.getElementById("sa-choices").elements;
+                var choices = document.querySelectorAll('#sa-choices input[type="checkbox"]');
                 for(let i = 0; i < choices.length; i++) {
                     if(choices[i].checked) {
                         response.push(choices[i].id);
