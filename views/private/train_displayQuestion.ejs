@@ -11,9 +11,23 @@
 
     $(document).ready(function () {
 
-        // obtain hidden tag info
+        // obtain hidden tag info [NOT IN USE RIGHT NOW]
         var id = $("#hiddenidtag").text();
         var type = $("#hiddentypetag").text();
+
+		// hide skip dialogue code
+		$("#skip-dialogue-1").show();
+		$("#skip-dialogue-2").hide();
+
+		// skip button confirm message
+        $("#skip-button").click(function () {
+            $("#skip-dialogue-2").show(1000);
+			$("#skip-dialogue-1").hide(1000);
+        });
+		$("#no-skip").click(function () {
+			$("#skip-dialogue-1").show(1000);
+			$("#skip-dialogue-2").hide(1000);
+        });
 
         // hide empty response messages
         $("#fr-answerblank").hide();
@@ -146,6 +160,22 @@
     <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
     <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
     
+</div>
+
+<div class="jumbotron container">
+
+	<div id="skip-dialogue-1">
+		<h3>Question's content out of reach of your knowledge?</h3>
+		<button type="button" class="btn btn-primary mt-2" id="skip-button">Skip Question</button>
+	</div>
+	
+	<div id="skip-dialogue-2">
+		<h3>Are you sure you want to skip this question?</h3>
+		<p>A new question will be randomly chosen, but you will lose 1 rating for skipping</p>
+		<button type="button" class="btn btn-secondary" id="no-skip">No</button>
+		<button type="button" class="btn btn-primary" id="yes-skip">Yes</button>
+	</div>
+
 </div>
 
 <%- include("../partials/footer") -%>
