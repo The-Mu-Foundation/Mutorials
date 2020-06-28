@@ -16,7 +16,7 @@ const subjects = require("./models/subjects");
 // start server
 InitiateMongoServer();
 const PORT = process.env.PORT || 3000;
-
+//process.env.questionz = null; //security issue
 const app = express();
 
 //session
@@ -123,7 +123,6 @@ app.use(passport.session());
 
 
 
-
 //webpages
 
 // POST ROUTES
@@ -206,6 +205,22 @@ app.post('/private/initialRating', (req, res, next) => {
   }
 });
 
+//select questions
+app.post("/selQ" , (req, res, next) => {
+  //var subj = null;
+  var units = null;
+  if(req.body.qNum == 0){
+    subj = req.body.subj;
+    res.redirect("/train/" + req.body.subj + "/choose_units");
+  }
+  if(req.body.qNum == 1){
+    units = req.body.unitChoice;
+      //app.set("questionz", questions);
+      res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString()); //units cannot have commas
+
+  }
+});
+
 //answer check
 app.post("/private/checkAnswer", (req, res, next) => {
   if(req.isAuthenticated()){
@@ -216,7 +231,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
           isRight = true;
         }
         console.log(isRight);
-        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
+        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
     }
     else if(req.body.type == "sa"){
@@ -224,7 +239,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
       const antsy = getQuestion(req.body.id).then(antsy => {
         isRight = arraysEqual(antsy.answer, req.body.saChoice);
         console.log(isRight);
-        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {userAnswer: req.body.saChoice,  userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
+        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.saChoice,  userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
     }
     else if(req.body.type == "fr"){
@@ -234,7 +249,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
           isRight = true;
         }
         console.log(isRight);
-        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
+        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
     }
   }
@@ -301,8 +316,9 @@ app.get("/train", (req, res) => {
 });
 
 app.get("/train/choose_subject", (req, res) => {
+  const qNum = 0;
   if (req.isAuthenticated()) {
-    res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs', { subjects: subjects.subjectUnitDictionary });
+    res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs', { subjects: subjects.subjectUnitDictionary, qNum: qNum });
   }
   else {
     res.redirect("/");
@@ -328,6 +344,7 @@ app.get("/train/:subject/proficiency", (req, res) => {
 })
 
 app.get("/train/:subject/choose_units", (req, res) => {
+  const qNum = 1;
   if (req.isAuthenticated()) {
     if (req.user.rating[req.params.subject.toLowerCase()] == -1) { //check to see if redir needed
       res.redirect("/train/" + req.params.subject + "/proficiency"); //ROUTING FIX
@@ -336,7 +353,7 @@ app.get("/train/:subject/choose_units", (req, res) => {
     else {
 
       // DO A CHECK HERE, IF NO RATING REDIRECT TO SET PROFICIENCY PAGE BEFORE THIS PAGE
-      res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { units: subjects.subjectUnitDictionary[req.params.subject] });
+      res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { subject: req.params.subject, units: subjects.subjectUnitDictionary[req.params.subject], qNum: qNum});
 
     }
   }
@@ -348,10 +365,11 @@ app.get("/train/:subject/choose_units", (req, res) => {
 app.get("/train/:subject/display_question", (req, res) => {
   var curQ = null;
   if (req.isAuthenticated()) {
-    const qs = getQuestions(50, 500).then(qs => { //copy exact then format for getquestion(s) for it to work
-
+    var units = req.query.units.split(",");
+    const qs = getQuestions(50, 500, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
+      //const qs = app.get("questionz");
       curQ = qs[Math.floor(Math.random() * qs.length)];
-      res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: curQ , subject: req.params.subject});
+      res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ , subject: req.params.subject});
     });
     /*
     const newQuestion = getQuestion("5ef044b61b4590329c4c8458").then(newQuestion => {
@@ -440,8 +458,8 @@ function getQuestion(id) {
 }
 
 // input a rating range (as floor and ceiling values), return a range of questions
-function getQuestions(ratingFloor, ratingCeiling) {
-  const gotQ = Ques.find({rating: { $gte: ratingFloor, $lte: ratingCeiling}});
+function getQuestions(ratingFloor, ratingCeiling, subject, units) {
+  const gotQ = Ques.find({units: units, subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling}});
   return gotQ.exec();
 }
 

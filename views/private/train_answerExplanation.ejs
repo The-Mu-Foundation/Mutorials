@@ -93,7 +93,7 @@
 <!-- REMEMBER TO ADD HREF FOR SECOND BUTTON -->
 <div class = "container mb-5">
     <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
-    <a href="/train/<%= subject %>/display_question"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
+    <a href="/train/<%= subject %>/display_question?units=<%=units%>"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
 </div>
 
 <%- include("../partials/footer") -%>

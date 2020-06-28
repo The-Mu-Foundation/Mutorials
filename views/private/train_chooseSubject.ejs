@@ -9,10 +9,13 @@
 <div class="jumbotron container mt-5">
 
 	<h3>Please select a subject below to train on:</h3>
-    
-    <% Object.keys(subjects).forEach((subject) => { %>
-        <a href="/train/<%= subject %>/choose_units"><button type="button" class="btn btn-primary btn-lg btn-block my-2" id="<%= subject %>"><%= subject %></button></a>
-    <% }) %>
+    <form action="/selQ" method="POST">
+        <input type="hidden" name="qNum" value="<%=qNum%>">
+        <% Object.keys(subjects).forEach((subject) => { %>
+            <!--<a href="/train/<%= subject %>/choose_units"> -->
+            <input type="submit" name="subj" class="btn btn-primary btn-lg btn-block my-2" id="<%= subject %>" value="<%= subject %>"><%= subject %></button>
+        <% }) %>
+    </form>
 </div>
 
 <%- include("../partials/footer") -%>

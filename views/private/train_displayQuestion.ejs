@@ -96,6 +96,7 @@
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
             <input type="hidden" name="subject" value="<%= subject %>">
+            <input type="hidden" name="units" value="<%=units%>">
         </form>
     <% } else if(newQues.type == "sa") { %>
         <!-- CODE FOR<input type="hidden" name="type" value="<%= subject %>"> SELECT ALL  -->
@@ -116,6 +117,7 @@
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
             <input type="hidden" name="subject" value="<%= subject %>">
+            <input type="hidden" name="units" value="<%=units%>">
         </form>
     <% } else if(newQues.type == "fr") { %>
         <!-- CODE FOR FREE RESPONSE -->
@@ -131,6 +133,7 @@
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
             <input type="hidden" name="subject" value="<%= subject %>">
+            <input type="hidden" name="units" value="<%=units%>">
         </form>
     <% } else { %>
         <!-- ERROR CODE -->
