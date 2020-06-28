@@ -11,6 +11,17 @@
 <!-- send to backend -->
 <script>
 	$(document).ready(function () {
+
+		// hide LaTeX compiler
+		$("#latex-compiler").hide();
+		$("#show-compiler").click(function() {
+			$("#latex-compiler").show(1000);
+			$("#show-compiler-div").hide(1000);
+		});
+
+		// set code for showing LaTeX compiler
+
+		// set what happens when question is submitted
 		var type, question, choices, tags, ext_source, rating, subject, units, answer, answer_ex, author;
 		$("#submit").click(function () {
 
@@ -76,7 +87,13 @@
 
 <h1 class="my-5 container">ADMIN PAGE: Add Question</h1>
 
-<div class="jumbotron container">
+<div class="jumbotron container" id="show-compiler-div">
+
+	<button type="button" class="btn btn-primary btn-block" id="show-compiler">Open LaTeX Compiler</button>
+
+</div>
+
+<div class="jumbotron container" id="latex-compiler">
 	
 	<div class="form-group">
 		<h3>LaTeX Compiler - NOT PART OF THE QUESTION</h3>

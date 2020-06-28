@@ -12,6 +12,7 @@ const session = require("express-session");
 var db = mongoose.connection;
 const InitiateMongoServer = require("./config/db");
 const subjects = require("./models/subjects");
+const ratings = require("./models/ratings");
 //const ratings = require("./models/userRatings");
 // start server
 InitiateMongoServer();
@@ -305,6 +306,15 @@ app.get("/settings", (req, res) => {
     res.redirect("/");
   }
 });
+
+
+
+// TESTING ROUTE FOR STATS PAGE
+app.get("/stats/:username", (req, res) => {
+  res.render(__dirname + '/views/private/' + 'stats.ejs');
+});
+
+
 
 app.get("/train", (req, res) => {
   if (req.isAuthenticated()) {
