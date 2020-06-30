@@ -2,7 +2,6 @@
 
 const bodyParser = require("body-parser");
 const passport = require("passport");
-const crypto = require("crypto");
 const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require("mongoose");
 const express = require("express");
@@ -185,7 +184,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
         if (req.body.type == "mc") {
             var isRight = false;
-            const antsy = getQuestion(req.body.id).then(antsy => {
+            const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 if (antsy.answer[0] == req.body.answerChoice) {
                     isRight = true;
                 }
@@ -196,7 +195,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
         }
         else if (req.body.type == "sa") {
             var isRight = false;
-            const antsy = getQuestion(req.body.id).then(antsy => {
+            const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 console.log(isRight);
@@ -205,7 +204,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
         }
         else if (req.body.type == "fr") {
             var isRight = false;
-            const antsy = getQuestion(req.body.id).then(antsy => {
+            const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 if (antsy.answer[0] == req.body.freeAnswer) {
                     isRight = true;
                 }
@@ -334,12 +333,12 @@ app.get("/train/:subject/display_question", (req, res) => {
     var curQ = null;
     if (req.isAuthenticated()) {
         var units = req.query.units.split(",");
-        const qs = getQuestions(50, 500, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
+        const qs = getQuestions(Ques, 50, 500, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject });
         });
         /*
-        const newQuestion = getQuestion("5ef044b61b4590329c4c8458").then(newQuestion => {
+        const newQuestion = getQuestion(Ques, "5ef044b61b4590329c4c8458").then(newQuestion => {
           res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: newQuestion });
         });
         */

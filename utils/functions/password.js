@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 // converts plain text password to hash
 function genPassword(password) {
     var salt = crypto.randomBytes(32).toString('hex');
