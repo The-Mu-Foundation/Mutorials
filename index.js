@@ -20,10 +20,9 @@ const { subjectUnitDictionary } = require("./utils/constants/subjects");
 
 
 
-// START MONGO SERVER
-
-var db = mongoose.connection;
+// START MONGO SERVER 
 InitiateMongoServer();
+var db = mongoose.connection;
 const PORT = process.env.PORT || 3000;
 const app = express();
 

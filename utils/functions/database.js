@@ -1,4 +1,7 @@
 // input a string (the question ID), returns question entry
+const mongoose = require("mongoose");
+var db = mongoose.connection;
+
 function getQuestion(Ques, id) {
     return Ques.findById(id).exec();
 }
