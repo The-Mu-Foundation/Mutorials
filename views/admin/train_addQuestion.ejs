@@ -212,7 +212,7 @@
 		<p>What is the correct answer?</p>
 		<input class="form-control" id="correctanswer" placeholder="Input the answer, with '@' characters as deliminators if there are multiple">
     </div>
-	    <!-- ANSWER EXPLANATION -->
+	<!-- ANSWER EXPLANATION -->
 	<div class="form-group">
 		<p>What is the answer explanation?</p>
 		<textarea class="form-control" id="answerexplanation" rows="3" placeholder="Enter a detailed answer explanation"></textarea>
@@ -221,8 +221,26 @@
 </div>
 
 <div class = "container mt-4 mb-5">
-    <button type="button" class="btn btn-secondary" id="cancel">Cancel</button>
+    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#confirmCancel" id="cancel">Cancel</button>
     <a href="/admin/addedSuccess"><button type="button" class="btn btn-primary" id="submit">Submit</button></a>
+</div>
+
+<!-- Extra code for confirming the cancel button -->
+<div class="modal fade" id="confirmCancel" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Are you sure you want to leave this page?</h5>
+            </div>
+			<div class="modal-body">    
+				<p>All your work is unsaved and will be discarded</p>
+            </div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <a href="/homepage"><button type="button" class="btn btn-primary" id="leaveConfirm">Yes</button></a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <%- include("../partials/footer") -%>
