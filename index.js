@@ -1,24 +1,28 @@
-
+// MODULE IMPORTS
 const bodyParser = require("body-parser");
-//const user = require("./routes/user");
-//const auth = require("./middleware/auth");
 const passport = require("passport");
 const crypto = require("crypto");
 const LocalStrategy = require('passport-local').Strategy;
-//const flash = require("connect-flash");
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
 var db = mongoose.connection;
 const InitiateMongoServer = require("./database/config/db");
-const subjects = require("./database/models/subjects");
-const ratings = require("./database/models/ratings");
+//const user = require("./routes/user");
+//const auth = require("./middleware/auth");
+//const flash = require("connect-flash");
+
+// METHOD AND CONSTANT IMPORTS
 const { subjectUnitDictionary } = require("./database/models/subjects");
-//const ratings = require("./models/userRatings");
-// start server
+const { genPassword, validPassword } = require("./util/password");
+const { calculateRatings } = require("./util/ratings");
+const { arraysEqual, parseDelimiter } = require("./util/general");
+const { getQuestion, getQuestions, getRating, setRating } = require("./util/database");
+
+
+// START MONGO SERVER
 InitiateMongoServer();
 const PORT = process.env.PORT || 3000;
-//process.env.questionz = null; //security issue
 const app = express();
 
 //session
@@ -71,21 +75,7 @@ app.use(session({
 
 //passport
 
-//generates plain text password to hash
-function genPassword(password) {
-    var salt = crypto.randomBytes(32).toString('hex');
-    var genHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
 
-    return {
-        salt: salt,
-        hash: genHash
-    };
-}
-// checks to see if its a valid password or not @hash is the stored pass, password is user inputted
-function validPassword(password, hash, salt) {
-    var hashVerify = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
-    return hash === hashVerify;
-}
 
 
 // called when passport.authenticate is used()
@@ -334,7 +324,7 @@ app.get("/train", (req, res) => {
 app.get("/train/choose_subject", (req, res) => {
     const qNum = 0;
     if (req.isAuthenticated()) {
-        res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs', { subjects: subjects.subjectUnitDictionary, qNum: qNum });
+        res.render(__dirname + '/views/private/' + 'train_chooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum });
     }
     else {
         res.redirect("/");
@@ -369,7 +359,7 @@ app.get("/train/:subject/choose_units", (req, res) => {
         else {
 
             // DO A CHECK HERE, IF NO RATING REDIRECT TO SET PROFICIENCY PAGE BEFORE THIS PAGE
-            res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { subject: req.params.subject, units: subjects.subjectUnitDictionary[req.params.subject], qNum: qNum });
+            res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum });
 
         }
     }
@@ -419,7 +409,7 @@ app.get("/logout", (req, res) => {
 
 app.get("/admin/addquestion", (req, res) => {
     if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
-        res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
+        res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
     }
     else {
         res.redirect("/");
@@ -435,90 +425,8 @@ app.get("/admin/addedSuccess", (req, res) => {
     }
 });
 
-// START SERVER
+// START NODE SERVER
 
 app.listen(PORT, (req, res) => {
     console.log(`Server Started at PORT ${PORT}`);
 });
-
-
-
-
-
-
-// delimiter parsing method: input is a string, output is an array of the values
-function parseDelimiter(input) {
-    return input.split("@");
-}
-
-
-
-
-
-// input a string (the question ID), return a question entry. idk how to phrase this
-function getQuestion(id) {
-    return Ques.findById(id).exec();
-}
-
-// input a rating range (as floor and ceiling values), return a range of questions
-function getQuestions(ratingFloor, ratingCeiling, subject, units) {
-    const gotQ = Ques.find({ units: units, subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
-    return gotQ.exec();
-}
-
-// return rating of the user logged in right now
-function getRating(subject, req) { //only works w new registered emails
-    // if you write method below this too, you can just call getRating([ID of user logged in rn]);
-    const rate = req.user.rating[subject.toLowerCase()];
-    return rate;
-}
-// or write a method which gets the rating of a user given the ID
-
-// set the rating of the person logged in rn
-function setRating(subject, newRating, req, correct) { ////only works w new registered emails
-    req.user.rating[subject.toLowerCase()] = newRating;
-    if (correct) {
-        req.user.correct++;
-    } else if (!correct) {
-        req.user.wrong++;
-    }
-    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating, correct: req.user.correct, wrong: req.user.wrong } }); //universal code for updating ratings
-}
-
-function arraysEqual(a, b) {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (a.length !== b.length) return false;
-
-    // If you don't care about the order of the elements inside
-    // the array, you should sort both arrays here.
-    // Please note that calling sort on an array will modify that array.
-    // you might want to clone your array first.
-
-    for (var i = 0; i < a.length; ++i) {
-        if (a[i] !== b[i]) return false;
-    }
-    return true;
-}
-
-function calculateRatings(userRating, questionRating, correct) {
-
-    // important values: 600 is spread of elo change, 50 is scale of change
-    var chanceOfCorrect = 1 / (1 + Math.pow(10, (questionRating - userRating) / 600));
-    var userRatingChange = Math.ceil(50 * (correct - chanceOfCorrect));
-    var questionRatingChange = -Math.ceil(userRatingChange / 10);
-
-    // assign rating changes
-    userRating += userRatingChange;
-    questionRating += questionRatingChange;
-
-    // make sure ratings are nonzero
-    if (userRating < 1) {
-        userRating = 1;
-    }
-    if (questionRating < 1) {
-        questionRating = 1;
-    }
-
-    return { newUserRating: userRating, newQuestionRating: questionRating }
-}
