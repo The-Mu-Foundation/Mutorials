@@ -251,7 +251,11 @@ app.get("/signup", (req, res) => {
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
-        res.render(__dirname + '/views/private/' + 'homepage.ejs');
+        if(req.user.username == "mutorialsproject@gmail.com") {
+            res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
+        } else {
+            res.render(__dirname + '/views/private/' + 'homepage.ejs');
+        }
     }
     else {
         res.redirect("/");
