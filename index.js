@@ -81,14 +81,14 @@ function genPassword(password) {
         hash: genHash
     };
 }
-//checks to see if its a valid password or not @hash is the stored pass, password is user inputted
+// checks to see if its a valid password or not @hash is the stored pass, password is user inputted
 function validPassword(password, hash, salt) {
     var hashVerify = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
     return hash === hashVerify;
 }
 
 
-//called when passport.authenticate is used()
+// called when passport.authenticate is used()
 passport.use(new LocalStrategy(
     function (username, password, cb) {
         User.find({ username: username })
@@ -127,8 +127,6 @@ app.use(passport.session());
 
 
 
-//webpages
-
 // POST ROUTES
 
 app.post('/login', passport.authenticate('local', { failureRedirect: "/signin", successRedirect: '/homepage' }),
@@ -138,7 +136,8 @@ app.post('/login', passport.authenticate('local', { failureRedirect: "/signin", 
         //const pw = passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' });
         //pw(req, res, next); 
         // if (err) next(err);
-    });
+});
+
 app.post('/register', (req, res, next) => {
 
     const saltHash = genPassword(req.body.password);
@@ -174,8 +173,9 @@ app.post('/register', (req, res, next) => {
     });
 });
 
-//const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
 app.post('/admin/addquestion', (req, res, next) => {
+    //const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
+
     if (req.isAuthenticated()) {
         const newQ = new Ques({
             question: req.body.question,
@@ -198,8 +198,9 @@ app.post('/admin/addquestion', (req, res, next) => {
     }
 });
 
-//initial ratings set proficiency
 app.post('/private/initialRating', (req, res, next) => {
+    //initial ratings set proficiency
+
     //req.params.level, req.params.subject
     if (req.isAuthenticated()) {
         req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
@@ -211,8 +212,8 @@ app.post('/private/initialRating', (req, res, next) => {
     }
 });
 
-//select questions
 app.post("/selQ", (req, res, next) => {
+    //select question
     //var subj = null;
     var units = null;
     if (req.body.qNum == 0) {
@@ -227,8 +228,8 @@ app.post("/selQ", (req, res, next) => {
     }
 });
 
-//answer check
 app.post("/private/checkAnswer", (req, res, next) => {
+    //answer check
     if (req.isAuthenticated()) {
         if (req.body.type == "mc") {
             var isRight = false;
@@ -266,9 +267,9 @@ app.post("/private/checkAnswer", (req, res, next) => {
         res.redirect("/");
     }
 });
-// GET ROUTES/webpages
 
-//public
+// PUBLIC USER GET ROUTES
+
 app.get("/", (req, res) => {
     if (!req.isAuthenticated()) {
         res.render(__dirname + '/views/public/' + 'index.ejs');
@@ -296,7 +297,8 @@ app.get("/signup", (req, res) => {
     }
 });
 
-//private
+// PRIVATE USER GET ROUTES
+
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
         res.render(__dirname + '/views/private/' + 'homepage.ejs');
@@ -315,14 +317,10 @@ app.get("/settings", (req, res) => {
     }
 });
 
-
-
-// TESTING ROUTE FOR STATS PAGE
 app.get("/stats/:username", (req, res) => {
+    // TESTING ROUTE FOR STATS PAGE
     res.render(__dirname + '/views/private/' + 'stats.ejs');
 });
-
-
 
 app.get("/train", (req, res) => {
     if (req.isAuthenticated()) {
@@ -343,8 +341,8 @@ app.get("/train/choose_subject", (req, res) => {
     }
 })
 
-//checks to see if prof visited before
 app.get("/train/:subject/proficiency", (req, res) => {
+    // called when rating isn't set for subject
     if (req.isAuthenticated()) {
         if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
             req.user.rating[req.params.subject.toLowerCase()] = 0;
@@ -417,8 +415,8 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-//admin
-// ADD QUESTION GET ROUTE IS HERE
+//ADMIN GET ROUTES
+
 app.get("/admin/addquestion", (req, res) => {
     if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjects.subjectUnitDictionary });
@@ -437,12 +435,13 @@ app.get("/admin/addedSuccess", (req, res) => {
     }
 });
 
-
-//app.use('/user', user); //user path to get to signin/login
+// START SERVER
 
 app.listen(PORT, (req, res) => {
     console.log(`Server Started at PORT ${PORT}`);
 });
+
+
 
 
 
@@ -454,7 +453,6 @@ function parseDelimiter(input) {
 
 
 
-// FUNCTIONS TO IMPLEMENT
 
 
 // input a string (the question ID), return a question entry. idk how to phrase this
