@@ -1,4 +1,5 @@
 // MODULE IMPORTS
+
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const crypto = require("crypto");
@@ -6,60 +7,31 @@ const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
-var db = mongoose.connection;
 const InitiateMongoServer = require("./database/config/db");
-//const user = require("./routes/user");
-//const auth = require("./middleware/auth");
-//const flash = require("connect-flash");
 
-// METHOD AND CONSTANT IMPORTS
-const { subjectUnitDictionary } = require("./database/models/subjects");
-const { genPassword, validPassword } = require("./util/password");
-const { calculateRatings } = require("./util/ratings");
-const { arraysEqual, parseDelimiter } = require("./util/general");
-const { getQuestion, getQuestions, getRating, setRating } = require("./util/database");
+// SCHEMA, FUNCTION, AND CONSTANT IMPORTS
 
+const { userSchema } = require("./database/models/user");
+const { qSchema } = require("./database/models/question");
+const { genPassword, validPassword } = require("./utils/functions/password");
+const { calculateRatings } = require("./utils/functions/ratings");
+const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
+const { getQuestion, getQuestions, getRating, setRating } = require("./utils/functions/database");
+const { subjectUnitDictionary } = require("./utils/constants/subjects");
 
 // START MONGO SERVER
+
+var db = mongoose.connection;
 InitiateMongoServer();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-//session
+// MONGO SESSION
+
 const MongoStore = require("connect-mongo")(session);
 
-//this is variables, see if user.js works first
-const UserSchema = new mongoose.Schema({
-    username: String,
-    hash: String,
-    salt: String,
-    correct: Number,
-    wrong: Number,
-    rating: {
-        physics: Number,
-        chemistry: Number,
-        biology: Number,
-        physicsRate: Number,
-        chemistryRate: Number,
-        biologyRate: Number
-    } //first index is phys, then chem, then bio; fourth index is 1/0 for proficiency
-});
-
-const qSchema = new mongoose.Schema({
-    question: String,
-    choices: Array,
-    tags: Array,
-    rating: Number,
-    answer: Array,
-    answer_ex: String,
-    author: String,
-    type: String,
-    ext_source: String,
-    subject: Array,
-    units: Array
-})
 const Ques = db.model('Ques', qSchema, 'questions');
-const User = db.model('User', UserSchema);
+const User = db.model('User', userSchema);
 //session collection
 const sessionStore = new MongoStore({ mongooseConnection: db, collection: 'sessions' });
 app.use(session({
@@ -68,15 +40,6 @@ app.use(session({
     saveUninitialized: true,
     store: sessionStore
 }));
-
-
-//middleware
-//app.use(bodyParser.json());
-
-//passport
-
-
-
 
 // called when passport.authenticate is used()
 passport.use(new LocalStrategy(
@@ -112,8 +75,6 @@ passport.deserializeUser(function (id, cb) {
 app.use(bodyParser.urlencoded());
 app.use(passport.initialize());
 app.use(passport.session());
-
-//app.use(flash);
 
 
 

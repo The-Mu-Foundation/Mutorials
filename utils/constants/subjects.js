@@ -1,5 +1,4 @@
-
-
+// list of subjects and units used
 var subjects = ["Physics", "Chemistry", "Biology"];
 var subjectUnitDictionary = {
     "Physics": ["Kinematics",
