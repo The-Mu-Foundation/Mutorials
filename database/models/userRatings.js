@@ -1,6 +1,6 @@
-// object for user's ratings
 const mongoose = require("mongoose");
 
+// object for user's ratings
 var ratingSchema = new mongoose.Schema({
     physics:{
         type: String,
@@ -27,4 +27,5 @@ var ratingSchema = new mongoose.Schema({
         default: "0"
     }
 });
-module.exports = {ratings: ratingSchema};
+
+module.exports = { ratings : ratingSchema};

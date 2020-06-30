@@ -10,17 +10,17 @@
     
 	<h3>What is your estimated proficiency level in <%= subject %>?</h3>
 	<form action="/private/initialRating" method="POST">	
-		<input class="btn btn-primary" type="submit" value="Beginner">
+		<input class="btn btn-primary btn-lg btn-block my-2" type="submit" value="Beginner">
 		<input type="hidden" name="subject" value="<%=subject%>">
 		<input type="hidden" name="level" value="500">
 	</form>
 	<form action="/private/initialRating" method="POST">	
-		<input class="btn btn-primary" type="submit" value="Intermediate">
+		<input class="btn btn-primary btn-lg btn-block my-2" type="submit" value="Intermediate">
 		<input type="hidden" name="subject" value="<%=subject%>">
 		<input type="hidden" name="level" value="1000">
 	</form>
 	<form action="/private/initialRating" method="POST">	
-		<input class="btn btn-primary" type="submit" value="Advanced">
+		<input class="btn btn-primary btn-lg btn-block my-2" type="submit" value="Advanced">
 		<input type="hidden" name="subject" value="<%=subject%>">
 		<input type="hidden" name="level" value="1500">
 	</form>

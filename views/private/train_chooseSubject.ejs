@@ -13,7 +13,7 @@
         <input type="hidden" name="qNum" value="<%=qNum%>">
         <% Object.keys(subjects).forEach((subject) => { %>
             <!--<a href="/train/<%= subject %>/choose_units"> -->
-            <input type="submit" name="subj" class="btn btn-primary btn-lg btn-block my-2" id="<%= subject %>" value="<%= subject %>"><%= subject %></button>
+            <input type="submit" name="subj" class="btn btn-primary btn-lg btn-block my-2" id="<%= subject %>" value="<%= subject %>">
         <% }) %>
     </form>
 </div>
