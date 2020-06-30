@@ -232,6 +232,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
         if(antsy.answer[0] == req.body.answerChoice){
           isRight = true;
         }
+        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
         console.log(isRight);
         res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
@@ -240,6 +241,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
       var isRight = false;
       const antsy = getQuestion(req.body.id).then(antsy => {
         isRight = arraysEqual(antsy.answer, req.body.saChoice);
+        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
         console.log(isRight);
         res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.saChoice,  userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
@@ -250,6 +252,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
         if(antsy.answer[0] == req.body.freeAnswer){
           isRight = true;
         }
+        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
         console.log(isRight);
         res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
@@ -439,19 +442,6 @@ app.listen(PORT, (req, res) => {
 
 
 
-app.get("/test", (req, res) => { 
-  const qs = getQuestions(50, 300).then(qs => { //copy exact then format for getquestion(s) for it to work
-    console.log(qs.toString());
-  });
-  const q = (getQuestion("5eed7e4d4c9d7f16ec0768b9")).then(q => {
-    console.log(q.toString());
-  });
-  console.log(getRating("Physics", req));
-  setRating("Physics", 5000, req); //works
-  console.log(getRating("Physics", req));
-});
-
-
 
 // delimiter parsing method: input is a string, output is an array of the values
 function parseDelimiter(input) {
@@ -502,4 +492,26 @@ function arraysEqual(a, b) {
     if (a[i] !== b[i]) return false;
   }
   return true;
+}
+
+function calculateRatings(userRating, questionRating, correct) {
+    
+  // important values: 600 is spread of elo change, 50 is scale of change
+  var chanceOfCorrect = 1/(1+Math.pow(10, (questionRating-userRating)/600));
+  var userRatingChange = Math.ceil(50*(correct-chanceOfCorrect));
+  var questionRatingChange = -Math.ceil(userRatingChange/10);
+  
+  // assign rating changes
+  userRating += userRatingChange;
+  questionRating += questionRatingChange;
+  
+  // make sure ratings are nonzero
+  if(userRating < 1) {
+      userRating = 1;
+  }
+  if(questionRating < 1) {
+      questionRating = 1;
+  }
+
+return {newUserRating: userRating, newQuestionRating: questionRating}
 }
