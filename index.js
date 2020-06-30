@@ -29,6 +29,8 @@ const UserSchema = new mongoose.Schema({
   username: String,
   hash: String,
   salt: String,
+  correct: Number,
+  wrong: Number,
   rating: {
     physics: Number,
     chemistry: Number,
@@ -147,6 +149,8 @@ app.post('/register', (req, res, next) => {
     username: req.body.username,
     hash: hash,
     salt: salt,
+    correct: 0,
+    wrong: 0,
     rating: {
       physics: -1,
       chemistry: -1,
@@ -232,7 +236,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
         if(antsy.answer[0] == req.body.answerChoice){
           isRight = true;
         }
-        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
+        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
         console.log(isRight);
         res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
@@ -241,7 +245,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
       var isRight = false;
       const antsy = getQuestion(req.body.id).then(antsy => {
         isRight = arraysEqual(antsy.answer, req.body.saChoice);
-        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
+        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
         console.log(isRight);
         res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.saChoice,  userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
@@ -252,7 +256,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
         if(antsy.answer[0] == req.body.freeAnswer){
           isRight = true;
         }
-        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
+        setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
         console.log(isRight);
         res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', {units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight});
       });
@@ -473,9 +477,14 @@ function getRating(subject, req) { //only works w new registered emails
 // or write a method which gets the rating of a user given the ID
 
 // set the rating of the person logged in rn
-function setRating(subject, newRating, req) { ////only works w new registered emails
+function setRating(subject, newRating, req, correct) { ////only works w new registered emails
   req.user.rating[subject.toLowerCase()] = newRating;
-  db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } }); //universal code for updating ratings
+  if(correct){
+    req.user.correct++;
+  }else if(!correct){
+    req.user.wrong++;
+  }
+  db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating, correct: req.user.correct, wrong: req.user.wrong }}); //universal code for updating ratings
 }
 
 function arraysEqual(a, b) {
