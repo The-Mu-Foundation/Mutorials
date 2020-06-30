@@ -19,6 +19,8 @@ const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
 const { getQuestion, getQuestions, getRating, setRating } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 
+
+
 // START MONGO SERVER
 
 var db = mongoose.connection;
@@ -32,7 +34,9 @@ const MongoStore = require("connect-mongo")(session);
 
 const Ques = db.model('Ques', qSchema, 'questions');
 const User = db.model('User', userSchema);
-//session collection
+
+// SESSION COLLECTION
+
 const sessionStore = new MongoStore({ mongooseConnection: db, collection: 'sessions' });
 app.use(session({
     secret: "blahblah",
@@ -41,14 +45,15 @@ app.use(session({
     store: sessionStore
 }));
 
-// called when passport.authenticate is used()
+// PASSPORT CODE
+
 passport.use(new LocalStrategy(
+    // called when passport.authenticate is used()
     function (username, password, cb) {
         User.find({ username: username })
             .then((user) => {
                 if (!user) { return cb(null, false) }
 
-                // Function defined at bottom of app.js
                 const isValid = validPassword(password, user[0].hash, user[0].salt);
 
                 if (isValid) {
@@ -81,12 +86,8 @@ app.use(passport.session());
 // POST ROUTES
 
 app.post('/login', passport.authenticate('local', { failureRedirect: "/signin", successRedirect: '/homepage' }),
-    //passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' }), 
     (req, res, next) => {
         console.log("Oh hi");
-        //const pw = passport.authenticate('local', { failureRedirect: '/homepage', successRedirect: '/train' });
-        //pw(req, res, next); 
-        // if (err) next(err);
 });
 
 app.post('/register', (req, res, next) => {
@@ -107,7 +108,7 @@ app.post('/register', (req, res, next) => {
             biology: -1
         }
     });
-    //dupe user?
+    // check for duplicate user
     db.collection('users').findOne({ username: req.body.username }).then((user) => {
         if (user) {
             console.log("used");
@@ -334,7 +335,6 @@ app.get("/train/:subject/display_question", (req, res) => {
     if (req.isAuthenticated()) {
         var units = req.query.units.split(",");
         const qs = getQuestions(50, 500, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
-            //const qs = app.get("questionz");
             curQ = qs[Math.floor(Math.random() * qs.length)];
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject });
         });
