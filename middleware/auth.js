@@ -2,7 +2,7 @@
 //checks login token, know when redirect to login
 const jwt = require("jsonwebtoken");
 
-module.exports = function(req, res, next){
+module.exports = function(req, res, next) {
     const token = req.header("token");
     if(!token) {
         res.redirect("/signup");

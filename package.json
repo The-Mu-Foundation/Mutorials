@@ -1,31 +1,31 @@
 {
-  "name": "mutorials.org",
-  "version": "0.0.0",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "engines": {
-    "node": "12.16.1"
-  },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "connect-flash": "^0.1.1",
-    "connect-mongo": "^3.2.0",
-    "cookie-parser": "^1.4.5",
-    "crypto": "^1.0.1",
-    "debug": "~2.6.9",
-    "ejs": "^3.1.2",
-    "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "express-validator": "^6.5.0",
-    "html": "^1.0.0",
-    "http-errors": "^1.6.3",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.18",
-    "passport": "^0.4.1",
-    "passport-local": "^1.0.0",
-    "passport-local-mongoose": "^6.0.1",
-    "pg": "^7.18.2"
-  }
+    "name": "mutorials.org",
+    "version": "0.0.0",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "engines": {
+        "node": "12.16.1"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.19.0",
+        "connect-flash": "^0.1.1",
+        "connect-mongo": "^3.2.0",
+        "cookie-parser": "^1.4.5",
+        "crypto": "^1.0.1",
+        "debug": "~2.6.9",
+        "ejs": "^3.1.2",
+        "express": "^4.17.1",
+        "express-session": "^1.17.1",
+        "express-validator": "^6.5.0",
+        "html": "^1.0.0",
+        "http-errors": "^1.6.3",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^5.9.18",
+        "passport": "^0.4.1",
+        "passport-local": "^1.0.0",
+        "passport-local-mongoose": "^6.0.1",
+        "pg": "^7.18.2"
+    }
 }
