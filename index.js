@@ -10,10 +10,10 @@ const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
 var db = mongoose.connection;
-const InitiateMongoServer = require("./config/db");
-const subjects = require("./models/subjects");
-const ratings = require("./models/ratings");
-const { subjectUnitDictionary } = require("./models/subjects");
+const InitiateMongoServer = require("./database/config/db");
+const subjects = require("./database/models/subjects");
+const ratings = require("./database/models/ratings");
+const { subjectUnitDictionary } = require("./database/models/subjects");
 //const ratings = require("./models/userRatings");
 // start server
 InitiateMongoServer();
