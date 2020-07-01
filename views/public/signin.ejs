@@ -2,21 +2,15 @@
 
 <%- include("../partials/header") -%>
 
-<!-- send to backend -->
+<!-- javascript to flash -->
 <script>
-/*
-    // SIGNIN
+
     $(document).ready(function () {
-        var username, pass;
-        $("#loginSubmit").click(function () {
-            username = $("#loginEmail").val();
-            pass = $("#loginPassword").val();
-            $.post("/login", { username: username, password: pass }, function (data) {
-                location.reload(true);
-            });
-        });
+
+        // hide flash message
+        $("#flash").hide();
     });
-    */
+
 </script>
 
 <h1 class="my-5 container">Sign in to Mutorials!</h1>
@@ -39,6 +33,8 @@
             <input class="btn btn-primary" type="submit" value="Sign In">
         </div>
 	</form>
+
+    <h4 class="my-4" id="flash"><font color="red">Your email or password is incorrect</font></h4>
 
 </div>
 
