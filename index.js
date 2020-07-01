@@ -349,9 +349,9 @@ app.get("/train/:subject/display_question", (req, res) => {
     else {
         res.redirect("/");
     }
-})
+});
 
-app.get("/train/:subject/answer_explanation", (req, res) => {
+/*app.get("/train/:subject/answer_explanation", (req, res) => {
     if (req.isAuthenticated()) {
         // PASS IN PARAMETERS BELOW
         res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { subject: req.params.subject, newQues: antsy, correct: isRight });
@@ -359,7 +359,7 @@ app.get("/train/:subject/answer_explanation", (req, res) => {
     else {
         res.redirect("/");
     }
-})
+});*/
 
 app.get("/logout", (req, res) => {
     if (req.isAuthenticated()) {

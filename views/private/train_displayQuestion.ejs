@@ -1,7 +1,9 @@
 <!-- This is the page to display questions on -->
 
 <!-- ARGUMENTS:
-    newQues - question object passed in to be displayed -->
+    newQues - question object passed in to be displayed
+    units - a list of the units that the user selected
+    subject - the subject -->
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
@@ -87,8 +89,8 @@
 <div class="jumbotron container mt-5">
     
     <h3>Question Info</h3>
-    <p>Rating: <%= newQues.rating %></p>
-    <p>Source: <%= newQues.ext_source %></p>
+    <p>Question Rating: <%= newQues.rating %></p>
+    <p>Question Source: <%= newQues.ext_source %></p>
 
     <!-- HIDDEN TAGS -->
 
@@ -107,7 +109,7 @@
                     </div>
                     <% choiceIndex++; %>
                 <% }) %>
-		        <input class="btn btn-primary" type="submit" value="Submit">
+		        <input class="btn btn-primary mt-4" type="submit" value="Submit">
             </div>
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
@@ -128,7 +130,7 @@
                     </div>
                     <% choiceIndex++; %>
                 <% }) %>
-                <input class="btn btn-primary" type="submit" value="Submit">
+                <input class="btn btn-primary mt-4" type="submit" value="Submit">
             </div>
             <input type="hidden" name="id" value="<%=newQues._id %>">
             <input type="hidden" name="type" value="<%= newQues.type %>">
