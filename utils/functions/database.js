@@ -30,4 +30,8 @@ function setRating(subject, newRating, req, correct) {
     //universal code for updating ratings
 }
 
-module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating };
+function setQRating(antsy, db, newQRate){
+    antsy.rating = newQRate;
+    db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
+}
+module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating };

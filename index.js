@@ -15,7 +15,7 @@ const { qSchema } = require("./database/models/question");
 const { genPassword, validPassword } = require("./utils/functions/password");
 const { calculateRatings } = require("./utils/functions/ratings");
 const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
-const { getQuestion, getQuestions, getRating, setRating } = require("./utils/functions/database");
+const { getQuestion, getQuestions, getRating, setRating, setQRating } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 
 
@@ -96,6 +96,7 @@ app.post('/register', (req, res, next) => {
     const hash = saltHash.hash;
     const newUser = new User({
         username: req.body.username,
+        ign: req.body.ign,
         hash: hash,
         salt: salt,
         correct: 0,
@@ -187,18 +188,22 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 if (antsy.answer[0] == req.body.answerChoice) {
                     isRight = true;
                 }
+                oldRate = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
+                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight });
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
         else if (req.body.type == "sa") {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
+                oldRate = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
+                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight });
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
         else if (req.body.type == "fr") {
@@ -207,9 +212,11 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 if (antsy.answer[0] == req.body.freeAnswer) {
                     isRight = true;
                 }
+                oldRate = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
+                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight });
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
     }

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 // define user schema
 const userSchema = new mongoose.Schema({
     username: String,
+    ign: String,
     hash: String,
     salt: String,
     correct: Number,
