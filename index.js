@@ -180,9 +180,10 @@ app.post("/selQ", (req, res, next) => {
 });
 
 app.post("/private/checkAnswer", (req, res, next) => {
-    //answer check
+    // answer check
     if (req.isAuthenticated()) {
-        if (req.body.type == "mc") {
+        // the page keeps loading if the answer is left blank; this doesn't do any harm persay, but its a bug that needs to be fixed
+        if (req.body.type == "mc" && req.body.answerChoice != undefined) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 if (antsy.answer[0] == req.body.answerChoice) {
@@ -191,24 +192,24 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 oldRate = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
-                console.log(isRight);
+                console.log("Correct answer? - " + isRight);
                 console.log(req.body.answerChoice);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
-        else if (req.body.type == "sa") {
+        else if (req.body.type == "sa" && req.body.saChoice != undefined) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 oldRate = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
-                console.log(isRight);
+                console.log("Correct answer? - " + isRight);
                 console.log(req.body.saChoice);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
-        else if (req.body.type == "fr") {
+        else if (req.body.type == "fr" && req.body.freeAnswer != "") {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 if (antsy.answer[0] == req.body.freeAnswer) {
@@ -217,7 +218,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 oldRate = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
-                console.log(isRight);
+                console.log("Correct answer? - " + isRight);
                 console.log(req.body.freeAnswer);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
@@ -255,6 +256,10 @@ app.get("/signup", (req, res) => {
     else {
         res.redirect("/homepage");
     }
+});
+
+app.get("/latex_compiler", (req, res) => {
+    res.render(__dirname + '/views/public/' + 'latexcompiler.ejs');
 });
 
 // PRIVATE USER GET ROUTES

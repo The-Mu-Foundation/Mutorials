@@ -14,8 +14,7 @@
     $(document).ready(function () {
 
         // obtain hidden tag info [NOT IN USE RIGHT NOW]
-        var id = $("#hiddenidtag").text();
-        var type = $("#hiddentypetag").text();
+        var type = $("#hiddentypetag").val();
 
 		// hide skip dialogue code
 		$("#skip-dialogue-1").show();
@@ -37,7 +36,7 @@
 
         // upon hitting submit button
         var response = "";
-        $("#next").click(function () {
+        $("#submit").click(function () {
             if(type == "mc") {
 
                 // MULTIPLE CHOICE RESPONSE CHECK
@@ -51,7 +50,6 @@
 
                 if(response == "") {
                     $("#mc-answerblank").show(1000);
-                    //return;
                 }
             } else if(type == "sa") {
 
@@ -67,7 +65,6 @@
 
                 if(response.length == 0) {
                     $("#mc-answerblank").show(1000);
-                    //return;
                 }
             } else if(type == "fr") {
 
@@ -76,7 +73,6 @@
                 
                 if(response == "") {
                     $("#fr-answerblank").show(1000);
-                    //return;
                 }
             }
             
@@ -91,8 +87,6 @@
     <h3>Question Info</h3>
     <p>Question Rating: <%= newQues.rating %></p>
     <p>Question Source: <%= newQues.ext_source %></p>
-
-    <!-- HIDDEN TAGS -->
 
     <!-- DISPLAY QUESTION -->
     <% if(newQues.type == "mc") { %>
@@ -109,15 +103,15 @@
                     </div>
                     <% choiceIndex++; %>
                 <% }) %>
-		        <input class="btn btn-primary mt-4" type="submit" value="Submit">
+		        <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
             </div>
-            <input type="hidden" name="id" value="<%=newQues._id %>">
-            <input type="hidden" name="type" value="<%= newQues.type %>">
+            <input type="hidden" name="id" value="<%= newQues._id %>">
+            <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
             <input type="hidden" name="subject" value="<%= subject %>">
-            <input type="hidden" name="units" value="<%=units%>">
+            <input type="hidden" name="units" value="<%= units %>">
         </form>
     <% } else if(newQues.type == "sa") { %>
-        <!-- CODE FOR<input type="hidden" name="type" value="<%= subject %>"> SELECT ALL  -->
+        <!-- CODE FOR SELECT ALL  -->
         <h3>Please read the following and select ALL choices that apply:</h3>
         <p><%= newQues.question %></p>
         <form action="/private/checkAnswer" method="POST">
@@ -130,12 +124,12 @@
                     </div>
                     <% choiceIndex++; %>
                 <% }) %>
-                <input class="btn btn-primary mt-4" type="submit" value="Submit">
+                <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
             </div>
-            <input type="hidden" name="id" value="<%=newQues._id %>">
-            <input type="hidden" name="type" value="<%= newQues.type %>">
+            <input type="hidden" name="id" value="<%= newQues._id %>">
+            <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
             <input type="hidden" name="subject" value="<%= subject %>">
-            <input type="hidden" name="units" value="<%=units%>">
+            <input type="hidden" name="units" value="<%= units %>">
         </form>
     <% } else if(newQues.type == "fr") { %>
         <!-- CODE FOR FREE RESPONSE -->
@@ -146,12 +140,12 @@
                 <div class="form-group">
                     <input type="number" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer">
                 </div>
-                <input class="btn btn-primary" type="submit" value="Submit">
+                <input class="btn btn-primary" type="submit" value="Submit" id="submit">
             </div>
-            <input type="hidden" name="id" value="<%=newQues._id %>">
-            <input type="hidden" name="type" value="<%= newQues.type %>">
+            <input type="hidden" name="id" value="<%= newQues._id %>">
+            <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
             <input type="hidden" name="subject" value="<%= subject %>">
-            <input type="hidden" name="units" value="<%=units%>">
+            <input type="hidden" name="units" value="<%= units %>">
         </form>
     <% } else { %>
         <!-- ERROR CODE -->
