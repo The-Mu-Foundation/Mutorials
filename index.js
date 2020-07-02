@@ -192,6 +192,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
+                console.log(req.body.answerChoice);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
@@ -203,6 +204,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
+                console.log(req.body.saChoice);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
@@ -216,6 +218,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
+                console.log(req.body.freeAnswer);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
@@ -344,7 +347,7 @@ app.get("/train/:subject/display_question", (req, res) => {
     if (req.isAuthenticated()) {
         var units = req.query.units.split(",");
         // IMPLEMENT RATING FLOOR AND CEILING IN FUTURE
-        ceilingFloor = ratingCeilingFloor(getRating(req.body.subject, req));
+        // ceilingFloor = ratingCeilingFloor(userRating);
         // floor = ceilingFloor.floor;
         // ceiling = ceilingFloor.ceiling;
         const qs = getQuestions(Ques, 50, 500, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
