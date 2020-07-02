@@ -13,7 +13,7 @@ const InitiateMongoServer = require("./database/config/db");
 const { userSchema } = require("./database/models/user");
 const { qSchema } = require("./database/models/question");
 const { genPassword, validPassword } = require("./utils/functions/password");
-const { calculateRatings } = require("./utils/functions/ratings");
+const { calculateRatings, ratingCeilingFloor } = require("./utils/functions/ratings");
 const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
 const { getQuestion, getQuestions, getRating, setRating, setQRating } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
@@ -192,6 +192,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
+                console.log(req.body.answerChoice);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
@@ -203,6 +204,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
+                console.log(req.body.saChoice);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
@@ -216,6 +218,7 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
                 setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
                 console.log(isRight);
+                console.log(req.body.freeAnswer);
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
             });
         }
@@ -343,30 +346,19 @@ app.get("/train/:subject/display_question", (req, res) => {
     var curQ = null;
     if (req.isAuthenticated()) {
         var units = req.query.units.split(",");
+        // IMPLEMENT RATING FLOOR AND CEILING IN FUTURE
+        // ceilingFloor = ratingCeilingFloor(userRating);
+        // floor = ceilingFloor.floor;
+        // ceiling = ceilingFloor.ceiling;
         const qs = getQuestions(Ques, 50, 500, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject });
         });
-        /*
-        const newQuestion = getQuestion(Ques, "5ef044b61b4590329c4c8458").then(newQuestion => {
-          res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { newQues: newQuestion });
-        });
-        */
     }
     else {
         res.redirect("/");
     }
 });
-
-/*app.get("/train/:subject/answer_explanation", (req, res) => {
-    if (req.isAuthenticated()) {
-        // PASS IN PARAMETERS BELOW
-        res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { subject: req.params.subject, newQues: antsy, correct: isRight });
-    }
-    else {
-        res.redirect("/");
-    }
-});*/
 
 app.get("/logout", (req, res) => {
     if (req.isAuthenticated()) {

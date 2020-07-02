@@ -21,4 +21,19 @@ function calculateRatings(userRating, questionRating, correct) {
     return { newUserRating: userRating, newQuestionRating: questionRating }
 }
 
-module.exports = { calculateRatings : calculateRatings };
+// input user rating, gives range of ratings for next question's selection
+function ratingCeilingFloor(userRating) {
+
+    var spread = Math.round((Math.random()+1.1)*(Math.random()+1.1)*(Math.random()+1.1)*100);
+    spread += Math.round(userRating/20);
+
+    var floor = userRating-spread;
+    var ceiling = userRating+spread;
+    if(floor < 0) {
+        floor = 0;
+    }
+
+    return { floor : floor, ceiling : ceiling };
+}
+
+module.exports = { calculateRatings : calculateRatings, ratingCeilingFloor : ratingCeilingFloor };

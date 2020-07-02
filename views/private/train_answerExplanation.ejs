@@ -69,7 +69,7 @@
             <% newQues.choices.forEach((choice) => { %>
                 <% if(newQues.answer.includes(i)) { %>
                     <p><font color="green"><%= choice %></font></p>
-                <% } else if(userAnswer.includes(i)) { %>
+                <% } else if(userAnswer.includes(''+i)) { %>
                     <p><font color="red"><%= choice %></font></p>
                 <% } else { %>
                     <p><%= choice %></p>
