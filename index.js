@@ -258,6 +258,10 @@ app.get("/signup", (req, res) => {
     }
 });
 
+app.get("/latex_compiler", (req, res) => {
+    res.render(__dirname + '/views/public/' + 'latexcompiler.ejs');
+});
+
 // PRIVATE USER GET ROUTES
 
 app.get("/homepage", (req, res) => {
