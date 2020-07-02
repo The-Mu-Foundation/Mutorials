@@ -180,8 +180,9 @@ app.post("/selQ", (req, res, next) => {
 });
 
 app.post("/private/checkAnswer", (req, res, next) => {
-    //answer check
+    // answer check
     if (req.isAuthenticated()) {
+        // the page keeps loading if the answer is left blank; this doesn't do any harm persay, but its a bug that needs to be fixed
         if (req.body.type == "mc" && req.body.answerChoice != undefined) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
