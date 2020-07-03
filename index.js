@@ -196,13 +196,14 @@ app.post("/private/checkAnswer", (req, res, next) => {
                     isRight = true;
                 }
                 // modify ratings
-                oldRate = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
-                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldQRating = antsy.rating;
+                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
                 // update counters
                 updateCounters(req, antsy, isRight);
                 // render answer page
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating });
             });
         }
         else if (req.body.type == "sa" && req.body.saChoice != undefined) {
@@ -211,13 +212,14 @@ app.post("/private/checkAnswer", (req, res, next) => {
                 // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 // modify ratings
-                oldRate = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
-                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldQRating = antsy.rating;
+                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
                 // update counters
                 updateCounters(req, antsy, isRight);
                 // render answer page
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating });
             });
         }
         else if (req.body.type == "fr" && req.body.freeAnswer != "") {
@@ -228,13 +230,14 @@ app.post("/private/checkAnswer", (req, res, next) => {
                     isRight = true;
                 }
                 // modify ratings
-                oldRate = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req);
-                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldQRating = antsy.rating;
+                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
                 // update counters
                 updateCounters(req, antsy, isRight);
                 // render answer page
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating });
             });
         }
     }

@@ -3,6 +3,7 @@
 <!-- ARGUMENTS:
     correct - a boolean saying whether or not the user got the question correct
     userRating - new user rating
+    oldUserRating - old user rating (to calculate delta)
     userAnswer - what the user answered, array if select all
     subject - the subject of the question
     units - the units the question belongs to
@@ -23,8 +24,8 @@
     </div>
 
     <div class="mb-4">
-        <h5>Your new rating is: <%= userRating %></h5>
-        <h5>This question is rated: <%= oldRate %></h5>
+        <h5>Your new rating is: <%= userRating %> (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
+        <h5>This question is rated: <%= newQues.rating %></h5>
     </div>
 
     <div class="mb-4">

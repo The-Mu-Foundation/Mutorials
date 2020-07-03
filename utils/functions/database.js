@@ -37,7 +37,7 @@ function updateCounters(req, question, correct) {
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
 
-function setQRating(antsy, db, newQRate){
+function setQRating(antsy, newQRate){
     antsy.rating = newQRate;
     db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
 }
