@@ -392,6 +392,12 @@ app.get("/admin/addedSuccess", (req, res) => {
     }
 });
 
+// WILDCARD FOR ALL OTHER ROUTES
+
+app.get("*", (req, res) => {
+    res.redirect("/");
+});
+
 // START NODE SERVER
 
 app.listen(PORT, (req, res) => {
