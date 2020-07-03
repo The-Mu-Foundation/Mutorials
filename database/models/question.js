@@ -12,7 +12,11 @@ const qSchema = new mongoose.Schema({
     type: String,
     ext_source: String,
     subject: Array,
-    units: Array
+    units: Array,
+    stats: {
+        pass: Number,
+        fail: Number
+    }
 });
 
 module.exports = { qSchema : qSchema };

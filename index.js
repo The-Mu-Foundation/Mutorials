@@ -15,7 +15,7 @@ const { qSchema } = require("./database/models/question");
 const { genPassword, validPassword } = require("./utils/functions/password");
 const { calculateRatings, ratingCeilingFloor } = require("./utils/functions/ratings");
 const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
-const { getQuestion, getQuestions, getRating, setRating, setQRating } = require("./utils/functions/database");
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 
 
@@ -99,8 +99,10 @@ app.post('/register', (req, res, next) => {
         ign: req.body.ign,
         hash: hash,
         salt: salt,
-        correct: 0,
-        wrong: 0,
+        stats: {
+            correct: 0,
+            wrong: 0
+        },
         rating: {
             physics: -1,
             chemistry: -1,
@@ -139,7 +141,11 @@ app.post('/admin/addquestion', (req, res, next) => {
             type: req.body.type,
             ext_source: req.body.ext_source,
             subject: req.body.subject,
-            units: req.body.units
+            units: req.body.units,
+            stats: {
+                pass: 0,
+                fail: 0
+            }
         })
         //collection.insertOne({})
         newQ.save();
@@ -180,47 +186,58 @@ app.post("/selQ", (req, res, next) => {
 });
 
 app.post("/private/checkAnswer", (req, res, next) => {
-    // answer check
     if (req.isAuthenticated()) {
         // the page keeps loading if the answer is left blank; this doesn't do any harm persay, but its a bug that needs to be fixed
         if (req.body.type == "mc" && req.body.answerChoice != undefined) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+                // check answer
                 if (antsy.answer[0] == req.body.answerChoice) {
                     isRight = true;
                 }
-                oldRate = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
-                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
-                console.log("Correct answer? - " + isRight);
-                console.log(req.body.answerChoice);
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
+                // modify ratings
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldQRating = antsy.rating;
+                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                // update counters
+                updateCounters(req, antsy, isRight);
+                // render answer page
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating });
             });
         }
         else if (req.body.type == "sa" && req.body.saChoice != undefined) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+                // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
-                oldRate = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
-                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
-                console.log("Correct answer? - " + isRight);
-                console.log(req.body.saChoice);
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
+                // modify ratings
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldQRating = antsy.rating;
+                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                // update counters
+                updateCounters(req, antsy, isRight);
+                // render answer page
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating });
             });
         }
         else if (req.body.type == "fr" && req.body.freeAnswer != "") {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+                // check answer
                 if (antsy.answer[0] == req.body.freeAnswer) {
                     isRight = true;
                 }
-                oldRate = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newUserRating, req, isRight);
-                setQRating(antsy, db, calculateRatings(req.user.rating[antsy.subject[0].toLowerCase()], antsy.rating, isRight).newQuestionRating);
-                console.log("Correct answer? - " + isRight);
-                console.log(req.body.freeAnswer);
-                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldRate: oldRate });
+                // modify ratings
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldQRating = antsy.rating;
+                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                // update counters
+                updateCounters(req, antsy, isRight);
+                // render answer page
+                res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating });
             });
         }
     }
@@ -390,6 +407,12 @@ app.get("/admin/addedSuccess", (req, res) => {
     else {
         res.redirect("/");
     }
+});
+
+// WILDCARD FOR ALL OTHER ROUTES
+
+app.get("*", (req, res) => {
+    res.redirect("/");
 });
 
 // START NODE SERVER
