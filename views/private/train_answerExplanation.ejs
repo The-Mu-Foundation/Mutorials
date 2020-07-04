@@ -80,11 +80,11 @@
             <% var i = 1; %>
             <% newQues.choices.forEach((choice) => { %>
                 <% if(newQues.answer[0] == i) { %>
-                    <p><font color="green"><%= choice %></font></p>
+                    <p><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
                 <% } else if(userAnswer == i) { %>
-                    <p><font color="red"><%= choice %></font></p>
+                    <p><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
                 <% } else { %>
-                    <p><%= choice %></p>
+                    <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
                 <% } %>
                 <% i++; %>
             <% }) %>
@@ -95,11 +95,11 @@
             <% var i = 1; %>
             <% newQues.choices.forEach((choice) => { %>
                 <% if(newQues.answer.includes(i)) { %>
-                    <p><font color="green"><%= choice %></font></p>
+                    <p><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
                 <% } else if(userAnswer.includes(''+i)) { %>
-                    <p><font color="red"><%= choice %></font></p>
+                    <p><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
                 <% } else { %>
-                    <p><%= choice %></p>
+                    <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
                 <% } %>
                 <% i++; %>
             <% }) %>
