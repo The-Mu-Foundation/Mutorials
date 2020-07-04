@@ -7,9 +7,17 @@ function getQuestion(Ques, id) {
 }
 
 // input a rating range (as floor and ceiling values), returns a range of questions
-function getQuestions(Ques, ratingFloor, ratingCeiling, subject, units) {
-    const gotQ = Ques.find({ units: units, subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
-    return gotQ.exec();
+async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, unitos) {
+    const gotQ = Ques.find({subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
+    var tempQ = await gotQ.exec();
+    for(i = 0; i < tempQ.length; i++){
+        const found = unitos.some(r=> tempQ[i].units.includes(r));
+        if(!found){
+            tempQ.splice(i, 1);
+            i--;
+        }
+    }
+    return tempQ;
 }
 
 // return rating of the user logged in right now
