@@ -3,6 +3,7 @@
 <!-- ARGUMENTS:
     correct - a boolean saying whether or not the user got the question correct
     userRating - new user rating
+    oldUserRating - old user rating (to calculate delta)
     userAnswer - what the user answered, array if select all
     subject - the subject of the question
     units - the units the question belongs to
@@ -11,6 +12,31 @@
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
+
+<!-- JS for rendering the chart -->
+<script>
+
+    window.onload = function () {
+
+        var passrate = {
+            animationEnabled: false,
+            title: {
+                text: "Problem Pass/Fail Rate"
+            },
+            data: [{
+                type: "doughnut",
+                innerRadius: "40%",
+                indexLabel: "{label} Rate: #percent%",
+                dataPoints: [
+                    { label: "Pass", y: $("#passcount").val(), color: "Green" },
+                    { label: "Fail", y: $("#failcount").val(), color: "Red" }
+                ]
+            }]
+        };
+        $("#passRateChartContainer").CanvasJSChart(passrate);
+    }
+
+</script>
 
 <div class="jumbotron container mt-5">
 
@@ -23,8 +49,8 @@
     </div>
 
     <div class="mb-4">
-        <h5>Your new rating is: <%= userRating %></h5>
-        <h5>This question is rated: <%= oldRate %></h5>
+        <h5>Your new rating is: <%= userRating %> (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
+        <h5>This question is rated: <%= newQues.rating %></h5>
     </div>
 
     <div class="mb-4">
@@ -88,6 +114,14 @@
         <h3>Answer Explanation:</h3>
         <p><%= newQues.answer_ex %></p>
     </div>
+
+</div>
+
+<div class="jumbotron container">
+
+    <div id="passRateChartContainer" style="height: 370px; width: 100%;" class="my-5"></div>
+    <input type="hidden" id="passcount" value="<%= newQues.stats.pass %>">
+    <input type="hidden" id="failcount" value="<%= newQues.stats.fail %>">
 
 </div>
 

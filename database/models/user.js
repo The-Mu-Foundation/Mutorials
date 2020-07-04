@@ -6,8 +6,10 @@ const userSchema = new mongoose.Schema({
     ign: String,
     hash: String,
     salt: String,
-    correct: Number,
-    wrong: Number,
+    stats: {
+        correct: Number,
+        wrong: Number
+    },
     rating: {
         physics: Number,
         chemistry: Number,
