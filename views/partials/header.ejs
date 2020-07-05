@@ -24,9 +24,17 @@
             };
         </script>
 
-        <!-- canvasjs import (to render graphs); note the JQUERY VERSION is imported -->
-        <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>  
-        
+        <!-- chartjs import (to render graphs and charts) -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+        <script>
+            var canvascontainerlist = document.getElementsByClassName("canvas-container-center");
+            for(i = 0; i < canvascontainerlist.length; i++) {
+                var parentStyle = canvascontainerlist[i].style;
+                parentStyle.textAlign = "center";
+                parentStyle.width = "100%";
+            }
+        </script>
+
     </head>
 
     <body>

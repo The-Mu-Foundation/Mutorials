@@ -7,57 +7,50 @@
 <%- include("../partials/navigation") -%>
 
 <!-- IN DEVELOPMENT, ALL CODE RN IS DYSFUNCTIONAL AND ONLY FOR TESTING CHARTS -->
-<script type="text/javascript">
-    window.onload = function () {
 
-        //Better to construct options first and then pass it as a parameter
-        var options = { 
-            data: [
-                {
-                    type: "splineArea", //change it to column, spline, line, pie, etc
-                    dataPoints: [
-                        { x: 10, y: 10 },
-                        { x: 20, y: 14 },
-                        { x: 30, y: 18 },
-                        { x: 40, y: 22 },
-                        { x: 50, y: 18 },
-                        { x: 60, y: 28 }
-                    ]
-                }
-            ]
-        };
-        $("#splineContainer").CanvasJSChart(options);
+
+
+<div class="container jumbotron my-5">
+    <div class="canvas-container-center">
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
     
-        $("#addDataPoint").click(function () {
-            var chart = $("#chartContainer").CanvasJSChart();
-            var length = chart.options.data[0].dataPoints.length;
-            chart.options.data[0].dataPoints.push({ x: (length + 1) * 10, y: Math.round((30 - Math.random() * 10)) });
-            chart.render();
-        });
+</div>
 
-        var options2 = {
-            animationEnabled: true,
-            title: {
-                text: "Problem Pass/Fail Rates"
-            },
-            data: [{
-                type: "doughnut",
-                innerRadius: "40%",
-                indexLabel: "{label} Rate: #percent%",
-                dataPoints: [
-                    { label: "Pass", y: 187, color: "Green" },
-                    { label: "Fail", y: 213, color: "Red" }
-                ]
+
+<script>
+
+    var ctx = document.getElementById("myChart");
+
+    var style = ctx.style;
+    style.marginLeft = "auto";
+    style.marginRight = "auto";
+
+    var myChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: ["Pass", "Fail"],
+            datasets: [{
+                label: "Problem Pass/Fail Rates",
+                data: [20, 10],
+                backgroundColor: [
+                    "rgba(0, 255, 0, 1)",
+                    "rgba(255, 0, 0, 1)"
+                ],
+                borderColor: [
+                    "rgba(255, 255, 255, 1)",
+                    "rgba(255, 255, 255, 1)"
+                ],
+                borderWidth: 2
             }]
-        };
-        $("#doughnutContainer").CanvasJSChart(options2);
-    }
+        },
+        options: {
+            cutoutPercentage: 30,
+            responsive: false
+        }
+    });
+
+
 </script>
-
-<div id="splineContainer" style="width:100%; height:280px;"></div>
-<button id="addDataPoint" style="position:absolute;right:0px;margin-right:10px;">Add Data Point</button>
-
-<div id="doughnutContainer" style="height: 370px; width: 100%;" class="my-5"></div>
-
 
 <%- include("../partials/footer") -%>
