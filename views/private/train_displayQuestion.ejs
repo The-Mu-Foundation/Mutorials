@@ -100,7 +100,7 @@
             <!-- CODE FOR MULTIPLE CHOICE -->
             <h3>Please read the following question and select the best answer:</h3>
             <p><%= newQues.question %></p>
-            <form action="/private/checkAnswer" method="POST">
+            <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="mc-choices">
                     <% var choiceIndex = 1; %>
                     <% newQues.choices.forEach((choice) => { %>
@@ -121,7 +121,7 @@
             <!-- CODE FOR SELECT ALL  -->
             <h3>Please read the following and select ALL choices that apply:</h3>
             <p><%= newQues.question %></p>
-            <form action="/private/checkAnswer" method="POST">
+            <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="sa-choices">
                     <% var choiceIndex = 1; %>
                     <% newQues.choices.forEach((choice) => { %>
@@ -142,7 +142,7 @@
             <!-- CODE FOR FREE RESPONSE -->
             <h3>Please read the following question and enter your answer in the box:</h3>
             <p><%= newQues.question %></p>
-            <form action="/private/checkAnswer" method="POST">
+            <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4">
                     <div class="form-group">
                         <input type="number" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer">
