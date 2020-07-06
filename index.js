@@ -5,6 +5,7 @@ const passport = require("passport");
 const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require("mongoose");
 const express = require("express");
+var flash = require("express-flash-messages");
 const session = require("express-session");
 const InitiateMongoServer = require("./database/config/db");
 
@@ -43,14 +44,16 @@ app.use(session({
     store: sessionStore
 }));
 
-// PASSPORT CODE
+var email_validation = require('./utils/functions/email_validation'); 
 
+
+// PASSPORT CODE
 passport.use(new LocalStrategy(
     // called when passport.authenticate is used()
     function (username, password, cb) {
         User.find({ username: username })
             .then((user) => {
-                if (!user) { return cb(null, false) }
+                if (!user[0]) { return cb(null, false); }
 
                 const isValid = validPassword(password, user[0].hash, user[0].salt);
 
@@ -60,6 +63,7 @@ passport.use(new LocalStrategy(
 
                     return cb(null, false);
                 }
+                
             })
             .catch((err) => {
                 cb(err);
@@ -78,17 +82,48 @@ passport.deserializeUser(function (id, cb) {
 app.use(bodyParser.urlencoded());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash()); // express-flash-messages config
 
-
+app.use(function(req, res, next) {
+    res.locals.success_flash = req.flash('success_flash');
+    res.locals.error_flash   = req.flash('error_flash');
+    next();
+});
 
 // POST ROUTES
 
-app.post('/login', passport.authenticate('local', { failureRedirect: "/signin", successRedirect: '/homepage' }),
+app.post('/login', passport.authenticate('local', { 
+    failureRedirect: "/signin",
+    successRedirect: '/homepage',
+    failureFlash: 'Invalid username or password.',
+    successFlash: 'Welcome!'
+}),
     (req, res, next) => {
         console.log("Oh hi");
+        console.log("req.session");
 });
 
+// `username` is email
+// `ign` is username
 app.post('/register', (req, res, next) => {
+    var register_input_problems = false;
+    if (req.body.ign.length < 1) {
+        req.flash('error_flash', 'Please enter a username.');
+        register_input_problems = true;
+    }
+    if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
+        req.flash('error_flash', 'The password you entered does not meet the requirements.');
+        register_input_problems = true;
+    }
+    if (!email_validation.regex_check(req.body.username)) {
+        req.flash('error_flash', 'The email you entered is not valid.');
+        register_input_problems = true;
+    }
+
+    if (register_input_problems) {
+        res.redirect('/signup');
+        return; // to prevent ERR_HTTP_HEADERS_SENT
+    }
 
     const saltHash = genPassword(req.body.password);
 
@@ -113,16 +148,21 @@ app.post('/register', (req, res, next) => {
     db.collection('users').findOne({ username: req.body.username }).then((user) => {
         if (user) {
             console.log("used");
-        }
-        else {
+            if (user.ign == req.body.ign) {
+                req.flash('error_flash', 'This username is already taken.');
+            } else { // has to be matching email
+                req.flash('error_flash', 'This email is already in use.');
+            }
+        } else {
             console.log("new one");
             newUser.save()
                 .then((user) => {
                     //passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/train'});
                     console.log(user);
                 });
+            req.flash('success_flash', 'We successfully signed you up!');
         }
-        res.redirect('/signin');
+        res.redirect('/signup');
     });
 });
 
@@ -130,6 +170,21 @@ app.post('/admin/addquestion', (req, res, next) => {
     //const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
 
     if (req.isAuthenticated()) {
+        if (req.body.question.length < 1
+        || parseDelimiter(req.body.choices).length < 1
+        || parseDelimiter(req.body.tags).length < 1
+        || req.body.rating.length < 1
+        || parseDelimiter(req.body.answer).length < 1
+        || req.body.answer_ex.length < 1
+        || req.body.author.length < 1
+        || req.body.type.length < 1
+        || req.body.ext_source < 1
+        || req.body.subject < 1
+        || req.body.units < 1) {
+            req.flash('error_flash', 'You\'re forgetting a field.');
+            res.redirect('/admin/addquestion');
+            return;
+        }
         const newQ = new Ques({
             question: req.body.question,
             choices: parseDelimiter(req.body.choices),
@@ -149,6 +204,7 @@ app.post('/admin/addquestion', (req, res, next) => {
         })
         //collection.insertOne({})
         newQ.save();
+        res.redirect('/admin/addedSuccess');
     }
     else {
         res.redirect("/");

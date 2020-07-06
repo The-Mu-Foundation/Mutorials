@@ -2,11 +2,11 @@
 
 <%- include("../partials/header") -%>
 
+
 <!-- javascript to flash -->
 <script>
 
     $(document).ready(function () {
-
         // show/hide password requirement notification
         $("#password-req").hide();
         $("#signupPassword").focus(function() {
@@ -15,9 +15,6 @@
         $("#signupPassword").blur(function() {
             $("#password-req").hide(100);
         });
-
-        // hide flash message
-        $("#flash").hide();
     });
 
 </script>
@@ -25,6 +22,7 @@
 <h1 class="my-5 container">Sign up to Mutorials!</h1>
 
 <div class="jumbotron container">
+    <%- include("../partials/flashes") -%>
 
     <form action="/register" method="post">
 
@@ -44,10 +42,6 @@
             <input class="btn btn-primary" type="submit" value="Sign Up">
         </div>
     </form>
-
-    <!-- can have different types of flash messages in the future -->
-    <h4 class="my-4" id="flash"><font color="red">INSERT FLASH MESSAGE</font></h4>
-
 </div>
 
 
