@@ -106,21 +106,21 @@ app.post('/login', passport.authenticate('local', {
 // `username` is email
 // `ign` is username
 app.post('/register', (req, res, next) => {
-    var register_input_problems = false;
+    var register_input_problems_1 = false;
     if (req.body.ign.length < 1) {
         req.flash('error_flash', 'Please enter a username.');
-        register_input_problems = true;
+        register_input_problems_1 = true;
     }
     if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
         req.flash('error_flash', 'The password you entered does not meet the requirements.');
-        register_input_problems = true;
+        register_input_problems_1 = true;
     }
     if (!email_validation.regex_check(req.body.username)) {
         req.flash('error_flash', 'The email you entered is not valid.');
-        register_input_problems = true;
+        register_input_problems_1 = true;
     }
 
-    if (register_input_problems) {
+    if (register_input_problems_1) {
         res.redirect('/signup');
         return; // to prevent ERR_HTTP_HEADERS_SENT
     }
@@ -148,10 +148,16 @@ app.post('/register', (req, res, next) => {
     db.collection('users').findOne({ username: req.body.username }).then((user) => {
         if (user) {
             console.log("used");
+            var register_input_problems_2 = false;
             if (user.ign == req.body.ign) {
                 req.flash('error_flash', 'This username is already taken.');
+                register_input_problems_2 = true;
             } else { // has to be matching email
                 req.flash('error_flash', 'This email is already in use.');
+                register_input_problems_2 = true;
+            }
+            if (register_input_problems_2) {
+                res.redirect('/signup');
             }
         } else {
             console.log("new one");
@@ -162,7 +168,7 @@ app.post('/register', (req, res, next) => {
                 });
             req.flash('success_flash', 'We successfully signed you up!');
         }
-        res.redirect('/signup');
+        res.redirect('/signin');
     });
 });
 
@@ -171,16 +177,15 @@ app.post('/admin/addquestion', (req, res, next) => {
 
     if (req.isAuthenticated()) {
         if (req.body.question.length < 1
-        || parseDelimiter(req.body.choices).length < 1
         || parseDelimiter(req.body.tags).length < 1
         || req.body.rating.length < 1
-        || parseDelimiter(req.body.answer).length < 1
+        || parseDelimiter(req.body.answer)[0].length < 1
         || req.body.answer_ex.length < 1
         || req.body.author.length < 1
         || req.body.type.length < 1
-        || req.body.ext_source < 1
-        || req.body.subject < 1
-        || req.body.units < 1) {
+        || req.body.ext_source.length < 1
+        || req.body.subject.length < 1
+        || req.body.units.length < 1) {
             req.flash('error_flash', 'You\'re forgetting a field.');
             res.redirect('/admin/addquestion');
             return;
@@ -204,7 +209,6 @@ app.post('/admin/addquestion', (req, res, next) => {
         })
         //collection.insertOne({})
         newQ.save();
-        res.redirect('/admin/addedSuccess');
     }
     else {
         res.redirect("/");
