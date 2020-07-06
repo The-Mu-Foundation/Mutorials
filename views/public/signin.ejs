@@ -2,21 +2,10 @@
 
 <%- include("../partials/header") -%>
 
-<!-- javascript to flash -->
-<script>
-
-    $(document).ready(function () {
-
-        // hide flash message
-        $("#flash").hide();
-    });
-
-</script>
-
 <h1 class="my-5 container">Sign in to Mutorials!</h1>
 
 <div class="jumbotron container">
-
+    <%- include("../partials/flashes") -%>
 	<form action="/login" method="post">
 		<div class="form-group">
 			<input type="text" class="form-control" id="loginEmail" placeholder="Email Address" name="username">
@@ -33,9 +22,6 @@
             <input class="btn btn-primary" type="submit" value="Sign In">
         </div>
 	</form>
-
-    <h4 class="my-4" id="flash"><font color="red">Your email or password is incorrect</font></h4>
-
 </div>
 
 
