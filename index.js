@@ -8,6 +8,7 @@ const express = require("express");
 var flash = require("express-flash-messages");
 const session = require("express-session");
 const InitiateMongoServer = require("./database/config/db");
+var email_validation = require('./utils/functions/email_validation');
 
 // SCHEMA, FUNCTION, AND CONSTANT IMPORTS
 
@@ -18,6 +19,7 @@ const { calculateRatings, ratingCeilingFloor } = require("./utils/functions/rati
 const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
+const { presetUnitOptions } = require("./utils/constants/presets");
 
 
 
@@ -43,9 +45,6 @@ app.use(session({
     saveUninitialized: true,
     store: sessionStore
 }));
-
-var email_validation = require('./utils/functions/email_validation'); 
-
 
 // PASSPORT CODE
 passport.use(new LocalStrategy(
@@ -414,8 +413,7 @@ app.get("/train/:subject/choose_units", (req, res) => {
 
         else {
 
-            // DO A CHECK HERE, IF NO RATING REDIRECT TO SET PROFICIENCY PAGE BEFORE THIS PAGE
-            res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum });
+            res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum, unitPresets: presetUnitOptions[req.params.subject] });
 
         }
     }
