@@ -187,7 +187,7 @@ app.post('/admin/addquestion', (req, res, next) => {
         || req.body.subject.length < 1
         || req.body.units.length < 1) {
             req.flash('error_flash', 'You\'re forgetting a field.');
-            res.redirect('/admin/addquestion');
+            res.redirect('/admin/addedFailure');
             return;
         }
         const newQ = new Ques({
@@ -468,6 +468,16 @@ app.get("/admin/addedSuccess", (req, res) => {
         res.redirect("/");
     }
 });
+
+app.get("/admin/addedFailure", (req, res) => {
+    if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
+        res.render(__dirname + '/views/admin/' + 'train_addQuestionFailure.ejs');
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 
 // WILDCARD FOR ALL OTHER ROUTES
 
