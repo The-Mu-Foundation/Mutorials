@@ -14,18 +14,62 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
+
+<!-- Render pass/fail chart -->
+<script>
+
+    window.onload = function () {
+        
+        var ctx = document.getElementById("passRateChart");
+
+        var style = ctx.style;
+        style.marginLeft = "auto";
+        style.marginRight = "auto";
+
+        var myChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: ["Pass", "Fail"],
+                datasets: [{
+                    label: "Problem Pass/Fail Rates",
+                    data: [$("#passcount").val(), $("#failcount").val()],
+                    backgroundColor: [
+                        "rgba(0, 255, 0, 1)",
+                        "rgba(255, 0, 0, 1)"
+                    ],
+                    borderColor: [
+                        "rgba(255, 255, 255, 1)",
+                        "rgba(255, 255, 255, 1)"
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                cutoutPercentage: 30,
+                responsive: false
+            }
+        });
+    }
+
+</script>
+
 <div class="jumbotron container mt-5">
 
     <div class="mb-4">
         <% if(correct) { %>
-            <h1 class="my-4"><font color="green">Your answer is correct!</font></h1>
+        <h1 class="my-4">
+            <font color="green">Your answer is correct!</font>
+        </h1>
         <% } else { %>
-            <h1 class="my-4"><font color="red">Your answer is incorrect.</font></h1>
+        <h1 class="my-4">
+            <font color="red">Your answer is incorrect.</font>
+        </h1>
         <% } %>
     </div>
 
     <div class="mb-4">
-        <h5>Your new rating is: <%= userRating %> (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
+        <h5>Your new rating is: <%= userRating %>
+            (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
         <h5>This question is rated: <%= oldQ %></h5>
     </div>
 
@@ -36,10 +80,10 @@
     <div>
         <h5>Question Tags:</h5>
         <% newQues.tags.forEach((tag) => { %>
-            <button class="btn btn-info btn-sm" disabled><%= tag %></button>
+        <button class="btn btn-info btn-sm" disabled><%= tag %></button>
         <% }) %>
     </div>
-	
+
 </div>
 
 <div class="jumbotron container">
@@ -50,40 +94,48 @@
     </div>
 
     <% if(newQues.type == "mc") { %>
-        <div class="mb-4">
-            <h5>Answer Choices:</h5>
-            <% var i = 1; %>
-            <% newQues.choices.forEach((choice) => { %>
-                <% if(newQues.answer[0] == i) { %>
-                    <p><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
-                <% } else if(userAnswer == i) { %>
-                    <p><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
-                <% } else { %>
-                    <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
-                <% } %>
-                <% i++; %>
-            <% }) %>
-        </div>
+    <div class="mb-4">
+        <h5>Answer Choices:</h5>
+        <% var i = 1; %>
+        <% newQues.choices.forEach((choice) => { %>
+        <% if(newQues.answer[0] == i) { %>
+        <p>
+            <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+        </p>
+        <% } else if(userAnswer == i) { %>
+        <p>
+            <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+        </p>
+        <% } else { %>
+        <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
+        <% } %>
+        <% i++; %>
+        <% }) %>
+    </div>
     <% } else if(newQues.type == "sa") { %>
-        <div class="mb-4">
-            <h5>Answer Choices:</h5>
-            <% var i = 1; %>
-            <% newQues.choices.forEach((choice) => { %>
-                <% if(newQues.answer.includes(i)) { %>
-                    <p><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
-                <% } else if(userAnswer.includes(''+i)) { %>
-                    <p><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></p>
-                <% } else { %>
-                    <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
-                <% } %>
-                <% i++; %>
-            <% }) %>
-        </div>
+    <div class="mb-4">
+        <h5>Answer Choices:</h5>
+        <% var i = 1; %>
+        <% newQues.choices.forEach((choice) => { %>
+        <% if(newQues.answer.includes(i)) { %>
+        <p>
+            <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+        </p>
+        <% } else if(userAnswer.includes(''+i)) { %>
+        <p>
+            <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+        </p>
+        <% } else { %>
+        <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
+        <% } %>
+        <% i++; %>
+        <% }) %>
+    </div>
     <% } else if(newQues.type == "fr") { %>
-        <div class="mb-4">
-            <h5>You answered: <%= userAnswer %></h5>
-            <h5>The correct answer is: <%= newQues.answer[0] %></h5>
-        </div>
+    <div class="mb-4">
+        <h5>You answered: <%= userAnswer %></h5>
+        <h5>The correct answer is: <%= newQues.answer[0] %></h5>
+    </div>
     <% } %>
 
     <div>
@@ -105,51 +157,17 @@
         <p>Pass Rate: <%= Math.round(100*(newQues.stats.pass)/(newQues.stats.pass+newQues.stats.fail)) %>%</p>
         <p>Fail Rate: <%= Math.round(100*(newQues.stats.fail)/(newQues.stats.pass+newQues.stats.fail)) %>%</p>
     </div>
-    
+
     <!-- Hidden pass/fail stats -->
     <input type="hidden" id="passcount" value="<%= newQues.stats.pass %>">
     <input type="hidden" id="failcount" value="<%= newQues.stats.fail %>">
 
 </div>
 
-<!-- Render pass/fail chart -->
-<script>
-
-    var ctx = document.getElementById("passRateChart");
-
-    var style = ctx.style;
-    style.marginLeft = "auto";
-    style.marginRight = "auto";
-
-    var myChart = new Chart(ctx, {
-        type: "pie",
-        data: {
-            labels: ["Pass", "Fail"],
-            datasets: [{
-                label: "Problem Pass/Fail Rates",
-                data: [$("#passcount").val(), $("#failcount").val()],
-                backgroundColor: [
-                    "rgba(0, 255, 0, 1)",
-                    "rgba(255, 0, 0, 1)"
-                ],
-                borderColor: [
-                    "rgba(255, 255, 255, 1)",
-                    "rgba(255, 255, 255, 1)"
-                ],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            cutoutPercentage: 30,
-            responsive: false
-        }
-    });
-
-</script>
-
-<div class = "container mb-5">
+<div class="container mb-5">
     <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
-    <a href="/train/<%= subject %>/display_question?units=<%=units%>"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
+    <a href="/train/<%= subject %>/display_question?units=<%=units%>"><button type="button" class="btn btn-primary"
+            id="tryanother">Try Another Question</button></a>
 </div>
 
 <%- include("../partials/footer") -%>
