@@ -241,7 +241,7 @@ app.post("/selQ", (req, res, next) => {
     }
 });
 
-app.post("/private/checkAnswer", (req, res, next) => {
+app.post("/train/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
         // the page keeps loading if the answer is left blank; this doesn't do any harm persay, but its a bug that needs to be fixed
         if (req.body.type == "mc" && req.body.answerChoice != undefined) {
@@ -425,10 +425,10 @@ app.get("/train/:subject/display_question", (req, res) => {
     if (req.isAuthenticated()) {
         var units = req.query.units.split(",");
         // IMPLEMENT RATING FLOOR AND CEILING IN FUTURE
-        // ceilingFloor = ratingCeilingFloor(userRating);
-        // floor = ceilingFloor.floor;
-        // ceiling = ceilingFloor.ceiling;
-        const qs = getQuestions(Ques, 50, 500, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
+        ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
+        floor = ceilingFloor.floor;
+        ceiling = ceilingFloor.ceiling;
+        const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject });
         });

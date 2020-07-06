@@ -84,78 +84,93 @@
 
 <div class="jumbotron container mt-5">
     
-    <h3>Question Info</h3>
-    <p>Question Rating: <%= newQues.rating %></p>
-    <p>Question Source: <%= newQues.ext_source %></p>
+    <% try { %>
 
-    <!-- DISPLAY QUESTION -->
-    <% if(newQues.type == "mc") { %>
-        <!-- CODE FOR MULTIPLE CHOICE -->
-        <h3>Please read the following question and select the best answer:</h3>
-        <p><%= newQues.question %></p>
-        <form action="/private/checkAnswer" method="POST">
-            <div class="mt-4" id="mc-choices">
-                <% var choiceIndex = 1; %>
-                <% newQues.choices.forEach((choice) => { %>
-                    <div class="custom-control custom-radio">
-                        <input class="custom-control-input" type="radio" name="answerChoice" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
-                        <label class="custom-control-label" for="<%= choiceIndex %>"><%= choice %></label>
-                    </div>
-                    <% choiceIndex++; %>
-                <% }) %>
-		        <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
-            </div>
-            <input type="hidden" name="id" value="<%= newQues._id %>">
-            <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
-            <input type="hidden" name="subject" value="<%= subject %>">
-            <input type="hidden" name="units" value="<%= units %>">
-        </form>
-    <% } else if(newQues.type == "sa") { %>
-        <!-- CODE FOR SELECT ALL  -->
-        <h3>Please read the following and select ALL choices that apply:</h3>
-        <p><%= newQues.question %></p>
-        <form action="/private/checkAnswer" method="POST">
-            <div class="mt-4" id="sa-choices">
-                <% var choiceIndex = 1; %>
-                <% newQues.choices.forEach((choice) => { %>
-                    <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                        <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
-                        <label class="custom-control-label" for="<%= choiceIndex %>"><%= choice %></label>
-                    </div>
-                    <% choiceIndex++; %>
-                <% }) %>
-                <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
-            </div>
-            <input type="hidden" name="id" value="<%= newQues._id %>">
-            <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
-            <input type="hidden" name="subject" value="<%= subject %>">
-            <input type="hidden" name="units" value="<%= units %>">
-        </form>
-    <% } else if(newQues.type == "fr") { %>
-        <!-- CODE FOR FREE RESPONSE -->
-        <h3>Please read the following question and enter your answer in the box:</h3>
-        <p><%= newQues.question %></p>
-        <form action="/private/checkAnswer" method="POST">
-            <div class="mt-4">
-                <div class="form-group">
-                    <input type="number" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer">
+        <!-- Test for faulty question -->
+        <% if((newQues.question == "") || (newQues.rating == null) || (newQues.answer[0] == "") || (newQues.answer_ex == "")) { %>
+            <% throw "bad question parameters"; %>
+        <% } %>
+
+        <h3>Question Info</h3>
+        <p>Question Rating: <%= newQues.rating %></p>
+        <p>Question Source: <%= newQues.ext_source %></p>
+
+        <!-- DISPLAY QUESTION -->
+        <% if(newQues.type == "mc") { %>
+            <!-- CODE FOR MULTIPLE CHOICE -->
+            <h3>Please read the following question and select the best answer:</h3>
+            <p><%= newQues.question %></p>
+            <form action="/train/checkAnswer" method="POST">
+                <div class="mt-4" id="mc-choices">
+                    <% var choiceIndex = 1; %>
+                    <% newQues.choices.forEach((choice) => { %>
+                        <div class="custom-control custom-radio">
+                            <input class="custom-control-input" type="radio" name="answerChoice" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
+                            <label class="custom-control-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+                        </div>
+                        <% choiceIndex++; %>
+                    <% }) %>
+                    <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
                 </div>
-                <input class="btn btn-primary" type="submit" value="Submit" id="submit">
-            </div>
-            <input type="hidden" name="id" value="<%= newQues._id %>">
-            <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
-            <input type="hidden" name="subject" value="<%= subject %>">
-            <input type="hidden" name="units" value="<%= units %>">
-        </form>
-    <% } else { %>
+                <input type="hidden" name="id" value="<%= newQues._id %>">
+                <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
+                <input type="hidden" name="subject" value="<%= subject %>">
+                <input type="hidden" name="units" value="<%= units %>">
+            </form>
+        <% } else if(newQues.type == "sa") { %>
+            <!-- CODE FOR SELECT ALL  -->
+            <h3>Please read the following and select ALL choices that apply:</h3>
+            <p><%= newQues.question %></p>
+            <form action="/train/checkAnswer" method="POST">
+                <div class="mt-4" id="sa-choices">
+                    <% var choiceIndex = 1; %>
+                    <% newQues.choices.forEach((choice) => { %>
+                        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                            <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
+                            <label class="custom-control-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+                        </div>
+                        <% choiceIndex++; %>
+                    <% }) %>
+                    <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
+                </div>
+                <input type="hidden" name="id" value="<%= newQues._id %>">
+                <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
+                <input type="hidden" name="subject" value="<%= subject %>">
+                <input type="hidden" name="units" value="<%= units %>">
+            </form>
+        <% } else if(newQues.type == "fr") { %>
+            <!-- CODE FOR FREE RESPONSE -->
+            <h3>Please read the following question and enter your answer in the box:</h3>
+            <p><%= newQues.question %></p>
+            <form action="/train/checkAnswer" method="POST">
+                <div class="mt-4">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer">
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Submit" id="submit">
+                </div>
+                <input type="hidden" name="id" value="<%= newQues._id %>">
+                <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
+                <input type="hidden" name="subject" value="<%= subject %>">
+                <input type="hidden" name="units" value="<%= units %>">
+            </form>
+        <% } else { %>
+            <% throw "invalid type"; %>
+        <% } %>
+
+        <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
+        <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
+        
+    <% } catch(err) { %>
+
         <!-- ERROR CODE -->
-        <h3>We are sorry - your question could not be displayed. Please refresh, press "submit", or reenter the trainer.</h3>
+        <h3>Someone messed up their equations! Perhaps they said $\sin^2(\theta)+\cos^2(\theta) \neq 1$ ?</h3>
+        <p>Sorry, we could not display your question. Please reenter the trainer and inform an admin that the question with ID <font color="red"><%= newQues._id %></font> is dysfunctional.</p>
+
+        <a href="/train" class="btn btn-primary btn-block btn-lg mt-4">Click me to go back</a>
+
     <% } %>
 
-
-    <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
-    <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
-    
 </div>
 
 <div class="jumbotron container">
