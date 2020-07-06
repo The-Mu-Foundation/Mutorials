@@ -3,26 +3,26 @@
 <% var messages = getMessages() %>
 
 <% if (messages.error_flash) { %>
-<% for(var i=0; i < messages.error_flash.length; i++) { %>
-<div class="alert alert-danger" role="alert"><%= messages.error_flash[i] %></div>
-<% } %>
+    <% for(var i=0; i < messages.error_flash.length; i++) { %>
+        <div class="alert alert-danger" role="alert"><%= messages.error_flash[i] %></div>
+    <% } %>
 <% } %>
 
 <% if (messages.error) { %>
-<% for(var i=0; i < messages.error.length; i++) { %>
-<div class="alert alert-danger" role="alert"><%= messages.error[i] %></div>
-<% } %>
+    <% for(var i=0; i < messages.error.length; i++) { %>
+        <div class="alert alert-danger" role="alert"><%= messages.error[i] %></div>
+    <% } %>
 <% } %>
 
 <% if (messages.success_flash) { %>
-<% for(var i=0; i < messages.success_flash.length; i++) { %>
-<div class="alert alert-success" role="alert"><%= messages.success_flash[i] %></div>
-<% } %>
+    <% for(var i=0; i < messages.success_flash.length; i++) { %>
+        <div class="alert alert-success" role="alert"><%= messages.success_flash[i] %></div>
+    <% } %>
 <% } %>
 
 <% if (messages.success) { %>
-<% for(var i=0; i < messages.success.length; i++) { %>
-<div class="alert alert-success" role="alert"><%= messages.success[i] %></div>
-<% } %>
+    <% for(var i=0; i < messages.success.length; i++) { %>
+        <div class="alert alert-success" role="alert"><%= messages.success[i] %></div>
+    <% } %>
 <% } %>
 
