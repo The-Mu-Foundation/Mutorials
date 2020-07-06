@@ -13,7 +13,9 @@
             $("#password-req").show(100);
         });
         $("#signupPassword").blur(function() {
-            $("#password-req").hide(100);
+            window.setTimeout(function() {
+                $("#password-req").hide(100);
+            }, 1000);
         });
     });
 
