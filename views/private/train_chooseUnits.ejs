@@ -3,6 +3,7 @@
 <!-- ARGUMENTS:
     units - a list of units to train on
     subject - the subjects
+    unitPresets - an object of the unit present options
     qNum -->
 
 <%- include("../partials/header") -%>
@@ -32,6 +33,24 @@
             }
         });
 
+        // make unit clustering buttons work
+        var unitPresets = JSON.parse($("#stringifiedUnits").val());
+        Object.keys(unitPresets).forEach((preset) => {
+            $("#"+preset.replace(/\s+/g, '')).click(function() {
+                // deselect all
+                document.getElementsByName("unitChoice").forEach((checkbox) => {
+                    if(checkbox.type == "checkbox") {
+                        checkbox.checked = false;
+                    }
+                });
+                // select all matching units
+                unitPresets[preset].forEach((unit) => {
+                    document.getElementById(unit).checked = true;
+                });
+            });
+        });
+
+
     });
 
 </script>
@@ -49,10 +68,20 @@
             <% }) %>
         </div>
 
-        <div class = "mt-4">
+        <div class="mt-4">
             <a href="/train/choose_subject"><button type="button" class="btn btn-secondary" id="previous">Previous</button></a>
             <input type="submit" class="btn btn-primary" id="next" value="Next">
         </div>
+
+        <% if(Object.entries(unitPresets).length > 0) { %>
+            <div class="mt-4 mb-1">
+                <h3>Pre-coded groups of units to aid in aimed review of specific courses:</h3>
+                <% Object.entries(unitPresets).forEach((preset) => { %>
+                    <button type="button" class="btn btn-info btn-sm" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
+                <% }); %>
+            </div>
+        <% } %>
+        <input type="hidden" id="stringifiedUnits" value="<%= JSON.stringify(unitPresets) %>">
 
         <input type="hidden" name="qNum" value="<%= qNum %>">
         <input type="hidden" name="subj" value="<%= subject %>">
