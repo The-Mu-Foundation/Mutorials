@@ -14,12 +14,11 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
-
-<!-- Render pass/fail chart -->
 <script>
 
+    // render pass/fail chart
     window.onload = function () {
-        
+
         var ctx = document.getElementById("passRateChart");
 
         var style = ctx.style;
@@ -50,6 +49,25 @@
             }
         });
     }
+
+    // configure report button
+    $(document).ready(function () {
+
+        // hide report dialogue code
+        $("#initial-report-container").show();
+        $("#report-container").hide();
+
+        // report button popup
+        $("#report").click(function () {
+            $("#report-container").show(1000);
+            $("#initial-report-container").hide(1000);
+        });
+        $("#cancel-report").click(function () {
+            $("#initial-report-container").show(1000);
+            $("#report-container").hide(1000);
+        });
+
+    });
 
 </script>
 
@@ -88,6 +106,22 @@
 
 <div class="jumbotron container">
 
+    <!-- Report question buttons -->
+    <div class="mb-5">
+        <div id="initial-report-container">
+            <button type="button" class="btn btn-danger btn-sm float-right" id="report">Report Question</button>
+        </div>
+        <div id="report-container">
+            <h3>Report this question:</h3>
+            <p>The ID of this question is <font color="red"><%= newQues._id %></font></p>
+            <textarea class="form-control mb-2" id="report-question-text" rows="3" placeholder="Explain what is wrong with this question (ambiguity, inaccuracy, botched formatting, etc.)"></textarea>
+            <button type="button" class="btn btn-secondary" id="cancel-report">Cancel</button>
+            <button type="button" class="btn btn-primary" id="submit-report">Submit</button>
+            <p>DISCLAIMER: This form does NOT work currently; for now, please simply give an admin the question ID</p>
+        </div>
+    </div>
+
+    <!-- Question and explanation -->
     <div class="mb-4">
         <h3>Question Statement:</h3>
         <p><%= newQues.question %></p>
