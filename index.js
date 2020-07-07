@@ -133,6 +133,11 @@ app.post('/register', (req, res, next) => {
         ign: req.body.ign,
         hash: hash,
         salt: salt,
+        profile: {
+            name: "",
+            location: "",
+            age: ""
+        },
         stats: {
             correct: 0,
             wrong: 0
@@ -355,7 +360,7 @@ app.get("/homepage", (req, res) => {
 
 app.get("/settings", (req, res) => {
     if (req.isAuthenticated()) {
-        res.render(__dirname + '/views/private/' + 'settings.ejs');
+        res.render(__dirname + '/views/private/' + 'settings.ejs', { user: req.user });
     }
     else {
         res.redirect("/");
