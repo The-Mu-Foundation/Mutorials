@@ -9,11 +9,13 @@ const userSchema = new mongoose.Schema({
     profile: {
         name: String,
         location: String,
-        age: String
+        age: String,
+        bio: String
     },
     stats: {
         correct: Number,
-        wrong: Number
+        wrong: Number,
+        collectedTags: Array
     },
     rating: {
         physics: Number,

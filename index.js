@@ -136,11 +136,13 @@ app.post('/register', (req, res, next) => {
         profile: {
             name: "",
             location: "",
-            age: ""
+            age: "",
+            bio: ""
         },
         stats: {
             correct: 0,
-            wrong: 0
+            wrong: 0,
+            collectedTags: []
         },
         rating: {
             physics: -1,
@@ -264,7 +266,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 oldQRating = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                 setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters
+                // update counters & tag collector
                 updateCounters(req, antsy, isRight);
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating });
