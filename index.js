@@ -23,7 +23,7 @@ const { presetUnitOptions } = require("./utils/constants/presets");
 
 
 
-// START MONGO SERVER 
+// START MONGO SERVER
 InitiateMongoServer();
 var db = mongoose.connection;
 const PORT = process.env.PORT || 3000;
@@ -88,7 +88,6 @@ app.use(function(req, res, next) {
     res.locals.error_flash   = req.flash('error_flash');
     next();
 });
-
 // POST ROUTES
 
 app.post('/login', passport.authenticate('local', { 
@@ -115,6 +114,7 @@ app.post('/register', (req, res, next) => {
         register_input_problems_1 = true;
     }
     if (!email_validation.regex_check(req.body.username)) {
+        console.log(req.body.username);
         req.flash('error_flash', 'The email you entered is not valid.');
         register_input_problems_1 = true;
     }
@@ -128,11 +128,17 @@ app.post('/register', (req, res, next) => {
 
     const salt = saltHash.salt;
     const hash = saltHash.hash;
+    var confirm_code;
+    require('crypto').randomBytes(6, function(ex, buf) {
+        confirm_code = buf.toString('hex');
+    });
     const newUser = new User({
         username: req.body.username,
         ign: req.body.ign,
         hash: hash,
         salt: salt,
+        // iff email_confirm_code == 0, then email is confirmed
+        email_confirm_code: confirm_code,
         stats: {
             correct: 0,
             wrong: 0
@@ -157,6 +163,7 @@ app.post('/register', (req, res, next) => {
             }
             if (register_input_problems_2) {
                 res.redirect('/signup');
+                return; // to prevent ERR_HTTP_HEADERS_SENT
             }
         } else {
             console.log("new one");
@@ -167,6 +174,7 @@ app.post('/register', (req, res, next) => {
                 });
             req.flash('success_flash', 'We successfully signed you up!');
         }
+        email_validation.email_code_send(req.body.username, confirm_code);
         res.redirect('/signin');
     });
 });
@@ -228,6 +236,28 @@ app.post('/private/initialRating', (req, res, next) => {
     }
 });
 
+app.post('/email_check', (req, res, next) => {
+    if (req.isAuthenticated()){
+        if (req.user.email_confirm_code != "0") {
+            console.log(req.user.username);
+            console.log(req.body.entered_code);
+            if (email_validation.check_code(req.user.username, req.body.entered_code)) {
+                email_validation.clear_confirm_code(req.user.username);
+                req.flash('success_flash', 'We successfully confirmed your email!');
+                res.redirect('/');
+            } else {
+                req.flash('error_flash', 'That isn\' the right code. Please try again.');
+                res.redirect('/email_confirmation');
+            }
+        } else {
+            req.flash('error_flash', 'You\'ve already confirmed your email.');
+            res.redirect('/');
+        }
+    } else {
+        res.redirect('/');
+    }
+});
+
 app.post("/selQ", (req, res, next) => {
     //select question
     //var subj = null;
@@ -246,7 +276,7 @@ app.post("/selQ", (req, res, next) => {
 
 app.post("/train/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
-        // the page keeps loading if the answer is left blank; this doesn't do any harm persay, but its a bug that needs to be fixed
+        // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
         if (req.body.type == "mc" && req.body.answerChoice != undefined) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
@@ -352,6 +382,20 @@ app.get("/homepage", (req, res) => {
         res.redirect("/");
     }
 });
+
+app.get('/email_confirmation', (req, res) => {
+    if (req.isAuthenticated()) {
+        if (req.user.email_confirm_code != 0) {
+            res.render(__dirname + '/views/private/' + 'emailConfirmation.ejs');
+        } else {
+            req.flash('error_flash', 'You\'ve already confirmed your email.');
+            res.redirect('/');
+        }
+    } else {
+        res.redirect('/');
+    }
+});
+
 
 app.get("/settings", (req, res) => {
     if (req.isAuthenticated()) {
