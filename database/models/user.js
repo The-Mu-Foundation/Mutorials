@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema({
     ign: String,
     hash: String,
     salt: String,
+    profile: {
+        name: String,
+        location: String,
+        age: String
+    },
     stats: {
         correct: Number,
         wrong: Number
