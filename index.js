@@ -360,6 +360,15 @@ app.get("/homepage", (req, res) => {
     }
 });
 
+app.get("/references", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references.ejs');
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 app.get("/settings", (req, res) => {
     if (req.isAuthenticated()) {
         res.render(__dirname + '/views/private/' + 'settings.ejs', { user: req.user });
@@ -369,9 +378,24 @@ app.get("/settings", (req, res) => {
     }
 });
 
+app.get("/stats", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.redirect("/stats/" + req.user.ign);
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 app.get("/stats/:username", (req, res) => {
-    // TESTING ROUTE FOR STATS PAGE
-    res.render(__dirname + '/views/private/' + 'stats.ejs');
+    if (req.isAuthenticated()) {
+        User.findOne({ ign: req.params.username }, function(err, obj) {
+            res.render(__dirname + '/views/private/' + 'stats.ejs', { user: obj });
+        });
+    }
+    else {
+        res.redirect("/");
+    }
 });
 
 app.get("/train", (req, res) => {
