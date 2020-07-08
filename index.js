@@ -317,18 +317,14 @@ app.post("/train/checkAnswer", (req, res, next) => {
     }
 });
 
-//settings change
 app.post("/changeInfo", (req, res) => {
     if(req.isAuthenticated()){
-        if(req.body.name){
-            req.user.profile.name = req.body.name;
-        }
-        if(req.body.location){
-            req.user.profile.location = req.body.location;
-        }
-        if(req.body.age){ 
-            req.user.profile.age = req.body.age;
-        }
+
+        req.user.profile.name = req.body.name;
+        req.user.profile.bio = req.body.bio;
+        req.user.profile.location = req.body.location;
+        req.user.profile.age = req.body.age;
+
         if(req.body.ign){
             req.user.ign = req.body.ign;
         }
@@ -340,13 +336,15 @@ app.post("/changeInfo", (req, res) => {
             req.user.hash = newPass.hash;
             req.user.salt = newPass.salt;
         }
-        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: {age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name }} });
+
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }} });
         res.redirect("/settings");
     }
     else{
         res.redirect("/");
     }
 });
+
 // PUBLIC USER GET ROUTES
 
 app.get("/", (req, res) => {
