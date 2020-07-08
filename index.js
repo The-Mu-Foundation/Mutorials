@@ -326,7 +326,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
         res.redirect("/");
     }
 });
-
+//settings
 app.post("/changeInfo", (req, res) => {
     if(req.isAuthenticated()){
 
