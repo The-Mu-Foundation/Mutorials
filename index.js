@@ -316,33 +316,67 @@ app.post("/train/checkAnswer", (req, res, next) => {
 //settings change
 app.post("/changeInfo", (req, res) => {
     if(req.isAuthenticated()){
-        if(req.body.name){
-            req.user.profile.name = req.body.name;
-        }
-        if(req.body.location){
-            req.user.profile.location = req.body.location;
-        }
-        if(req.body.age){ 
-            req.user.profile.age = req.body.age;
-        }
+
+        req.user.profile.name = req.body.name;
+        req.user.profile.bio = req.body.bio;
+        req.user.profile.location = req.body.location;
+        req.user.profile.age = req.body.age;
+
         if(req.body.ign){
-            req.user.ign = req.body.ign;
+            /*
+            const exist = db.collection('users').findOne({ ign: req.body.ign });
+            if(!exist){
+                req.user.ign = req.body.ign;
+            }
+            else{
+                console.log("used ign"); 
+            }
+            */
+            db.collection('users').findOne({ ign: req.body.ign }).then((user) => {
+                if (!user) {
+                    req.user.ign = req.body.ign;
+                }
+                else{
+                    console.log("used ign!") //flash
+                }
+            });
+            
+            
         }
         if(req.body.username){
-            req.user.username = req.body.username;
+            
+            db.collection('users').findOne({ username: req.body.username }).then((user) => {
+                if (!user) {
+                    req.user.username = req.body.username;
+                }
+                else{
+                    console.log("used email!") //flash
+                }
+            });
+            /*
+            const exist = db.collection('users').findOne({ username: req.body.username });
+            if(!exist){
+                req.user.username = req.body.username;
+            }
+            else{
+                console.log("used email");
+            }
+            */
         }
         if(req.body.password){ //
             const newPass = genPassword(req.body.password);
             req.user.hash = newPass.hash;
             req.user.salt = newPass.salt;
         }
-        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: {age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name }} });
+
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }} });
         res.redirect("/settings");
     }
     else{
         res.redirect("/");
     }
 });
+
 // PUBLIC USER GET ROUTES
 
 app.get("/", (req, res) => {
