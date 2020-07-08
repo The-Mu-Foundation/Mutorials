@@ -20,6 +20,8 @@ const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
+const { referenceSheet } = require("./utils/constants/referencesheet");
+const { tags } = require("./utils/constants/tags");
 
 
 
@@ -363,6 +365,42 @@ app.get("/homepage", (req, res) => {
 app.get("/references", (req, res) => {
     if (req.isAuthenticated()) {
         res.render(__dirname + '/views/private/' + 'references.ejs');
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/equations", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_equations.ejs', { equations: referenceSheet.equations });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/constants", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_constants.ejs', { constants: referenceSheet.constants });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/taglist", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_taglist.ejs', { tags: tags });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/about", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_about.ejs');
     }
     else {
         res.redirect("/");
