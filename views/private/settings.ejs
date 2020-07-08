@@ -9,76 +9,74 @@
 <h1 class="my-5 container">Settings</h1>
 
 <!-- public profile tweaks -->
-<div class="jumbotron container">
 
-	<h3 class="mb-4">Profile</h3>
 	
-	<!-- edit the following to do what you want -->
-	<form action="/" method="POST">
+<!-- edit the following to do what you want -->
+<form action="/changeInfo" method="POST">
+	<h3 class="mb-4">Profile</h3>
+	<div class="jumbotron container"></div>
 		<div class="form-group row">
 			<label for="name" class="col-sm-2 col-form-label">Name</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" id="name" value="<%= user.profile.name %>" placeholder="Enter your name here">
+				<input type="text" class="form-control" id="name" name="name" value="<%= user.profile.name %>" placeholder="Enter your name here">
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="Location" class="col-sm-2 col-form-label">Location</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" id="Location" value="<%= user.profile.location %>" placeholder="Where do you live?">
+				<input type="text" class="form-control" id="location" name="location" value="<%= user.profile.location %>" placeholder="Where do you live?">
 			</div>
 		</div>
 		<div class="form-group row">
 			<label for="Age" class="col-sm-2 col-form-label">Age</label>
 			<div class="col-sm-10">
-				<input type="number" class="form-control" id="Age" value="<%= user.profile.age %>" placeholder="Enter your age here">
+				<input type="number" class="form-control" id="age" name="age" value="<%= user.profile.age %>" placeholder="Enter your age here">
 			</div>
-        </div>
-        
-        <button type="submit" class="btn btn-primary mt-4">Update Profile</button>
-
-	</form>
+		</div>
 		
-</div>
+		<button type="submit" class="btn btn-primary mt-4">Update Profile</button>
+
+		
+	</div>
 
 <!-- account tweaks -->
-<div class="jumbotron container">
+	<div class="jumbotron container">
 
-	<h3 class="mb-4">Account</h3>
-	
-	<!-- edit this form too -->
-	<form action="/" method="POST">
-		<div class="form-group row">
-			<label for="Username" class="col-sm-2 col-form-label">Username</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="Username" value="<%= user.ign %>" placeholder="Change your username">
+		<h3 class="mb-4">Account</h3>
+		
+		<!-- edit this form too -->
+			<div class="form-group row">
+				<label for="Username" class="col-sm-2 col-form-label">Username</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="ign" name="ign" value="<%= user.ign %>" placeholder="Change your username">
+				</div>
 			</div>
-		</div>
-		<div class="form-group row">
-			<label for="Email" class="col-sm-2 col-form-label">Email</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="Email" value="<%= user.username %>" placeholder="Change your linked email">
+			<div class="form-group row">
+				<label for="Email" class="col-sm-2 col-form-label">Email</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" placeholder="Change your linked email">
+				</div>
 			</div>
-		</div>
-		<div class="form-group row">
-			<label for="Password" class="col-sm-2 col-form-label">Change Password</label>
-			<div class="col-sm-10">
-				<input type="password" class="form-control" id="Password" placeholder="Current password">
+			<div class="form-group row">
+				<label for="Password" class="col-sm-2 col-form-label">Change Password</label>
+				<div class="col-sm-10">
+					<input type="password" class="form-control" id="Password" placeholder="Current password">
+				</div>
+				<label for="NewPW" class="col-sm-2 col-form-label"></label>
+				<div class="col-sm-10 mt-1">
+					<input type="password" class="form-control" id="newpw" placeholder="New password">
+				</div>
+				<label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
+				<div class="col-sm-10 mt-1">
+					<input type="password" class="form-control" id="password" name="password" placeholder="Confirm new password">
+				</div>
 			</div>
-			<label for="NewPW" class="col-sm-2 col-form-label"></label>
-			<div class="col-sm-10 mt-1">
-				<input type="password" class="form-control" id="NewPW" placeholder="New password">
-			</div>
-			<label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
-			<div class="col-sm-10 mt-1">
-				<input type="password" class="form-control" id="ConfirmPW" placeholder="Confirm new password">
-			</div>
-        </div>
-        
-        <button type="submit" class="btn btn-primary mt-4">Update Account</button>
+			
+			
+	</div>
+	<button type="submit" class="btn btn-primary mt-4">Update Account</button>
+</form>
 
-	</form>
-	
-</div>
 
 <!-- logout button -->
 <div class="container">

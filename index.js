@@ -243,8 +243,11 @@ app.post("/selQ", (req, res, next) => {
     }
     if (req.body.qNum == 1) {
         units = req.body.unitChoice;
+        if(units){ //nothing happens if units is empty
+            res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
+        }
         //app.set("questionz", questions);
-        res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString()); //units cannot have commas
+         //units cannot have commas
 
     }
 });
@@ -310,6 +313,35 @@ app.post("/train/checkAnswer", (req, res, next) => {
     }
 });
 
+//settings change
+app.post("/changeInfo", (req, res) => {
+    if(req.isAuthenticated()){
+        if(req.body.name){
+            req.user.profile.name = req.body.name;
+        }
+        if(req.body.location){
+            req.user.profile.location = req.body.location;
+        }
+        if(req.body.age){ 
+            req.user.profile.age = req.body.age;
+        }
+        if(req.body.ign){
+            req.user.ign = req.body.ign;
+        }
+        if(req.body.username){
+            req.user.username = req.body.username;
+        }
+        if(req.body.password){ //
+            const newPass = genPassword(req.body.password);
+            req.user.hash = newPass.hash;
+            req.user.salt = newPass.salt;
+        }
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: {age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name }} });
+    }
+    else{
+        res.redirect("/");
+    }
+});
 // PUBLIC USER GET ROUTES
 
 app.get("/", (req, res) => {
