@@ -337,6 +337,7 @@ app.post("/changeInfo", (req, res) => {
             req.user.salt = newPass.salt;
         }
         db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: {age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name }} });
+        res.redirect("/settings");
     }
     else{
         res.redirect("/");
