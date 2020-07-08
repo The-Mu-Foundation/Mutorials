@@ -8,17 +8,23 @@
 
 <h1 class="my-5 container">Settings</h1>
 
-<!-- public profile tweaks -->
-
-	
-<!-- edit the following to do what you want -->
 <form action="/changeInfo" method="POST">
-	<h3 class="mb-4">Profile</h3>
-	<div class="jumbotron container"></div>
+    
+    <!-- public profile tweaks -->
+	<div class="jumbotron container">
+
+        <h3 class="mb-4">Profile</h3>
+
 		<div class="form-group row">
 			<label for="name" class="col-sm-2 col-form-label">Name</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" id="name" name="name" value="<%= user.profile.name %>" placeholder="Enter your name here">
+			</div>
+        </div>
+        <div class="form-group row">
+			<label for="Bio" class="col-sm-2 col-form-label">Bio</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="bio" name="bio" value="<%= user.profile.bio %>" placeholder="Introduce yourself!">
 			</div>
 		</div>
 		<div class="form-group row">
@@ -32,14 +38,13 @@
 			<div class="col-sm-10">
 				<input type="number" class="form-control" id="age" name="age" value="<%= user.profile.age %>" placeholder="Enter your age here">
 			</div>
-		</div>
+        </div>
 		
 		<button type="submit" class="btn btn-primary mt-4">Update Profile</button>
 
-		
 	</div>
 
-<!-- account tweaks -->
+    <!-- account tweaks -->
 	<div class="jumbotron container">
 
 		<h3 class="mb-4">Account</h3>
@@ -71,10 +76,10 @@
 					<input type="password" class="form-control" id="password" name="password" placeholder="Confirm new password">
 				</div>
 			</div>
-			
-			
-	</div>
-	<button type="submit" class="btn btn-primary mt-4">Update Account</button>
+            
+            <button type="submit" class="btn btn-primary mt-4">Update Account</button>
+    </div>
+    
 </form>
 
 
