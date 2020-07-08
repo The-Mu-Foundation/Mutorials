@@ -18,7 +18,7 @@
 
 		// hide skip dialogue code
 		$("#skip-dialogue-1").show();
-		$("#skip-dialogue-2").hide();
+		$("#skip-dialogue-2").hide(0);
 
 		// skip button confirm message
         $("#skip-button").click(function () {
@@ -31,8 +31,8 @@
         });
 
         // hide empty response messages
-        $("#fr-answerblank").hide();
-        $("#mc-answerblank").hide();
+        $("#fr-answerblank").hide(0);
+        $("#mc-answerblank").hide(0);
 
         // upon hitting submit button
         var response = "";
