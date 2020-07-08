@@ -6,7 +6,36 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
+<script>
+
+    $(document).ready(function() {
+        
+        // configure unsaved changes alert
+        $("#unsaved-alert").hide(0);
+        
+        var setUnsavedAlertFor = function(id) {
+            $("#" + id).on("input", function() {
+                $("#unsaved-alert").show(500);
+                $("#" + id).css({ "border": '#FFA500 2px solid' });
+            });
+        }
+
+        setUnsavedAlertFor("name");
+        setUnsavedAlertFor("bio");
+        setUnsavedAlertFor("location");
+        setUnsavedAlertFor("age");
+        setUnsavedAlertFor("ign");
+        setUnsavedAlertFor("username");
+
+    });
+
+</script>
+
 <h1 class="my-5 container">Settings</h1>
+
+<div class="container" id="unsaved-alert">
+    <div class="alert alert-danger" role="alert">Careful! You have unsaved changes!</div>
+</div>
 
 <form action="/changeInfo" method="POST">
     

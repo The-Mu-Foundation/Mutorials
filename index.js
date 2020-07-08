@@ -512,7 +512,7 @@ app.get("/stats", (req, res) => {
 app.get("/stats/:username", (req, res) => {
     if (req.isAuthenticated()) {
         User.findOne({ ign: req.params.username }, function(err, obj) {
-            res.render(__dirname + '/views/private/' + 'stats.ejs', { user: obj });
+            res.render(__dirname + '/views/private/' + 'stats.ejs', { user: obj, totalTags: tags });
         });
     }
     else {

@@ -1,7 +1,8 @@
 <!-- This is the page for displaying stats -->
 
 <!-- ARGUMENTS:
-    user - the user for which stats are being displayed -->
+    user - the user for which stats are being displayed
+    totalTags - the complete list of all tags on the site -->
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
@@ -47,15 +48,75 @@
 <h1 class="my-5 container">Stats for <strong><%= user.ign %></strong></h1>
 
 <div class="container jumbotron mt-5">
-    <h2>Physics Rating: <font color="blue"><%= user.rating.physics != -1 ? user.rating.physics : "Unrated" %></font></h2>
+
+    <h3>Physics Rating: <font color="red"><%= user.rating.physics != -1 ? user.rating.physics : "Unrated" %></font></h3>
+    
+    <h5 class="mt-3">Collected Physics Tags:</h5>
+    <% var counter = 0; %>
+    <% user.stats.collectedTags.forEach((tag) => { %>
+        <% counter++; %>
+        <% if(Object.keys(totalTags["Physics"]["Units"]).includes(tag)) { %>
+            <button class="btn btn-primary btn-sm" disabled><%= tag %></button>
+        <% } else if(Object.keys(totalTags["Physics"]["Concepts"]).includes(tag)) { %>
+            <button class="btn btn-info btn-sm" disabled><%= tag %></button>
+        <% } else { %>
+            <% counter--; %>
+        <% } %>
+    <% }); %>
+    
+    <% if(counter == 0) { %>
+        <p>None</p>
+    <% } else { %>
+        <p><%= counter %>/<%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> tags in this subject have been collected</p>
+    <% } %>
 </div>
 
 <div class="container jumbotron">
-    <h2>Chemistry Rating: <font color="blue"><%= user.rating.chemistry != -1 ? user.rating.chemistry : "Unrated" %></font></h2>
+
+    <h3>Chemistry Rating: <font color="red"><%= user.rating.chemistry != -1 ? user.rating.chemistry : "Unrated" %></font></h3>
+
+    <h5 class="mt-3">Collected Chemistry Tags:</h5>
+    <% var counter = 0; %>
+    <% user.stats.collectedTags.forEach((tag) => { %>
+        <% counter++; %>
+        <% if(Object.keys(totalTags["Chemistry"]["Units"]).includes(tag)) { %>
+            <button class="btn btn-primary btn-sm" disabled><%= tag %></button>
+        <% } else if(Object.keys(totalTags["Chemistry"]["Concepts"]).includes(tag)) { %>
+            <button class="btn btn-info btn-sm" disabled><%= tag %></button>
+        <% } else { %>
+            <% counter--; %>
+        <% } %>
+    <% }); %>
+    
+    <% if(counter == 0) { %>
+        <p>None</p>
+    <% } else { %>
+        <p><%= counter %>/<%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> tags in this subject have been collected</p>
+    <% } %>
 </div>
 
 <div class="container jumbotron mb-5">
-    <h2>Biology Rating: <font color="blue"><%= user.rating.biology != -1 ? user.rating.biology : "Unrated" %></font></h2>
+
+    <h3>Biology Rating: <font color="red"><%= user.rating.biology != -1 ? user.rating.biology : "Unrated" %></font></h3>
+
+    <h5 class="mt-3">Collected Biology Tags:</h5>
+    <% var counter = 0; %>
+    <% user.stats.collectedTags.forEach((tag) => { %>
+        <% counter++; %>
+        <% if(Object.keys(totalTags["Biology"]["Units"]).includes(tag)) { %>
+            <button class="btn btn-primary btn-sm" disabled><%= tag %></button>
+        <% } else if(Object.keys(totalTags["Biology"]["Concepts"]).includes(tag)) { %>
+            <button class="btn btn-info btn-sm" disabled><%= tag %></button>
+        <% } else { %>
+            <% counter--; %>
+        <% } %>
+    <% }); %>
+    
+    <% if(counter == 0) { %>
+        <p>None</p>
+    <% } else { %>
+        <p><%= counter %>/<%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> tags in this subject have been collected</p>
+    <% } %>
 </div>
 
 <div class="container jumbotron my-5">
