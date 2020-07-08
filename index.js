@@ -20,6 +20,8 @@ const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
+const { referenceSheet } = require("./utils/constants/referencesheet");
+const { tags } = require("./utils/constants/tags");
 
 
 
@@ -137,19 +139,18 @@ app.post('/register', (req, res, next) => {
         ign: req.body.ign,
         hash: hash,
         salt: salt,
-<<<<<<< HEAD
         profile: {
             name: "",
             location: "",
-            age: ""
+            age: "",
+            bio: ""
         },
-=======
         // iff email_confirm_code == 0, then email is confirmed
         email_confirm_code: confirm_code,
->>>>>>> 840d1577cd102675d2532d5c4607ee7502c127e5
         stats: {
             correct: 0,
-            wrong: 0
+            wrong: 0,
+            collectedTags: []
         },
         rating: {
             physics: -1,
@@ -205,6 +206,16 @@ app.post('/admin/addquestion', (req, res, next) => {
             res.redirect('/admin/addedFailure');
             return;
         }
+
+        // append unique unit tags to taglist
+        req.body.subject.forEach((subject) => {
+            Object.keys(tags[subject]["Units"]).forEach((unitTag) => {
+                if(req.body.units.includes(subject + " - " + tags[subject]["Units"][unitTag])) { 
+                    req.body.tags = unitTag + "@" + req.body.tags;
+                }
+            });
+        });
+
         const newQ = new Ques({
             question: req.body.question,
             choices: parseDelimiter(req.body.choices),
@@ -276,8 +287,11 @@ app.post("/selQ", (req, res, next) => {
     }
     if (req.body.qNum == 1) {
         units = req.body.unitChoice;
+        if(units){ //nothing happens if units is empty
+            res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
+        }
         //app.set("questionz", questions);
-        res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString()); //units cannot have commas
+         //units cannot have commas
 
     }
 });
@@ -297,7 +311,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 oldQRating = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                 setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters
+                // update counters & tag collector
                 updateCounters(req, antsy, isRight);
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating });
@@ -339,6 +353,34 @@ app.post("/train/checkAnswer", (req, res, next) => {
         }
     }
     else {
+        res.redirect("/");
+    }
+});
+//settings
+app.post("/changeInfo", (req, res) => {
+    if(req.isAuthenticated()){
+
+        req.user.profile.name = req.body.name;
+        req.user.profile.bio = req.body.bio;
+        req.user.profile.location = req.body.location;
+        req.user.profile.age = req.body.age;
+
+        if(req.body.ign){
+            req.user.ign = req.body.ign;
+        }
+        if(req.body.username){
+            req.user.username = req.body.username;
+        }
+        if(req.body.password){ //
+            const newPass = genPassword(req.body.password);
+            req.user.hash = newPass.hash;
+            req.user.salt = newPass.salt;
+        }
+
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }} });
+        res.redirect("/settings");
+    }
+    else{
         res.redirect("/");
     }
 });
@@ -391,6 +433,51 @@ app.get("/homepage", (req, res) => {
     }
 });
 
+app.get("/references", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references.ejs');
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/equations", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_equations.ejs', { equations: referenceSheet.equations });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/constants", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_constants.ejs', { constants: referenceSheet.constants });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/taglist", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_taglist.ejs', { tags: tags });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/about", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_about.ejs');
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 app.get('/email_confirmation', (req, res) => {
     if (req.isAuthenticated()) {
         if (req.user.email_confirm_code != 0) {
@@ -404,7 +491,6 @@ app.get('/email_confirmation', (req, res) => {
     }
 });
 
-
 app.get("/settings", (req, res) => {
     if (req.isAuthenticated()) {
         res.render(__dirname + '/views/private/' + 'settings.ejs', { user: req.user });
@@ -414,9 +500,24 @@ app.get("/settings", (req, res) => {
     }
 });
 
+app.get("/stats", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.redirect("/stats/" + req.user.ign);
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 app.get("/stats/:username", (req, res) => {
-    // TESTING ROUTE FOR STATS PAGE
-    res.render(__dirname + '/views/private/' + 'stats.ejs');
+    if (req.isAuthenticated()) {
+        User.findOne({ ign: req.params.username }, function(err, obj) {
+            res.render(__dirname + '/views/private/' + 'stats.ejs', { user: obj });
+        });
+    }
+    else {
+        res.redirect("/");
+    }
 });
 
 app.get("/train", (req, res) => {

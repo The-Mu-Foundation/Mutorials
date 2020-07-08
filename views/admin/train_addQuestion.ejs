@@ -13,7 +13,7 @@
 	$(document).ready(function () {
 
 		// hide LaTeX compiler
-		$("#latex-compiler").hide();
+		$("#latex-compiler").hide(0);
 		$("#show-compiler").click(function() {
 			$("#latex-compiler").show(1000);
 			$("#show-compiler-div").hide(1000);
@@ -110,7 +110,6 @@
     
 	<h3>Question Display</h3>
     <!-- FORMAT -->
-    <%- include("../partials/flashes") -%>
 	<form id="question-format">
 		<p>What is the format of this question?</p>
 		<div class="custom-control custom-radio">
