@@ -32,8 +32,10 @@ function setRating(subject, newRating, req) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating, correct: req.user.correct, wrong: req.user.wrong } });
 }
 
-// modify the correct/wrong counter for users, and the pass/fail counter for questions
+// modify the correct/wrong counter for users, and the pass/fail counter for questions, as well as tag collector tags
 function updateCounters(req, question, correct) {
+
+    // update counters
     if (correct) {
         req.user.stats.correct++;
         question.stats.pass++;
@@ -41,7 +43,18 @@ function updateCounters(req, question, correct) {
         req.user.stats.wrong++;
         question.stats.fail++;
     }
-    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: { correct: req.user.stats.correct, wrong: req.user.stats.wrong } } });
+
+    // update tag collector
+    if(correct) {
+        question.tags.forEach((tag) => {
+            if(!req.user.stats.collectedTags.includes(tag)) {
+                req.user.stats.collectedTags.push(tag);
+            }
+        });
+    }
+
+    // update above results in database
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: { correct: req.user.stats.correct, wrong: req.user.stats.wrong, collectedTags: req.user.stats.collectedTags } } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
 

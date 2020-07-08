@@ -1,56 +1,80 @@
 <!-- This is the page for displaying stats -->
 
 <!-- ARGUMENTS:
-    none yet -->
+    user - the user for which stats are being displayed -->
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
-<!-- IN DEVELOPMENT, ALL CODE RN IS DYSFUNCTIONAL AND ONLY FOR TESTING CHARTS -->
-
-
-
-<div class="container jumbotron my-5">
-    <div class="canvas-container-center">
-        <canvas id="myChart" width="400" height="400"></canvas>
-    </div>
-    
-</div>
-
-
 <script>
 
-    var ctx = document.getElementById("myChart");
+    // render correct/wrong chart
+    window.onload = function () {
 
-    var style = ctx.style;
-    style.marginLeft = "auto";
-    style.marginRight = "auto";
+        var ctx = document.getElementById("correctWrongChart");
 
-    var myChart = new Chart(ctx, {
-        type: "pie",
-        data: {
-            labels: ["Pass", "Fail"],
-            datasets: [{
-                label: "Problem Pass/Fail Rates",
-                data: [20, 10],
-                backgroundColor: [
-                    "rgba(0, 255, 0, 1)",
-                    "rgba(255, 0, 0, 1)"
-                ],
-                borderColor: [
-                    "rgba(255, 255, 255, 1)",
-                    "rgba(255, 255, 255, 1)"
-                ],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            cutoutPercentage: 30,
-            responsive: false
-        }
-    });
+        var style = ctx.style;
+        style.marginLeft = "auto";
+        style.marginRight = "auto";
 
+        var myChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: ["Correct", "Wrong"],
+                datasets: [{
+                    label: "User Correct/Wrong Counts",
+                    data: [$("#correctcount").val(), $("#wrongcount").val()],
+                    backgroundColor: [
+                        "rgba(0, 255, 0, 1)",
+                        "rgba(255, 0, 0, 1)"
+                    ],
+                    borderColor: [
+                        "rgba(255, 255, 255, 1)",
+                        "rgba(255, 255, 255, 1)"
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                cutoutPercentage: 30,
+                responsive: false
+            }
+        });
+    }
 
 </script>
+
+<h1 class="my-5 container">Stats for <strong><%= user.ign %></strong></h1>
+
+<div class="container jumbotron mt-5">
+    <h2>Physics Rating: <font color="blue"><%= user.rating.physics != -1 ? user.rating.physics : "Unrated" %></font></h2>
+</div>
+
+<div class="container jumbotron">
+    <h2>Chemistry Rating: <font color="blue"><%= user.rating.chemistry != -1 ? user.rating.chemistry : "Unrated" %></font></h2>
+</div>
+
+<div class="container jumbotron mb-5">
+    <h2>Biology Rating: <font color="blue"><%= user.rating.biology != -1 ? user.rating.biology : "Unrated" %></font></h2>
+</div>
+
+<div class="container jumbotron my-5">
+
+    <!-- correct/wrong chart -->
+    <div class="canvas-container-center text-center">
+
+        <h3>Total Question Correct/Wrong Counts</h3>
+
+        <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>
+
+        <p>Correct Rate: <%= Math.round(100*(user.stats.correct)/(user.stats.correct+user.stats.wrong)) %>%</p>
+        <p>Wrong Rate: <%= Math.round(100*(user.stats.wrong)/(user.stats.correct+user.stats.wrong)) %>%</p>
+    </div>
+
+    <!-- hidden stats -->
+    <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
+    <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
+
+</div>
 
 <%- include("../partials/footer") -%>

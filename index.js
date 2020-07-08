@@ -20,6 +20,8 @@ const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
+const { referenceSheet } = require("./utils/constants/referencesheet");
+const { tags } = require("./utils/constants/tags");
 
 
 
@@ -136,11 +138,13 @@ app.post('/register', (req, res, next) => {
         profile: {
             name: "",
             location: "",
-            age: ""
+            age: "",
+            bio: ""
         },
         stats: {
             correct: 0,
-            wrong: 0
+            wrong: 0,
+            collectedTags: []
         },
         rating: {
             physics: -1,
@@ -267,7 +271,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 oldQRating = antsy.rating;
                 setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                 setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters
+                // update counters & tag collector
                 updateCounters(req, antsy, isRight);
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating });
@@ -391,6 +395,51 @@ app.get("/homepage", (req, res) => {
     }
 });
 
+app.get("/references", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references.ejs');
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/equations", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_equations.ejs', { equations: referenceSheet.equations });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/constants", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_constants.ejs', { constants: referenceSheet.constants });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/taglist", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_taglist.ejs', { tags: tags });
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
+app.get("/references/about", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render(__dirname + '/views/private/' + 'references_about.ejs');
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 app.get("/settings", (req, res) => {
     if (req.isAuthenticated()) {
         res.render(__dirname + '/views/private/' + 'settings.ejs', { user: req.user });
@@ -400,9 +449,24 @@ app.get("/settings", (req, res) => {
     }
 });
 
+app.get("/stats", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.redirect("/stats/" + req.user.ign);
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 app.get("/stats/:username", (req, res) => {
-    // TESTING ROUTE FOR STATS PAGE
-    res.render(__dirname + '/views/private/' + 'stats.ejs');
+    if (req.isAuthenticated()) {
+        User.findOne({ ign: req.params.username }, function(err, obj) {
+            res.render(__dirname + '/views/private/' + 'stats.ejs', { user: obj });
+        });
+    }
+    else {
+        res.redirect("/");
+    }
 });
 
 app.get("/train", (req, res) => {
