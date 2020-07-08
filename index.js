@@ -198,6 +198,16 @@ app.post('/admin/addquestion', (req, res, next) => {
             res.redirect('/admin/addedFailure');
             return;
         }
+
+        // append unique unit tags to taglist
+        req.body.subject.forEach((subject) => {
+            Object.keys(tags[subject]["Units"]).forEach((unitTag) => {
+                if(req.body.units.includes(subject + " - " + tags[subject]["Units"][unitTag])) { 
+                    req.body.tags = unitTag + "@" + req.body.tags;
+                }
+            });
+        });
+
         const newQ = new Ques({
             question: req.body.question,
             choices: parseDelimiter(req.body.choices),
