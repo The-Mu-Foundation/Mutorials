@@ -8,6 +8,7 @@ var tags = {
             "EEC": "Electrical Energy and Capacitance",
             "EFF": "Electric Forces and Fields",
             "ENE": "Energy",
+            "ES": "Electrostatics",
             "FOR": "Forces",
             "IND": "Inductance",
             "KIN": "Kinematics",
@@ -75,11 +76,35 @@ var tags = {
         }
     },
     "Chemistry": {
-        "Units": {},
+        "Units": {
+            "AAB": "Acids and Bases",
+            "ATOM": "Atomic Structure",
+            "BCHEM": "Biochemistry",
+            "BOND": "Bonding",
+            "CHEQ": "Chemical Equilibrium",
+            "CHKI": "Chemical Kinetics",
+            "ECHEM": "Electrochemistry",
+            "GAS": "Gases",
+            "MCHEM": "Materials Chemistry",
+            "OCHEM": "Organic Chemistry",
+            "REACT": "Chemical Reactions",
+            "SEF": "Spontaneity, Entropy, and Free Energy",
+            "SOL": "Solubility",
+            "STOICH": "Stoichiometry",
+            "TCHEM": "Thermochemistry"
+        },
         "Concepts": {}
     },
     "Biology": {
-        "Units": {},
+        "Units": {
+            "CELL": "Cell Biology",
+            "EAB": "Evolution and Biodiversity",
+            "ECO": "Ecology",
+            "HAG": "Heredity and Genetics",
+            "HUMAN": "Human Physiology",
+            "MOBIO": "Molecular Biology",
+            "PAAP": "Plant and Animal Physiology"
+        },
         "Concepts": {}
     }
 }
