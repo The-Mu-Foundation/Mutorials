@@ -72,4 +72,4 @@ function setQRating(antsy, newQRate){
     //var tempQ = await gotQ.exec();
 }*/
 
-module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters, settingChange: settingChange };
+module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters};

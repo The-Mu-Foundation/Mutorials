@@ -17,7 +17,7 @@ const { qSchema } = require("./database/models/question");
 const { genPassword, validPassword } = require("./utils/functions/password");
 const { calculateRatings, ratingCeilingFloor } = require("./utils/functions/ratings");
 const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, settingChange } = require("./utils/functions/database");
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters} = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
 const { referenceSheet } = require("./utils/constants/referencesheet");
@@ -367,7 +367,7 @@ app.post("/changeInfo", (req, res) => {
         req.user.profile.location = req.body.location;
         req.user.profile.age = req.body.age;
 
-        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+        
 
         console.log("Profile has been updated");
 
@@ -402,12 +402,12 @@ app.post("/changeInfo", (req, res) => {
 
         console.log("log marker 1");
 
-        /*if(req.body.password) {
+        if(req.body.password) {
             const newPass = genPassword(req.body.password);
             req.user.hash = newPass.hash;
             req.user.salt = newPass.salt;
-        }*/
-
+        }
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
         //db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
         res.redirect("/settings");
