@@ -33,6 +33,22 @@
             }
         });
 
+        // make select and deselect all buttons work
+        $("#select-all").click(function() {
+            document.getElementsByName("unitChoice").forEach((checkbox) => {
+                if(checkbox.type == "checkbox") {
+                    checkbox.checked = true;
+                }
+            });
+        });
+        $("#deselect-all").click(function() {
+            document.getElementsByName("unitChoice").forEach((checkbox) => {
+                if(checkbox.type == "checkbox") {
+                    checkbox.checked = false;
+                }
+            });
+        });
+
         // make unit clustering buttons work
         var unitPresets = JSON.parse($("#stringifiedUnits").val());
         Object.keys(unitPresets).forEach((preset) => {
@@ -76,6 +92,10 @@
         <% if(Object.entries(unitPresets).length > 0) { %>
             <div class="mt-4 mb-1">
                 <h3>Quick-Select Unit Groups:</h3>
+                <div class="mb-2">
+                    <button type="button" class="btn btn-warning btn-sm" id="select-all"><font color="white">Select All</font></button>
+                    <button type="button" class="btn btn-warning btn-sm" id="deselect-all"><font color="white">Deselect All</font></button>
+                </div>
                 <% Object.entries(unitPresets).forEach((preset) => { %>
                     <button type="button" class="btn btn-info btn-sm" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
                 <% }); %>
