@@ -6,21 +6,15 @@
 <%- include("../partials/header") -%>
 
 <div class="jumbotron container my-5">
-	
+    <%- include ("../partials/flashes") -%>
 	<h3>Please enter the confirmation code sent to testingemail@gmail.com</h3>
-	
-	<!-- remember to change HTML form action to direct to the right place -->
-	<!-- I'm assuming the code is text; if you choose to change to type="number", note the maxlength variable doesnt work anymore -->
-	<!-- you can also change the maxlength variable to change max length -->
-	<!-- Also all text in the box is set to auto-uppercase -->
-	<form action="/" method="POST">
-		<input class="form-control form-control-lg mb-3 mt-4" type="text" placeholder="Enter code here" maxlength="4" style="text-transform:uppercase">
+
+	<form action="/email_check" method="post">
+		<input class="form-control form-control-lg mb-3 mt-4" type="text" placeholder="Enter code here" name="entered_code" id="entered_code" style="text">
 		<input type="submit" class="btn btn-primary" id="confirm" value="Confirm">
 	</form>
-		
-	<!-- remember to change href for this -->
-    <p class="mt-4"><a href="www.mutorials.org"><font color="blue">Skip for now and confirm later</font></a></p>
-	
+    <p class="mt-4"><a href="/"><font color="blue">Skip for now and confirm later</font></a></p>
+
 </div>
 
 
