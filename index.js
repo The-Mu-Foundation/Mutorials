@@ -228,6 +228,8 @@ app.post('/admin/addquestion', (req, res, next) => {
             ext_source: req.body.ext_source,
             subject: req.body.subject,
             units: req.body.units,
+            question_diagrams: [""],
+            solution_diagrams: [""],
             stats: {
                 pass: 0,
                 fail: 0
@@ -407,7 +409,7 @@ app.post("/changeInfo", (req, res) => {
             req.user.hash = newPass.hash;
             req.user.salt = newPass.salt;
         }
-        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
         //db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
         res.redirect("/settings");

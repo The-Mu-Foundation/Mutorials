@@ -13,6 +13,8 @@ const qSchema = new mongoose.Schema({
     ext_source: String,
     subject: Array,
     units: Array,
+    question_diagrams: Array,
+    solution_diagrams: Array,
     stats: {
         pass: Number,
         fail: Number
