@@ -369,7 +369,7 @@ app.post("/changeInfo", (req, res) => {
         req.user.profile.location = req.body.location;
         req.user.profile.age = req.body.age;
 
-        
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
 
         console.log("Profile has been updated");
 
