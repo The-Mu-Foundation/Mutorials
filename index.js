@@ -292,6 +292,9 @@ app.post("/selQ", (req, res, next) => {
         if (units) { //nothing happens if units is empty
             res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
         }
+        if(!units){
+            res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
+        }
         //app.set("questionz", questions);
         //units cannot have commas
 
