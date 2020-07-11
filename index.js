@@ -460,7 +460,7 @@ app.get("/latex_compiler", (req, res) => {
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
-        if (req.user.username == "mutorialsproject@gmail.com") {
+        if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
             res.render(__dirname + '/views/private/' + 'homepage.ejs');
@@ -641,7 +641,7 @@ app.get("/logout", (req, res) => {
 //ADMIN GET ROUTES
 
 app.get("/admin/addquestion", (req, res) => {
-    if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
+    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
     }
     else {
@@ -650,7 +650,7 @@ app.get("/admin/addquestion", (req, res) => {
 });
 
 app.get("/admin/addedSuccess", (req, res) => {
-    if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
+    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
     }
     else {
@@ -659,7 +659,7 @@ app.get("/admin/addedSuccess", (req, res) => {
 });
 
 app.get("/admin/addedFailure", (req, res) => {
-    if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
+    if (req.isAuthenticated() && ((req.user.username ==  "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionFailure.ejs');
     }
     else {
