@@ -256,18 +256,28 @@ app.post('/private/initialRating', (req, res, next) => {
 });
 
 app.post('/email_check', (req, res, next) => {
+    // console.log are REQUIRED for this to work lol
+    console.log('0');
     if (req.isAuthenticated()){
         if (req.user.email_confirm_code != "0") {
-            console.log(req.user.username);
-            console.log(req.body.entered_code);
-            if (email_validation.check_code(req.user.username, req.body.entered_code)) {
-                email_validation.clear_confirm_code(req.user.username);
-                req.flash('success_flash', 'We successfully confirmed your email!');
-                res.redirect('/');
-            } else {
-                req.flash('error_flash', 'That isn\' the right code. Please try again.');
-                res.redirect('/email_confirmation');
-            }
+            debugger;
+            const cccc = new Promise((resolve, reject) => {
+                debugger;
+                console.log('1');
+                resolve(email_validation.check_code(req.user.username, req.body.entered_code));
+                console.log('2');
+            });
+            console.log('3');
+            cccc.then((value) => {
+                if (value) {
+                    email_validation.clear_confirm_code(req.user.username);
+                    req.flash('success_flash', 'We successfully confirmed your email!');
+                    res.redirect('/');
+                } else {
+                    req.flash('error_flash', 'That isn\'t the right code. Please try again.');
+                    res.redirect('/email_confirmation');
+                }
+            });
         } else {
             req.flash('error_flash', 'You\'ve already confirmed your email.');
             res.redirect('/');
