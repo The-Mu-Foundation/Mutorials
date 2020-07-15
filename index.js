@@ -17,7 +17,7 @@ const { qSchema } = require("./database/models/question");
 const { genPassword, validPassword } = require("./utils/functions/password");
 const { calculateRatings, ratingCeilingFloor } = require("./utils/functions/ratings");
 const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters } = require("./utils/functions/database");
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters} = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
 const { referenceSheet } = require("./utils/constants/referencesheet");
@@ -64,7 +64,7 @@ passport.use(new LocalStrategy(
 
                     return cb(null, false);
                 }
-                
+
             })
             .catch((err) => {
                 cb(err);
@@ -85,14 +85,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash()); // express-flash-messages config
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.locals.success_flash = req.flash('success_flash');
-    res.locals.error_flash   = req.flash('error_flash');
+    res.locals.error_flash = req.flash('error_flash');
     next();
 });
 // POST ROUTES
 
-app.post('/login', passport.authenticate('local', { 
+app.post('/login', passport.authenticate('local', {
     failureRedirect: "/signin",
     successRedirect: '/homepage',
     failureFlash: 'Invalid username or password.',
@@ -101,7 +101,7 @@ app.post('/login', passport.authenticate('local', {
     (req, res, next) => {
         console.log("Oh hi");
         console.log("req.session");
-});
+    });
 
 // `username` is email
 // `ign` is username
@@ -131,7 +131,7 @@ app.post('/register', (req, res, next) => {
     const salt = saltHash.salt;
     const hash = saltHash.hash;
     var confirm_code;
-    require('crypto').randomBytes(6, function(ex, buf) {
+    require('crypto').randomBytes(6, function (ex, buf) {
         confirm_code = buf.toString('hex');
     });
     const newUser = new User({
@@ -193,15 +193,15 @@ app.post('/admin/addquestion', (req, res, next) => {
 
     if (req.isAuthenticated()) {
         if (req.body.question.length < 1
-        || parseDelimiter(req.body.tags).length < 1
-        || req.body.rating.length < 1
-        || parseDelimiter(req.body.answer)[0].length < 1
-        || req.body.answer_ex.length < 1
-        || req.body.author.length < 1
-        || req.body.type.length < 1
-        || req.body.ext_source.length < 1
-        || req.body.subject.length < 1
-        || req.body.units.length < 1) {
+            || parseDelimiter(req.body.tags).length < 1
+            || req.body.rating.length < 1
+            || parseDelimiter(req.body.answer)[0].length < 1
+            || req.body.answer_ex.length < 1
+            || req.body.author.length < 1
+            || req.body.type.length < 1
+            || req.body.ext_source.length < 1
+            || req.body.subject.length < 1
+            || req.body.units.length < 1) {
             req.flash('error_flash', 'You\'re forgetting a field.');
             res.redirect('/admin/addedFailure');
             return;
@@ -210,8 +210,12 @@ app.post('/admin/addquestion', (req, res, next) => {
         // append unique unit tags to taglist
         req.body.subject.forEach((subject) => {
             Object.keys(tags[subject]["Units"]).forEach((unitTag) => {
-                if(req.body.units.includes(subject + " - " + tags[subject]["Units"][unitTag])) { 
-                    req.body.tags = unitTag + "@" + req.body.tags;
+                if (req.body.units.includes(subject + " - " + tags[subject]["Units"][unitTag])) {
+                    if(req.body.tags.length >= 1) {
+                        req.body.tags = unitTag + "@" + req.body.tags;
+                    } else {
+                        req.body.tags = unitTag;
+                    }
                 }
             });
         });
@@ -228,6 +232,8 @@ app.post('/admin/addquestion', (req, res, next) => {
             ext_source: req.body.ext_source,
             subject: req.body.subject,
             units: req.body.units,
+            question_diagrams: [""],
+            solution_diagrams: [""],
             stats: {
                 pass: 0,
                 fail: 0
@@ -297,11 +303,14 @@ app.post("/selQ", (req, res, next) => {
     }
     if (req.body.qNum == 1) {
         units = req.body.unitChoice;
-        if(units){ //nothing happens if units is empty
+        if (units) { //nothing happens if units is empty
             res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
         }
+        if(!units){
+            res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
+        }
         //app.set("questionz", questions);
-         //units cannot have commas
+        //units cannot have commas
 
     }
 });
@@ -368,29 +377,62 @@ app.post("/train/checkAnswer", (req, res, next) => {
 });
 //settings
 app.post("/changeInfo", (req, res) => {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
+
+        // change profile settings
 
         req.user.profile.name = req.body.name;
         req.user.profile.bio = req.body.bio;
         req.user.profile.location = req.body.location;
         req.user.profile.age = req.body.age;
 
-        if(req.body.ign){
-            req.user.ign = req.body.ign;
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+
+        console.log("Profile has been updated");
+
+        // change account settings
+
+        if (req.body.ign && req.body.ign != req.user.ign) {
+            User.count({ ign: req.body.ign }, function (err, count) {
+                if (count > 0) {
+                    console.log("username exists"); // flash
+                } else {
+                    console.log("username does not exist");
+                    db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { ign: req.body.ign } });
+                }
+            });
+        } else {
+            console.log("Empty username or no change");
         }
-        if(req.body.username){
-            req.user.username = req.body.username;
+
+        if(req.body.username && req.body.username != req.user.username) {
+            User.count({ username: req.body.username }, function (err, count) {
+                if (count > 0) {
+                    console.log("email exists"); // flash
+                } else {
+                    console.log("email does not exist");
+                    db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
+                    console.log("email updated");
+                }
+            });
+        } else {
+            console.log("Empty email or no change");
         }
-        if(req.body.password){ //
+
+        console.log("log marker 1");
+
+        if(req.body.password) {
             const newPass = genPassword(req.body.password);
             req.user.hash = newPass.hash;
             req.user.salt = newPass.salt;
         }
+        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+        //db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
-        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign, profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }} });
         res.redirect("/settings");
+
     }
-    else{
+    else {
         res.redirect("/");
     }
 });
@@ -432,7 +474,7 @@ app.get("/latex_compiler", (req, res) => {
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
-        if(req.user.username == "mutorialsproject@gmail.com") {
+        if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
             res.render(__dirname + '/views/private/' + 'homepage.ejs');
@@ -521,8 +563,8 @@ app.get("/stats", (req, res) => {
 
 app.get("/stats/:username", (req, res) => {
     if (req.isAuthenticated()) {
-        User.findOne({ ign: req.params.username }, function(err, obj) {
-            res.render(__dirname + '/views/private/' + 'stats.ejs', { user: obj });
+        User.findOne({ ign: req.params.username }, function (err, obj) {
+            res.render(__dirname + '/views/private/' + 'stats.ejs', { user: obj, totalTags: tags });
         });
     }
     else {
@@ -595,7 +637,7 @@ app.get("/train/:subject/display_question", (req, res) => {
         ceiling = ceilingFloor.ceiling;
         const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
-            res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject });
+            res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
         });
     }
     else {
@@ -613,7 +655,7 @@ app.get("/logout", (req, res) => {
 //ADMIN GET ROUTES
 
 app.get("/admin/addquestion", (req, res) => {
-    if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
+    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
     }
     else {
@@ -622,7 +664,7 @@ app.get("/admin/addquestion", (req, res) => {
 });
 
 app.get("/admin/addedSuccess", (req, res) => {
-    if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
+    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
     }
     else {
@@ -631,7 +673,7 @@ app.get("/admin/addedSuccess", (req, res) => {
 });
 
 app.get("/admin/addedFailure", (req, res) => {
-    if (req.isAuthenticated() && (req.user.username == "mutorialsproject@gmail.com")) {
+    if (req.isAuthenticated() && ((req.user.username ==  "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionFailure.ejs');
     }
     else {
