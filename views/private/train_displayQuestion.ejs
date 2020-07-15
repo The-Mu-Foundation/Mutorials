@@ -3,6 +3,7 @@
 <!-- ARGUMENTS:
     newQues - question object passed in to be displayed
     units - a list of the units that the user selected
+    user - the player
     subject - the subject -->
 
 <%- include("../partials/header") -%>
@@ -91,15 +92,11 @@
             <% throw "bad question parameters"; %>
         <% } %>
 
-        <h3>Question Info</h3>
-        <p>Question Rating: <%= newQues.rating %></p>
-        <p>Question Source: <%= newQues.ext_source %></p>
-
         <!-- DISPLAY QUESTION -->
         <% if(newQues.type == "mc") { %>
             <!-- CODE FOR MULTIPLE CHOICE -->
             <h3>Please read the following question and select the best answer:</h3>
-            <p><%= newQues.question %></p>
+            <p><%- newQues.question %></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="mc-choices">
                     <% var choiceIndex = 1; %>
@@ -120,7 +117,7 @@
         <% } else if(newQues.type == "sa") { %>
             <!-- CODE FOR SELECT ALL  -->
             <h3>Please read the following and select ALL choices that apply:</h3>
-            <p><%= newQues.question %></p>
+            <p><%- newQues.question %></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="sa-choices">
                     <% var choiceIndex = 1; %>
@@ -141,7 +138,7 @@
         <% } else if(newQues.type == "fr") { %>
             <!-- CODE FOR FREE RESPONSE -->
             <h3>Please read the following question and enter your answer in the box:</h3>
-            <p><%= newQues.question %></p>
+            <p><%- newQues.question %></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4">
                     <div class="form-group">
@@ -161,6 +158,13 @@
         <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
         <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
         
+        <h3 class="mt-4 mb-2">Additional Info</h3>
+        <p>Question Rating: <%= newQues.rating %></p>
+        <p>User Rating: <%= user.rating[subject.toLowerCase()] %></p>
+        <% if(newQues.ext_source != "original") { %>
+            <p>Question Source: <%= newQues.ext_source %></p>
+        <% } %>
+
     <% } catch(err) { %>
 
         <!-- ERROR CODE -->
