@@ -19,6 +19,36 @@
     // render pass/fail chart
     window.onload = function () {
 
+        // render pass/fail chart
+
+        Chart.pluginService.register({
+            beforeDraw: function (chart) {
+
+                var width = chart.chart.width;
+                var height = chart.chart.height;
+                var ctx = chart.chart.ctx;
+
+                ctx.restore();
+
+                var fontSize = "1";
+                ctx.font = fontSize + "em sans-serif";
+
+                ctx.fillStyle = "#8d0f0f";
+                var text = "Fail rate: <%= Math.round(100*(newQues.stats.fail)/(newQues.stats.pass+newQues.stats.fail)) %>%";
+                var textX = Math.round((width - ctx.measureText(text).width) / 2);
+                var textY = (height/2) + 20;
+                ctx.fillText(text, textX, textY);
+
+                ctx.fillStyle = "#208d0f";
+                text = "Pass rate: <%= Math.round(100*(newQues.stats.pass)/(newQues.stats.pass+newQues.stats.fail)) %>%";
+                textX = Math.round((width - ctx.measureText(text).width) / 2);
+                textY -= 20;
+                ctx.fillText(text, textX, textY);
+
+                ctx.save();
+            }
+        });
+
         var ctx = document.getElementById("passRateChart");
 
         var style = ctx.style;
@@ -33,19 +63,23 @@
                     label: "Problem Pass/Fail Rates",
                     data: [$("#passcount").val(), $("#failcount").val()],
                     backgroundColor: [
-                        "rgba(0, 255, 0, 1)",
-                        "rgba(255, 0, 0, 1)"
+                        "rgba(80, 185, 20, 1)",
+                        "rgba(215, 80, 80, 1)"
+                    ],
+                    hoverBackgroundColor: [
+                        "rgba(80, 185, 20, 1)",
+                        "rgba(215, 80, 80, 1)"
                     ],
                     borderColor: [
-                        "rgba(255, 255, 255, 1)",
-                        "rgba(255, 255, 255, 1)"
+                        "rgba(255, 255, 255, 0.5)",
+                        "rgba(255, 255, 255, 0.5)"
                     ],
                     borderWidth: 2
                 }]
             },
             options: {
-                cutoutPercentage: 30,
-                responsive: false
+                cutoutPercentage: 60,
+                responsive: true
             }
         });
     }
@@ -73,41 +107,111 @@
 
 <div class="jumbotron container mt-5">
 
-    <div class="mb-4">
-        <% if(correct) { %>
-        <h1 class="my-4">
-            <font color="green">Your answer is correct!</font>
-        </h1>
-        <% } else { %>
-        <h1 class="my-4">
-            <font color="red">Your answer is incorrect.</font>
-        </h1>
-        <% } %>
+    <div class="row">
+
+        <div class="col-8">
+
+            <!-- Question and explanation -->
+            <div class="mb-4">
+                <h3>Question Statement:</h3>
+                <p><%= newQues.question %></p>
+            </div>
+
+            <% if(newQues.type == "mc") { %>
+                <div class="mb-4">
+                    <h5>Answer Choices:</h5>
+                    <% var i = 1; %>
+                    <% newQues.choices.forEach((choice) => { %>
+                        <% if(newQues.answer[0] == i) { %>
+                            <p>
+                                <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+                            </p>
+                        <% } else if(userAnswer == i) { %>
+                            <p>
+                                <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+                            </p>
+                        <% } else { %>
+                            <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
+                        <% } %>
+                        <% i++; %>
+                    <% }) %>
+                </div>
+            <% } else if(newQues.type == "sa") { %>
+                <div class="mb-4">
+                    <h5>Answer Choices:</h5>
+                    <% var i = 1; %>
+                    <% newQues.choices.forEach((choice) => { %>
+                        <% if(newQues.answer.includes(i)) { %>
+                            <p>
+                                <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+                            </p>
+                        <% } else if(userAnswer.includes(''+i)) { %>
+                            <p>
+                                <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+                            </p>
+                        <% } else { %>
+                            <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
+                        <% } %>
+                        <% i++; %>
+                    <% }) %>
+                </div>
+            <% } else if(newQues.type == "fr") { %>
+                <div class="mb-4">
+                    <h5>You answered: <%= userAnswer %></h5>
+                    <h5>The correct answer is: <%= newQues.answer[0] %></h5>
+                </div>
+            <% } %>
+
+            <div>
+                <h3>Answer Explanation:</h3>
+                <p><%= newQues.answer_ex %></p>
+            </div>
+
+        </div>
+
+        <div class="col-4">
+
+            <div class="mb-4">
+                <% if(correct) { %>
+                    <h3 class="mb-4"><font color="green">Your answer is correct!</font></h3>
+                <% } else { %>
+                    <h3 class="mb-4"><font color="red">Your answer is incorrect.</font></h3>
+                <% } %>
+            </div>
+
+            <div class="my-4">
+                <h5>New <%= subject.toLowerCase() %> rating: <%= userRating %> (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
+                <h5>Question rating: <%= oldQ %></h5>
+            </div>
+
+            <% if(newQues.ext_source != "original") { %>
+                <div>
+                    <h5>Question Source: <%= newQues.ext_source %></h5>
+                </div>
+            <% } %>
+
+            <div>
+                <h5>Question Tags:</h5>
+                <% newQues.tags.forEach((tag) => { %>
+                    <button class="btn btn-info btn-sm" disabled><%= tag %></button>
+                <% }) %>
+            </div>
+
+            <!-- pass rate chart -->
+            <div class="canvas-container-center text-center">
+                <canvas id="passRateChart" width="400" height="400" class="my-4"></canvas>            
+            </div>
+
+            <!-- Hidden pass/fail stats -->
+            <input type="hidden" id="passcount" value="<%= newQues.stats.pass %>">
+            <input type="hidden" id="failcount" value="<%= newQues.stats.fail %>">
+
+        </div>
+
     </div>
-
-    <div class="mb-4">
-        <h5>Your new rating is: <%= userRating %>
-            (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
-        <h5>This question is rated: <%= oldQ %></h5>
-    </div>
-
-    <div class="mb-4">
-        <h5>Question Source: <%= newQues.ext_source %></h5>
-    </div>
-
-    <div>
-        <h5>Question Tags:</h5>
-        <% newQues.tags.forEach((tag) => { %>
-            <button class="btn btn-info btn-sm" disabled><%= tag %></button>
-        <% }) %>
-    </div>
-
-</div>
-
-<div class="jumbotron container">
 
     <!-- Report question buttons -->
-    <div class="mb-5">
+    <div class="mt-5">
         <div id="initial-report-container">
             <button type="button" class="btn btn-danger btn-sm float-right" id="report">Report Question</button>
         </div>
@@ -120,81 +224,6 @@
             <p>DISCLAIMER: This form does NOT work currently; for now, please simply give an admin the question ID</p>
         </div>
     </div>
-
-    <!-- Question and explanation -->
-    <div class="mb-4">
-        <h3>Question Statement:</h3>
-        <p><%= newQues.question %></p>
-    </div>
-
-    <% if(newQues.type == "mc") { %>
-    <div class="mb-4">
-        <h5>Answer Choices:</h5>
-        <% var i = 1; %>
-        <% newQues.choices.forEach((choice) => { %>
-        <% if(newQues.answer[0] == i) { %>
-        <p>
-            <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-        </p>
-        <% } else if(userAnswer == i) { %>
-        <p>
-            <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-        </p>
-        <% } else { %>
-        <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
-        <% } %>
-        <% i++; %>
-        <% }) %>
-    </div>
-    <% } else if(newQues.type == "sa") { %>
-    <div class="mb-4">
-        <h5>Answer Choices:</h5>
-        <% var i = 1; %>
-        <% newQues.choices.forEach((choice) => { %>
-        <% if(newQues.answer.includes(i)) { %>
-        <p>
-            <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-        </p>
-        <% } else if(userAnswer.includes(''+i)) { %>
-        <p>
-            <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-        </p>
-        <% } else { %>
-        <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
-        <% } %>
-        <% i++; %>
-        <% }) %>
-    </div>
-    <% } else if(newQues.type == "fr") { %>
-    <div class="mb-4">
-        <h5>You answered: <%= userAnswer %></h5>
-        <h5>The correct answer is: <%= newQues.answer[0] %></h5>
-    </div>
-    <% } %>
-
-    <div>
-        <h3>Answer Explanation:</h3>
-        <p><%= newQues.answer_ex %></p>
-    </div>
-
-</div>
-
-<div class="jumbotron container">
-
-    <!-- pass rate chart -->
-    <div class="canvas-container-center text-center">
-
-        <h3>Question Pass/Fail Statistics</h3>
-
-        <canvas id="passRateChart" width="400" height="400" class="my-4"></canvas>
-
-        <p>Pass Rate: <%= Math.round(100*(newQues.stats.pass)/(newQues.stats.pass+newQues.stats.fail)) %>%</p>
-        <p>Fail Rate: <%= Math.round(100*(newQues.stats.fail)/(newQues.stats.pass+newQues.stats.fail)) %>%</p>
-    </div>
-
-    <!-- Hidden pass/fail stats -->
-    <input type="hidden" id="passcount" value="<%= newQues.stats.pass %>">
-    <input type="hidden" id="failcount" value="<%= newQues.stats.fail %>">
 
 </div>
 
