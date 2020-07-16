@@ -232,8 +232,6 @@ app.post('/admin/addquestion', (req, res, next) => {
             ext_source: req.body.ext_source,
             subject: req.body.subject,
             units: req.body.units,
-            question_diagrams: [""],
-            solution_diagrams: [""],
             stats: {
                 pass: 0,
                 fail: 0
