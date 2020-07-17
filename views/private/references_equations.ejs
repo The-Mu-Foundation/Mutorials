@@ -11,9 +11,13 @@
 <div class="container jumbotron mt-5">
 
     <% Object.keys(equations).forEach((equation) => { %>
-        <div class="my-3">
-            <h5><%= equation %></h5>
-            <p><%= equations[equation] %></p>
+        <div class="my-4 row">
+            <div class="col-6">
+                <h5><%= equation %></h5>
+            </div>
+            <div class="col-6">
+                <p><%= equations[equation] %></p>
+            </div>
         </div>
     <% }); %>
 
