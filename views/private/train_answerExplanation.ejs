@@ -112,47 +112,43 @@
         <div class="col-8">
 
             <!-- Question and explanation -->
-            <div class="mb-4">
-                <h3>Question Statement:</h3>
+            <div class="mb-3">
+                <h3>Question:</h3>
                 <p><%= newQues.question %></p>
             </div>
 
             <% if(newQues.type == "mc") { %>
                 <div class="mb-4">
-                    <h5>Answer Choices:</h5>
                     <% var i = 1; %>
                     <% newQues.choices.forEach((choice) => { %>
-                        <% if(newQues.answer[0] == i) { %>
-                            <p>
-                                <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-                            </p>
-                        <% } else if(userAnswer == i) { %>
-                            <p>
-                                <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-                            </p>
-                        <% } else { %>
-                            <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
-                        <% } %>
-                        <% i++; %>
+                        <div class="custom-control custom-radio">
+                            <input class="custom-control-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled>
+                            <% if(newQues.answer[0] == i) { %>
+                                <label class="custom-control-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                            <% } else if(userAnswer == i) { %>
+                                <label class="custom-control-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                            <% } else { %>
+                                <label class="custom-control-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
+                            <% } %>
+                            <% i++; %>
+                        </div>
                     <% }) %>
                 </div>
             <% } else if(newQues.type == "sa") { %>
                 <div class="mb-4">
-                    <h5>Answer Choices:</h5>
                     <% var i = 1; %>
                     <% newQues.choices.forEach((choice) => { %>
-                        <% if(newQues.answer.includes(i)) { %>
-                            <p>
-                                <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-                            </p>
-                        <% } else if(userAnswer.includes(''+i)) { %>
-                            <p>
-                                <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
-                            </p>
-                        <% } else { %>
-                            <p><%= String.fromCharCode(64+i) %>. <%= choice %></p>
-                        <% } %>
-                        <% i++; %>
+                        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                            <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= i %>" value="<%= i %>" disabled>
+                            <% if(newQues.answer.includes(i)) { %>
+                                <label class="custom-control-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                            <% } else if(userAnswer.includes(''+i)) { %>
+                                <label class="custom-control-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                            <% } else { %>
+                                <label class="custom-control-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
+                            <% } %>
+                            <% i++; %>
+                        </div>
                     <% }) %>
                 </div>
             <% } else if(newQues.type == "fr") { %>
