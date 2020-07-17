@@ -2,7 +2,7 @@
 
 <!-- ARGUMENTS:
     units - a list of units to train on
-    subject - the subjects
+    subject - the subject
     unitPresets - an object of the unit present options
     qNum -->
 
@@ -73,40 +73,59 @@
 
 <div class="jumbotron container mt-5">
     
-    <h3>Please select the units you wish to include in your training:</h3>
-    <form action="/selQ" method="POST">
-        <div id="checkboxes">
-            <% units.forEach((unit) => { %>
-                <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                    <input type="checkbox" name="unitChoice" class="custom-control-input" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
-                    <label class="custom-control-label" for="<%= unit %>"><%= unit %></label>
+    <h1 class="display-2 text-center mb-5"><%= subject %></h1>
+
+    <div class="row">
+        
+        <div class="col-1"></div>
+
+        <div class="col-6">
+
+            <h3 class="mb-2">Select units to train in:</h3>
+
+            <form action="/selQ" method="POST">
+
+                <div id="checkboxes">
+                    <% units.forEach((unit) => { %>
+                        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                            <input type="checkbox" name="unitChoice" class="custom-control-input" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
+                            <label class="custom-control-label" for="<%= unit %>"><%= unit %></label>
+                        </div>
+                    <% }) %>
                 </div>
-            <% }) %>
+
+                <div class="mt-4">
+                    <a href="/train/choose_subject"><button type="button" class="btn btn-secondary" id="previous">Previous</button></a>
+                    <input type="submit" class="btn btn-primary" id="next" value="Next">
+                </div>
+
+                <input type="hidden" name="qNum" value="<%= qNum %>">
+                <input type="hidden" name="subj" value="<%= subject %>">
+
+            </form>
+
         </div>
 
-        <div class="mt-4">
-            <a href="/train/choose_subject"><button type="button" class="btn btn-secondary" id="previous">Previous</button></a>
-            <input type="submit" class="btn btn-primary" id="next" value="Next">
-        </div>
+            <div class="col-4">
 
-        <% if(Object.entries(unitPresets).length > 0) { %>
-            <div class="mt-4 mb-1">
-                <h3>Quick-Select Unit Groups:</h3>
-                <div class="mb-2">
-                    <button type="button" class="btn btn-warning btn-sm" id="select-all"><font color="white">Select All</font></button>
-                    <button type="button" class="btn btn-warning btn-sm" id="deselect-all"><font color="white">Deselect All</font></button>
-                </div>
-                <% Object.entries(unitPresets).forEach((preset) => { %>
-                    <button type="button" class="btn btn-info btn-sm" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
-                <% }); %>
+                <h3 class="mb-2">Quick Select</h3>
+
+                <button type="button" class="btn btn-warning btn-block" id="select-all"><font color="white">Select All</font></button>
+                <button type="button" class="btn btn-warning btn-block" id="deselect-all"><font color="white">Deselect All</font></button>
+
+                <% if(Object.entries(unitPresets).length > 0) { %>
+                    <% Object.entries(unitPresets).forEach((preset) => { %>
+                        <button type="button" class="btn btn-info btn-block" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
+                    <% }); %>
+                <% } %>
+
+                <input type="hidden" id="stringifiedUnits" value="<%= JSON.stringify(unitPresets) %>">
+
             </div>
-        <% } %>
-        <input type="hidden" id="stringifiedUnits" value="<%= JSON.stringify(unitPresets) %>">
 
-        <input type="hidden" name="qNum" value="<%= qNum %>">
-        <input type="hidden" name="subj" value="<%= subject %>">
+    </div>
 
-    </form>
+    <div class="col-1"></div>
 
     <h4 class="my-4" id="no-units-selected"><font color="red">You haven't selected any units yet!</font></h4>
 
