@@ -3,18 +3,104 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
+<script>
+
+    $(document).ready(function() {
+
+        $(".thumbnail").fadeTo(0, 0.8);
+        $(".thumbnail").on({
+            mouseenter: function() {
+                $(this).fadeTo(200, 1);
+            },
+            mouseleave: function() {
+                $(this).fadeTo(200, 0.8);
+                /*$("#default-card").show(0);
+                $("#physics-card").hide(0);
+                $("#chem-card").hide(0);
+                $("#bio-card").hide(0);*/
+            }
+        });
+
+        $("#physics-card").hide(0);
+        $("#chem-card").hide(0);
+        $("#bio-card").hide(0);
+        $("#physics-icon").mouseenter(function() {
+            $("#default-card").hide(0);
+            $("#physics-card").show(0);
+            $("#chem-card").hide(0);
+            $("#bio-card").hide(0);
+        });
+        $("#chem-icon").mouseenter(function() {
+            $("#default-card").hide(0);
+            $("#physics-card").hide(0);
+            $("#chem-card").show(0);
+            $("#bio-card").hide(0);
+        });
+        $("#bio-icon").mouseenter(function() {
+            $("#default-card").hide(0);
+            $("#physics-card").hide(0);
+            $("#chem-card").hide(0);
+            $("#bio-card").show(0);
+        });
+
+    });
+
+</script>
+
 <h1 class="my-5 container">Welcome to Mutorials!</h1>
 
 <div class="jumbotron container">
+
     <%- include("../partials/flashes") -%>
-	<h3 class="mb-4">Latest Site Updates</h3>
+
+    <div class="row">
+        
+        <div class="col-4">
+            <a href="/train/Physics/choose_units"><img id="physics-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics icon"></a>
+        </div>
+
+        <div class="col-4">
+            <a href="/train/Chemistry/choose_units"><img id="chem-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Physics icon"></a>
+        </div>
+
+        <div class="col-4">
+            <a href="/train/Biology/choose_units"><img id="bio-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Physics icon"></a>
+        </div>
+
+    </div>
+
+    <div class="card text-center border-primary mt-4" id="description-card">
+
+        <div class="card-body" id="default-card">
+            <h5 class="card-title">Science with Mutorials</h5>
+            <p class="card-text">Mutorials offers questions in the sciences of physics, chemistry, and biology! Click on a button to commence training in that subject!</p>
+        </div>
+
+        <div class="card-body" id="physics-card">
+            <h5 class="card-title">Physics</h5>
+            <p class="card-text">Physics is a branch of science concerned with matter and energy. Mutorials offers a wide variety of physics topics, from mechanics such as kinematics and forces to fields such as quantum mechanics!</p>
+        </div>
+
+        <div class="card-body" id="chem-card">
+            <h5 class="card-title">Chemistry</h5>
+            <p class="card-text">Chemistry is a branch of science dealing with the structure of and interaction between matter. Here at Mutorials, chemistry topics range form stoichiometry to organic chemistry and more!</p>
+        </div>
+
+        <div class="card-body" id="bio-card">
+            <h5 class="card-title">Biology</h5>
+            <p class="card-text">Biology is a branch of science about life. Mutorials doesn't answer the question "why are we alive", but by training with us, you can gain deeper comprehension about how we (and other organimsms) live!</p>
+        </div>
+
+    </div>
+
+	<!-- <h3 class="my-4">Latest Site Updates</h3>
 	<ul class="mb-4">
 		<li>7/10 - questions starting to go in!</li>
 		<li>7/11 - site ready for beta testing release</li>
 		<li>7/11 - basic training capability of site is set</li>
 	</ul>
 
-	<p>Cool stuff coming soon!</p>
+	<p>Cool stuff coming soon!</p>-->
 	
 </div>
 
