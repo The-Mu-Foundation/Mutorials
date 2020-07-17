@@ -354,7 +354,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 // check answer
-                if (antsy.answer[0] == req.body.freeAnswer) {
+                if (antsy.answer[0] == req.body.freeAnswer.trim()) {
                     isRight = true;
                 }
                 // modify ratings
