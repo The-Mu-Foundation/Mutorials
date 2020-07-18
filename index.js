@@ -142,11 +142,11 @@ app.post('/register', (req, res, next) => {
         salt: salt,
         profile: {
             name: "",
-            location: "",
+            location: "Earth",
             age: "",
             bio: ""
         },
-        // iff email_confirm_code == 0, then email is confirmed
+        // if email_confirm_code == 0, then email is confirmed
         email_confirm_code: confirm_code,
         stats: {
             correct: 0,
@@ -233,8 +233,6 @@ app.post('/admin/addquestion', (req, res, next) => {
             ext_source: req.body.ext_source,
             subject: req.body.subject,
             units: req.body.units,
-            question_diagrams: [""],
-            solution_diagrams: [""],
             stats: {
                 pass: 0,
                 fail: 0
@@ -357,7 +355,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 // check answer
-                if (antsy.answer[0] == req.body.freeAnswer) {
+                if (antsy.answer[0] == req.body.freeAnswer.trim()) {
                     isRight = true;
                 }
                 // modify ratings
@@ -376,8 +374,9 @@ app.post("/train/checkAnswer", (req, res, next) => {
         res.redirect("/");
     }
 });
-//settings
+
 app.post("/changeInfo", (req, res) => {
+    // settings page
     if (req.isAuthenticated()) {
 
         // change profile settings

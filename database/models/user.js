@@ -15,15 +15,17 @@ const userSchema = new mongoose.Schema({
     stats: {
         correct: Number,
         wrong: Number,
-        collectedTags: Array
+        collectedTags: Array,
+        ratingTracker: {
+            physics: Array,
+            chemistry: Array,
+            biology: Array
+        }
     },
     rating: {
         physics: Number,
         chemistry: Number,
-        biology: Number,
-        physicsRate: Number,
-        chemistryRate: Number,
-        biologyRate: Number
+        biology: Number
     }
     // first index is phys, then chem, then bio; fourth index is 1/0 for proficiency
 });
