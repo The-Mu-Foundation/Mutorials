@@ -88,4 +88,14 @@ function setQRating(antsy, newQRate){
     db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
 }
 
+/*async function settingChange(param){
+    //const user = userSchema.find(query);
+    const user = await db.collection('users').findOne(query);
+    //const u = await user.exec();
+    console.log("oh");
+    return user;
+    //var tempQ = await gotQ.exec();
+}*/
+
+module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters};
 module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters};

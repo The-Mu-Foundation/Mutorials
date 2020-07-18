@@ -8,7 +8,7 @@ const express = require("express");
 var flash = require("express-flash-messages");
 const session = require("express-session");
 const InitiateMongoServer = require("./database/config/db");
-var email_validation = require('./utils/functions/email_validation');
+const email_validation = require('./utils/functions/email_validation');
 
 // SCHEMA, FUNCTION, AND CONSTANT IMPORTS
 
@@ -133,6 +133,7 @@ app.post('/register', (req, res, next) => {
     var confirm_code;
     require('crypto').randomBytes(6, function (ex, buf) {
         confirm_code = buf.toString('hex');
+        debugger;
     });
     const newUser = new User({
         username: req.body.username,
@@ -260,32 +261,32 @@ app.post('/private/initialRating', (req, res, next) => {
 });
 
 app.post('/email_check', (req, res, next) => {
-    // console.log are REQUIRED for this to work lol
-    console.log('0');
-    if (req.isAuthenticated()){
-        if (req.user.email_confirm_code != "0") {
-            debugger;
-            const cccc = new Promise((resolve, reject) => {
-                debugger;
-                console.log('1');
-                resolve(email_validation.check_code(req.user.username, req.body.entered_code));
-                console.log('2');
-            });
-            console.log('3');
-            cccc.then((value) => {
-                if (value) {
-                    email_validation.clear_confirm_code(req.user.username);
-                    req.flash('success_flash', 'We successfully confirmed your email!');
-                    res.redirect('/');
-                } else {
-                    req.flash('error_flash', 'That isn\'t the right code. Please try again.');
-                    res.redirect('/email_confirmation');
-                }
-            });
-        } else {
-            req.flash('error_flash', 'You\'ve already confirmed your email.');
-            res.redirect('/');
-        }
+    if (req.isAuthenticated()) {
+        const cc = new Promise((resolve, reject) => {
+            resolve(email_validation.check_code(req.user.username, "0"));
+        });
+        cc.then((value) => {
+            if (!value) {
+                const cccc = new Promise((resolve, reject) => {
+                    resolve(email_validation.check_code(req.user.username, req.body.entered_code));
+                });
+                cccc.then((value1) => {
+                    if (value1) {
+                        console.log('confirm_code did match');
+                        email_validation.clear_confirm_code(req.user.username);
+                        req.flash('success_flash', 'We successfully confirmed your email!');
+                        res.redirect('/');
+                    } else {
+                        console.log('confirm_code didn\'t match');
+                        req.flash('error_flash', 'That isn\'t the right code. Please try again.');
+                        res.redirect('/email_confirmation');
+                    }
+                });
+            } else {
+                req.flash('error_flash', 'You\'ve already confirmed your email.');
+                res.redirect('/');
+            }
+        });
     } else {
         res.redirect('/');
     }
@@ -531,12 +532,19 @@ app.get("/references/about", (req, res) => {
 
 app.get('/email_confirmation', (req, res) => {
     if (req.isAuthenticated()) {
-        if (req.user.email_confirm_code != 0) {
-            res.render(__dirname + '/views/private/' + 'emailConfirmation.ejs');
-        } else {
-            req.flash('error_flash', 'You\'ve already confirmed your email.');
-            res.redirect('/');
-        }
+        debugger;
+        const cc = new Promise((resolve, reject) => {
+            resolve(email_validation.check_code(req.user.username, "0"));
+        });
+        cc.then((value) => {
+            if (!value) {
+                debugger;
+                res.render(__dirname + '/views/private/' + 'emailConfirmation.ejs');
+            } else {
+                req.flash('error_flash', 'You\'ve already confirmed your email.');
+                res.redirect('/');
+            }
+        });
     } else {
         res.redirect('/');
     }

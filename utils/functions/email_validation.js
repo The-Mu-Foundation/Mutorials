@@ -22,7 +22,7 @@ module.exports = {
         };
         transporter.sendMail(mailOptions, function(error, info) {
             if (error) {
-                console.log(errror);
+                console.log(error);
             } else {
                 console.log('Email sent: ' + info.response);
             }
@@ -30,14 +30,13 @@ module.exports = {
 
     },
     check_code: function(username, entered_code) {
-        debugger;
-        db.collection('users').findOne({ username: username }).then((user) => {
+        return db.collection('users').findOne({ username: username }).then((user) => {
             return user.email_confirm_code == entered_code;
         });
     },
 
     clear_confirm_code: function(username) {
-        db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: "0" } });
+        db.collection('users').findOneAndUpdate({ username: username }, { $set: { email_confirm_code: "0" } });
     },
 
     regex_check: function(username) {
