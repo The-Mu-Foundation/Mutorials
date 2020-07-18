@@ -296,10 +296,12 @@ app.post("/selQ", (req, res, next) => {
     //select question
     //var subj = null;
     var units = null;
+    /*
     if (req.body.qNum == 0) {
         subj = req.body.subj;
         res.redirect("/train/" + req.body.subj + "/choose_units");
     }
+    */
     if (req.body.qNum == 1) {
         units = req.body.unitChoice;
         if (units) { //nothing happens if units is empty
