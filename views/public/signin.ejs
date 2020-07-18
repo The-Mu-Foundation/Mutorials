@@ -2,28 +2,76 @@
 
 <%- include("../partials/header") -%>
 
-<h1 class="my-5 container">Sign in to Mutorials!</h1>
+<script>
 
-<div class="jumbotron container">
-    <%- include("../partials/flashes") -%>
-	<form action="/login" method="post">
-		<div class="form-group">
-			<input type="text" class="form-control" id="loginEmail" placeholder="Email Address" name="username">
-		</div>
-		<div class="form-group">
-			<input type="password" class="form-control" id="loginPassword" placeholder="Password" name="password">
-		</div>
-		<div class="custom-control custom-checkbox">
-			<input type="checkbox" class="custom-control-input" id="stayLoggedIn">
-			<label class="custom-control-label" for="stayLoggedIn">Keep me signed in</label>
-        </div>
-        <div class = "container mt-4 mb-5">
-            <a type="button" class="btn btn-secondary" id="cancel" href="/">Cancel</a>
-            <input class="btn btn-primary" type="submit" value="Sign In">
-        </div>
-	</form>
+    $(document).ready(function () {
+
+		$("#forgot-password-form").hide(0);
+		$("#forgotPasswordTrigger").click(function() {
+			$("#forgot-password-form").show(1000);
+			$("#signin-form").hide(500);
+		});
+        $("#cancel-password").click(function() {
+			$("#forgot-password-form").hide(500);
+			$("#signin-form").show(1000);
+		});
+
+    });
+
+
+</script>
+
+<div id="signin-form">
+
+    <h1 class="my-5 container">Sign in to Mutorials!</h1>
+
+    <div class="jumbotron container">
+        <%- include("../partials/flashes") -%>
+        <form action="/login" method="post">
+            <div class="form-group">
+                <input type="text" class="form-control" id="loginEmail" placeholder="Email Address" name="username">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="loginPassword" placeholder="Password" name="password">
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="stayLoggedIn">
+                        <label class="custom-control-label" for="stayLoggedIn">Keep me signed in</label>
+                    </div>
+                </div>            
+                <div class="col-6">
+                    <button type="button" class="btn btn-sm btn-link float-right" id="forgotPasswordTrigger"><font color="blue">Forgot Password?</font></button>
+                </div>
+            </div>
+            <div class="mt-4 ml-1">
+                <a type="button" class="btn btn-secondary" id="cancel" href="/">Cancel</a>
+                <input class="btn btn-primary" type="submit" value="Sign In">
+            </div>
+        </form>
+    </div>
+
 </div>
 
+<div id="forgot-password-form">
 
+    <h1 class="my-5 container">Oh no! You forgot your password!</h1>
+
+    <div class="jumbotron container">
+        <%- include("../partials/flashes") -%>
+        <h5>Use this form to send a code to your email for resetting your password:</h5>
+        <form action="/forgotPassword" method="post">
+            <div class="form-group">
+                <input type="text" class="form-control" id="loginEmail" placeholder="Email Address" name="username">
+            </div>
+            <div class="mt-4 ml-1">
+                <button type="button" class="btn btn-secondary" id="cancel-password">Cancel</button>
+                <input class="btn btn-primary" type="submit" value="Send">
+            </div>
+        </form>
+    </div>
+
+</div>
 
 <%- include("../partials/footer") -%>
