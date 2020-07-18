@@ -7,16 +7,53 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
-<div class="jumbotron container mt-5">
 
-	<h3>Please select a subject below to train on:</h3>
+    <br>
+    <h3 style="text-align: center;">Select a subject below to train on:</h3>
+    <br>
+    <!--
     <form action="/selQ" method="POST">
         <input type="hidden" name="qNum" value="<%=qNum%>">
         <% Object.keys(subjects).forEach((subject) => { %>
-            <!--<a href="/train/<%= subject %>/choose_units"> -->
+            
             <input type="submit" name="subj" class="btn btn-primary btn-lg btn-block my-2" id="<%= subject %>" value="<%= subject %>">
         <% }) %>
     </form>
-</div>
+    -->
+    <div class="container">
+        <div class="row mx-auto justify-content-around">
+            <div class="col-sm-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics Icon">
+                    <div class="card-body text-center">
+                    <h5 class="card-title">Physics</h5>
+                    <p class="card-text">Improve your Physics!</p>
+                    <a href="/train/Physics/choose_units" class="btn btn-primary">Physics</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Chemistry Icon">
+                    <div class="card-body text-center">
+                    <h5 class="card-title">Chemistry</h5>
+                    <p class="card-text">Advance your Chemistry!</p>
+                    <a href="/train/Chemistry/choose_units" class="btn btn-primary">Chemistry</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Biology Icon">
+                    <div class="card-body text-center">
+                    <h5 class="card-title">Biology</h5>
+                    <p class="card-text">Brighten your Biology!</p>
+                    <a href="/train/Biology/choose_units" class="btn btn-primary">Biology</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 <%- include("../partials/footer") -%>
