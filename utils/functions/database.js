@@ -53,8 +53,33 @@ function updateCounters(req, question, correct) {
         });
     }
 
+    // update rating tracker
+    var tracker;
+
+    if(req.user.stats.ratingTracker == undefined) {
+        req.user.stats.ratingTracker = {};
+    }
+
+    try {
+
+        // try to update the tracker
+        tracker = req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
+        tracker.push(req.user.rating[question.subject[0].toLowerCase()]);
+        while(tracker.length > 20) {
+            tracker.shift();
+        }
+        
+    } catch(err) {
+
+        // tracker doesn't exist (yet), so create one!
+        tracker = [req.user.rating[question.subject[0].toLowerCase()]];
+        req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
+
+    }
+    req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
+
     // update above results in database
-    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: { correct: req.user.stats.correct, wrong: req.user.stats.wrong, collectedTags: req.user.stats.collectedTags } } });
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: { correct: req.user.stats.correct, wrong: req.user.stats.wrong, collectedTags: req.user.stats.collectedTags, ratingTracker: req.user.stats.ratingTracker } } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
 
@@ -72,4 +97,5 @@ function setQRating(antsy, newQRate){
     //var tempQ = await gotQ.exec();
 }*/
 
+module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters};
 module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters};
