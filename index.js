@@ -80,7 +80,7 @@ passport.deserializeUser(function (id, cb) {
     });
 });
 
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash()); // express-flash-messages config

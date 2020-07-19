@@ -7,7 +7,8 @@ const MONGOURI = "mongodb+srv://Skippy:PNSwim19@cluster0-7gibd.mongodb.net/test?
 const InitiateMongoServer = async () => {
     try{
         await mongoose.connect(MONGOURI, {
-            useNewUrlParser: true
+            useNewUrlParser: true,
+            useUnifiedTopology: true
         });
     console.log("Connected to the database!");
     } catch (e) {
