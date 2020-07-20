@@ -103,6 +103,36 @@ app.post('/login', passport.authenticate('local', {
         console.log("req.session");
     });
 
+app.post('forgot_password', (req, res, next) => {
+    if (req.isAuthenticated()) {
+        req.flash('error_flash', 'You\'ll need to change your password here.');
+        res.redirect('/settings')
+    } else {
+        if (!req.body.entered_code) {
+            User.count({ username: req.body.username }, function (err, count) {
+                if (count > 0) {
+                    req.flash('success_flash', 'Check your email for the code.');
+                    var confirm_code;
+                    require('crypto').randomBytes(6, function (ex, buf) {
+                        confirm_code = buf.toString('hex');
+                        debugger;
+                    });
+                    db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
+                    email_validation.email_code_send(req.body.username, confirm_code);
+                    
+                } else {
+                    req.flash('error_flash', 'That email isn\'t registered with us.');
+                    res.redirect('/signin');
+                }
+            });
+        } else {
+            // TODO: reset password
+            // by going through this process the user `de facto` confirms their email
+
+        }
+    }
+});
+
 // `username` is email
 // `ign` is username
 app.post('/register', (req, res, next) => {
@@ -397,10 +427,12 @@ app.post("/changeInfo", (req, res) => {
         if (req.body.ign && req.body.ign != req.user.ign) {
             User.count({ ign: req.body.ign }, function (err, count) {
                 if (count > 0) {
-                    console.log("username exists"); // flash
+                    console.log("username exists");
+                    req.flash('error_flash', "Sorry, this username already exists.");
                 } else {
                     console.log("username does not exist");
                     db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { ign: req.body.ign } });
+                    req.flash('success_flash', "We successfully changed your username.");
                 }
             });
         } else {
@@ -411,8 +443,15 @@ app.post("/changeInfo", (req, res) => {
             User.count({ username: req.body.username }, function (err, count) {
                 if (count > 0) {
                     console.log("email exists"); // flash
+                    req.flash('error_flash', "We already have an account with that email. Try signing in with that one.");
                 } else {
                     console.log("email does not exist");
+                    var confirm_code;
+                    require('crypto').randomBytes(6, function (ex, buf) {
+                        confirm_code = buf.toString('hex');
+                    });
+                    db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } }); 
+                    req.flash('success_flash', "You need to confirm your email. Please check your email to confirm it.");
                     db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
                     console.log("email updated");
                 }
@@ -423,7 +462,7 @@ app.post("/changeInfo", (req, res) => {
 
         console.log("log marker 1");
 
-        if(req.body.password) {
+        if(req.body.password) && (/\d/.test(req.body.password)) && (/[a-zA-Z]/.test(req.body.password)) {
             const newPass = genPassword(req.body.password);
             req.user.hash = newPass.hash;
             req.user.salt = newPass.salt;
@@ -432,7 +471,6 @@ app.post("/changeInfo", (req, res) => {
         //db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
         res.redirect("/settings");
-
     }
     else {
         res.redirect("/");
