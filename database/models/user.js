@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
             biology: Array
         }
     },
+    email_confirm_code: String,
     rating: {
         physics: Number,
         chemistry: Number,
