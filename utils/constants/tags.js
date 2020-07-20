@@ -70,6 +70,7 @@ var tags = {
             "UG": "Gravitational Potential Energy",
             "USP": "Spring Potential Energy",
             "VAVG": "Average Velocity",
+            "VEC": "Vectors",
             "WET": "Work Energy Theorem",
             "WNF": "Weak Nuclear Force",
             "WORK": "Work"
