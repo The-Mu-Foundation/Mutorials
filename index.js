@@ -541,7 +541,7 @@ app.get('/email_confirmation', (req, res) => {
         cc.then((value) => {
             if (!value) {
                 debugger;
-                res.render(__dirname + '/views/private/' + 'emailConfirmation.ejs');
+                res.render(__dirname + '/views/private/' + 'emailConfirmation.ejs', { email: req.user.username });
             } else {
                 req.flash('error_flash', 'You\'ve already confirmed your email.');
                 res.redirect('/');
