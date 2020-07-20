@@ -119,7 +119,7 @@ app.post('forgot_password', (req, res, next) => {
                     });
                     db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
                     email_validation.email_code_send(req.body.username, confirm_code);
-                    
+                    res.redirect(                    
                 } else {
                     req.flash('error_flash', 'That email isn\'t registered with us.');
                     res.redirect('/signin');
