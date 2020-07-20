@@ -479,7 +479,7 @@ app.get("/homepage", (req, res) => {
         if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
-            res.render(__dirname + '/views/private/' + 'homepage.ejs');
+            res.render(__dirname + '/views/private/' + 'homepage.ejs', { user: req.user });
         }
     }
     else {
