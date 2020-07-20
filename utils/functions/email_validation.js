@@ -5,10 +5,10 @@ const nodemailer = require('nodemailer');
 var db = mongoose.connection;
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'Mailgun',
     auth: {
-        user: 'mutorialsproject@gmail.com',
-        pass: 'Eejklmrrv$16'
+        user: 'email_confirmation@noreply.mutorials.org',
+        pass: '20b8d86294b492e6a78ac0043dd03df4-a83a87a9-c636447c'
     }
 });
 
