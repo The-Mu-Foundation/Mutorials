@@ -106,7 +106,33 @@ var tags = {
             "MOBIO": "Molecular Biology",
             "PAAP": "Plant and Animal Physiology"
         },
-        "Concepts": {}
+        "Concepts": {
+            "CARB": "Carbon Cycle",
+            "CELC": "Cell Communication",
+            "CELR": "Cellular Respiration",
+            "CELS": "Cell Structure",
+            "CELT": "Cellular Transport",
+            "CYC": "Cell Cycle",
+            "DIG": "Digestion",
+            "DNAR": "DNA Replication",
+            "ENZ": "Enzymes",
+            "GASX": "Gas Exchange",
+            "GEC": "Genes & Chromosomes",
+            "IMM": "Immune System",
+            "INH": "Inheritance",
+            "LAB": "Lab Skills",
+            "MEI": "Meiosis",
+            "MEM": "Membrane Structure and Function",
+            "MIT": "Mitosis",
+            "NATS": "Natural Selection",
+            "PED": "Pedigrees",
+            "PHO": "Photosynthesis",
+            "PROT": "Proteins",
+            "PUN": "Punnett Squares",
+            "TAXON": "Taxonomy",
+            "TRSCRIP": "Transcription",
+            "TRSLATE": "Translation"
+        }
     }
 }
 
