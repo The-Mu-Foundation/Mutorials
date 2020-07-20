@@ -29,7 +29,7 @@ function getRating(subject, req) {
 // set the rating of the user logged in right now
 function setRating(subject, newRating, req) {
     req.user.rating[subject.toLowerCase()] = newRating;
-    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating, correct: req.user.correct, wrong: req.user.wrong } });
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
 }
 
 // modify the correct/wrong counter for users, and the pass/fail counter for questions, as well as tag collector tags
@@ -79,7 +79,7 @@ function updateCounters(req, question, correct) {
     req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
 
     // update above results in database
-    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: { correct: req.user.stats.correct, wrong: req.user.stats.wrong, collectedTags: req.user.stats.collectedTags, ratingTracker: req.user.stats.ratingTracker } } });
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
 

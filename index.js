@@ -296,10 +296,12 @@ app.post("/selQ", (req, res, next) => {
     //select question
     //var subj = null;
     var units = null;
+    /*
     if (req.body.qNum == 0) {
         subj = req.body.subj;
         res.redirect("/train/" + req.body.subj + "/choose_units");
     }
+    */
     if (req.body.qNum == 1) {
         units = req.body.unitChoice;
         if (units) { //nothing happens if units is empty
@@ -477,7 +479,7 @@ app.get("/homepage", (req, res) => {
         if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
-            res.render(__dirname + '/views/private/' + 'homepage.ejs');
+            res.render(__dirname + '/views/private/' + 'homepage.ejs', { user: req.user });
         }
     }
     else {

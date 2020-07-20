@@ -1,5 +1,8 @@
 <!-- This is the page routed to upon signin; root page -->
 
+<!-- ARGUMENTS:
+    user: the user logged in -->
+
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
@@ -47,7 +50,7 @@
 
 </script>
 
-<h1 class="my-5 container text-center display-2">Welcome to Mutorials!</h1>
+<h1 class="my-5 container text-center display-3">Welcome, <%= user.ign %></h1>
 
 <div class="jumbotron container">
 
