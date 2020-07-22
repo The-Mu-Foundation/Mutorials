@@ -1,4 +1,4 @@
-// MODULE IMPORTS
+    // MODULE IMPORTS
 
 const bodyParser = require("body-parser");
 const passport = require("passport");
@@ -22,7 +22,6 @@ const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
 const { referenceSheet } = require("./utils/constants/referencesheet");
 const { tags } = require("./utils/constants/tags");
-
 
 
 // START MONGO SERVER
@@ -69,7 +68,8 @@ passport.use(new LocalStrategy(
             .catch((err) => {
                 cb(err);
             });
-    }));
+    }
+));
 passport.serializeUser(function (user, cb) {
     cb(null, user.id);
 });
@@ -103,7 +103,7 @@ app.post('/login', passport.authenticate('local', {
         console.log("req.session");
     });
 
-app.post('forgot_password', (req, res, next) => {
+app.post('/forgot_password_check', (req, res, next) => {
     if (req.isAuthenticated()) {
         req.flash('error_flash', 'You\'ll need to change your password here.');
         res.redirect('/settings')
@@ -115,20 +115,27 @@ app.post('forgot_password', (req, res, next) => {
                     var confirm_code;
                     require('crypto').randomBytes(6, function (ex, buf) {
                         confirm_code = buf.toString('hex');
-                        debugger;
                     });
                     db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
                     email_validation.email_code_send(req.body.username, confirm_code);
-                    res.redirect(                    
+                    res.redirect('/forgot_password');
                 } else {
                     req.flash('error_flash', 'That email isn\'t registered with us.');
                     res.redirect('/signin');
                 }
             });
         } else {
-            // TODO: reset password
-            // by going through this process the user `de facto` confirms their email
-
+            User.findOne({ username: req.body.username }).then((user) {
+                if (user) {
+                    if (user.email_confirm_code != "0") {
+                        if (email_validation.check_code(user.username, req.body.entered_code)) {
+                            clear_confirm_code(user.username);
+                            req.flash('success_flash', 'We successfully reset your password');
+                            res.redirect('/signin');
+                        } else {
+                            req.flash('error_flash', 'The email is wrong. Please try again.');
+                        }
+            });
         }
     }
 });
@@ -350,7 +357,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
         // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
         if (req.body.type == "mc" && req.body.answerChoice != undefined) {
-            var isRight = false;
+                var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 // check answer
                 if (antsy.answer[0] == req.body.answerChoice) {
@@ -509,6 +516,11 @@ app.get("/signup", (req, res) => {
 app.get("/latex_compiler", (req, res) => {
     res.render(__dirname + '/views/public/' + 'latexcompiler.ejs');
 });
+
+app.get('/forgot_password', (req, res) => {
+    res.render(__dirname + '/views/public/' + 'forgotPassword.ejs', { email: req.body.username } );
+}
+
 
 // PRIVATE USER GET ROUTES
 
