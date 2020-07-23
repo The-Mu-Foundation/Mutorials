@@ -329,10 +329,13 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // modify ratings
                 oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 oldQRating = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
-                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters & tag collector
-                updateCounters(req, antsy, isRight);
+                if(req.user.stats.lastAnswered != antsy._id) {
+                    setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                    setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                
+                    // update counters & tag collector
+                    updateCounters(req, antsy, isRight);
+                }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
@@ -345,10 +348,13 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // modify ratings
                 oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 oldQRating = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
-                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters
-                updateCounters(req, antsy, isRight);
+                if(req.user.stats.lastAnswered != antsy._id) {
+                    setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                    setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                    
+                    // update counters & tag collector
+                    updateCounters(req, antsy, isRight);
+                }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
@@ -363,10 +369,13 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // modify ratings
                 oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 oldQRating = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
-                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters
-                updateCounters(req, antsy, isRight);
+                if(req.user.stats.lastAnswered != antsy._id) {
+                    setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                    setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                    
+                    // update counters & tag collector
+                    updateCounters(req, antsy, isRight);
+                }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
