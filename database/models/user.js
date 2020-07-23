@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
         correct: Number,
         wrong: Number,
         collectedTags: Array,
+        lastAnswered: String,
         ratingTracker: {
             physics: Array,
             chemistry: Array,

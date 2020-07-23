@@ -22,6 +22,7 @@ const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
 const { referenceSheet } = require("./utils/constants/referencesheet");
 const { tags } = require("./utils/constants/tags");
+const { adminList, contributorList } = require("./utils/constants/sitesettings");
 
 
 
@@ -329,10 +330,13 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // modify ratings
                 oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 oldQRating = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
-                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters & tag collector
-                updateCounters(req, antsy, isRight);
+                if(req.user.stats.lastAnswered != antsy._id) {
+                    setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                    setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                
+                    // update counters & tag collector
+                    updateCounters(req, antsy, isRight);
+                }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
@@ -345,10 +349,13 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // modify ratings
                 oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 oldQRating = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
-                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters
-                updateCounters(req, antsy, isRight);
+                if(req.user.stats.lastAnswered != antsy._id) {
+                    setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                    setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                    
+                    // update counters & tag collector
+                    updateCounters(req, antsy, isRight);
+                }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
@@ -363,10 +370,13 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // modify ratings
                 oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 oldQRating = antsy.rating;
-                setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
-                setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                // update counters
-                updateCounters(req, antsy, isRight);
+                if(req.user.stats.lastAnswered != antsy._id) {
+                    setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                    setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
+                    
+                    // update counters & tag collector
+                    updateCounters(req, antsy, isRight);
+                }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
@@ -664,7 +674,7 @@ app.get("/logout", (req, res) => {
 //ADMIN GET ROUTES
 
 app.get("/admin/addquestion", (req, res) => {
-    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
+    if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
     }
     else {
@@ -673,7 +683,7 @@ app.get("/admin/addquestion", (req, res) => {
 });
 
 app.get("/admin/addedSuccess", (req, res) => {
-    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
+    if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
     }
     else {
@@ -682,7 +692,7 @@ app.get("/admin/addedSuccess", (req, res) => {
 });
 
 app.get("/admin/addedFailure", (req, res) => {
-    if (req.isAuthenticated() && ((req.user.username ==  "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
+    if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionFailure.ejs');
     }
     else {

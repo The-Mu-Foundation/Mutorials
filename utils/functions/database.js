@@ -78,6 +78,9 @@ function updateCounters(req, question, correct) {
     }
     req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
 
+    // updated "last answered" field with question ID
+    req.user.stats.lastAnswered = question._id;
+
     // update above results in database
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
