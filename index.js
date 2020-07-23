@@ -22,6 +22,7 @@ const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
 const { referenceSheet } = require("./utils/constants/referencesheet");
 const { tags } = require("./utils/constants/tags");
+const { adminList, contributorList } = require("./utils/constants/sitesettings");
 
 
 
@@ -673,7 +674,7 @@ app.get("/logout", (req, res) => {
 //ADMIN GET ROUTES
 
 app.get("/admin/addquestion", (req, res) => {
-    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
+    if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
     }
     else {
@@ -682,7 +683,7 @@ app.get("/admin/addquestion", (req, res) => {
 });
 
 app.get("/admin/addedSuccess", (req, res) => {
-    if (req.isAuthenticated() && ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
+    if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionSuccess.ejs');
     }
     else {
@@ -691,7 +692,7 @@ app.get("/admin/addedSuccess", (req, res) => {
 });
 
 app.get("/admin/addedFailure", (req, res) => {
-    if (req.isAuthenticated() && ((req.user.username ==  "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org"))) {
+    if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
         res.render(__dirname + '/views/admin/' + 'train_addQuestionFailure.ejs');
     }
     else {
