@@ -14,46 +14,28 @@
     $(document).ready(function () {
 
         // TEMPORARY: hide unused units on frontend (physics only right now)
-        var toHide = ["Electric Forces and Fields",
-                "Electrical Energy and Capacitance",
-                "Current and Resistance",
-                "DC Circuits",
-                "AC Circuits",
-                "Magnetism",
-                "Inductance",
-                "Electrostatics",
-                "Thermodynamics",
-                "Vibrations and Waves",
-                "Reflection and Refraction",
-                "Mirrors and Lenses",
-                "Wave Optics",
-                "Relativity",
-                "Quantum Physics",
-                "Nuclear Energy and Elementary Particles"];
-        toHide.forEach((element) => {
-            console.log("Now hidden: " + element);
-            document.getElementById("DIV " + element).style.display = "none";
-        });
-
-        // show "no units selected" message when submit button is clicked and no unit is seleted
-        $("#no-units-selected").hide(0);
-
-        $("#next").click(function () {
-            
-            selection = "";
-            var choices = document.querySelectorAll('#checkboxes input[type="checkbox"]');
-            
-            console.log(choices);
-            for(let i = 0; i < choices.length; i++) {
-                if(choices[i].checked) {
-                    selection = choices[i].id;
-                }
-            }
-
-            if(selection == "") {
-                $("#no-units-selected").show(1000);
-            }
-        });
+        if("<%= subject %>" == "Physics") {
+            var toHide = ["Electric Forces and Fields",
+                    "Electrical Energy and Capacitance",
+                    "Current and Resistance",
+                    "DC Circuits",
+                    "AC Circuits",
+                    "Magnetism",
+                    "Inductance",
+                    "Electrostatics",
+                    "Thermodynamics",
+                    "Vibrations and Waves",
+                    "Reflection and Refraction",
+                    "Mirrors and Lenses",
+                    "Wave Optics",
+                    "Relativity",
+                    "Quantum Physics",
+                    "Nuclear Energy and Elementary Particles"];
+            toHide.forEach((element) => {
+                console.log("Now hidden: " + element);
+                document.getElementById("DIV " + element).style.display = "none";
+            });
+        }
 
         // make select and deselect all buttons work
         $("#select-all").click(function() {
@@ -148,8 +130,6 @@
     </div>
 
     <div class="col-1"></div>
-
-    <h4 class="my-4" id="no-units-selected"><font color="red">You haven't selected any units yet!</font></h4>
 
 </div>
 

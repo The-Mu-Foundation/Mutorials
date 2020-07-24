@@ -94,7 +94,11 @@ var tags = {
             "STOICH": "Stoichiometry",
             "TCHEM": "Thermochemistry"
         },
-        "Concepts": {}
+        "Concepts": {
+            "KANE": "Alkanes",
+            "KENE": "Alkenes",
+            "KYNE": "Alkynes"
+        }
     },
     "Biology": {
         "Units": {
@@ -118,6 +122,7 @@ var tags = {
             "ENZ": "Enzymes",
             "GASX": "Gas Exchange",
             "GEC": "Genes & Chromosomes",
+            "HORM": "Hormones",
             "IMM": "Immune System",
             "INH": "Inheritance",
             "LAB": "Lab Skills",
