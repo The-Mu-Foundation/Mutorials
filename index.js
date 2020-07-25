@@ -1,4 +1,4 @@
-    // MODULE IMPORTS
+// MODULE IMPORTS
 
 const bodyParser = require("body-parser");
 const passport = require("passport");
@@ -115,9 +115,10 @@ app.post('/forgot_password_check', (req, res, next) => {
                     var confirm_code;
                     require('crypto').randomBytes(6, function (ex, buf) {
                         confirm_code = buf.toString('hex');
+                        db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
+                        email_validation.email_code_send(req.body.username, confirm_code);
                     });
-                    db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
-                    email_validation.email_code_send(req.body.username, confirm_code);
+                    req.flash('forgot_pass_user', req.body.username);
                     res.redirect('/forgot_password');
                 } else {
                     req.flash('error_flash', 'That email isn\'t registered with us.');
@@ -125,16 +126,41 @@ app.post('/forgot_password_check', (req, res, next) => {
                 }
             });
         } else {
-            User.findOne({ username: req.body.username }).then((user) {
+            User.findOne({ username: req.body.username }).then((user) => {
                 if (user) {
                     if (user.email_confirm_code != "0") {
                         if (email_validation.check_code(user.username, req.body.entered_code)) {
-                            clear_confirm_code(user.username);
-                            req.flash('success_flash', 'We successfully reset your password');
-                            res.redirect('/signin');
+                            if (req.body.newpw == req.body.confirmnewpw) {
+                                if((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
+                                    const newPass = genPassword(req.body.newpw);
+                                    db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { hash: newPass.hash, salt: newPass.salt } });
+                                    email_validation.clear_confirm_code(user.username);
+                                    req.flash('success_flash', 'We successfully reset your password');
+                                    res.redirect('/signin');
+                                } else {
+                                    req.flash('error_flash', 'The password doesn\'t fit the requirements.');
+                                    req.flash('forgot_pass_user', req.body.username);
+                                    res.redirect('/forgot_password');
+                                }
+                            } else {
+                                req.flash('error_flash', 'The passwords don\'t match. Please try again.');
+                                req.flash('forgot_pass_user', req.body.username);
+                                res.redirect('/forgot_password');
+                            }
                         } else {
-                            req.flash('error_flash', 'The email is wrong. Please try again.');
+                            req.flash('error_flash', 'The code is wrong. Please try again.');
+                            req.flash('forgot_pass_user', req.body.username);
+                            res.redirect('/forgot_password');
                         }
+                    } else {
+                        req.flash('error_flash', 'Please try resetting your password again.');
+                        res.redirect('/signin');
+                    }
+                } else {
+                    req.flash('error_flash', 'The email is incorrect, please try again');
+                    req.flash('forgot_pass_user', req.body.username);
+                    res.redirect('/forgot_password');
+                }
             });
         }
     }
@@ -167,11 +193,6 @@ app.post('/register', (req, res, next) => {
 
     const salt = saltHash.salt;
     const hash = saltHash.hash;
-    var confirm_code;
-    require('crypto').randomBytes(6, function (ex, buf) {
-        confirm_code = buf.toString('hex');
-        debugger;
-    });
     const newUser = new User({
         username: req.body.username,
         ign: req.body.ign,
@@ -184,7 +205,6 @@ app.post('/register', (req, res, next) => {
             bio: ""
         },
         // if email_confirm_code == 0, then email is confirmed
-        email_confirm_code: confirm_code,
         stats: {
             correct: 0,
             wrong: 0,
@@ -221,7 +241,6 @@ app.post('/register', (req, res, next) => {
                 });
             req.flash('success_flash', 'We successfully signed you up!');
         }
-        email_validation.email_code_send(req.body.username, confirm_code);
         res.redirect('/signin');
     });
 });
@@ -456,8 +475,8 @@ app.post("/changeInfo", (req, res) => {
                     var confirm_code;
                     require('crypto').randomBytes(6, function (ex, buf) {
                         confirm_code = buf.toString('hex');
+                        db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
                     });
-                    db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } }); 
                     req.flash('success_flash', "You need to confirm your email. Please check your email to confirm it.");
                     db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
                     console.log("email updated");
@@ -469,12 +488,20 @@ app.post("/changeInfo", (req, res) => {
 
         console.log("log marker 1");
 
-        if(req.body.password) && (/\d/.test(req.body.password)) && (/[a-zA-Z]/.test(req.body.password)) {
-            const newPass = genPassword(req.body.password);
-            req.user.hash = newPass.hash;
-            req.user.salt = newPass.salt;
+        if(req.body.newpw) {
+            if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
+                if (req.body.newpw == req.body.confirmnewpw) {
+                    const newPass = genPassword(req.body.newpw);
+                    req.user.hash = newPass.hash;
+                    req.user.salt = newPass.salt;
+                    db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+                } else {
+                    req.flash('error_flash', 'passwords don\'t match');
+                }
+            } else {
+                req.flash('error_flash', 'Password does not meet requirments.');
+            }
         }
-        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
         //db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
         res.redirect("/settings");
@@ -518,14 +545,31 @@ app.get("/latex_compiler", (req, res) => {
 });
 
 app.get('/forgot_password', (req, res) => {
-    res.render(__dirname + '/views/public/' + 'forgotPassword.ejs', { email: req.body.username } );
-}
+    if (req.isAuthenticated()) {
+        req.flash('error_flash', 'You\'ll need to change your password here.');
+        res.redirect('/settings')
+    } else {
+        res.render(__dirname + '/views/public/' + 'forgotPassword.ejs');
+    }
+});
 
 
 // PRIVATE USER GET ROUTES
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
+        db.collection("users").findOne({ username: req.user.username }).then((user) => {
+            if (!user.email_confirm_code) {
+                console.log(user.email_confirm_code);
+                var confirm_code;
+                require('crypto').randomBytes(6, function (ex, buf) {
+                confirm_code = buf.toString('hex');
+                db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
+                    email_validation.email_code_send(req.user.username, confirm_code);
+                });
+                req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
+            }
+        });
         if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
@@ -591,7 +635,7 @@ app.get('/email_confirmation', (req, res) => {
         cc.then((value) => {
             if (!value) {
                 debugger;
-                res.render(__dirname + '/views/private/' + 'emailConfirmation.ejs');
+                res.render(__dirname + '/views/private/' + 'emailConfirmation.ejs', { email: req.user.username });
             } else {
                 req.flash('error_flash', 'You\'ve already confirmed your email.');
                 res.redirect('/');
