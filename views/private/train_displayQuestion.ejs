@@ -96,7 +96,7 @@
         <% if(newQues.type == "mc") { %>
             <!-- CODE FOR MULTIPLE CHOICE -->
             <h3>Please read the following question and select the best answer:</h3>
-            <p><%- newQues.question %></p>
+            <p><%- newQues.question -%></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="mc-choices">
                     <% var choiceIndex = 1; %>
@@ -117,7 +117,7 @@
         <% } else if(newQues.type == "sa") { %>
             <!-- CODE FOR SELECT ALL  -->
             <h3>Please read the following and select ALL choices that apply:</h3>
-            <p><%- newQues.question %></p>
+            <p><%- newQues.question -%></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="sa-choices">
                     <% var choiceIndex = 1; %>
@@ -138,7 +138,7 @@
         <% } else if(newQues.type == "fr") { %>
             <!-- CODE FOR FREE RESPONSE -->
             <h3>Please read the following question and enter your answer in the box:</h3>
-            <p><%- newQues.question %></p>
+            <p><%- newQues.question -%></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4">
                     <div class="form-group">
