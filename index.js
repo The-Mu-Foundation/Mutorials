@@ -52,6 +52,7 @@ app.use(session({
 passport.use(new LocalStrategy(
     // called when passport.authenticate is used()
     function (username, password, cb) {
+        username = username.toLowerCase();
         User.find({ username: username })
             .then((user) => {
                 if (!user[0]) { return cb(null, false); }
