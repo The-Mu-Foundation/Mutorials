@@ -489,6 +489,7 @@ app.post("/changeInfo", (req, res) => {
         console.log("log marker 1");
 
         if(req.body.newpw) {
+
             if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
                 if (req.body.newpw == req.body.confirmnewpw) {
                     const newPass = genPassword(req.body.newpw);
@@ -738,6 +739,9 @@ app.get("/train/:subject/display_question", (req, res) => {
         ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
         floor = ceilingFloor.floor;
         ceiling = ceilingFloor.ceiling;
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
         const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
