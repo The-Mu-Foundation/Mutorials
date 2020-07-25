@@ -40,7 +40,7 @@
                         <input type="checkbox" class="custom-control-input" id="stayLoggedIn">
                         <label class="custom-control-label" for="stayLoggedIn">Keep me signed in</label>
                     </div>
-                </div>            
+                </div>
                 <div class="col-6">
                     <button type="button" class="btn btn-sm btn-link float-right" id="forgotPasswordTrigger"><font color="blue">Forgot Password?</font></button>
                 </div>
@@ -56,12 +56,11 @@
 
 <div id="forgot-password-form">
 
-    <h1 class="my-5 container">Oh no! You forgot your password!</h1>
+    <h1 class="my-5 container">Forgot your password? No problem, just fill out this form.</h1>
 
     <div class="jumbotron container">
         <%- include("../partials/flashes") -%>
-        <h5>Use this form to send a code to your email for resetting your password:</h5>
-        <form action="/forgotPassword" method="post">
+        <form action="/forgot_password_check" method="post">
             <div class="form-group">
                 <input type="text" class="form-control" id="loginEmail" placeholder="Email Address" name="username">
             </div>

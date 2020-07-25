@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 module.exports = {
     email_code_send: function(username, code) {
         const mailOptions = {
-            from: 'mutorialsproject@gmail.com',
+            from: 'email_confirmation@noreply.mutorials.org',
             to: username,
             subject: 'Mutorials Email Confirmation',
             text: 'Here is your code: ' + code

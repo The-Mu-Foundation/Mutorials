@@ -25,7 +25,6 @@ const { tags } = require("./utils/constants/tags");
 const { adminList, contributorList } = require("./utils/constants/sitesettings");
 
 
-
 // START MONGO SERVER
 InitiateMongoServer();
 var db = mongoose.connection;
@@ -70,7 +69,8 @@ passport.use(new LocalStrategy(
             .catch((err) => {
                 cb(err);
             });
-    }));
+    }
+));
 passport.serializeUser(function (user, cb) {
     cb(null, user.id);
 });
@@ -104,6 +104,69 @@ app.post('/login', passport.authenticate('local', {
         console.log("req.session");
     });
 
+app.post('/forgot_password_check', (req, res, next) => {
+    if (req.isAuthenticated()) {
+        req.flash('error_flash', 'You\'ll need to change your password here.');
+        res.redirect('/settings')
+    } else {
+        if (!req.body.entered_code) {
+            User.count({ username: req.body.username }, function (err, count) {
+                if (count > 0) {
+                    req.flash('success_flash', 'Check your email for the code.');
+                    var confirm_code;
+                    require('crypto').randomBytes(6, function (ex, buf) {
+                        confirm_code = buf.toString('hex');
+                        db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
+                        email_validation.email_code_send(req.body.username, confirm_code);
+                    });
+                    req.flash('forgot_pass_user', req.body.username);
+                    res.redirect('/forgot_password');
+                } else {
+                    req.flash('error_flash', 'That email isn\'t registered with us.');
+                    res.redirect('/signin');
+                }
+            });
+        } else {
+            User.findOne({ username: req.body.username }).then((user) => {
+                if (user) {
+                    if (user.email_confirm_code != "0") {
+                        if (email_validation.check_code(user.username, req.body.entered_code)) {
+                            if (req.body.newpw == req.body.confirmnewpw) {
+                                if((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
+                                    const newPass = genPassword(req.body.newpw);
+                                    db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { hash: newPass.hash, salt: newPass.salt } });
+                                    email_validation.clear_confirm_code(user.username);
+                                    req.flash('success_flash', 'We successfully reset your password');
+                                    res.redirect('/signin');
+                                } else {
+                                    req.flash('error_flash', 'The password doesn\'t fit the requirements.');
+                                    req.flash('forgot_pass_user', req.body.username);
+                                    res.redirect('/forgot_password');
+                                }
+                            } else {
+                                req.flash('error_flash', 'The passwords don\'t match. Please try again.');
+                                req.flash('forgot_pass_user', req.body.username);
+                                res.redirect('/forgot_password');
+                            }
+                        } else {
+                            req.flash('error_flash', 'The code is wrong. Please try again.');
+                            req.flash('forgot_pass_user', req.body.username);
+                            res.redirect('/forgot_password');
+                        }
+                    } else {
+                        req.flash('error_flash', 'Please try resetting your password again.');
+                        res.redirect('/signin');
+                    }
+                } else {
+                    req.flash('error_flash', 'The email is incorrect, please try again');
+                    req.flash('forgot_pass_user', req.body.username);
+                    res.redirect('/forgot_password');
+                }
+            });
+        }
+    }
+});
+
 // `username` is email
 // `ign` is username
 app.post('/register', (req, res, next) => {
@@ -131,11 +194,6 @@ app.post('/register', (req, res, next) => {
 
     const salt = saltHash.salt;
     const hash = saltHash.hash;
-    var confirm_code;
-    require('crypto').randomBytes(6, function (ex, buf) {
-        confirm_code = buf.toString('hex');
-        debugger;
-    });
     const newUser = new User({
         username: req.body.username,
         ign: req.body.ign,
@@ -148,7 +206,6 @@ app.post('/register', (req, res, next) => {
             bio: ""
         },
         // if email_confirm_code == 0, then email is confirmed
-        email_confirm_code: confirm_code,
         stats: {
             correct: 0,
             wrong: 0,
@@ -185,7 +242,6 @@ app.post('/register', (req, res, next) => {
                 });
             req.flash('success_flash', 'We successfully signed you up!');
         }
-        email_validation.email_code_send(req.body.username, confirm_code);
         res.redirect('/signin');
     });
 });
@@ -321,7 +377,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
         // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
         if (req.body.type == "mc" && req.body.answerChoice != undefined) {
-            var isRight = false;
+                var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
                 // check answer
                 if (antsy.answer[0] == req.body.answerChoice) {
@@ -407,10 +463,12 @@ app.post("/changeInfo", (req, res) => {
         if (req.body.ign && req.body.ign != req.user.ign) {
             User.count({ ign: req.body.ign }, function (err, count) {
                 if (count > 0) {
-                    console.log("username exists"); // flash
+                    console.log("username exists");
+                    req.flash('error_flash', "Sorry, this username already exists.");
                 } else {
                     console.log("username does not exist");
                     db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { ign: req.body.ign } });
+                    req.flash('success_flash', "We successfully changed your username.");
                 }
             });
         } else {
@@ -421,8 +479,15 @@ app.post("/changeInfo", (req, res) => {
             User.count({ username: req.body.username }, function (err, count) {
                 if (count > 0) {
                     console.log("email exists"); // flash
+                    req.flash('error_flash', "We already have an account with that email. Try signing in with that one.");
                 } else {
                     console.log("email does not exist");
+                    var confirm_code;
+                    require('crypto').randomBytes(6, function (ex, buf) {
+                        confirm_code = buf.toString('hex');
+                        db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
+                    });
+                    req.flash('success_flash', "You need to confirm your email. Please check your email to confirm it.");
                     db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
                     console.log("email updated");
                 }
@@ -433,16 +498,23 @@ app.post("/changeInfo", (req, res) => {
 
         console.log("log marker 1");
 
-        if(req.body.password) {
-            const newPass = genPassword(req.body.password);
-            req.user.hash = newPass.hash;
-            req.user.salt = newPass.salt;
+        if(req.body.newpw) {
+            if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
+                if (req.body.newpw == req.body.confirmnewpw) {
+                    const newPass = genPassword(req.body.newpw);
+                    req.user.hash = newPass.hash;
+                    req.user.salt = newPass.salt;
+                    db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+                } else {
+                    req.flash('error_flash', 'passwords don\'t match');
+                }
+            } else {
+                req.flash('error_flash', 'Password does not meet requirments.');
+            }
         }
-        db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
         //db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
         res.redirect("/settings");
-
     }
     else {
         res.redirect("/");
@@ -482,10 +554,32 @@ app.get("/latex_compiler", (req, res) => {
     res.render(__dirname + '/views/public/' + 'latexcompiler.ejs');
 });
 
+app.get('/forgot_password', (req, res) => {
+    if (req.isAuthenticated()) {
+        req.flash('error_flash', 'You\'ll need to change your password here.');
+        res.redirect('/settings')
+    } else {
+        res.render(__dirname + '/views/public/' + 'forgotPassword.ejs');
+    }
+});
+
+
 // PRIVATE USER GET ROUTES
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
+        db.collection("users").findOne({ username: req.user.username }).then((user) => {
+            if (!user.email_confirm_code) {
+                console.log(user.email_confirm_code);
+                var confirm_code;
+                require('crypto').randomBytes(6, function (ex, buf) {
+                confirm_code = buf.toString('hex');
+                db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
+                    email_validation.email_code_send(req.user.username, confirm_code);
+                });
+                req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
+            }
+        });
         if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
