@@ -170,6 +170,8 @@ app.post('/forgot_password_check', (req, res, next) => {
 // `username` is email
 // `ign` is username
 app.post('/register', (req, res, next) => {
+    req.body.username = req.body.username.toLowerCase();
+    req.body.ign = req.body.ign.toLowerCase();
     var register_input_problems_1 = false;
     if (req.body.ign.length < 1) {
         req.flash('error_flash', 'Please enter a username.');
@@ -389,7 +391,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                
+
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
                 }
@@ -408,7 +410,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                    
+
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
                 }
@@ -429,7 +431,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
-                    
+
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
                 }
