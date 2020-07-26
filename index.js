@@ -17,12 +17,13 @@ const { qSchema } = require("./database/models/question");
 const { genPassword, validPassword } = require("./utils/functions/password");
 const { calculateRatings, ratingCeilingFloor } = require("./utils/functions/ratings");
 const { arraysEqual, parseDelimiter } = require("./utils/functions/general");
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters} = require("./utils/functions/database");
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, generateLeaderboard } = require("./utils/functions/database");
 const { subjectUnitDictionary } = require("./utils/constants/subjects");
 const { presetUnitOptions } = require("./utils/constants/presets");
 const { referenceSheet } = require("./utils/constants/referencesheet");
 const { tags } = require("./utils/constants/tags");
 const { adminList, contributorList } = require("./utils/constants/sitesettings");
+
 
 
 // START MONGO SERVER
@@ -376,10 +377,14 @@ app.post("/selQ", (req, res, next) => {
 
 app.post("/train/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
+
         // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
         if (req.body.type == "mc" && req.body.answerChoice != undefined) {
                 var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+
+                // add rating (undo skip question)
+                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 if (antsy.answer[0] == req.body.answerChoice) {
                     isRight = true;
@@ -401,6 +406,9 @@ app.post("/train/checkAnswer", (req, res, next) => {
         else if (req.body.type == "sa" && req.body.saChoice != undefined) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+
+                // add rating (undo skip question)
+                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 // modify ratings
@@ -420,6 +428,9 @@ app.post("/train/checkAnswer", (req, res, next) => {
         else if (req.body.type == "fr" && req.body.freeAnswer != "") {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+
+                // add rating (undo skip question)
+                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 if (antsy.answer[0] == req.body.freeAnswer.trim()) {
                     isRight = true;
@@ -593,6 +604,19 @@ app.get("/homepage", (req, res) => {
     }
 });
 
+app.get("/leaderboard/:subject", (req, res) => {
+    if (req.isAuthenticated()) {
+        // DOESN'T WORK YET, NEEDA FIX IT
+        var leaderboard = generateLeaderboard(User, req.params.subject, 3);
+        res.render(__dirname + '/views/private/' + 'train.ejs');
+        //res.render(__dirname + '/views/private/' + 'leaderboard.ejs');
+        // req.params.subject
+    }
+    else {
+        res.redirect("/");
+    }
+});
+
 app.get("/references", (req, res) => {
     if (req.isAuthenticated()) {
         res.render(__dirname + '/views/private/' + 'references.ejs');
@@ -742,14 +766,25 @@ app.get("/train/:subject/choose_units", (req, res) => {
 app.get("/train/:subject/display_question", (req, res) => {
     var curQ = null;
     if (req.isAuthenticated()) {
+
+        // get parameters set up
         var units = req.query.units.split(",");
-        // IMPLEMENT RATING FLOOR AND CEILING IN FUTURE
         ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
         floor = ceilingFloor.floor;
         ceiling = ceilingFloor.ceiling;
+        
+        // no cache
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         res.setHeader("Pragma", "no-cache");
         res.setHeader("Expires", "0");
+
+        // deduct rating (skip question)
+        var originalRating = getRating(req.params.subject, req);
+        var deduction = originalRating > 5 ? originalRating-5 : 0;
+        setRating(req.params.subject, deduction, req);
+        req.user.rating[req.params.subject.toLowerCase()] = originalRating;
+
+        // get question
         const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });

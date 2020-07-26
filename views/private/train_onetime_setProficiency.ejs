@@ -36,8 +36,7 @@
 	<p>Equivalent to students enrolled in an AP level course or above</p>
 </div>
 -->
-<%- include("../partials/header") -%>
-<%- include("../partials/navigation") -%>
+
 
 <script>
 
@@ -102,7 +101,7 @@
 			<div class="col-4">		
 				<input type="image" class="thumbnail rounded" alt="Intermediate" src="..." id="Intermediate">
 				<input type="hidden" name="subject" value="<%=subject%>">
-				<input type="hidden" name="level" value="1000">
+				<input type="hidden" name="level" value="1300">
 			</div>
 		</form>
 		<br>
@@ -110,7 +109,7 @@
 			<div class="col-4">	
 				<input type="image" class="thumbnail rounded" alt="Advanced" src="..." id="Advanced">
 				<input type="hidden" name="subject" value="<%=subject%>">
-				<input type="hidden" name="level" value="1500">
+				<input type="hidden" name="level" value="2100">
 			</div>
 		</form>
 	<!--
@@ -137,31 +136,21 @@
 
         <div class="card-body" id="Beginner-Card">
             <h5 class="card-title">Beginner</h5>
-            <p class="card-text">This will set your <%=subject%> rating to 500</p>
+            <p class="card-text">Equivalent to starters, or those who take courses on a middle school level. Questions here are mostly conceptual.</p>
         </div>
 
         <div class="card-body" id="Intermediate-Card">
             <h5 class="card-title">Intermediate</h5>
-            <p class="card-text">This will set your <%=subject%> rating to 1000</p>
+            <p class="card-text">Equivalent to those who take Honors program courses or in general, courses on a high school level. Questions here may involve simple math.</p>
         </div>
 
         <div class="card-body" id="Advanced-Card">
             <h5 class="card-title">Advanced</h5>
-            <p class="card-text">This will set your <%=subject%> rating to 1500</p>
+            <p class="card-text">Equivalent to students enrolled in an AP level course or above. Get ready to use your brain!</p>
         </div>
 
     </div>
 
-	<!-- <h3 class="my-4">Latest Site Updates</h3>
-	<ul class="mb-4">
-		<li>7/10 - questions starting to go in!</li>
-		<li>7/11 - site ready for beta testing release</li>
-		<li>7/11 - basic training capability of site is set</li>
-	</ul>
-
-	<p>Cool stuff coming soon!</p>-->
-	
 </div>
 
-<%- include("../partials/footer") -%>
 <%- include("../partials/footer") -%>

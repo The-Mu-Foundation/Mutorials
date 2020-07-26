@@ -27,6 +27,17 @@
         setUnsavedAlertFor("ign");
         setUnsavedAlertFor("username");
 
+        // show/hide password requirement notification
+        $("#password-req").hide();
+        $("#newpw").focus(function() {
+            $("#password-req").show(100);
+        });
+        $("#newpw").blur(function() {
+            window.setTimeout(function() {
+                $("#password-req").hide(100);
+            }, 1000);
+        });
+
     });
 
 </script>
@@ -103,7 +114,8 @@
 				</div>
 				<label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
 				<div class="col-sm-10 mt-1">
-					<input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
+                    <input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
+                    <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
 				</div>
 			</div>
 
