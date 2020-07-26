@@ -86,19 +86,20 @@ function updateCounters(req, question, correct) {
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
 
+// set question rating
 function setQRating(antsy, newQRate){
     antsy.rating = newQRate;
     db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
 }
 
-/*async function settingChange(param){
-    //const user = userSchema.find(query);
-    const user = await db.collection('users').findOne(query);
-    //const u = await user.exec();
-    console.log("oh");
-    return user;
-    //var tempQ = await gotQ.exec();
-}*/
+// generate a leaderboard for a certain subject; count is the number of people on board
+function generateLeaderboard(User, subject, count) {
+    var query = { rating: { physics: {}, biology: {}, chemistry: {}}};
+    query.rating[subject] = { $gte: 500 };
+    User.find(query).lean().exec(function(err, arr) {
+        console.log(arr);
+    });
+    //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
+}
 
-module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters};
-module.exports = { getQuestion : getQuestion, getQuestions : getQuestions, getRating : getRating, setRating : setRating, setQRating: setQRating, updateCounters : updateCounters};
+module.exports = { getQuestion: getQuestion, getQuestions: getQuestions, getRating: getRating, setRating: setRating, setQRating: setQRating, updateCounters: updateCounters, generateLeaderboard: generateLeaderboard};
