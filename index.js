@@ -364,15 +364,13 @@ app.post("/selQ", (req, res, next) => {
     */
     if (req.body.qNum == 1) {
         units = req.body.unitChoice;
+        console.log(units);
         if (units) { //nothing happens if units is empty
             res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
-        }
-        if(!units){
+        } else {
+            req.flash('error_flash', 'Please select a unit.');
             res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
         }
-        //app.set("questionz", questions);
-        //units cannot have commas
-
     }
 });
 
@@ -732,11 +730,8 @@ app.get("/train/:subject/choose_units", (req, res) => {
         if (req.user.rating[req.params.subject.toLowerCase()] == -1) { //check to see if redir needed
             res.redirect("/train/" + req.params.subject + "/proficiency"); //ROUTING FIX
         }
-
         else {
-
             res.render(__dirname + '/views/private/' + 'train_chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum, unitPresets: presetUnitOptions[req.params.subject] });
-
         }
     }
     else {
