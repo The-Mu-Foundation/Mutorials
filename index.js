@@ -356,24 +356,26 @@ app.post('/email_check', (req, res, next) => {
 app.post("/selQ", (req, res, next) => {
     //select question
     //var subj = null;
-    var units = null;
-    /*
-    if (req.body.qNum == 0) {
-        subj = req.body.subj;
-        res.redirect("/train/" + req.body.subj + "/choose_units");
-    }
-    */
-    if (req.body.qNum == 1) {
-        units = req.body.unitChoice;
-        if (units) { //nothing happens if units is empty
-            res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
+    if(req.isAuthenticated()){
+        var units = null;
+        /*
+        if (req.body.qNum == 0) {
+            subj = req.body.subj;
+            res.redirect("/train/" + req.body.subj + "/choose_units");
         }
-        if(!units){
-            res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
-        }
-        //app.set("questionz", questions);
-        //units cannot have commas
+        */
+        if (req.body.qNum == 1) {
+            units = req.body.unitChoice;
+            if (units) { //nothing happens if units is empty
+                res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
+            }
+            if(!units){
+                res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
+            }
+            //app.set("questionz", questions);
+            //units cannot have commas
 
+        }
     }
 });
 
@@ -736,9 +738,9 @@ app.get("/train/:subject/proficiency", (req, res) => {
     // called when rating isn't set for subject
     if (req.isAuthenticated()) {
         if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
-            req.user.rating[req.params.subject.toLowerCase()] = 0;
+            //req.user.rating[req.params.subject.toLowerCase()] = 0;
             //req.user.save();
-            db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+            //db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
             res.render(__dirname + '/views/private/' + 'train_onetime_setProficiency.ejs', { subject: req.params.subject });
         }
         else {
