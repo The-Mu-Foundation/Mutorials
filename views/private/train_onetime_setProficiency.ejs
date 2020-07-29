@@ -5,38 +5,6 @@
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
-<!--
-<div class="container-md">
-    <br>
-	<h3 style="text-align: center;">What is your estimated proficiency level in <%= subject %>?</h3>
-	<br>
-	<form action="/private/initialRating" method="POST">	
-		<input class="btn btn-outline-primary btn-lg" type="submit" value="Beginner">
-		<input type="hidden" name="subject" value="<%=subject%>">
-		<input type="hidden" name="level" value="500">
-	</form>
-	<br>
-	<form action="/private/initialRating" method="POST">	
-		<input class="btn btn-outline-primary btn-lg" type="submit" value="Intermediate">
-		<input type="hidden" name="subject" value="<%=subject%>">
-		<input type="hidden" name="level" value="1000">
-	</form>
-	<br>
-	<form action="/private/initialRating" method="POST">	
-		<input class="btn btn-outline-primary btn-lg" type="submit" value="Advanced">
-		<input type="hidden" name="subject" value="<%=subject%>">
-		<input type="hidden" name="level" value="1500">
-	</form>
-	<h3 class="mt-4">What do these levels mean?</h3>
-	<h6>Beginner:</h6>
-	<p>Equivalent to starters, or those who take courses on a middle school level</p>
-	<h6>Intermediate:</h6>
-	<p>Equivalent to those who take Honors program courses or in general, courses on a high school level</p>
-	<h6>Advanced:</h6>
-	<p>Equivalent to students enrolled in an AP level course or above</p>
-</div>
--->
-
 
 <script>
 
@@ -82,66 +50,52 @@
 
 </script>
 
-<h1 class="my-5 container text-center display-2">Welcome to Mutorials!</h1>
+<h1 class="my-5 container text-center display-2">Proficiency in <%= subject %></h1>
 
 <div class="jumbotron container">
 
     <%- include("../partials/flashes") -%>
 
     <div class="row">
-		<form action="/private/initialRating" method="POST">
-			<div class="col-4">	
-				<input type="image" class="thumbnail rounded" alt="Beginner" src="..." id="Beginner">
-				<input type="hidden" name="subject" value="<%=subject%>">
-				<input type="hidden" name="level" value="500">
-			</div>
-		</form>
-		<br>
-		<form action="/private/initialRating" method="POST">
-			<div class="col-4">		
-				<input type="image" class="thumbnail rounded" alt="Intermediate" src="..." id="Intermediate">
-				<input type="hidden" name="subject" value="<%=subject%>">
-				<input type="hidden" name="level" value="1300">
-			</div>
-		</form>
-		<br>
-		<form action="/private/initialRating" method="POST">
-			<div class="col-4">	
-				<input type="image" class="thumbnail rounded" alt="Advanced" src="..." id="Advanced">
-				<input type="hidden" name="subject" value="<%=subject%>">
-				<input type="hidden" name="level" value="2100">
-			</div>
-		</form>
-	<!--
         <div class="col-4">
-            <a href="/train/Physics/choose_units"><img id="physics-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics icon"></a>
+            <form action="/private/initialRating" method="POST">
+                    <input type="image" class="thumbnail rounded" alt="Beginner" src="https://f000.backblazeb2.com/file/mutorials/icons/Prof_Beg.svg" id="Beginner">
+                    <input type="hidden" name="subject" value="<%=subject%>">
+                    <input type="hidden" name="level" value="500">
+            </form>
+        </div>
+        <div class="col-4">
+            <form action="/private/initialRating" method="POST">
+                    <input type="image" class="thumbnail rounded" alt="Intermediate" src="https://f000.backblazeb2.com/file/mutorials/icons/Prof_Int.svg" id="Intermediate">
+                    <input type="hidden" name="subject" value="<%=subject%>">
+                    <input type="hidden" name="level" value="1300">
+            </form>
+        </div>
+        <div class="col-4">	
+            <form action="/private/initialRating" method="POST">
+                    <input type="image" class="thumbnail rounded" alt="Advanced" src="https://f000.backblazeb2.com/file/mutorials/icons/Prof_Adv.svg" id="Advanced">
+                    <input type="hidden" name="subject" value="<%=subject%>">
+                    <input type="hidden" name="level" value="2100">
+            </form>
         </div>
 
-        <div class="col-4">
-            <a href="/train/Chemistry/choose_units"><img id="chem-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Physics icon"></a>
-        </div>
-
-        <div class="col-4">
-            <a href="/train/Biology/choose_units"><img id="bio-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Physics icon"></a>
-        </div>
-	-->
     </div>
 
     <div class="card text-center border-primary mt-4" id="description-card">
 
         <div class="card-body" id="default-card">
             <h5 class="card-title">Proficiency</h5>
-            <p class="card-text">Select your current skill level at <%=subject%> to set your initial rating.</p>
+            <p class="card-text">Select your current skill level at <%=subject%> to set your initial rating</p>
         </div>
 
         <div class="card-body" id="Beginner-Card">
             <h5 class="card-title">Beginner</h5>
-            <p class="card-text">Equivalent to starters, or those who take courses on a middle school level. Questions here are mostly conceptual.</p>
+            <p class="card-text">Corresponding to starters, or those who take courses on a middle school level. Questions here are mostly conceptual.</p>
         </div>
 
         <div class="card-body" id="Intermediate-Card">
             <h5 class="card-title">Intermediate</h5>
-            <p class="card-text">Equivalent to those who take Honors program courses or in general, courses on a high school level. Questions here may involve simple math.</p>
+            <p class="card-text">Significant of those who take Honors program courses or in general, courses on a high school level. Questions here may involve simple math.</p>
         </div>
 
         <div class="card-body" id="Advanced-Card">
