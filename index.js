@@ -1,3 +1,4 @@
+//
 // MODULE IMPORTS
 
 const bodyParser = require("body-parser");
@@ -244,17 +245,13 @@ app.post('/register', (req, res, next) => {
                     //passport.authenticate('local', {failureRedirect: "/signin", successRedirect: '/train'});
                     console.log(user);
                 });
-            req.flash('success_flash', 'We successfully signed you up!');
-        }
-        if (!user.email_confirm_code) {
-            console.log(user.email_confirm_code);
+            req.flash('success_flash', 'We successfully signed you up! You need to confirm your email. Please check your email for instructions.');
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
-            confirm_code = buf.toString('hex');
-            db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
-                email_validation.email_code_send(req.user.username, confirm_code);
+                confirm_code = buf.toString('hex');
+                db.collection('users').findOneAndUpdate({ username: }, { $set: { email_confirm_code: confirm_code } });
+                email_validation.email_code_send(req.body.username, confirm_code);
             });
-            req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
         }
         res.redirect('/signin');
     });
@@ -521,7 +518,7 @@ app.post("/changeInfo", (req, res) => {
                         confirm_code = buf.toString('hex');
                         db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
                     });
-                    req.flash('success_flash', "You need to confirm your email. Please check your email to confirm it.");
+                    req.flash('success_flash', "Email changed. You need to confirm your email. Please check your email to confirm it.");
                     db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
                     console.log("email updated");
                 }
@@ -533,7 +530,6 @@ app.post("/changeInfo", (req, res) => {
         console.log("log marker 1");
 
         if(req.body.newpw) {
-
             if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
                 if (req.body.newpw == req.body.confirmnewpw) {
                     const newPass = genPassword(req.body.newpw);
