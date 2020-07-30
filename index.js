@@ -371,6 +371,8 @@ app.post("/selQ", (req, res, next) => {
         } else {
             req.flash('error_flash', 'Please select a unit.');
             res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
+        }
+    }
     if(req.isAuthenticated()){
         var units = null;
         /*
@@ -791,7 +793,7 @@ app.get("/train/:subject/display_question", (req, res) => {
         ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
         floor = ceilingFloor.floor;
         ceiling = ceilingFloor.ceiling;
-        
+
         // no cache
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         res.setHeader("Pragma", "no-cache");
