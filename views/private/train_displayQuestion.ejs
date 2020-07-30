@@ -91,11 +91,17 @@
         <% if((newQues.question == "") || (newQues.rating == null) || (newQues.answer[0] == "") || (newQues.answer_ex == "")) { %>
             <% throw "bad question parameters"; %>
         <% } %>
-
+        <p class="lead">
+            <p style="color: #0275d8">Question Rating: <%= newQues.rating %></p>
+            <p style="color: #0275d8">User Rating: <%= user.rating[subject.toLowerCase()] %></p>
+            <% if(newQues.ext_source != "original") { %>
+                <p>Question Source: <%= newQues.ext_source %></p>
+            <% } %>
+        </p>
         <!-- DISPLAY QUESTION -->
         <% if(newQues.type == "mc") { %>
             <!-- CODE FOR MULTIPLE CHOICE -->
-            <h3>Please read the following question and select the best answer:</h3>
+            <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
             <p><%- newQues.question %></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="mc-choices">
@@ -116,7 +122,7 @@
             </form>
         <% } else if(newQues.type == "sa") { %>
             <!-- CODE FOR SELECT ALL  -->
-            <h3>Please read the following and select ALL choices that apply:</h3>
+            <h3 class="display-4" style="font-size: 1.5rem;">Please read the following and select ALL choices that apply:</h3>
             <p><%- newQues.question %></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4" id="sa-choices">
@@ -137,7 +143,7 @@
             </form>
         <% } else if(newQues.type == "fr") { %>
             <!-- CODE FOR FREE RESPONSE -->
-            <h3>Please read the following question and enter your answer in the box:</h3>
+            <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and enter your answer in the box:</h3>
             <p><%- newQues.question %></p>
             <form action="/train/checkAnswer" method="POST">
                 <div class="mt-4">
@@ -158,12 +164,7 @@
         <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
         <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
         
-        <h3 class="mt-4 mb-2">Additional Info</h3>
-        <p>Question Rating: <%= newQues.rating %></p>
-        <p>User Rating: <%= user.rating[subject.toLowerCase()] %></p>
-        <% if(newQues.ext_source != "original") { %>
-            <p>Question Source: <%= newQues.ext_source %></p>
-        <% } %>
+        <!--<h3 class="mt-4 mb-2">Additional Info</h3>-->
 
     <% } catch(err) { %>
 
