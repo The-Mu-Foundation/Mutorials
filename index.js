@@ -249,7 +249,7 @@ app.post('/register', (req, res, next) => {
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
                 confirm_code = buf.toString('hex');
-                db.collection('users').findOneAndUpdate({ username: }, { $set: { email_confirm_code: confirm_code } });
+                db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
                 email_validation.email_code_send(req.body.username, confirm_code);
             });
         }
@@ -397,9 +397,8 @@ app.post("/selQ", (req, res, next) => {
 app.post("/train/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
 
-        // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
-        if (req.body.type == "mc" && req.body.answerChoice != undefined) {
-                var isRight = false;
+        if (req.body.type == "mc" && req.body.answerChoice) {
+            var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
                 // add rating (undo skip question)
@@ -422,7 +421,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
         }
-        else if (req.body.type == "sa" && req.body.saChoice != undefined) {
+        else if (req.body.type == "sa" && req.body.saChoice) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
@@ -447,7 +446,6 @@ app.post("/train/checkAnswer", (req, res, next) => {
         else if (req.body.type == "fr" && req.body.freeAnswer != "") {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
-
                 // add rating (undo skip question)
                 req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
@@ -467,6 +465,13 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
+        } else if (!req.body.answerChoice || !req.body.saChoice || req.body.freeAnswer == "") {
+            req.flash('error_flash', 'Please enter an answer!');
+            res.locals.question_id = req.body.id;
+            res.redirect('/train/display_question');
+        } else {
+            req.flash('error_flash', 'We ran into a problem grading your problem. Sorry!');
+            res.redirect('/train/display_question', );
         }
     }
     else {
@@ -793,6 +798,10 @@ app.get("/train/:subject/display_question", (req, res) => {
         // get question
         const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
+            if (res.locals.question_id) {
+                curQ = res.locals.question_id;
+                res.locals.question_id = undefined;
+            }
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
         });
     }
