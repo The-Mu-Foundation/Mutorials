@@ -363,16 +363,7 @@ app.post("/selQ", (req, res, next) => {
         res.redirect("/train/" + req.body.subj + "/choose_units");
     }
     */
-    if (req.body.qNum == 1) {
-        units = req.body.unitChoice;
-        console.log(units);
-        if (units) { //nothing happens if units is empty
-            res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
-        } else {
-            req.flash('error_flash', 'Please select a unit.');
-            res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
-        }
-    }
+
     if(req.isAuthenticated()){
         var units = null;
         /*
