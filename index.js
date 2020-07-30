@@ -246,6 +246,16 @@ app.post('/register', (req, res, next) => {
                 });
             req.flash('success_flash', 'We successfully signed you up!');
         }
+        if (!user.email_confirm_code) {
+            console.log(user.email_confirm_code);
+            var confirm_code;
+            require('crypto').randomBytes(6, function (ex, buf) {
+            confirm_code = buf.toString('hex');
+            db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
+                email_validation.email_code_send(req.user.username, confirm_code);
+            });
+            req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
+        }
         res.redirect('/signin');
     });
 });
@@ -593,18 +603,6 @@ app.get('/forgot_password', (req, res) => {
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
-        db.collection("users").findOne({ username: req.user.username }).then((user) => {
-            if (!user.email_confirm_code) {
-                console.log(user.email_confirm_code);
-                var confirm_code;
-                require('crypto').randomBytes(6, function (ex, buf) {
-                confirm_code = buf.toString('hex');
-                db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
-                    email_validation.email_code_send(req.user.username, confirm_code);
-                });
-                req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
-            }
-        });
         if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
