@@ -173,10 +173,10 @@ app.post('/forgot_password_check', (req, res, next) => {
 // `username` is email
 // `ign` is username
 app.post('/register', (req, res, next) => {
-    req.body.username = req.body.username.toLowerCase();
-    req.body.ign = req.body.ign.toLowerCase();
+    var username_lower = req.body.username.toLowerCase();
+    var ign_lower = req.body.ign.toLowerCase();
     var register_input_problems_1 = false;
-    if (req.body.ign.length < 1) {
+    if (ign_lower.length < 1) {
         req.flash('error_flash', 'Please enter a username.');
         register_input_problems_1 = true;
     }
@@ -184,8 +184,8 @@ app.post('/register', (req, res, next) => {
         req.flash('error_flash', 'The password you entered does not meet the requirements.');
         register_input_problems_1 = true;
     }
-    if (!email_validation.regex_check(req.body.username)) {
-        console.log(req.body.username);
+    if (!email_validation.regex_check(username_lower)) {
+        console.log(username_lower);
         req.flash('error_flash', 'The email you entered is not valid.');
         register_input_problems_1 = true;
     }
@@ -200,8 +200,8 @@ app.post('/register', (req, res, next) => {
     const salt = saltHash.salt;
     const hash = saltHash.hash;
     const newUser = new User({
-        username: req.body.username,
-        ign: req.body.ign,
+        username: username_lower,
+        ign: ign_lower,
         hash: hash,
         salt: salt,
         profile: {
@@ -223,11 +223,11 @@ app.post('/register', (req, res, next) => {
         }
     });
     // check for duplicate user
-    db.collection('users').findOne({ username: req.body.username }).then((user) => {
+    db.collection('users').findOne({ username: username_lower }).then((user) => {
         if (user) {
             console.log("used");
             var register_input_problems_2 = false;
-            if (user.ign == req.body.ign) {
+            if (user.ign == ign_lower) {
                 req.flash('error_flash', 'This username is already taken.');
                 register_input_problems_2 = true;
             } else { // has to be matching email
@@ -249,8 +249,8 @@ app.post('/register', (req, res, next) => {
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
                 confirm_code = buf.toString('hex');
-                db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
-                email_validation.email_code_send(req.body.username, confirm_code);
+                db.collection('users').findOneAndUpdate({ username: username_lower }, { $set: { email_confirm_code: confirm_code } });
+                email_validation.email_code_send(username_lower, confirm_code);
             });
         }
         res.redirect('/signin');
@@ -799,10 +799,12 @@ app.get("/train/:subject/display_question", (req, res) => {
         const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
         });
-        if (curQ.length) {
-            req.flash('error_flash', 'We\'re sorry, but we don\'t have any problems in that unit right now.');
-            res.redirect('/train/' + req.params.subject + '/choose_units');
-        }
+        Promise.all([qs]).then((values) => {
+            if (values[1].length) {
+                req.flash('error_flash', 'We\'re sorry, but we don\'t have any problems in that unit right now.');
+                res.redirect('/train/' + req.params.subject + '/choose_units');
+            }
+        });
         res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
     } else {
         res.redirect("/");
