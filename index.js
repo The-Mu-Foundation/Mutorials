@@ -381,11 +381,12 @@ app.post("/selQ", (req, res, next) => {
         */
         if (req.body.qNum == 1) {
             units = req.body.unitChoice;
-            if (units) { //nothing happens if units is empty
+            if (units) {
                 res.redirect("/train/" + req.body.subj + "/display_question?units=" + units.toString());
             }
-            if(!units){
-                res.redirect("/train/" + req.body.subj + "/choose_units"); //maybe flash
+            if (!units) {
+                req.flash('error_flash', 'Please select a unit.');
+                res.redirect("/train/" + req.body.subj + "/choose_units");
             }
             //app.set("questionz", questions);
             //units cannot have commas
@@ -797,7 +798,9 @@ app.get("/train/:subject/display_question", (req, res) => {
         // get question
         const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
-            debugger;
+            if (curQ.length) {
+                req.flash('error_flash', 'We\'re sorry, but we don\'t have any problems in that unit right now.');
+                res.redirect('/train/' + req.params.subject + '/choose_units');
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
         });
     } else {
