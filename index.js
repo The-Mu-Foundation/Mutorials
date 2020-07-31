@@ -389,18 +389,15 @@ app.post("/selQ", (req, res, next) => {
             }
             //app.set("questionz", questions);
             //units cannot have commas
-
         }
     }
 });
 
 app.post("/train/checkAnswer", (req, res, next) => {
     if (req.isAuthenticated()) {
-
         if (req.body.type == "mc" && req.body.answerChoice) {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
-
                 // add rating (undo skip question)
                 req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
@@ -468,7 +465,6 @@ app.post("/train/checkAnswer", (req, res, next) => {
         } else {
             if (!req.body.answerChoice || !req.body.saChoice || req.body.freeAnswer == "") {
                 req.flash('error_flash', 'Please enter an answer!');
-                res.locals.question_id = req.body.id;
             } else {
                 req.flash('error_flash', 'We ran into a problem grading your problem. Sorry!');
             }
@@ -800,10 +796,7 @@ app.get("/train/:subject/display_question", (req, res) => {
         // get question
         const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
             curQ = qs[Math.floor(Math.random() * qs.length)];
-            if (res.locals.question_id) {
-                curQ = res.locals.question_id;
-                res.locals.question_id = undefined;
-            }
+            debugger;
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
         });
     } else {

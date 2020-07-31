@@ -71,12 +71,12 @@
 
                 // FREE RESPONSE RESPONSE CHECK
                 response = $("#fr-answer").val();
-                
+
                 if(response == "") {
                     $("#fr-answerblank").show(1000);
                 }
             }
-            
+
             // NOT POSTING WITH JQUERY; but if we did a post message would go here
         });
     });
@@ -84,7 +84,7 @@
 </script>
 
 <div class="jumbotron container mt-5">
-    
+    <%- include("../partials/flashes") -%>
     <% try { %>
 
         <!-- Test for faulty question -->
@@ -163,7 +163,7 @@
 
         <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
         <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
-        
+
         <!--<h3 class="mt-4 mb-2">Additional Info</h3>-->
 
     <% } catch(err) { %>
@@ -184,10 +184,10 @@
 		<h3>Question's content out of reach of your knowledge?</h3>
 		<button type="button" class="btn btn-primary mt-2" id="skip-button">Skip Question</button>
 	</div>
-	
+
 	<div id="skip-dialogue-2">
 		<h3>Are you sure you want to skip this question?</h3>
-		<p>A new question will be randomly chosen, but you will lose 5 rating for skipping</p>
+		<p>A new question will be randomly chosen, but you will lose 5 rating for skipping.</p>
 		<button type="button" class="btn btn-secondary" id="no-skip">No</button>
 		<a href="/train/<%= subject %>/display_question?units=<%=units%>"><button type="button" class="btn btn-primary" id="yes-skip">Yes</button></a>
 	</div>
