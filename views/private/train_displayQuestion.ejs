@@ -118,6 +118,9 @@
     <% try { %>
 
         <!-- Test for faulty question -->
+        <% if (!newQues) { %>
+            <% throw "no questions found"; %>
+        <% } %>
         <% if((newQues.question == "") || (newQues.rating == null) || (newQues.answer[0] == "") || (newQues.answer_ex == "")) { %>
             <% throw "bad question parameters"; %>
         <% } %>
@@ -211,15 +214,19 @@
     <% } catch(err) { %>
 
         <!-- ERROR CODE -->
-        <h3>Someone messed up their equations! Perhaps they said $\sin^2(\theta)+\cos^2(\theta) \neq 1$ ?</h3>
-        <p>Sorry, we could not display your question. Please reenter the trainer and inform an admin that the question with ID <font color="red"><%= newQues._id %></font> is dysfunctional.</p>
+        <% if(err=="bad question parameters") { %>
+            <h3>Someone messed up their equations! Perhaps they said $\sin^2(\theta)+\cos^2(\theta) \neq 1$ ?</h3>
+            <p>Sorry, we could not display your question. Please reenter the trainer and inform an admin that the question with ID <font color="red"><%= newQues._id %></font> is dysfunctional.</p>
 
-        <a href="/train" class="btn btn-primary btn-block btn-lg mt-4">Click me to go back</a>
+        <% } else { %>
+            <h3>We're sorry, we weren't able to find any problems in this unit.</h3>
+            <p>We're adding new problems constantly... Check back soon!</p>
 
-    <% } %>
+            <a href="/train" class="btn btn-primary btn-block btn-lg mt-4">Click me to go back</a>
+        <% } %>
 
 </div>
-
+<% if (typeof err == 'undefined') { %>
 <div class="jumbotron container">
 
 	<div id="skip-dialogue-1">
@@ -235,5 +242,11 @@
 	</div>
 
 </div>
+<% } %>
 
+<<<<<<< HEAD
 <%- include("../partials/footer") -%>
+=======
+    <% } %>
+<%- include("../partials/footer") -%>
+>>>>>>> 6c603aa... no problem found flashes

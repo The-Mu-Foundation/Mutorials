@@ -813,8 +813,12 @@ app.get("/train/:subject/display_question", (req, res) => {
             curQ = qs[Math.floor(Math.random() * qs.length)];
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
         });
+<<<<<<< HEAD
     }
     else {
+=======
+    } else {
+>>>>>>> 6c603aa... no problem found flashes
         res.redirect("/");
     }
 });
