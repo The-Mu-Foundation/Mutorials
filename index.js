@@ -801,6 +801,7 @@ app.get("/train/:subject/display_question", (req, res) => {
             if (curQ.length) {
                 req.flash('error_flash', 'We\'re sorry, but we don\'t have any problems in that unit right now.');
                 res.redirect('/train/' + req.params.subject + '/choose_units');
+            }
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
         });
     } else {
