@@ -538,6 +538,7 @@ app.post("/changeInfo", (req, res) => {
                     req.user.hash = newPass.hash;
                     req.user.salt = newPass.salt;
                     db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+                    req.flash('success_flash', 'We changed your password.');
                 } else {
                     req.flash('error_flash', 'passwords don\'t match');
                 }
