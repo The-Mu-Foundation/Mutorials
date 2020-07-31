@@ -465,13 +465,16 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
             });
-        } else if (!req.body.answerChoice || !req.body.saChoice || req.body.freeAnswer == "") {
-            req.flash('error_flash', 'Please enter an answer!');
-            res.locals.question_id = req.body.id;
-            res.redirect('/train/display_question');
         } else {
-            req.flash('error_flash', 'We ran into a problem grading your problem. Sorry!');
-            res.redirect('/train/display_question', );
+            const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+                if (!req.body.answerChoice || !req.body.saChoice || req.body.freeAnswer == "") {
+                    req.flash('error_flash', 'Please enter an answer!');
+                    res.locals.question_id = req.body.id;
+                } else {
+                    req.flash('error_flash', 'We ran into a problem grading your problem. Sorry!');
+                }
+                res.redirect('/train/' + antsy.subject[0] + '/display_question');
+            });
         }
     }
     else {
@@ -804,8 +807,7 @@ app.get("/train/:subject/display_question", (req, res) => {
             }
             res.render(__dirname + '/views/private/' + 'train_displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
         });
-    }
-    else {
+    } else {
         res.redirect("/");
     }
 });
