@@ -1,4 +1,3 @@
-//
 // MODULE IMPORTS
 
 const bodyParser = require("body-parser");
@@ -10,6 +9,7 @@ var flash = require("express-flash-messages");
 const session = require("express-session");
 const InitiateMongoServer = require("./database/config/db");
 const email_validation = require('./utils/functions/email_validation');
+const { verify } = require('hcaptcha');
 
 // SCHEMA, FUNCTION, AND CONSTANT IMPORTS
 
@@ -26,6 +26,10 @@ const { tags } = require("./utils/constants/tags");
 const { adminList, contributorList } = require("./utils/constants/sitesettings");
 
 
+// hCAPTCHA CONFIG
+
+const hcaptcha_secret = '0x3eA6e571024374bFEA61bdef1E29Afa34F089Acf';
+const hcaptcha_token = 'token from widget';
 
 // START MONGO SERVER
 InitiateMongoServer();
@@ -51,25 +55,36 @@ app.use(session({
 }));
 
 // PASSPORT CODE
-passport.use(new LocalStrategy(
+passport.use(new LocalStrategy({
+        passReqToCallback: true,
+    },
     // called when passport.authenticate is used()
-    function (username, password, cb) {
+    function (req, username, password, cb) {
         username = username.toLowerCase();
-        User.find({ username: username })
-            .then((user) => {
+
+        verify(secret, token).then((data) => { // hCaptcha check
+            console.log('hCaptcha: ' + data);
+        }).catch(console.error);
+
+        User.find({ username: username }).then((user) => {
                 if (!user[0]) { return cb(null, false); }
 
                 const isValid = validPassword(password, user[0].hash, user[0].salt);
 
-                if (isValid) {
+                if (user.login_tries > 3) {
+                    req.flash('error_flash', 'You\'ve run out of tries. Please click on \'Forgot Password\' to reset your password.');
+                    cb(null, false);
+                } else if (isValid) {
+                    db.collection('users').findOneAndUpdate({ username: username }, { $set: { login_tries: 0 } });
+                    req.flash('success_flash', 'Successfully signed in.');
                     return cb(null, user[0]);
                 } else {
-
+                    db.collection('users').findOneAndUpdate({ username: username }, { $set: { login_tries: user.login_tries+1 } });
+                    req.flash('error_flash', 'Invalid username and/or password. You have ' + 3-(user.login_tries+1) + ' tries remaining.');
                     return cb(null, false);
                 }
 
-            })
-            .catch((err) => {
+            }).catch((err) => {
                 cb(err);
             });
     }
@@ -94,6 +109,7 @@ app.use(function (req, res, next) {
     res.locals.error_flash = req.flash('error_flash');
     next();
 });
+
 // POST ROUTES
 
 app.post('/login', passport.authenticate('local', {
@@ -180,16 +196,22 @@ app.post('/register', (req, res, next) => {
         req.flash('error_flash', 'Please enter a username.');
         register_input_problems_1 = true;
     }
+    if (ign_lower.length > 20) {
+        req.flash('error_flash', 'Your username is too long. Please enter a username shorter than 20 characters.');
+        register_input_problems_1 = true;
+    }
     if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
         req.flash('error_flash', 'The password you entered does not meet the requirements.');
         register_input_problems_1 = true;
     }
-    if (!email_validation.regex_check(username_lower)) {
-        console.log(username_lower);
+    if (!email_validation.regex_check(username_lower) ) {
         req.flash('error_flash', 'The email you entered is not valid.');
         register_input_problems_1 = true;
     }
-
+    if (username_lower.length > 80) {
+        req.flash('error_flash', 'The email you entered is too long. Please enter an email shorter than 80 characters.');
+        register_input_problems_1 = true;
+    }
     if (register_input_problems_1) {
         res.redirect('/signup');
         return; // to prevent ERR_HTTP_HEADERS_SENT
@@ -210,7 +232,6 @@ app.post('/register', (req, res, next) => {
             age: "",
             bio: ""
         },
-        // if email_confirm_code == 0, then email is confirmed
         stats: {
             correct: 0,
             wrong: 0,
@@ -249,7 +270,7 @@ app.post('/register', (req, res, next) => {
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
                 confirm_code = buf.toString('hex');
-                db.collection('users').findOneAndUpdate({ username: username_lower }, { $set: { email_confirm_code: confirm_code } });
+                db.collection('users').findOneAndUpdate({ username: username_lower }, { $set: /* new fields */ { email_confirm_code: confirm_code, login_tries: 0 } });
                 email_validation.email_code_send(username_lower, confirm_code);
             });
         }
@@ -483,10 +504,26 @@ app.post("/changeInfo", (req, res) => {
 
         // change profile settings
 
-        req.user.profile.name = req.body.name;
-        req.user.profile.bio = req.body.bio;
-        req.user.profile.location = req.body.location;
-        req.user.profile.age = req.body.age;
+        if (req.body.name.length < 50) {
+            req.user.profile.name = req.body.name;
+        } else {
+            req.flash('error_flash', 'Please enter a name less than 50 characters long.');
+        }
+        if (req.body.bio.length < 150) {
+            req.user.profile.bio = req.body.bio;
+        } else {
+            req.flash('error_flash', 'Your bio must be less than 150 characters long.');
+        }
+        if (req.body.location.length < 80) {
+            req.user.profile.location = req.body.location;
+        } else {
+            req.flash('error_flash', 'Please enter a location with less than 80 characters.');
+        }
+        if (req.body.age < 150 && req.body.age > -1) {
+            req.user.profile.age = req.body.age;
+        } else {
+            req.flash('error_flash', 'You\'re not older than 150 years old, and you\'re definitely not younger than 0 years old. 😉');
+        }
 
         db.collection("users").findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
 
@@ -840,12 +877,22 @@ app.get("/admin/addedFailure", (req, res) => {
         res.redirect("/");
     }
 });
+app.get('/error', (req, res) => {
+    res.render(__dirname + '/views/error.ejs');
+});
 
 
 // WILDCARD FOR ALL OTHER ROUTES
 
 app.get("*", (req, res) => {
     res.redirect("/");
+});
+
+process.on('uncaughtException', function (err, req, res) {
+    console.error((new Date).toUTCString() + ' uncaughtException:', err.message);
+    console.error(err.stack);
+    res.redirect('/error');
+    process.exit(1);
 });
 
 // START NODE SERVER
