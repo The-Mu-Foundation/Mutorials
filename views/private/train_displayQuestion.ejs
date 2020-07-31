@@ -31,7 +31,7 @@
 			$("#skip-dialogue-2").hide(1000);
         });
 
-        
+
         // render rating display
         var ctx_rating = document.getElementById("ratingChart");
 
@@ -114,7 +114,7 @@
 </script>
 
 <div class="jumbotron container mt-5">
-    
+
     <% try { %>
 
         <!-- Test for faulty question -->
@@ -195,14 +195,14 @@
                     </form>
                 <% } else { %>
                     <% throw "invalid type"; %>
-                <% } %>                
+                <% } %>
 
             </div>
 
             <div class="col-2">
 
                 <div class="canvas-container-center text-center">
-                    <canvas id="ratingChart" width="400" height="1000"></canvas>            
+                    <canvas id="ratingChart" width="400" height="1000"></canvas>
                 </div>
                 <input type="hidden" id="userRating" value="<%= user.rating[subject.toLowerCase()] %>">
                 <input type="hidden" id="questionRating" value="<%= newQues.rating %>">
@@ -233,7 +233,7 @@
 		<h3 class="display-4" style="font-size: 1.5rem;">Question's content out of reach of your knowledge?</h3>
 		<button type="button" class="btn btn-primary mt-2" id="skip-button">Skip Question</button>
 	</div>
-	
+
 	<div id="skip-dialogue-2">
 		<h3 class="display-4" style="font-size: 1.5rem;">Are you sure you want to skip this question?</h3>
 		<p>A new question will be randomly chosen, but you will lose 8 rating for skipping</p>
@@ -243,10 +243,4 @@
 
 </div>
 <% } %>
-
-<<<<<<< HEAD
 <%- include("../partials/footer") -%>
-=======
-    <% } %>
-<%- include("../partials/footer") -%>
->>>>>>> 6c603aa... no problem found flashes
