@@ -106,54 +106,9 @@
         });
 
 
-        // hide empty response messages
-        $("#fr-answerblank").hide(0);
-        $("#mc-answerblank").hide(0);
+        // decheck all
+        $('.custom-control-input').prop('checked', false);
 
-        // upon hitting submit button
-        var response = "";
-        $("#submit").click(function () {
-            if(type == "mc") {
-
-                // MULTIPLE CHOICE RESPONSE CHECK
-                //var choices = document.getElementById("mc-choices").elements;
-                var choices = document.querySelectorAll('#mc-choices input[type="radio"]');
-                for(let i = 0; i < choices.length; i++) {
-                    if(choices[i].checked) {
-                        response = choices[i].id;
-                    }
-                }
-
-                if(response == "") {
-                    $("#mc-answerblank").show(1000);
-                }
-            } else if(type == "sa") {
-
-                // SELECT ALL REPSONSE CHECK
-                response = [];
-                //var choices = document.getElementById("sa-choices").elements;
-                var choices = document.querySelectorAll('#sa-choices input[type="checkbox"]');
-                for(let i = 0; i < choices.length; i++) {
-                    if(choices[i].checked) {
-                        response.push(choices[i].id);
-                    }
-                }
-
-                if(response.length == 0) {
-                    $("#mc-answerblank").show(1000);
-                }
-            } else if(type == "fr") {
-
-                // FREE RESPONSE RESPONSE CHECK
-                response = $("#fr-answer").val();
-                
-                if(response == "") {
-                    $("#fr-answerblank").show(1000);
-                }
-            }
-            
-            // NOT POSTING WITH JQUERY; but if we did a post message would go here
-        });
     });
 
 </script>
@@ -226,7 +181,7 @@
                     <form action="/train/checkAnswer" method="POST">
                         <div class="mt-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer">
+                                <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
                             </div>
                             <input class="btn btn-primary" type="submit" value="Submit" id="submit">
                         </div>
@@ -237,12 +192,7 @@
                     </form>
                 <% } else { %>
                     <% throw "invalid type"; %>
-                <% } %>
-
-                <h4 class="my-4" id="fr-answerblank"><font color="red">You haven't entered a response yet!</font></h4>
-                <h4 class="my-4" id="mc-answerblank"><font color="red">You haven't selected an answer yet!</font></h4>
-                
-                <!--<h3 class="mt-4 mb-2">Additional Info</h3>-->
+                <% } %>                
 
             </div>
 

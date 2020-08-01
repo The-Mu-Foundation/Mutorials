@@ -112,7 +112,7 @@ app.post('/forgot_password_check', (req, res, next) => {
         res.redirect('/settings')
     } else {
         if (!req.body.entered_code) {
-            User.count({ username: req.body.username }, function (err, count) {
+            User.countDocuments({ username: req.body.username }, function (err, count) {
                 if (count > 0) {
                     req.flash('success_flash', 'Check your email for the code.');
                     var confirm_code;
@@ -501,7 +501,7 @@ app.post("/changeInfo", (req, res) => {
         // change account settings
 
         if (req.body.ign && req.body.ign != req.user.ign) {
-            User.count({ ign: req.body.ign }, function (err, count) {
+            User.countDocuments({ ign: req.body.ign }, function (err, count) {
                 if (count > 0) {
                     console.log("username exists");
                     req.flash('error_flash', "Sorry, this username already exists.");
@@ -516,7 +516,7 @@ app.post("/changeInfo", (req, res) => {
         }
 
         if(req.body.username && req.body.username != req.user.username) {
-            User.count({ username: req.body.username }, function (err, count) {
+            User.countDocuments({ username: req.body.username }, function (err, count) {
                 if (count > 0) {
                     console.log("email exists"); // flash
                     req.flash('error_flash', "We already have an account with that email. Try signing in with that one.");
