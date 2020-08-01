@@ -106,9 +106,8 @@
         });
 
 
-        // hide empty response messages
-        $("#fr-answerblank").hide(0);
-        $("#mc-answerblank").hide(0);
+        // decheck all
+        $('.custom-control-input').prop('checked', false);
 
     });
 
@@ -182,7 +181,7 @@
                     <form action="/train/checkAnswer" method="POST">
                         <div class="mt-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer">
+                                <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
                             </div>
                             <input class="btn btn-primary" type="submit" value="Submit" id="submit">
                         </div>
