@@ -29,7 +29,6 @@ const { adminList, contributorList } = require("./utils/constants/sitesettings")
 // hCAPTCHA CONFIG
 
 const hcaptcha_secret = '0x3eA6e571024374bFEA61bdef1E29Afa34F089Acf';
-const hcaptcha_token = 'token from widget';
 
 // START MONGO SERVER
 InitiateMongoServer();
@@ -62,7 +61,7 @@ passport.use(new LocalStrategy({
     function (req, username, password, cb) {
         username = username.toLowerCase();
 
-        verify(secret, token).then((data) => { // hCaptcha check
+        verify(secret, req.body.h_captcha_response).then((data) => { // hCaptcha check
             console.log('hCaptcha: ' + data);
         }).catch(console.error);
 
@@ -900,3 +899,4 @@ process.on('uncaughtException', function (err, req, res) {
 app.listen(PORT, (req, res) => {
     console.log(`Server Started at PORT ${PORT}`);
 });
+
