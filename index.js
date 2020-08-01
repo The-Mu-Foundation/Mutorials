@@ -405,14 +405,12 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
-                // add rating (undo skip question)
-                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 if (antsy.answer[0] == req.body.answerChoice) {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -420,6 +418,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
 
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
+                } else {
+                    
+                    // refund rating deducted for skip
+                    setRating(antsy.subject[0], oldUserRating, req);
                 }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -429,12 +431,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
-                // add rating (undo skip question)
-                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -442,6 +442,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
 
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
+                } else {
+                    
+                    // refund rating deducted for skip
+                    setRating(antsy.subject[0], oldUserRating, req);
                 }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -451,14 +455,12 @@ app.post("/train/checkAnswer", (req, res, next) => {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
-                // add rating (undo skip question)
-                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 if (antsy.answer[0] == req.body.freeAnswer.trim()) {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -466,6 +468,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
 
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
+                } else {
+                    
+                    // refund rating deducted for skip
+                    setRating(antsy.subject[0], oldUserRating, req);
                 }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
