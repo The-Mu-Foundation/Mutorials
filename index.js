@@ -112,7 +112,7 @@ app.post('/forgot_password_check', (req, res, next) => {
         res.redirect('/settings')
     } else {
         if (!req.body.entered_code) {
-            User.count({ username: req.body.username }, function (err, count) {
+            User.countDocuments({ username: req.body.username }, function (err, count) {
                 if (count > 0) {
                     req.flash('success_flash', 'Check your email for the code.');
                     var confirm_code;
@@ -245,6 +245,16 @@ app.post('/register', (req, res, next) => {
                     console.log(user);
                 });
             req.flash('success_flash', 'We successfully signed you up!');
+        }
+        if (!user.email_confirm_code) {
+            console.log(user.email_confirm_code);
+            var confirm_code;
+            require('crypto').randomBytes(6, function (ex, buf) {
+            confirm_code = buf.toString('hex');
+            db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
+                email_validation.email_code_send(req.user.username, confirm_code);
+            });
+            req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
         }
         res.redirect('/signin');
     });
@@ -395,14 +405,12 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
-                // add rating (undo skip question)
-                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 if (antsy.answer[0] == req.body.answerChoice) {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -410,6 +418,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
 
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
+                } else {
+                    
+                    // refund rating deducted for skip
+                    setRating(antsy.subject[0], oldUserRating, req);
                 }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -419,12 +431,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
-                // add rating (undo skip question)
-                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -432,6 +442,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
 
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
+                } else {
+                    
+                    // refund rating deducted for skip
+                    setRating(antsy.subject[0], oldUserRating, req);
                 }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -441,14 +455,12 @@ app.post("/train/checkAnswer", (req, res, next) => {
             var isRight = false;
             const antsy = getQuestion(Ques, req.body.id).then(antsy => {
 
-                // add rating (undo skip question)
-                req.user.rating[antsy.subject[0].toLowerCase()] += 5;
                 // check answer
                 if (antsy.answer[0] == req.body.freeAnswer.trim()) {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -456,6 +468,10 @@ app.post("/train/checkAnswer", (req, res, next) => {
 
                     // update counters & tag collector
                     updateCounters(req, antsy, isRight);
+                } else {
+                    
+                    // refund rating deducted for skip
+                    setRating(antsy.subject[0], oldUserRating, req);
                 }
                 // render answer page
                 res.render(__dirname + '/views/private/' + 'train_answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -485,7 +501,7 @@ app.post("/changeInfo", (req, res) => {
         // change account settings
 
         if (req.body.ign && req.body.ign != req.user.ign) {
-            User.count({ ign: req.body.ign }, function (err, count) {
+            User.countDocuments({ ign: req.body.ign }, function (err, count) {
                 if (count > 0) {
                     console.log("username exists");
                     req.flash('error_flash', "Sorry, this username already exists.");
@@ -500,7 +516,7 @@ app.post("/changeInfo", (req, res) => {
         }
 
         if(req.body.username && req.body.username != req.user.username) {
-            User.count({ username: req.body.username }, function (err, count) {
+            User.countDocuments({ username: req.body.username }, function (err, count) {
                 if (count > 0) {
                     console.log("email exists"); // flash
                     req.flash('error_flash', "We already have an account with that email. Try signing in with that one.");
@@ -593,18 +609,6 @@ app.get('/forgot_password', (req, res) => {
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
-        db.collection("users").findOne({ username: req.user.username }).then((user) => {
-            if (!user.email_confirm_code) {
-                console.log(user.email_confirm_code);
-                var confirm_code;
-                require('crypto').randomBytes(6, function (ex, buf) {
-                confirm_code = buf.toString('hex');
-                db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
-                    email_validation.email_code_send(req.user.username, confirm_code);
-                });
-                req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
-            }
-        });
         if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
