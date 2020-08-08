@@ -62,7 +62,7 @@ passport.use(new LocalStrategy({
         username = username.toLowerCase();
 
         verify(hcaptcha_secret, req.body.h_captcha_response).then((data) => { // hCaptcha check
-            console.log('hCaptcha: ' + data);
+            console.log('hCaptcha: ', data);
         }).catch(console.error);
 
         User.find({ username: username }).then((user) => {
@@ -75,7 +75,7 @@ passport.use(new LocalStrategy({
                     cb(null, false);
                 } else if (isValid) {
                     db.collection('users').findOneAndUpdate({ username: username }, { $set: { login_tries: 0 } });
-                    req.flash('success_flash', 'Successfully signed in.');
+                    req.flash('success_flash', 'Successfully signed in. Welcome!');
                     return cb(null, user[0]);
                 } else {
                     db.collection('users').findOneAndUpdate({ username: username }, { $set: { login_tries: user.login_tries+1 } });
@@ -113,9 +113,7 @@ app.use(function (req, res, next) {
 
 app.post('/login', passport.authenticate('local', {
     failureRedirect: "/signin",
-    successRedirect: '/homepage',
-    failureFlash: 'Invalid username or password.',
-    successFlash: 'Welcome!'
+    successRedirect: '/homepage'
 }),
     (req, res, next) => {
         console.log("Oh hi");
