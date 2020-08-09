@@ -1,5 +1,9 @@
 <!-- This is code for the unauthed page (main page without logging in) -->
 
+<!-- ARGUMENTS:
+    - userCount - estimated user count
+    - questionCount - estimated question count -->
+
 <%- include("../partials/header") -%>
 
 <script>
@@ -52,6 +56,8 @@
         </div>
 
         <p class="mt-4">Mutorials is a free, adaptive science trainer suited to individual needs.<br>We strive to keep students motivated, and to make them academically excellent.</p>
+        <p>Currently supporting <strong><%= userCount %></strong> users with a database of <strong><%= questionCount %></strong> questions.</p>
+
         <footer class="center"><br><hr><br>Copyright © 2020 The Mu Foundation. All Rights Reserved.</footer>
     </div>
 </div>
