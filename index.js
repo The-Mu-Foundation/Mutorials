@@ -566,7 +566,15 @@ app.post("/changeInfo", (req, res) => {
 
 app.get("/", (req, res) => {
     if (!req.isAuthenticated()) {
-        res.render(__dirname + '/views/public/' + 'index.ejs');
+        //var userCount = 0;
+        //var questionCount = 0;
+        User.estimatedDocumentCount({}, function(err, result) {
+            var userCount = result;
+            Ques.estimatedDocumentCount({}, function(err, result) {
+                var questionCount = result;
+                res.render(__dirname + '/views/public/' + 'index.ejs', { userCount: userCount, questionCount: questionCount });
+            });
+        });
     }
     else {
         res.redirect("/homepage");
