@@ -3,7 +3,8 @@ var adminList = [
     "s-donnerj@bsd405.org",
     "anikad33@gmail.com",
     "vishraj248@gmail.com",
-    "andrewyu6581@gmail.com"
+    "andrewyu6581@gmail.com",
+    "allenwu750@gmail.com"
 ];
 var contributorList = [];
 
