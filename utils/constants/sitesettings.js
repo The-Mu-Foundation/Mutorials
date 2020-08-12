@@ -4,7 +4,9 @@ var adminList = [
     "anikad33@gmail.com",
     "vishraj248@gmail.com",
     "andrewyu6581@gmail.com",
-    "allenwu750@gmail.com"
+    "allenwu750@gmail.com",
+    "ojaswupadhyay@gmail.com",
+    "allbookmonkey@gmail.com"
 ];
 var contributorList = [];
 
