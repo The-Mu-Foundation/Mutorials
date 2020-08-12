@@ -410,7 +410,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -434,7 +434,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -460,7 +460,7 @@ app.post("/train/checkAnswer", (req, res, next) => {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 5;
+                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
                 oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -617,7 +617,7 @@ app.get('/forgot_password', (req, res) => {
 
 app.get("/homepage", (req, res) => {
     if (req.isAuthenticated()) {
-        if ((req.user.username == "mutorialsproject@gmail.com") || (req.user.username == "s-donnerj@bsd405.org")) {
+        if (adminList.includes(req.user.username)) {
             res.render(__dirname + '/views/admin/' + 'adminHomepage.ejs');
         } else {
             res.render(__dirname + '/views/private/' + 'homepage.ejs', { user: req.user });
@@ -804,7 +804,7 @@ app.get("/train/:subject/display_question", (req, res) => {
 
         // deduct rating (skip question)
         var originalRating = getRating(req.params.subject, req);
-        var deduction = originalRating > 5 ? originalRating-5 : 0;
+        var deduction = originalRating > 8 ? originalRating-8 : 0;
         setRating(req.params.subject, deduction, req);
         req.user.rating[req.params.subject.toLowerCase()] = originalRating;
 
