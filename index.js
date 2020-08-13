@@ -61,7 +61,7 @@ passport.use(new LocalStrategy({
     function (req, username, password, cb) {
         username = username.toLowerCase();
 
-        verify(hcaptcha_secret, req.body.h_captcha_response).then((data) => { // hCaptcha check
+        verify(hcaptcha_secret, req.body['h_captcha_response']).then((data) => { // hCaptcha check
             console.log('hCaptcha: ', data);
         }).catch(console.error);
 
