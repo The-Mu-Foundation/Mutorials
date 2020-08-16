@@ -877,5 +877,6 @@ app.get("*", (req, res) => {
 });
 
 // START http AND https SERVERS
-httpsServer.listen(PORT);
-
+app.listen(PORT, (req, res) => {
+    console.log(`Server Started at ${PORT}`);
+});
