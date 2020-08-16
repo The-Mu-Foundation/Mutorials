@@ -245,7 +245,6 @@ app.post('/register', (req, res, next) => {
                     console.log(user);
                 });
             req.flash('success_flash', 'We successfully signed you up!');
-            console.log(user.email_confirm_code);
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
             confirm_code = buf.toString('hex');
