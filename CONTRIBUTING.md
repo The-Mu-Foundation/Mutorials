@@ -9,6 +9,19 @@ Reference [GitHub](https://github.com/The-Mu-Foundation/Mutorials/issues) to see
 ## Mutorials Code Conventions
 These are to be followed all the time 😁.
 
+### Indentation
+- Indents shall be 4 spaces, no tabs.
+    - [set this as your setting on vscode](https://stackoverflow.com/a/38556923)
+    - on vim:
+        - put the following in your `.vimrc`.
+        ```
+        filetype plugin indent on
+        set tabstop-4
+        set shiftwidth=4
+        set expandtab
+        ```
+        - then run `:source %`
+
 ### Naming
 #### Backend
 - snake_case for everything; this includes but is not limited to file names, variables (including functions), routes, etc.
