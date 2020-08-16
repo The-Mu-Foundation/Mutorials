@@ -248,7 +248,7 @@ app.post('/register', (req, res, next) => {
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
             confirm_code = buf.toString('hex');
-            db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
+            db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { email_confirm_code: confirm_code } });
                 email_validation.email_code_send(req.user.username, confirm_code);
             });
             req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
