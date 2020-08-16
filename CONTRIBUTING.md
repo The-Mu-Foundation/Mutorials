@@ -62,3 +62,6 @@ DISCLAIMER: these are nitpicky things which we just want to standardize
 
 One last thing: if you’re refactoring a lot of code, remember to let the rest of the team know so that we can accommodate and avoid conflicts!
 
+Ved Thiru (PerpetualCreativity on GitHub, vulcan#0604 on Discord)
+
+Michael Li (ML72 on GitHub, ML72#2092 on Discord)

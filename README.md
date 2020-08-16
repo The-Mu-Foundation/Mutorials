@@ -27,3 +27,7 @@ We might ask for additional information to help us fix the bug. Please check bac
 ### Contributing to Mutorials as a programmer
 Please see [our contributor documentation](/CONTRIBUTING.md) to get started.
 
+Thanks!
+
+Ved Thiru (@PerpetualCreativity on GitHub, vulcan#0604 on Discord)
+
