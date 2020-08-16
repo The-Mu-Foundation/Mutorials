@@ -878,6 +878,6 @@ app.get("*", (req, res) => {
 });
 
 // START http AND https SERVERS
-httpServer.listen(httpPort, hostname);
-httpsServer.listen(httpsPort, hostname);
+httpServer.listen(80, hostname);
+httpsServer.listen(443, hostname);
 
