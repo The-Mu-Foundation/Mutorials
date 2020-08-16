@@ -245,8 +245,6 @@ app.post('/register', (req, res, next) => {
                     console.log(user);
                 });
             req.flash('success_flash', 'We successfully signed you up!');
-        }
-        if (!user.email_confirm_code) {
             console.log(user.email_confirm_code);
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
