@@ -9,7 +9,6 @@ var flash = require("express-flash-messages");
 const session = require("express-session");
 const InitiateMongoServer = require("./database/config/db");
 const email_validation = require('./utils/functions/email_validation');
-const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
