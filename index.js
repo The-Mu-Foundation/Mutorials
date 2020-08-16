@@ -43,7 +43,6 @@ const httpsConfig = {
 };
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(httpsConfig, app);
-const hostname = 'www.mutorials.org';
 app.use((req, res, next) => {
     if (req.protocol === 'http') {
         res.redirect(301, `https://${req.headers.host}${req.url}`);
@@ -878,5 +877,5 @@ app.get("*", (req, res) => {
 });
 
 // START http AND https SERVERS
-httpsServer.listen(PORT, hostname);
+httpsServer.listen(PORT);
 
