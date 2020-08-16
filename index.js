@@ -36,14 +36,14 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 // https SETUP
+const httpsConfig = {
+    cert: fs.readFileSync('./ssl/server.crt'),
+    ca: fs.readFileSync('./ssl/server.ca_bundle'),
+    key: fs.readFileSync('./ssl/server.key')
+};
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(httpsConfig, app);
 const hostname = 'www.mutorials.org';
-const httpsConfig = {
-    cert: fs.readFileSync('./ssl/server.crt');
-    ca: fs.readFileSync('./ssl/server.ca-bundle');
-    key: fs.readFileSync('./ssl/server.key');
-};
 app.use((req, res, next) => {
     if (req.protocol === 'http') {
         res.redirect(301, `https://${req.headers.host}${req.url}`);
