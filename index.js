@@ -38,7 +38,8 @@ const app = express();
 const httpsConfig = {
     cert: process.env.SSL_CRT,
     ca: process.env.SSL_CA_BUNDLE,
-    key: process.env.SSL_KEY
+    key: process.env.SSL_KEY,
+    passphrase: process.env.SSL_PASSPHRASE
 };
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(httpsConfig, app);
