@@ -9,6 +9,8 @@ var flash = require("express-flash-messages");
 const session = require("express-session");
 const InitiateMongoServer = require("./database/config/db");
 const email_validation = require('./utils/functions/email_validation');
+const http = require('http');
+const https = require('https');
 
 // SCHEMA, FUNCTION, AND CONSTANT IMPORTS
 
@@ -24,13 +26,29 @@ const { referenceSheet } = require("./utils/constants/referencesheet");
 const { tags } = require("./utils/constants/tags");
 const { adminList, contributorList } = require("./utils/constants/sitesettings");
 
-
-
 // START MONGO SERVER
 InitiateMongoServer();
 var db = mongoose.connection;
 const PORT = process.env.PORT || 3000;
+
+// START EXPRESS SERVER
 const app = express();
+
+// https SETUP
+const httpsConfig = {
+    cert: process.env.SSL_CRT,
+    ca: process.env.SSL_CA_BUNDLE,
+    key: process.env.SSL_KEY
+};
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(httpsConfig, app);
+const hostname = 'www.mutorials.org';
+app.use((req, res, next) => {
+    if (req.protocol === 'http') {
+        res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
+});
 
 // MONGO SESSION
 
@@ -858,8 +876,7 @@ app.get("*", (req, res) => {
     res.redirect("/");
 });
 
-// START NODE SERVER
+// START http AND https SERVERS
+httpServer.listen(httpPort, hostname);
+httpsServer.listen(httpsPort, hostname);
 
-app.listen(PORT, (req, res) => {
-    console.log(`Server Started at PORT ${PORT}`);
-});
