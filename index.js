@@ -37,9 +37,9 @@ const app = express();
 
 // https SETUP
 const httpsConfig = {
-    cert: fs.readFileSync('./ssl/server.crt'),
-    ca: fs.readFileSync('./ssl/server.ca_bundle'),
-    key: fs.readFileSync('./ssl/server.key')
+    cert: process.env.SSL_CRT,
+    ca: process.env.SSL_CA_BUNDLE,
+    key: process.env.SSL_KEY
 };
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(httpsConfig, app);
