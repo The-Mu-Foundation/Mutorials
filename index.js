@@ -410,8 +410,8 @@ app.post("/train/checkAnswer", (req, res, next) => {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
-                oldQRating = antsy.rating;
+                var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                var oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -434,8 +434,8 @@ app.post("/train/checkAnswer", (req, res, next) => {
                 // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
-                oldQRating = antsy.rating;
+                var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                var oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -460,8 +460,8 @@ app.post("/train/checkAnswer", (req, res, next) => {
                     isRight = true;
                 }
                 // modify ratings
-                oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
-                oldQRating = antsy.rating;
+                var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                var oldQRating = antsy.rating;
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -793,9 +793,9 @@ app.get("/train/:subject/display_question", (req, res) => {
 
         // get parameters set up
         var units = req.query.units.split(",");
-        ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
-        floor = ceilingFloor.floor;
-        ceiling = ceilingFloor.ceiling;
+        var ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
+        var floor = ceilingFloor.floor;
+        var ceiling = ceilingFloor.ceiling;
 
         // no cache
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
