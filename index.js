@@ -9,6 +9,8 @@ var flash = require("express-flash-messages");
 const session = require("express-session");
 const InitiateMongoServer = require("./database/config/db");
 const email_validation = require('./utils/functions/email_validation');
+const http = require('http');
+const https = require('https');
 
 // SCHEMA, FUNCTION, AND CONSTANT IMPORTS
 
@@ -24,13 +26,29 @@ const { referenceSheet } = require("./utils/constants/referencesheet");
 const { tags } = require("./utils/constants/tags");
 const { adminList, contributorList } = require("./utils/constants/sitesettings");
 
-
-
 // START MONGO SERVER
 InitiateMongoServer();
 var db = mongoose.connection;
 const PORT = process.env.PORT || 3000;
+
+// START EXPRESS SERVER
 const app = express();
+
+// https SETUP
+const httpsConfig = {
+    cert: process.env.SSL_CRT,
+    ca: process.env.SSL_CA_BUNDLE,
+    key: process.env.SSL_KEY,
+    passphrase: process.env.SSL_PASSPHRASE
+};
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(httpsConfig, app);
+// app.use((req, res, next) => {
+//     if (req.protocol === 'http') {
+//         res.redirect(301, `https://${req.headers.host}${req.url}`);
+//     }
+//     next();
+// });
 
 // MONGO SESSION
 
@@ -245,16 +263,13 @@ app.post('/register', (req, res, next) => {
                     console.log(user);
                 });
             req.flash('success_flash', 'We successfully signed you up!');
-        }
-        if (!user.email_confirm_code) {
-            console.log(user.email_confirm_code);
             var confirm_code;
             require('crypto').randomBytes(6, function (ex, buf) {
-            confirm_code = buf.toString('hex');
-            db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { email_confirm_code: confirm_code } });
-                email_validation.email_code_send(req.user.username, confirm_code);
+                confirm_code = buf.toString('hex');
+                db.collection("users").findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: confirm_code } });
+                email_validation.email_code_send(req.body.username, confirm_code);
+                req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
             });
-            req.flash('error_flash', 'You need to confirm your email. Please check your email for instructions.');
         }
         res.redirect('/signin');
     });
@@ -861,8 +876,7 @@ app.get("*", (req, res) => {
     res.redirect("/");
 });
 
-// START NODE SERVER
-
+// START http AND https SERVERS
 app.listen(PORT, (req, res) => {
-    console.log(`Server Started at PORT ${PORT}`);
+    console.log(`Server Started at ${PORT}`);
 });
