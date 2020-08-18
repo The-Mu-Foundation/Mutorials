@@ -78,3 +78,5 @@ One last thing: if you’re refactoring a lot of code, remember to let the rest 
 Ved Thiru (PerpetualCreativity on GitHub, vulcan#0604 on Discord)
 
 Michael Li (ML72 on GitHub, ML72#2092 on Discord)
+
+Ethan Shen (Skipppyyy on GitHub, Skippy#0700 on Discord)
