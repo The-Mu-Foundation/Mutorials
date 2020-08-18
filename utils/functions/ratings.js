@@ -2,9 +2,9 @@
 function calculateRatings(userRating, questionRating, correct) {
 
     // important values: 1000 is spread of elo change, 32 is scale of change
-    var chanceOfCorrect = 1 / (1 + Math.pow(10, (questionRating - userRating) / 1000));
-    var userRatingChange = Math.round(32 * (correct - chanceOfCorrect));
-    var questionRatingChange = -Math.round(userRatingChange / 10);
+    let chanceOfCorrect = 1 / (1 + Math.pow(10, (questionRating - userRating) / 1000));
+    let userRatingChange = Math.round(32 * (correct - chanceOfCorrect));
+    let questionRatingChange = -Math.round(userRatingChange / 10);
 
     // assign rating changes
     userRating += userRatingChange;
@@ -24,11 +24,11 @@ function calculateRatings(userRating, questionRating, correct) {
 // input user rating, gives range of ratings for next question's selection
 function ratingCeilingFloor(userRating) {
 
-    var spread = Math.round((Math.random()+2)*(Math.random()+2)*100);
+    let spread = Math.round((Math.random()+2)*(Math.random()+2)*100);
     spread += Math.round(userRating/10);
 
-    var floor = userRating-spread;
-    var ceiling = userRating+spread;
+    let floor = userRating-spread;
+    let ceiling = userRating+spread;
     if(floor < 0) {
         floor = 0;
     }

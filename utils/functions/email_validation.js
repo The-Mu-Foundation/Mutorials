@@ -31,7 +31,7 @@ module.exports = {
     },
     check_code: function(username, entered_code) {
         return db.collection('users').findOne({ username: username }).then((user) => {
-            return user.email_confirm_code == entered_code;
+            return user.email_confirm_code === entered_code;
         });
     },
 

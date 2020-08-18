@@ -1,5 +1,5 @@
 // tags
-var referenceSheet = {
+const referenceSheet = {
     equations: {
         "First Kinematics Equation": "$v = v_0 + at$",
         "Second Kinematics Equation": "$\\Delta x = \\frac{v+v_0}{2}t$",
@@ -12,7 +12,7 @@ var referenceSheet = {
         "Impulse-Momentum Equation": "$\\Delta \\vec{p} = \\vec{F}\\Delta t$",
         "Kinetic Energy Formula": "$KE = \\frac{1}{2}mv^2$",
         "Work Equation": "$\\Delta E = W = F_{||}d = Fd\\cos{\\theta}$",
-        "Power Equation": "$P = \\frac{\\Delta E}{\\Delta t}$",
+        "Power Equation": "$P = \\frac{\\Delta E}{\\Delta t} = I\\\\Delta V$\"",
         "First Rotational Kinematics Equation": "$\\Delta\\theta = \\omega_0t = \\frac{1}{2}at^2$",
         "Second Rotational Kinematics Equation": "$\\omega = \\omega_0+at$",
         "Simple Harmonic Motion Equation": "$x = A\\cos{(2\\pi ft)}$",
@@ -28,7 +28,6 @@ var referenceSheet = {
         "Current Equation": "$I = \\frac{\\Delta q}{\\Delta t}$",
         "Resisivity Law": "$R = \\frac{\\rho l}{A}$",
         "Ohm's Law": "$I = \\frac{\\Delta V}{R}$",
-        "Power Equation": "$P = I\\Delta V$",
         "Resistors in Series": "$R_s = \\sum_i R_i$",
         "Resistors in Parallel": "$\\frac{1}{R_p} = \\sum_i\\frac{1}{R_i}$"
     },
@@ -36,6 +35,6 @@ var referenceSheet = {
         "Earth's gravitational constant": "$g = 9.81$",
         "Coulomb's constant": "$k = 8.99*10^9$"
     }
-}
+};
 
 module.exports = { referenceSheet: referenceSheet };

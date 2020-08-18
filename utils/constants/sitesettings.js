@@ -1,4 +1,4 @@
-var adminList = [
+const adminList = [
     "mutorialsproject@gmail.com",
     "s-donnerj@bsd405.org",
     "anikad33@gmail.com",
@@ -8,6 +8,6 @@ var adminList = [
     "ojaswupadhyay@gmail.com",
     "allbookmonkey@gmail.com"
 ];
-var contributorList = [];
+const contributorList = [];
 
 module.exports = { adminList : adminList, contributorList: contributorList };

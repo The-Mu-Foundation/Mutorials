@@ -1,5 +1,5 @@
 // tags
-var tags = {
+const tags = {
     "Physics": {
         "Units": {
             "ACC": "AC Circuits",
@@ -139,6 +139,6 @@ var tags = {
             "TRSLATE": "Translation"
         }
     }
-}
+};
 
 module.exports = { tags: tags };

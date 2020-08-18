@@ -22,8 +22,7 @@ async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, unitos) {
 
 // return rating of the user logged in right now
 function getRating(subject, req) {
-    const rate = req.user.rating[subject.toLowerCase()];
-    return rate;
+    return req.user.rating[subject.toLowerCase()];
 }
 
 // set the rating of the user logged in right now
@@ -56,7 +55,7 @@ function updateCounters(req, question, correct) {
     // update rating tracker
     var tracker;
 
-    if(req.user.stats.ratingTracker == undefined) {
+    if(req.user.stats.ratingTracker === undefined) {
         req.user.stats.ratingTracker = {};
     }
 
