@@ -627,7 +627,9 @@ app.get('/forgot_password', (req, res) => {
     }
 });
 
-
+app.get("/who_we_are", (req, res)  => {
+    res.render(__dirname + '/views/public/' + 'whoWeAre.ejs');
+});
 // PRIVATE USER GET ROUTES
 
 app.get("/homepage", (req, res) => {
