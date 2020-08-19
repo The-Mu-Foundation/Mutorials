@@ -30,6 +30,7 @@ These are to be followed all the time 😁.
 
 #### Frontend
 - JavaScript variables follow snake_case, similar to backend
+- For variables, use const for variables that will not be changed and use let for variables that will be changed. Do not use var.
 - Following Bootstrap conventions, kebab case will be used for classes, ids, names, and all of the other HTML tags
 
 #### General
