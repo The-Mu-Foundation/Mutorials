@@ -12,7 +12,7 @@ const referenceSheet = {
         "Impulse-Momentum Equation": "$\\Delta \\vec{p} = \\vec{F}\\Delta t$",
         "Kinetic Energy Formula": "$KE = \\frac{1}{2}mv^2$",
         "Work Equation": "$\\Delta E = W = F_{||}d = Fd\\cos{\\theta}$",
-        "Power Equation": "$P = \\frac{\\Delta E}{\\Delta t} = I\\\\Delta V$\"",
+        "Power Equation": "$P = \\frac{\\Delta E}{\\Delta t} = I\\Delta V$\"",
         "First Rotational Kinematics Equation": "$\\Delta\\theta = \\omega_0t = \\frac{1}{2}at^2$",
         "Second Rotational Kinematics Equation": "$\\omega = \\omega_0+at$",
         "Simple Harmonic Motion Equation": "$x = A\\cos{(2\\pi ft)}$",
