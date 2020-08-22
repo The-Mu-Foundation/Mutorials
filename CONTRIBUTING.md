@@ -24,8 +24,8 @@ These are to be followed all the time 😁.
 
 ### Naming
 #### Backend
-- snake_case for everything; this includes but is not limited to file names, variables (including functions), routes, etc.
-    - EXCEPTION: mongoose Schema declarations follow pascalCase
+- camelCase for everything; this includes but is not limited to file names, variables (including functions), routes, etc.
+    - EXCEPTION: mongoose Schema declarations follow PascalCase
 - All admin routes (get or post) should start with "/admin/"
 
 #### Frontend
