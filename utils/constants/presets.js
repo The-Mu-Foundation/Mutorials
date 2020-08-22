@@ -1,5 +1,5 @@
 // fill in preset units later
-var presetUnitOptions = {
+const presetUnitOptions = {
     "Physics": {
         "AP Physics 1": ["Kinematics", "Forces", "Rotational Motion", "Energy", "Momentum and Collisions", "Simple Harmonic Motion", "Electric Forces and Fields", "Current and Resistance", "DC Circuits", "Vibrations and Waves", "Electrostatics"],
         "AP Physics 2": ["Solids and Fluids", "Thermodynamics", "Electric Forces and Fields", "Current and Resistance", "DC Circuits", "Magnetism", "Inductance", "Vibrations and Waves", "Reflection and Refraction", "Mirrors and Lenses", "Wave Optics", "Quantum Physics", "Nuclear Energy and Elementary Particles", "Electrostatics"],
@@ -18,6 +18,6 @@ var presetUnitOptions = {
         "AP Biology": [],
         "IB Biology SL": []
     }
-}
+};
 
 module.exports = { presetUnitOptions: presetUnitOptions };

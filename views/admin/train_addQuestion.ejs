@@ -6,9 +6,8 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigation") -%>
 
-
-
 <!-- send to backend -->
+<!--suppress JSUnresolvedFunction -->
 <script>
 	$(document).ready(function () {
 
@@ -22,7 +21,7 @@
 		// set code for showing LaTeX compiler
 
 		// set what happens when question is submitted
-		var type, question, choices, tags, ext_source, rating, subject, units, answer, answer_ex, author;
+		let type, question, choices, tags, ext_source, rating, subject, units, answer, answer_ex, author;
 		$("#submit").click(function () {
 
 			// free response text values
@@ -36,14 +35,14 @@
 
 
 			// radio values
-			var typeInputs = document.getElementById("question-format").elements;
+			let typeInputs = document.getElementById("question-format").elements;
 			for(let i = 0; i < typeInputs.length; i++) {
 				if(typeInputs[i].checked) {
 					type = typeInputs[i].id;
 				}
 			}
 
-			var srcInputs = document.getElementById("external-source").elements;
+			let srcInputs = document.getElementById("external-source").elements;
 			for(let i = 0; i < srcInputs.length; i++) {
 				if(srcInputs[i].checked) {
 					ext_source = srcInputs[i].id;
@@ -53,7 +52,7 @@
 
 			// checkbox values - returns ARRAY
 			subject = [];
-			var subjInputs = document.getElementById("subjects").elements;
+			let subjInputs = document.getElementById("subjects").elements;
 			for(let i = 0; i < subjInputs.length; i++) {
 				if(subjInputs[i].checked) {
 					subject.push(subjInputs[i].id);
@@ -61,7 +60,7 @@
 			}
 
 			units = [];
-			var unitInputs = document.getElementById("units").elements;
+			let unitInputs = document.getElementById("units").elements;
 			for(let i = 0; i < unitInputs.length; i++) {
 				if(unitInputs[i].checked) {
 					units.push(unitInputs[i].id);
