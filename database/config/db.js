@@ -2,8 +2,6 @@
 const mongoose = require("mongoose");
 
 const MONGOURI = process.env.DB_URL || "mongodb+srv://Skippy:qVNOjHeNSJlEoI98@cluster0-7gibd.mongodb.net/test?retryWrites=true&w=majority"
-// Test database URI: "mongodb+srv://Skippy:PNSwim19@cluster0-7gibd.mongodb.net/test?retryWrites=true&w=majority"
-// Public database URI: "mongodb+srv://Skippy:PNSwim19@cluster0-7gibd.mongodb.net/mutorialsone?retryWrites=true&w=majority"
 
 const InitiateMongoServer = async () => {
     try{
