@@ -1,13 +1,15 @@
-<!-- This is the page ADMINS are routed to upon signin -->
+<%# Page admins see upon signing in %>
 
 <%- include("../partials/header") -%>
-<%- include("../partials/navigation") -%>
+<%- include("../partials/navigationPrivate") -%>
 
 <h1 class="my-5 container">MUTORIALS ADMIN HOMEPAGE</h1>
 <div class="jumbotron container">
+
     <%- include ("../partials/flashes") -%>
     <h3 class="mb-4">Quick access links:</h3>
-    <a class="btn btn-primary btn-lg btn-block my-2" href="/admin/addquestion">Add Question</a>
+    <a class="btn btn-primary btn-lg btn-block my-2" href="/admin/addQuestion">Add Question</a>
+
 </div>
 
 <%- include("../partials/footer") -%>
