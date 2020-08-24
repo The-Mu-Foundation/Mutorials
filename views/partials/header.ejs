@@ -1,4 +1,4 @@
-<!-- THIS IS A HEADER TEMPLATE -->
+<%# This is a header template %>
 
 <!doctype html>
 
@@ -6,14 +6,14 @@
 
 <head>
 
-    <!-- site data -->
+    <%# Site data %>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mutorials</title>
     <link rel="icon" href="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" sizes="any"
         type="image/svg+xml">
 
-    <!-- jquery and bootstrap imports-->
+    <%# JQuery and bootstrap imports %>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -22,27 +22,22 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
 
-    <!-- mathjax import (to render math) -->
+    <%# Fontawesome import %>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/63ec6f8c9f.js" crossorigin="anonymous"></script>
+
+    <%# Mathjax import %>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         window.MathJax = {
-            /*loader: { load: ['[tex]/mhchem'] },*/
             tex: {
-                /*packages: {'[+]': ['mhchem']},*/
                 inlineMath: [['$', '$'], ['$$', '$$']]
             }
         };
-        /*MathJax.Ajax.config.path["mhchem"] =
-            "https://cdnjs.cloudflare.com/ajax/libs/mathjax-mhchem/3.3.2";
-        MathJax.Hub.Config({
-            TeX: {
-                extensions: ["[mhchem]/mhchem.js"]
-            }
-        });*/
     </script>
 
-    <!-- chartjs import (to render graphs and charts) -->
+    <%# Chartjs import %>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
     <script>
         var canvascontainerlist = document.getElementsByClassName("canvas-container-center");
@@ -53,17 +48,76 @@
         }
     </script>
 
-    <!-- ALL CUSTOM CSS for our site goes here -->
+    <%# Custom CSS for site %>
     <style>
-        /* Cards in website */
+
         p {
             font-family: helvetica;
         }
-        h1 {}
-        h2 {}
+
         .card {
             margin-top: 50px;
         }
+
+        .carousel-inner > .item > img { width:90%; height:570px; }
+
+        .icon-bar {
+        position: fixed;
+        top: 30%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        }
+        .icon-bar a {
+        display: block;
+        text-align: center;
+        padding: 16px;
+        transition: all 0.3s ease;
+        color: white;
+        font-size: 20px;
+        }
+        .icon-bar a:hover {
+        background-color: #000;
+        }
+
+        .facebook {
+        background: #3B5998;
+        color: white;
+        }
+        .twitter {
+        background: #55ACEE;
+        color: white;
+        }
+        .google {
+        background: #dd4b39;
+        color: white;
+        }
+        .linkedin {
+        background: #007bb5;
+        color: white;
+        }
+        .youtube {
+        background: #bb0000;
+        color: white;
+        }
+        .instagram {
+        background: #bc2a8d;
+        color: white;
+        }
+        .discord {
+        background:#7289DA;
+        color: white;
+        }
+
+        .crop {
+            height: 286px;
+            width: 286px;
+            overflow: hidden;
+        }
+        /*.crop-img {
+            height: auto;
+            width: 286px;
+        }*/
 
     </style>
 
