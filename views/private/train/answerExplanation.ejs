@@ -1,23 +1,12 @@
-<!-- This is the page where answer explanations are displayed after finishing a question -->
-
-<!-- ARGUMENTS:
-    correct - a boolean saying whether or not the user got the question correct
-    userRating - new user rating
-    oldUserRating - old user rating (to calculate delta)
-    oldQ - old question rating (for consistency)
-    userAnswer - what the user answered, array if select all
-    subject - the subject of the question
-    units - the units the question belongs to
-    user - the current user
-    newQues - a question object with attributes of rating, ext_source, tags, question, answer, choices, answer_ex
-        Note some attributes are arrays -->
+<%# Page where answer explanation is displayed, after finishing question %>
+<%# ARGUMENTS: correct - correct/wrong bool, userRating - new user rating, oldUserRating - old user rating, oldQuestionRating - old question rating %>
+<%#      cont: userAnswer - what the user answered, subject - subject of question, units - units of question, user - current user object, newQues - question object %>
 
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
 
 <script>
 
-    // render pass/fail chart
     window.onload = function () {
 
         // render pass/fail chart
@@ -118,7 +107,6 @@
                 labels: labels,
                 datasets: [{
                     label: "Rating History",
-                    //data: [$("#passcount").val(), $("#failcount").val()],
                     data: tracker,
                     backgroundColor: "rgba(100, 200, 230, 1)",
                     borderColor: "rgba(100, 200, 230, 1)",
@@ -156,11 +144,9 @@
     // configure report button
     $(document).ready(function () {
 
-        // hide report dialogue code
         $("#initial-report-container").show(0);
         $("#report-container").hide(0);
 
-        // report button popup
         $("#report").click(function () {
             $("#report-container").show(1000);
             $("#initial-report-container").hide(1000);
@@ -180,7 +166,7 @@
 
         <div class="col-8">
 
-            <!-- Question and explanation -->
+            <%# Question and explanation %>
             <div class="mb-3">
                 <h3>Question:</h3>
                 <p><%- newQues.question %></p>
@@ -243,7 +229,7 @@
 
         </div>
 
-        <!-- Question data -->
+        <%# Question data %>
         <div class="col-4">
 
             <div class="mb-4">
@@ -272,13 +258,13 @@
                 <% }) %>
             </div>
 
-            <!-- rating tracker chart -->
+            <%# Rating tracker chart %>
             <div class="canvas-container-center text-center">
                 <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>            
             </div>
             <input type="hidden" id="ratingTrackerArray" value="<%= user.stats.ratingTracker[subject.toLowerCase()].join('@') %>">
 
-            <!-- pass rate chart -->
+            <%# Pass rate chart %>
             <div class="canvas-container-center text-center">
                 <canvas id="passRateChart" width="400" height="400" class="my-4"></canvas>            
             </div>
@@ -289,7 +275,7 @@
 
     </div>
 
-    <!-- Report question buttons -->
+    <%# Report question button %>
     <div class="mt-5">
         <div id="initial-report-container">
             <button type="button" class="btn btn-danger btn-sm float-right" id="report">Report Question</button>

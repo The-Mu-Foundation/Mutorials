@@ -1,7 +1,5 @@
-<!-- This is the page where you set your rating when starting a new subject -->
-
-<!-- ARGUMENTS:
-    subject - a string with the name of the subject you want to train in -->
+<%# Page for setting initial rating %>
+<%# ARGUMENTS: subject - name of subject to train in %>
 
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
@@ -17,10 +15,6 @@
             },
             mouseleave: function() {
                 $(this).fadeTo(200, 0.8);
-                /*$("#default-card").show(0);
-                $("#physics-card").hide(0);
-                $("#chem-card").hide(0);
-                $("#bio-card").hide(0);*/
             }
         });
 

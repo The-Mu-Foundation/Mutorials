@@ -1,8 +1,5 @@
-<!-- This is the page for displaying stats -->
-
-<!-- ARGUMENTS:
-    user - the user for which stats are being displayed
-    totalTags - the complete list of all tags on the site -->
+<%# Page for displaying stats %>
+<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -277,6 +274,7 @@
 
 </div>
 
+<%# Correct/wrong chart %>
 <div class="container jumbotron my-5">
 
     <div class="row">
@@ -284,7 +282,6 @@
         <div class="col-4"></div>
 
         <div class="col-4">
-            <!-- correct/wrong chart -->
             <div class="canvas-container-center text-center">
                 <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>            
             </div>

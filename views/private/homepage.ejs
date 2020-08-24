@@ -1,7 +1,5 @@
-<!-- This is the page routed to upon signin; root page -->
-
-<!-- ARGUMENTS:
-    user: the user logged in -->
+<%# Root page upon signin %>
+<%# ARGUMENTS: user- the user logged in right now %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -17,10 +15,6 @@
             },
             mouseleave: function() {
                 $(this).fadeTo(200, 0.8);
-                /*$("#default-card").show(0);
-                $("#physics-card").hide(0);
-                $("#chem-card").hide(0);
-                $("#bio-card").hide(0);*/
             }
         });
 
@@ -95,15 +89,6 @@
         </div>
 
     </div>
-
-	<!-- <h3 class="my-4">Latest Site Updates</h3>
-	<ul class="mb-4">
-		<li>7/10 - questions starting to go in!</li>
-		<li>7/11 - site ready for beta testing release</li>
-		<li>7/11 - basic training capability of site is set</li>
-	</ul>
-
-	<p>Cool stuff coming soon!</p>-->
 	
 </div>
 

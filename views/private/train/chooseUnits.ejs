@@ -1,10 +1,5 @@
-<!-- This is the page on which you choose the units you want to train on -->
-
-<!-- ARGUMENTS:
-    units - a list of units to train on
-    subject - the subject
-    unitPresets - an object of the unit present options
-    qNum -->
+<%# Page to select units for training %>
+<%# ARGUMENTS: units - list of units to train on, subject - the subject, unitPresets - object of unit presets, qNum - weird ID number %>
 
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
@@ -57,19 +52,18 @@
         var unitPresets = JSON.parse($("#stringifiedUnits").val());
         Object.keys(unitPresets).forEach((preset) => {
             $("#"+preset.replace(/\s+/g, '')).click(function() {
-                // deselect all
+
                 document.getElementsByName("unitChoice").forEach((checkbox) => {
                     if(checkbox.type == "checkbox") {
                         checkbox.checked = false;
                     }
                 });
-                // select all matching units
+
                 unitPresets[preset].forEach((unit) => {
                     document.getElementById(unit).checked = true;
                 });
             });
         });
-
 
     });
 
