@@ -26,6 +26,7 @@ These are to be followed all the time 😁.
 #### Backend
 - camelCase for everything; this includes but is not limited to file names, variables (including functions), routes, etc.
     - EXCEPTION: mongoose Schema declarations follow PascalCase
+    - EXCEPTION: environment variables use GIANT_SNAKE_CASE
 - All admin routes (get or post) should start with "/admin/"
 
 #### Frontend
