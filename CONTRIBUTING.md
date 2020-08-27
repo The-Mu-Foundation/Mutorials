@@ -30,9 +30,9 @@ These are to be followed all the time 😁.
 - All admin routes (get or post) should start with "/admin/"
 
 #### Frontend
-- JavaScript variables follow snake_case, similar to backend
+- JavaScript variables follow camelCase, similar to backend
 - For variables, use const for variables that will not be changed and use let for variables that will be changed. Do not use var.
-- Following Bootstrap conventions, kebab case will be used for classes, ids, names, and all of the other HTML tags
+- Following Bootstrap conventions, kebab-case will be used for classes, ids, names, and all of the other HTML tags
 
 #### General
 - Make names representative, no shorthands unless it’s obvious; i.e. “authentication”=“auth” is ok, but “question”=“antsy” is not; gray areas such as “Question”=“Ques” should be renamed (i.e. use “Question”, not “Ques”)
