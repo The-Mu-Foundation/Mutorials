@@ -62,7 +62,7 @@ app.use(session({
     store: sessionStore
 }));
 
-require('./utils/passport.js')(app);
+require('./utils/functions/passport.js')(app);
 
 app.use(flash()); // express-flash-messages config
 app.use(function (req, res, next) {
