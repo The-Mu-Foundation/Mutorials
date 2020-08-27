@@ -1,0 +1,52 @@
+<%# Reference subpage for tags %>
+<%# ARGUMENTS: tags - the taglist from backend %>
+
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
+
+<h1 class="my-5 container">The Grand Taglist</strong></h1>
+
+<div class="container jumbotron mt-5">
+
+    <h3>What are tags?</h3>
+    <p>Mutorials uses tags to classify questions into further subtopics. A full list of tags can be found on this page. Tags in <font color="red">red</font> are tags which represent a whole official unit.</p>
+
+</div>
+
+<% Object.keys(tags).forEach((subject) => { %>
+
+    <div class="container jumbotron mt-5">
+
+        <h3 class="mb-3"><%= subject %></h3>
+        
+        <% Object.keys(tags[subject]["Units"]).forEach((unitTag) => { %>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-primary btn-sm btn-block form-control" id="<%= subject %> - <%= unitTag %>" disabled><%= unitTag %></button>
+                </div>
+                <label for="<%= subject %> - <%= unitTag %>" class="col-sm-10 col-form-label"><font color="red"><%= tags[subject]["Units"][unitTag] %></font></label>
+            </div>
+
+        <% }) %>
+
+        <% Object.keys(tags[subject]["Concepts"]).forEach((conceptTag) => { %>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-info btn-sm btn-block form-control" id="<%= subject %> - <%= conceptTag %>" disabled><%= conceptTag %></button>
+                </div>
+                <label for="<%= subject %> - <%= conceptTag %>" class="col-sm-10 col-form-label"><%= tags[subject]["Concepts"][conceptTag] %></label>
+            </div>
+
+        <% }) %>
+    
+    </div>
+
+<% }) %>
+
+<div class="container">
+    <a class="mb-5 btn btn-secondary" href="/references">Return to references page</a>
+</div>
+
+<%- include("../../partials/footer") -%>

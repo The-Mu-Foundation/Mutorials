@@ -1,0 +1,48 @@
+<%# Page to select subject to train on %>
+<%# ARGUMENTS: subjects - subjects to train on as a list, qNum - weird ID %>
+
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
+
+
+    <br>
+    <h3 style="text-align: center;">Select a subject below to train on:</h3>
+    <br>
+
+    <div class="container">
+        <div class="row mx-auto justify-content-around">
+            <div class="col-sm-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics Icon">
+                    <div class="card-body text-center">
+                    <h5 class="card-title">Physics</h5>
+                    <p class="card-text">Improve your Physics!</p>
+                    <a href="/train/Physics/choose_units" class="btn btn-primary">Train Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Chemistry Icon">
+                    <div class="card-body text-center">
+                    <h5 class="card-title">Chemistry <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Beta</button></h5>
+                    <p class="card-text">Advance your Chemistry!</p>
+                    <a href="/train/Chemistry/choose_units" class="btn btn-primary">Train Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Biology Icon">
+                    <div class="card-body text-center">
+                    <h5 class="card-title">Biology <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Beta</button></h5>
+                    <p class="card-text">Brighten your Biology!</p>
+                    <a href="/train/Biology/choose_units" class="btn btn-primary">Train Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<%- include("../../partials/footer") -%>
