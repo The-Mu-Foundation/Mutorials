@@ -1,13 +1,10 @@
-<!-- This page is for admins to add new questions to the question bank -->
+<%# Admin page for adding new questions to the question bank %>
+<%# ARGUMENTS: subjectUnitDictionary - a class with key subject name and value array of units %>
 
-<!-- ARGUMENTS:
-    subjectUnitDictionary - a class; key is a subject name (corresponding to one in subjects array) and value is an array of the units -->
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
 
-<%- include("../partials/header") -%>
-<%- include("../partials/navigation") -%>
-
-<!-- send to backend -->
-<!--suppress JSUnresolvedFunction -->
+<%# Send to backend %>
 <script>
 	$(document).ready(function () {
 
@@ -18,10 +15,8 @@
 			$("#show-compiler-div").hide(1000);
 		});
 
-		// set code for showing LaTeX compiler
-
 		// set what happens when question is submitted
-		let type, question, choices, tags, ext_source, rating, subject, units, answer, answer_ex, author;
+		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement;
 		$("#submit").click(function () {
 
 			// free response text values
@@ -30,8 +25,9 @@
 			tags = $("#tags").val();
 			rating = $("#rating").val();
 			answer = $("#correctanswer").val();
-			answer_ex = $("#answerexplanation").val();
+			answerExplanation = $("#answer-explanation").val();
 			author = $("#author").val();
+            sourceStatement = $("source-statement").val();
 
 
 			// radio values
@@ -45,7 +41,7 @@
 			let srcInputs = document.getElementById("external-source").elements;
 			for(let i = 0; i < srcInputs.length; i++) {
 				if(srcInputs[i].checked) {
-					ext_source = srcInputs[i].id;
+					externalSource = srcInputs[i].id;
 				}
 			}
 
@@ -67,13 +63,9 @@
 				}
 			}
 
-
-			//var type, question, choices, tags, ext_source, rating, subject, units, answer, answer_ex, author;
-
-			// EVERYTHING IS A STRING EXCEPT FOR SUBJECT AND UNITS, WHICH ARE ARRAYS
-			$.post("/admin/addquestion", { type: type, question: question, choices: choices, tags: tags,
-				ext_source: ext_source, rating: rating, subject: subject, units: units,
-				answer: answer, answer_ex: answer_ex, author: author }, function (data) {
+			$.post("/admin/addQuestion", { type: type, question: question, choices: choices, tags: tags,
+				externalSource: externalSource, rating: rating, subject: subject, units: units,
+				answer: answer, answerExplanation: answerExplanation, author: author, sourceStatement: sourceStatement }, function (data) {
 				
 				location.reload(true);
 			});
@@ -108,7 +100,7 @@
 <div class="jumbotron container">
     
 	<h3>Question Display</h3>
-    <!-- FORMAT -->
+    <%# FORMAT %>
 	<form id="question-format">
 		<p>What is the format of this question?</p>
 		<div class="custom-control custom-radio">
@@ -124,22 +116,22 @@
 			<label class="custom-control-label" for="sa">Select All</label>
 		</div>
     </form>
-    <!-- QUESTION STATEMENT -->
+    <%# QUESTION STATEMENT %>
 	<div class="form-group">
 		<p>What is the question?</p>
 		<textarea class="form-control" id="question" rows="3" placeholder="Type in a whole question"></textarea>
     </div>
-    <!-- ANSWER CHOICES -->
+    <%# ANSWER CHOICES %>
 	<div class="form-group">
 		<p>FOR MC AND SA ONLY: What are the answer choices?</p>
 		<textarea class="form-control" id="answerchoices" rows="6" placeholder="Type in answer choices, using '@' characters as deliminators"></textarea>
 	</div>
-	<!-- TAGS -->
+	<%# TAGS %>
 	<div class="form-group">
 		<p>What are the tags for this question?</p>
 		<textarea class="form-control" id="tags" rows="2" placeholder="Type in tags with '@' characters as deliminators"></textarea>
 	</div>
-	<!-- EXTERNAL SOURCES? -->
+	<%# EXTERNAL SOURCES %>
 	<form id="external-source">
 		<p>Is this question from an external source?</p>
 		<div class="custom-control custom-radio">
@@ -163,17 +155,21 @@
 			<label class="custom-control-label" for="Comp">Competition problem</label>
 		</div>
     </form>
+    <div class="form-group">
+		<p>If the question is not original, please give a statement regarding the source:</p>
+		<input type="text" class="form-control" id="source-statement" placeholder="Enter the statement/title (with capitalization)">
+    </div>
 </div>
 
 <div class="jumbotron container">
 
     <h3>Question Data</h3>
-    <!-- RATING -->
+    <%# RATING %>
 	<div class="form-group">
 		<p>What is the rating of this question?</p>
 		<input type="number" class="form-control" id="rating" placeholder="Enter an integer rating">
     </div>
-    <!-- SUBJECTS -->
+    <%# SUBJECTS %>
 	<form id="subjects">
 		<p>What subject(s) does this question fall under?</p>
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
@@ -183,7 +179,7 @@
             </div>
         <% }) %>
 	</form>
-    <!-- UNITS -->
+    <%# UNITS %>
 	<form id="units">
         <p>What units(s) does this question belong to?</p>
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
@@ -195,10 +191,10 @@
             <% }) %>
         <% }) %>
 	</form>
-	<!-- AUTHOR -->
-	<div class="form-group">
+	<%# AUTHOR %>
+	<div class="form-group mt-4">
 		<p>INTERNAL USE ONLY: Who is the author of this question?</p>
-		<input type="text" class="form-control" id="author" placeholder="Enter the first name (with capitalization)">
+		<input type="text" class="form-control" id="author" placeholder="Enter the name (with capitalization)">
     </div>
 	
 </div>
@@ -206,15 +202,15 @@
 <div class="jumbotron container">
 
     <h3>Answer Info</h3>
-    <!-- ANSWER -->
+    <%# ANSWER %>
 	<div class="form-group">
 		<p>What is the correct answer?</p>
 		<input class="form-control" id="correctanswer" placeholder="Input the answer, with '@' characters as deliminators if there are multiple">
     </div>
-	<!-- ANSWER EXPLANATION -->
+    <%# ANSWER EXPLANATION %>
 	<div class="form-group">
 		<p>What is the answer explanation?</p>
-		<textarea class="form-control" id="answerexplanation" rows="3" placeholder="Enter a detailed answer explanation"></textarea>
+		<textarea class="form-control" id="answer-explanation" rows="3" placeholder="Enter a detailed answer explanation"></textarea>
     </div>
 	
 </div>
@@ -224,7 +220,7 @@
     <a href="/admin/addedSuccess"><button type="button" class="btn btn-primary" id="submit">Submit</button></a>
 </div>
 
-<!-- Extra code for confirming the cancel button -->
+<%# Cancel button code %>
 <div class="modal fade" id="confirmCancel" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -242,4 +238,4 @@
     </div>
 </div>
 
-<%- include("../partials/footer") -%>
+<%- include("../../partials/footer") -%>

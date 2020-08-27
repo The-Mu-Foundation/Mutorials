@@ -1,25 +1,14 @@
-<!-- This is the page on which you choose the subject you want to train on -->
+<%# Page to select subject to train on %>
+<%# ARGUMENTS: subjects - subjects to train on as a list, qNum - weird ID %>
 
-<!-- ARGUMENTS:
-    subjects - a list of subjects to train on
-    qNum -->
-
-<%- include("../partials/header") -%>
-<%- include("../partials/navigation") -%>
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
 
 
     <br>
     <h3 style="text-align: center;">Select a subject below to train on:</h3>
     <br>
-    <!--
-    <form action="/selQ" method="POST">
-        <input type="hidden" name="qNum" value="<%=qNum%>">
-        <% Object.keys(subjects).forEach((subject) => { %>
 
-            <input type="submit" name="subj" class="btn btn-primary btn-lg btn-block my-2" id="<%= subject %>" value="<%= subject %>">
-        <% }) %>
-    </form>
-    -->
     <div class="container">
         <div class="row mx-auto justify-content-around">
             <div class="col-sm-4">
@@ -56,4 +45,4 @@
     </div>
 
 
-<%- include("../partials/footer") -%>
+<%- include("../../partials/footer") -%>

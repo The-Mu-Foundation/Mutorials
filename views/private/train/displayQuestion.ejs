@@ -1,15 +1,10 @@
-<!-- This is the page to display questions on -->
+<%# Page to display questions on for classic training %>
+<%# ARGUMENTS: newQues - question object, units - units user selected, user - the user object, subject - the subject %>
 
-<!-- ARGUMENTS:
-    newQues - question object passed in to be displayed
-    units - a list of the units that the user selected
-    user - the player
-    subject - the subject -->
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
 
-<%- include("../partials/header") -%>
-<%- include("../partials/navigation") -%>
-
-<!-- javascript code -->
+<%# JS code %>
 <script>
 
     $(document).ready(function () {
@@ -30,7 +25,6 @@
 			$("#skip-dialogue-1").show(1000);
 			$("#skip-dialogue-2").hide(1000);
         });
-
 
         // render rating display
         var ctx_rating = document.getElementById("ratingChart");
@@ -95,16 +89,12 @@
                                 max: Math.round((higherRating+100)/100)*100,
                                 stepSize: 100,
                                 display: false
-                            },
-                            gridLines: {
-                                //display: false
                             }
                         }]
                     },
                 responsive: true
             }
         });
-
 
         // decheck all
         $('.custom-control-input').prop('checked', false);
@@ -117,7 +107,7 @@
 
     <% try { %>
 
-        <!-- Test for faulty question -->
+        <%# Test for faulty question %>
         <% if (!newQues) { %>
             <% throw "no questions found"; %>
         <% } %>
@@ -134,9 +124,12 @@
                         <p>Question Source: <%= newQues.ext_source %></p>
                     <% } %>
                 </p>
-                <!-- DISPLAY QUESTION -->
+                
+                <%# Display question %>
                 <% if(newQues.type == "mc") { %>
-                    <!-- CODE FOR MULTIPLE CHOICE -->
+                    
+                    <%# Multiple choice %>
+
                     <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
                     <p><%- newQues.question %></p>
                     <form action="/train/checkAnswer" method="POST">
@@ -157,7 +150,9 @@
                         <input type="hidden" name="units" value="<%= units %>">
                     </form>
                 <% } else if(newQues.type == "sa") { %>
-                    <!-- CODE FOR SELECT ALL  -->
+
+                    <%# Select all %>
+
                     <h3 class="display-4" style="font-size: 1.5rem;">Please read the following and select ALL choices that apply:</h3>
                     <p><%- newQues.question %></p>
                     <form action="/train/checkAnswer" method="POST">
@@ -178,7 +173,9 @@
                         <input type="hidden" name="units" value="<%= units %>">
                     </form>
                 <% } else if(newQues.type == "fr") { %>
-                    <!-- CODE FOR FREE RESPONSE -->
+
+                    <%# Free response %>
+
                     <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and enter your answer in the box:</h3>
                     <p><%- newQues.question %></p>
                     <form action="/train/checkAnswer" method="POST">
@@ -211,6 +208,25 @@
 
         </div>
 
+        <%# Skip question %>
+        <div class="jumbotron container">
+            
+            <div id="skip-dialogue-1">
+                <h3 class="display-4" style="font-size: 1.5rem;">Question's content out of reach of your knowledge?</h3>
+                <button type="button" class="btn btn-primary mt-2" id="skip-button">Skip Question</button>
+            </div>
+        
+            <div id="skip-dialogue-2">
+                <h3>Are you sure you want to skip this question?</h3>
+                <p>A new question will be randomly chosen, but you will lose <strong>5</strong> rating for skipping. If you refresh the page while on a question page it will be counted as a skip.</p>
+                <h3 class="display-4" style="font-size: 1.5rem;">Are you sure you want to skip this question?</h3>
+                <p>A new question will be randomly chosen, but you will lose 8 rating for skipping</p>
+                <button type="button" class="btn btn-secondary" id="no-skip">No</button>
+                <a href="/train/<%= subject %>/display_question?units=<%=units%>"><button type="button" class="btn btn-primary" id="yes-skip">Yes</button></a>
+            </div>
+        
+        </div>
+
     <% } catch(err) { %>
 
         <!-- ERROR CODE -->
@@ -225,25 +241,8 @@
             <a href="/train" class="btn btn-primary btn-block btn-lg mt-4">Click me to go back</a>
         <% } %>
 
-</div>
-<% if (typeof err == 'undefined') { %>
-<div class="jumbotron container">
-
-	<div id="skip-dialogue-1">
-		<h3 class="display-4" style="font-size: 1.5rem;">Question's content out of reach of your knowledge?</h3>
-		<button type="button" class="btn btn-primary mt-2" id="skip-button">Skip Question</button>
-	</div>
-
-	<div id="skip-dialogue-2">
-		<h3>Are you sure you want to skip this question?</h3>
-		<p>A new question will be randomly chosen, but you will lose <strong>5</strong> rating for skipping. If you refresh the page while on a question page it will be counted as a skip.</p>
-		<h3 class="display-4" style="font-size: 1.5rem;">Are you sure you want to skip this question?</h3>
-		<p>A new question will be randomly chosen, but you will lose 8 rating for skipping</p>
-		<button type="button" class="btn btn-secondary" id="no-skip">No</button>
-		<a href="/train/<%= subject %>/display_question?units=<%=units%>"><button type="button" class="btn btn-primary" id="yes-skip">Yes</button></a>
-	</div>
+    <% } %>
 
 </div>
-<% } %>
-<% } %>
-<%- include("../partials/footer") -%>
+
+<%- include("../../partials/footer") -%>
