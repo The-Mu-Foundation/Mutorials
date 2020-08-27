@@ -34,24 +34,20 @@ function setRating(subject, newRating, req) {
 // modify the correct/wrong counter for users, and the pass/fail counter for questions, as well as tag collector tags
 function updateCounters(req, question, correct) {
 
-    // update counters
     if (correct) {
+        // update counters
         req.user.stats.correct++;
         question.stats.pass++;
-    } else if (!correct) {
-        req.user.stats.wrong++;
-        question.stats.fail++;
-    }
-
-    // update tag collector
-    if(correct) {
+        // update tag collector
         question.tags.forEach((tag) => {
             if(!req.user.stats.collectedTags.includes(tag)) {
                 req.user.stats.collectedTags.push(tag);
             }
         });
+    } else if (!correct) {
+        req.user.stats.wrong++;
+        question.stats.fail++;
     }
-
     // update rating tracker
     var tracker;
 
@@ -67,7 +63,7 @@ function updateCounters(req, question, correct) {
         while(tracker.length > 20) {
             tracker.shift();
         }
-        
+
     } catch(err) {
 
         // tracker doesn't exist (yet), so create one!
