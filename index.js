@@ -2,18 +2,14 @@
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const mongoose = require('mongoose');
 const express = require('express');
 var flash = require('express-flash-messages');
 const session = require('express-session');
-const InitiateMongoServer = require('./database/config/db');
 const emailValidation = require('./utils/functions/emailValidation');
 const http = require('http');
 const https = require('https');
 
 // SCHEMA, FUNCTION, AND CONSTANT IMPORTS
-const { userSchema } = require('./database/models/user');
-const { qSchema } = require('./database/models/question');
 const { genPassword, validPassword } = require('./utils/functions/password');
 const { calculateRatings, ratingCeilingFloor } = require('./utils/functions/ratings');
 const { arraysEqual, parseDelimiter } = require('./utils/functions/general');
@@ -24,13 +20,10 @@ const { referenceSheet } = require('./utils/constants/referencesheet');
 const { tags } = require('./utils/constants/tags');
 const { adminList, contributorList } = require('./utils/constants/sitesettings');
 
-// START MONGO SERVER
-InitiateMongoServer();
-var db = mongoose.connection;
-const PORT = process.env.PORT || 3000;
 
 // START EXPRESS SERVER
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // https SETUP
 const httpsConfig = {
@@ -48,18 +41,13 @@ const httpsServer = https.createServer(httpsConfig, app);
 //     next();
 // });
 
-// MONGO SESSION
-const MongoStore = require('connect-mongo')(session);
-const Ques = db.model('Ques', qSchema, 'questions');
-const User = db.model('User', userSchema);
+var mongo = require('./utils/functions/mongo.js');
 
-// SESSION COLLECTION
-const sessionStore = new MongoStore({ mongooseConnection: db, collection: 'sessions' });
 app.use(session({
     secret: 'blahblah',
     resave: false,
     saveUninitialized: true,
-    store: sessionStore
+    store: mongo.sessionStore
 }));
 
 require('./utils/functions/passport.js')(app);
