@@ -74,7 +74,7 @@ DISCLAIMER: these are nitpicky things which we just want to standardize
 - If callbacks or .then()’s contain more than 1 line, make the content of the function a new line and don’t try to jam the whole thing into 1 line
 - All indents should be 4 spaces, and indent correctly and reasonably
 - .then() goes on the same line, not the next
-- On frontend, prefer "double quotes". On backend, prefer 'single quotes'.
+- On frontend, prefer "double quotes". On backend, prefer 'single quotes'. On both, prefer \`format quotes\` instead of string concatenation.
 
 One last thing: if you’re refactoring a lot of code, remember to let the rest of the team know so that we can accommodate and avoid conflicts!
 
