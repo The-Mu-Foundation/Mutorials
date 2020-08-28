@@ -1,6 +1,6 @@
 // functions for email validation
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 var db = mongoose.connection;
 
@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = {
-    email_code_send: function(username, code) {
+    emailCodeSend: function(username, code) {
         const mailOptions = {
             from: 'email_confirmation@noreply.mutorials.org',
             to: username,
@@ -29,17 +29,17 @@ module.exports = {
         });
 
     },
-    check_code: function(username, entered_code) {
+    checkCode: function(username, entered_code) {
         return db.collection('users').findOne({ username: username }).then((user) => {
             return user.email_confirm_code === entered_code;
         });
     },
 
-    clear_confirm_code: function(username) {
+    clearConfirmCode: function(username) {
         db.collection('users').findOneAndUpdate({ username: username }, { $set: { email_confirm_code: "0" } });
     },
 
-    regex_check: function(username) {
+    regexCheck: function(username) {
         // returns true if the email conforms to RFC 5322
         // see https://stackoverflow.com/questions/201323
 

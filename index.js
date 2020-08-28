@@ -50,7 +50,7 @@ app.use(session({
     store: mongo.sessionStore
 }));
 
-require('./utils/functions/passport.js')(app);
+require('./utils/functions/passport.js')(app, mongo);
 
 app.use(flash()); // express-flash-messages config
 app.use(function (req, res, next) {

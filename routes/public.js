@@ -1,4 +1,5 @@
 const passport = require('passport');
+const emailValidation = require('../utils/functions/emailValidation');
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
@@ -24,7 +25,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signin', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(__dirname + '../' + '/views/public/' + 'signin.ejs');
+            res.render(__dirname + '/../' + '/views/public/' + 'signin.ejs');
         }
         else {
             res.redirect('/homepage');

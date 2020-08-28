@@ -14,8 +14,8 @@
         Chart.pluginService.register({
             beforeDraw: function (chart) {
 
-                if(chart.config.options.passrate_plugin) {
-                    
+                if(chart.config.options.passratePlugin) {
+
                     var width = chart.chart.width;
                     var height = chart.chart.height;
                     var ctx = chart.chart.ctx;
@@ -42,13 +42,13 @@
             }
         });
 
-        var ctx_passrate = document.getElementById("passRateChart");
+        var ctxPassrate = document.getElementById("passRateChart");
 
-        var style = ctx_passrate.style;
+        var style = ctxPassrate.style;
         style.marginLeft = "auto";
         style.marginRight = "auto";
 
-        var myChart = new Chart(ctx_passrate, {
+        var myChart = new Chart(ctxPassrate, {
             type: "pie",
             data: {
                 labels: ["Pass", "Fail"],
@@ -71,7 +71,7 @@
                 }]
             },
             options: {
-                passrate_plugin: true,
+                passratePlugin: true,
                 title: {
                     display: true,
                     text: "Question Pass/Fail Rates"
@@ -86,9 +86,9 @@
 
         // render rating tracker chart
 
-        var ctx_tracker = document.getElementById("ratingTrackerChart");
+        var ctxTracker = document.getElementById("ratingTrackerChart");
 
-        var style = ctx_tracker.style;
+        var style = ctxTracker.style;
         style.marginLeft = "auto";
         style.marginRight = "auto";
 
@@ -101,7 +101,7 @@
             labels.push(i + " Ago");
         }
         labels.push("");
-        var myChart = new Chart(ctx_tracker, {
+        var myChart = new Chart(ctxTracker, {
             type: "line",
             data: {
                 labels: labels,
@@ -224,7 +224,7 @@
 
             <div>
                 <h3>Answer Explanation:</h3>
-                <p><%- newQues.answer_ex %></p>
+                <p><%- newQues.answerEx %></p>
             </div>
 
         </div>
@@ -245,9 +245,9 @@
                 <h5>Question rating: <%= oldQ %></h5>
             </div>
 
-            <% if(newQues.ext_source != "original") { %>
+            <% if(newQues.extSource != "original") { %>
                 <div>
-                    <h5>Question Source: <%= newQues.ext_source %></h5>
+                    <h5>Question Source: <%= newQues.extSource %></h5>
                 </div>
             <% } %>
 
@@ -260,13 +260,13 @@
 
             <%# Rating tracker chart %>
             <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>            
+                <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
             </div>
             <input type="hidden" id="ratingTrackerArray" value="<%= user.stats.ratingTracker[subject.toLowerCase()].join('@') %>">
 
             <%# Pass rate chart %>
             <div class="canvas-container-center text-center">
-                <canvas id="passRateChart" width="400" height="400" class="my-4"></canvas>            
+                <canvas id="passRateChart" width="400" height="400" class="my-4"></canvas>
             </div>
             <input type="hidden" id="passcount" value="<%= newQues.stats.pass %>">
             <input type="hidden" id="failcount" value="<%= newQues.stats.fail %>">
@@ -294,7 +294,7 @@
 
 <div class="container mb-5">
     <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
-    <a href="/train/<%= subject %>/display_question?units=<%=units%>"><button type="button" class="btn btn-primary"
+    <a href="/train/<%= subject %>/displayQuestion?units=<%=units%>"><button type="button" class="btn btn-primary"
             id="tryanother">Try Another Question</button></a>
 </div>
 
