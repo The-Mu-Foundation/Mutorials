@@ -1,6 +1,6 @@
-module.exports = (app) => {
+module.exports = (app, mongo) => {
     app.post('/admin/addquestion', (req, res, next) => {
-        //const questionStore =  new MongoStore({mongooseConnection: db, collection: 'questions'});
+        //const questionStore =  new MongoStore({mongooseConnection: mongo.db, collection: 'questions'});
 
         if (req.isAuthenticated()) {
             if (req.body.question.length < 1
@@ -31,7 +31,7 @@ module.exports = (app) => {
                 });
             });
 
-            const newQ = new Ques({
+            const newQ = new mongo.Ques({
                 question: req.body.question,
                 choices: parseDelimiter(req.body.choices),
                 tags: parseDelimiter(req.body.tags),

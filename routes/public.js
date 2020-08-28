@@ -1,10 +1,64 @@
 const passport = require('passport');
 
-module.exports = (app) => {
+module.exports = (app, mongo) => {
     // PUBLIC GET
 
     // `username` is email
     // `ign` is username
+    app.get('/', (req, res) => {
+        if (!req.isAuthenticated()) {
+            //var userCount = 0;
+            //var questionCount = 0;
+            mongo.User.estimatedDocumentCount({}, function(err, result) {
+                var userCount = result;
+                mongo.Ques.estimatedDocumentCount({}, function(err, result) {
+                    var questionCount = result;
+                    res.render(__dirname + '/../' + '/views/public/' + 'index.ejs', { userCount: userCount, questionCount: questionCount });
+                });
+            });
+        }
+        else {
+            res.redirect('/homepage');
+        }
+    });
+
+    app.get('/signin', (req, res) => {
+        if (!req.isAuthenticated()) {
+            res.render(__dirname + '../' + '/views/public/' + 'signin.ejs');
+        }
+        else {
+            res.redirect('/homepage');
+        }
+    });
+
+    app.get('/signup', (req, res) => {
+        if (!req.isAuthenticated()) {
+            res.render(__dirname + '/../' + '/views/public/' + 'signup.ejs');
+        }
+        else {
+            res.redirect('/homepage');
+        }
+    });
+
+    app.get('/latexCompiler', (req, res) => {
+        res.render(__dirname + '/../' + '/views/public/' + 'latexcompiler.ejs');
+    });
+
+    app.get('/forgotPassword', (req, res) => {
+        if (req.isAuthenticated()) {
+            req.flash('errorFlash', 'You\'ll need to change your password here.');
+            res.redirect('/settings')
+        } else {
+            res.render(__dirname + '/../' + '/views/public/' + 'forgotPassword.ejs');
+        }
+    });
+
+    app.get('/whoWeAre', (req, res)  => {
+        res.render(__dirname + '/../' + '/views/public/' + 'whoWeAre.ejs');
+    });
+
+    // PUBLIC POST
+
     app.post('/register', (req, res, next) => {
         req.body.username = req.body.username.toLowerCase();
         req.body.ign = req.body.ign.toLowerCase();
@@ -32,7 +86,7 @@ module.exports = (app) => {
 
         const salt = saltHash.salt;
         const hash = saltHash.hash;
-        const newUser = new User({
+        const newUser = new mongo.User({
             username: req.body.username,
             ign: req.body.ign,
             hash: hash,
@@ -56,7 +110,7 @@ module.exports = (app) => {
             }
         });
         // check for duplicate user
-        db.collection('users').findOne({ username: req.body.username }).then((user) => {
+        mongo.db.collection('users').findOne({ username: req.body.username }).then((user) => {
             if (user) {
                 console.log('used');
                 var registerInputProblems2 = false;
@@ -82,7 +136,7 @@ module.exports = (app) => {
                 var confirmCode;
                 require('crypto').randomBytes(6, function (ex, buf) {
                     confirmCode = buf.toString('hex');
-                    db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
+                    mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
                     emailValidation.emailCodeSend(req.body.username, confirmCode);
                     req.flash('errorFlash', 'You need to confirm your email. Please check your email for instructions.');
                 });
@@ -90,60 +144,6 @@ module.exports = (app) => {
             res.redirect('/signin');
         });
     });
-    app.get('/', (req, res) => {
-        if (!req.isAuthenticated()) {
-            //var userCount = 0;
-            //var questionCount = 0;
-            User.estimatedDocumentCount({}, function(err, result) {
-                var userCount = result;
-                Ques.estimatedDocumentCount({}, function(err, result) {
-                    var questionCount = result;
-                    res.render(Dirname + '/views/public/' + 'index.ejs', { userCount: userCount, questionCount: questionCount });
-                });
-            });
-        }
-        else {
-            res.redirect('/homepage');
-        }
-    });
-
-    app.get('/signin', (req, res) => {
-        if (!req.isAuthenticated()) {
-            res.render(Dirname + '/views/public/' + 'signin.ejs');
-        }
-        else {
-            res.redirect('/homepage');
-        }
-    });
-
-    app.get('/signup', (req, res) => {
-        if (!req.isAuthenticated()) {
-            res.render(Dirname + '/views/public/' + 'signup.ejs');
-        }
-        else {
-            res.redirect('/homepage');
-        }
-    });
-
-    app.get('/latexCompiler', (req, res) => {
-        res.render(Dirname + '/views/public/' + 'latexcompiler.ejs');
-    });
-
-    app.get('/forgotPassword', (req, res) => {
-        if (req.isAuthenticated()) {
-            req.flash('errorFlash', 'You\'ll need to change your password here.');
-            res.redirect('/settings')
-        } else {
-            res.render(Dirname + '/views/public/' + 'forgotPassword.ejs');
-        }
-    });
-
-    app.get('/whoWeAre', (req, res)  => {
-        res.render(Dirname + '/views/public/' + 'whoWeAre.ejs');
-    });
-
-    // PUBLIC POST
-
     app.post('/login', passport.authenticate('local', {
         failureRedirect: '/signin',
         successRedirect: '/homepage',
@@ -161,16 +161,16 @@ module.exports = (app) => {
             res.redirect('/settings')
         } else {
             if (!req.body.enteredCode) {
-                User.countDocuments({ username: req.body.username }, function (err, count) {
+                mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
                     if (count > 0) {
                         req.flash('successFlash', 'Check your email for the code.');
                         var confirmCode;
                         require('crypto').randomBytes(6, function (ex, buf) {
                             confirmCode = buf.toString('hex');
-                            db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
+                            mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
                             emailValidation.emailCodeSend(req.body.username, confirmCode);
                         });
-                        req.flash('forgotPassUser', req.body.username);
+                        req.flash('forgotPass', req.body.username);
                         res.redirect('/forgotPassword');
                     } else {
                         req.flash('errorFlash', 'That email isn\'t registered with us.');
@@ -178,14 +178,14 @@ module.exports = (app) => {
                     }
                 });
             } else {
-                User.findOne({ username: req.body.username }).then((user) => {
+                mongo.User.findOne({ username: req.body.username }).then((user) => {
                     if (user) {
                         if (user.emailConfirmCode != '0') {
                             if (emailValidation.checkCode(user.username, req.body.enteredCode)) {
                                 if (req.body.newpw == req.body.confirmnewpw) {
                                     if((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
                                         const newPass = genPassword(req.body.newpw);
-                                        db.collection('users').findOneAndUpdate({ username: user.username }, { $set: { hash: newPass.hash, salt: newPass.salt } });
+                                        mongo.db.collection('users').findOneAndUpdate({ username: user.username }, { $set: { hash: newPass.hash, salt: newPass.salt } });
                                         emailValidation.clearConfirmCode(user.username);
                                         req.flash('successFlash', 'We successfully reset your password');
                                         res.redirect('/signin');

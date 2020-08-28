@@ -60,9 +60,9 @@ app.use(function (req, res, next) {
 });
 
 // ROUTE IMPORTS
-require('./routes/public.js')(app);
-require('./routes/private.js')(app);
-require('./routes/admin.js')(app);
+require('./routes/public.js')(app, mongo);
+require('./routes/private.js')(app, mongo);
+require('./routes/admin.js')(app, mongo);
 
 // WILDCARD FOR ALL OTHER ROUTES
 app.get('*', (req, res) => {

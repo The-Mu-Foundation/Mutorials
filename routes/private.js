@@ -1,4 +1,4 @@
-module.exports = (app) => {
+module.exports = (app, mongo) => {
 
     app.post('/private/initialRating', (req, res, next) => {
         //initial ratings set proficiency
@@ -6,7 +6,7 @@ module.exports = (app) => {
         //req.params.level, req.params.subject
         if (req.isAuthenticated()) {
             req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
-            db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+            mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
             res.redirect('/train/' + req.body.subject + '/chooseUnits');
         }
         else {
@@ -54,7 +54,7 @@ module.exports = (app) => {
             // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
             if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
                     var isRight = false;
-                const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
 
                     // check answer
                     if (antsy.answer[0] == req.body.answerChoice) {
@@ -80,7 +80,7 @@ module.exports = (app) => {
             }
             else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
                 var isRight = false;
-                const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
 
                     // check answer
                     isRight = arraysEqual(antsy.answer, req.body.saChoice);
@@ -104,7 +104,7 @@ module.exports = (app) => {
             }
             else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
                 var isRight = false;
-                const antsy = getQuestion(Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
 
                     // check answer
                     if (antsy.answer[0] == req.body.freeAnswer.trim()) {
@@ -145,20 +145,20 @@ module.exports = (app) => {
             req.user.profile.location = req.body.location;
             req.user.profile.age = req.body.age;
 
-            db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+            mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
 
             console.log('Profile has been updated');
 
             // change account settings
 
             if (req.body.ign && req.body.ign != req.user.ign) {
-                User.countDocuments({ ign: req.body.ign }, function (err, count) {
+                mongo.User.countDocuments({ ign: req.body.ign }, function (err, count) {
                     if (count > 0) {
                         console.log('username exists');
                         req.flash('errorFlash', 'Sorry, this username already exists.');
                     } else {
                         console.log('username does not exist');
-                        db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { ign: req.body.ign } });
+                        mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { ign: req.body.ign } });
                         req.flash('successFlash', 'We successfully changed your username.');
                     }
                 });
@@ -167,7 +167,7 @@ module.exports = (app) => {
             }
 
             if(req.body.username && req.body.username != req.user.username) {
-                User.countDocuments({ username: req.body.username }, function (err, count) {
+                mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
                     if (count > 0) {
                         console.log('email exists'); // flash
                         req.flash('errorFlash', 'We already have an account with that email. Try signing in with that one.');
@@ -176,10 +176,10 @@ module.exports = (app) => {
                         var confirmCode;
                         require('crypto').randomBytes(6, function (ex, buf) {
                             confirmCode = buf.toString('hex');
-                            db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
+                            mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
                         });
                         req.flash('successFlash', 'You need to confirm your email. Please check your email to confirm it.');
-                        db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { username: req.body.username } });
+                        mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { username: req.body.username } });
                         console.log('email updated');
                     }
                 });
@@ -196,7 +196,7 @@ module.exports = (app) => {
                         const newPass = genPassword(req.body.newpw);
                         req.user.hash = newPass.hash;
                         req.user.salt = newPass.salt;
-                        db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+                        mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
                     } else {
                         req.flash('errorFlash', 'passwords don\'t match');
                     }
@@ -204,7 +204,7 @@ module.exports = (app) => {
                     req.flash('errorFlash', 'Password does not meet requirments.');
                 }
             }
-            //db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
+            //mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
             res.redirect('/settings');
         }
@@ -229,7 +229,7 @@ module.exports = (app) => {
     app.get('/leaderboard/:subject', (req, res) => {
         if (req.isAuthenticated()) {
             // DOESN'T WORK YET, NEEDA FIX IT
-            var leaderboard = generateLeaderboard(User, req.params.subject, 3);
+            var leaderboard = generateLeaderboard(mongo.User, req.params.subject, 3);
             res.render(Dirname + '/views/private/' + 'train.ejs');
             //res.render(Dirname + '/views/private/' + 'leaderboard.ejs');
             // req.params.subject
@@ -324,7 +324,7 @@ module.exports = (app) => {
 
     app.get('/stats/:username', (req, res) => {
         if (req.isAuthenticated()) {
-            User.findOne({ ign: req.params.username }, function (err, obj) {
+            mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
                 res.render(Dirname + '/views/private/' + 'stats.ejs', { user: obj, totalTags: tags });
             });
         }
@@ -358,7 +358,7 @@ module.exports = (app) => {
             if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
                 //req.user.rating[req.params.subject.toLowerCase()] = 0;
                 //req.user.save();
-                //db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+                //mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
                 res.render(Dirname + '/views/private/' + 'trainOnetimeSetProficiency.ejs', { subject: req.params.subject });
             }
             else {
@@ -407,7 +407,7 @@ module.exports = (app) => {
             req.user.rating[req.params.subject.toLowerCase()] = originalRating;
 
             // get question
-            const qs = getQuestions(Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
+            const qs = getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
                 curQ = qs[Math.floor(Math.random() * qs.length)];
                 res.render(Dirname + '/views/private/' + 'trainDisplayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
             });
