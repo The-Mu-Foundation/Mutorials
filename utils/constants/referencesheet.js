@@ -32,8 +32,9 @@ const referenceSheet = {
         "Resistors in Parallel": "$\\frac{1}{R_p} = \\sum_i\\frac{1}{R_i}$"
     },
     constants: {
-        "Earth's gravitational constant": "$g = 9.81$",
-        "Coulomb's constant": "$k = 8.99*10^9$"
+        "Acceleration due to gravity on Earth": "$g = 9.81$",
+        "Coulomb's constant": "$k = 8.99*10^9$",
+        "Gravitational constant": "$6.67\times10^{-11}:\mathrm{Nm^2/kg^2}$"
     }
 };
 
