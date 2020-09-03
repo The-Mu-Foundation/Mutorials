@@ -1,8 +1,8 @@
 // FUNCTION IMPORTS
-const { tags } = require('./utils/constants/tags');
-const { subjectUnitDictionary } = require('./utils/constants/subjects');
-const { adminList, contributorList } = require('./utils/constants/sitesettings');
-const { parseDelimiter } = require('./utils/functions/general');
+const { tags } = require('../utils/constants/tags');
+const { subjectUnitDictionary } = require('../utils/constants/subjects');
+const { adminList, contributorList } = require('../utils/constants/sitesettings');
+const { parseDelimiter } = require('../utils/functions/general');
 module.exports = (app, mongo) => {
     app.post('/admin/addquestion', (req, res, next) => {
         //const questionStore =  new MongoStore({mongooseConnection: mongo.db, collection: 'questions'});

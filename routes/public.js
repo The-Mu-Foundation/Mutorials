@@ -3,7 +3,7 @@ const passport = require('passport');
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
-const { genPassword, validPassword } = require('./utils/functions/password');
+const { genPassword, validPassword } = require('../utils/functions/password');
 
 module.exports = (app, mongo) => {
     // PUBLIC GET

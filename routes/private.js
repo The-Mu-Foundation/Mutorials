@@ -1,12 +1,12 @@
 // FUNCTION IMPORTS
-const { calculateRatings, ratingCeilingFloor } = require('./utils/functions/ratings');
-const { presetUnitOptions } = require('./utils/constants/presets');
-const { tags } = require('./utils/constants/tags');
-const { referenceSheet } = require('./utils/constants/referencesheet');
-const { subjectUnitDictionary } = require('./utils/constants/subjects');
-const { adminList, contributorList } = require('./utils/constants/sitesettings');
-const { arraysEqual, parseDelimiter } = require('./utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateAll, generateLeaderboard } = require('./utils/functions/database');
+const { calculateRatings, ratingCeilingFloor } = require('../utils/functions/ratings');
+const { presetUnitOptions } = require('../utils/constants/presets');
+const { tags } = require('../utils/constants/tags');
+const { referenceSheet } = require('../utils/constants/referencesheet');
+const { subjectUnitDictionary } = require('../utils/constants/subjects');
+const { adminList, contributorList } = require('../utils/constants/sitesettings');
+const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateAll, generateLeaderboard } = require('../utils/functions/database');
 
 module.exports = (app, mongo) => {
     app.post('/private/initialRating', (req, res, next) => {
