@@ -1,8 +1,13 @@
+// FUNCTION IMPORTS
+const { tags } = require('./utils/constants/tags');
+const { subjectUnitDictionary } = require('./utils/constants/subjects');
+const { adminList, contributorList } = require('./utils/constants/sitesettings');
+const { parseDelimiter } = require('./utils/functions/general');
 module.exports = (app, mongo) => {
     app.post('/admin/addquestion', (req, res, next) => {
         //const questionStore =  new MongoStore({mongooseConnection: mongo.db, collection: 'questions'});
 
-        if (req.isAuthenticated()) {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
             if (req.body.question.length < 1
                 || parseDelimiter(req.body.tags).length < 1
                 || req.body.rating.length < 1
@@ -50,8 +55,7 @@ module.exports = (app, mongo) => {
             })
             //collection.insertOne({})
             newQ.save();
-        }
-        else {
+        } else {
             res.redirect('/');
         }
     });
@@ -61,7 +65,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addquestion', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(Dirname + '/views/admin/' + 'trainAddQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
+            res.render(_dirname + '/views/admin/' + 'trainAddQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
         }
         else {
             res.redirect('/');
@@ -70,7 +74,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addedSuccess', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(Dirname + '/views/admin/' + 'trainAddQuestionSuccess.ejs');
+            res.render(_dirname + '/views/admin/' + 'trainAddQuestionSuccess.ejs');
         }
         else {
             res.redirect('/');
@@ -79,7 +83,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addedFailure', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(Dirname + '/views/admin/' + 'trainAddQuestionFailure.ejs');
+            res.render(_dirname + '/views/admin/' + 'trainAddQuestionFailure.ejs');
         }
         else {
             res.redirect('/');

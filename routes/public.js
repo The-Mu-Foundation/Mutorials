@@ -1,5 +1,9 @@
+// MODULE IMPORTS
 const passport = require('passport');
+
+// FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
+const { genPassword, validPassword } = require('./utils/functions/password');
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
@@ -171,7 +175,7 @@ module.exports = (app, mongo) => {
                             mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
                             emailValidation.emailCodeSend(req.body.username, confirmCode);
                         });
-                        req.flash('forgotPass', req.body.username);
+                        req.flash('forgotPassUser', req.body.username);
                         res.redirect('/forgotPassword');
                     } else {
                         req.flash('errorFlash', 'That email isn\'t registered with us.');

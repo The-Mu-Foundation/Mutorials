@@ -9,18 +9,6 @@ const emailValidation = require('./utils/functions/emailValidation');
 const http = require('http');
 const https = require('https');
 
-// SCHEMA, FUNCTION, AND CONSTANT IMPORTS
-const { genPassword, validPassword } = require('./utils/functions/password');
-const { calculateRatings, ratingCeilingFloor } = require('./utils/functions/ratings');
-const { arraysEqual, parseDelimiter } = require('./utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, generateLeaderboard } = require('./utils/functions/database');
-const { subjectUnitDictionary } = require('./utils/constants/subjects');
-const { presetUnitOptions } = require('./utils/constants/presets');
-const { referenceSheet } = require('./utils/constants/referencesheet');
-const { tags } = require('./utils/constants/tags');
-const { adminList, contributorList } = require('./utils/constants/sitesettings');
-
-
 // START EXPRESS SERVER
 const app = express();
 const PORT = process.env.PORT || 3000;

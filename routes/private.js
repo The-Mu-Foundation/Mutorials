@@ -1,5 +1,14 @@
-module.exports = (app, mongo) => {
+// FUNCTION IMPORTS
+const { calculateRatings, ratingCeilingFloor } = require('./utils/functions/ratings');
+const { presetUnitOptions } = require('./utils/constants/presets');
+const { tags } = require('./utils/constants/tags');
+const { referenceSheet } = require('./utils/constants/referencesheet');
+const { subjectUnitDictionary } = require('./utils/constants/subjects');
+const { adminList, contributorList } = require('./utils/constants/sitesettings');
+const { arraysEqual, parseDelimiter } = require('./utils/functions/general');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateAll, generateLeaderboard } = require('./utils/functions/database');
 
+module.exports = (app, mongo) => {
     app.post('/private/initialRating', (req, res, next) => {
         //initial ratings set proficiency
 
@@ -68,14 +77,14 @@ module.exports = (app, mongo) => {
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
                         // update counters & tag collector
-                        updateCounters(req, antsy, isRight);
+                        updateAll(req, antsy, isRight);
                     } else {
 
                         // refund rating deducted for skip
                         setRating(antsy.subject[0], oldUserRating, req);
                     }
                     // render answer page
-                    res.render(Dirname + '/views/private/' + 'trainAnswerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(_dirname + '/views/private/' + 'trainAnswerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
                 });
             }
             else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
@@ -92,14 +101,14 @@ module.exports = (app, mongo) => {
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
                         // update counters & tag collector
-                        updateCounters(req, antsy, isRight);
+                        updateAll(req, antsy, isRight);
                     } else {
 
                         // refund rating deducted for skip
                         setRating(antsy.subject[0], oldUserRating, req);
                     }
                     // render answer page
-                    res.render(Dirname + '/views/private/' + 'trainAnswerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(_dirname + '/views/private/' + 'trainAnswerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
                 });
             }
             else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
@@ -118,14 +127,14 @@ module.exports = (app, mongo) => {
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
                         // update counters & tag collector
-                        updateCounters(req, antsy, isRight);
+                        updateAll(req, antsy, isRight);
                     } else {
 
                         // refund rating deducted for skip
                         setRating(antsy.subject[0], oldUserRating, req);
                     }
                     // render answer page
-                    res.render(Dirname + '/views/private/' + 'trainAnswerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(_dirname + '/views/private/' + 'trainAnswerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
                 });
             }
         }
@@ -216,9 +225,9 @@ module.exports = (app, mongo) => {
     app.get('/homepage', (req, res) => {
         if (req.isAuthenticated()) {
             if (adminList.includes(req.user.username)) {
-                res.render(Dirname + '/views/admin/' + 'adminHomepage.ejs');
+                res.render(_dirname + '/views/admin/' + 'adminHomepage.ejs');
             } else {
-                res.render(Dirname + '/views/private/' + 'homepage.ejs', { user: req.user });
+                res.render(_dirname + '/views/private/' + 'homepage.ejs', { user: req.user });
             }
         }
         else {
@@ -230,8 +239,8 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             // DOESN'T WORK YET, NEEDA FIX IT
             var leaderboard = generateLeaderboard(mongo.User, req.params.subject, 3);
-            res.render(Dirname + '/views/private/' + 'train.ejs');
-            //res.render(Dirname + '/views/private/' + 'leaderboard.ejs');
+            res.render(_dirname + '/views/private/' + 'train.ejs');
+            //res.render(_dirname + '/views/private/' + 'leaderboard.ejs');
             // req.params.subject
         }
         else {
@@ -241,7 +250,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'references.ejs');
+            res.render(_dirname + '/views/private/' + 'references.ejs');
         }
         else {
             res.redirect('/');
@@ -250,7 +259,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/equations', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'referencesEquations.ejs', { equations: referenceSheet.equations });
+            res.render(_dirname + '/views/private/' + 'referencesEquations.ejs', { equations: referenceSheet.equations });
         }
         else {
             res.redirect('/');
@@ -259,7 +268,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/constants', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'referencesConstants.ejs', { constants: referenceSheet.constants });
+            res.render(_dirname + '/views/private/' + 'referencesConstants.ejs', { constants: referenceSheet.constants });
         }
         else {
             res.redirect('/');
@@ -268,7 +277,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/taglist', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'referencesTaglist.ejs', { tags: tags });
+            res.render(_dirname + '/views/private/' + 'referencesTaglist.ejs', { tags: tags });
         }
         else {
             res.redirect('/');
@@ -277,7 +286,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/about', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'referencesAbout.ejs');
+            res.render(_dirname + '/views/private/' + 'referencesAbout.ejs');
         }
         else {
             res.redirect('/');
@@ -293,7 +302,7 @@ module.exports = (app, mongo) => {
             cc.then((value) => {
                 if (!value) {
                     debugger;
-                    res.render(Dirname + '/views/private/' + 'emailConfirmation.ejs', { email: req.user.username });
+                    res.render(_dirname + '/views/private/' + 'emailConfirmation.ejs', { email: req.user.username });
                 } else {
                     req.flash('errorFlash', 'You\'ve already confirmed your email.');
                     res.redirect('/');
@@ -306,7 +315,7 @@ module.exports = (app, mongo) => {
 
     app.get('/settings', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'settings.ejs', { user: req.user });
+            res.render(_dirname + '/views/private/' + 'settings.ejs', { user: req.user });
         }
         else {
             res.redirect('/');
@@ -325,7 +334,7 @@ module.exports = (app, mongo) => {
     app.get('/stats/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
-                res.render(Dirname + '/views/private/' + 'stats.ejs', { user: obj, totalTags: tags });
+                res.render(_dirname + '/views/private/' + 'stats.ejs', { user: obj, totalTags: tags });
             });
         }
         else {
@@ -335,7 +344,7 @@ module.exports = (app, mongo) => {
 
     app.get('/train', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'train.ejs');
+            res.render(_dirname + '/views/private/' + 'train.ejs');
         }
         else {
             res.redirect('/');
@@ -345,7 +354,7 @@ module.exports = (app, mongo) => {
     app.get('/train/chooseSubject', (req, res) => {
         const qNum = 0;
         if (req.isAuthenticated()) {
-            res.render(Dirname + '/views/private/' + 'trainChooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum });
+            res.render(_dirname + '/views/private/' + 'trainChooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum });
         }
         else {
             res.redirect('/');
@@ -359,7 +368,7 @@ module.exports = (app, mongo) => {
                 //req.user.rating[req.params.subject.toLowerCase()] = 0;
                 //req.user.save();
                 //mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
-                res.render(Dirname + '/views/private/' + 'trainOnetimeSetProficiency.ejs', { subject: req.params.subject });
+                res.render(_dirname + '/views/private/' + 'trainOnetimeSetProficiency.ejs', { subject: req.params.subject });
             }
             else {
                 res.redirect('/train');
@@ -377,7 +386,7 @@ module.exports = (app, mongo) => {
                 res.redirect('/train/' + req.params.subject + '/proficiency'); //ROUTING FIX
             }
             else {
-                res.render(Dirname + '/views/private/' + 'trainChooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum, unitPresets: presetUnitOptions[req.params.subject] });
+                res.render(_dirname + '/views/private/' + 'trainChooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum, unitPresets: presetUnitOptions[req.params.subject] });
             }
         }
         else {
@@ -409,7 +418,7 @@ module.exports = (app, mongo) => {
             // get question
             const qs = getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
                 curQ = qs[Math.floor(Math.random() * qs.length)];
-                res.render(Dirname + '/views/private/' + 'trainDisplayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
+                res.render(_dirname + '/views/private/' + 'trainDisplayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
             });
         } else {
             res.redirect('/');
