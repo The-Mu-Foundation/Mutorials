@@ -1,10 +1,10 @@
-<!-- TEMPLATE FOR FLASHES -->
+<%# Template for flashes %>
 
 <% var messages = getMessages() %>
 
-<% if (messages.error_flash) { %>
-    <% for(var i=0; i < messages.error_flash.length; i++) { %>
-        <div class="alert alert-danger" role="alert"><%= messages.error_flash[i] %></div>
+<% if (messages.errorFlash) { %>
+    <% for(var i=0; i < messages.errorFlash.length; i++) { %>
+        <div class="alert alert-danger" role="alert"><%= messages.errorFlash[i] %></div>
     <% } %>
 <% } %>
 
@@ -14,9 +14,9 @@
     <% } %>
 <% } %>
 
-<% if (messages.success_flash) { %>
-    <% for(var i=0; i < messages.success_flash.length; i++) { %>
-        <div class="alert alert-success" role="alert"><%= messages.success_flash[i] %></div>
+<% if (messages.successFlash) { %>
+    <% for(var i=0; i < messages.successFlash.length; i++) { %>
+        <div class="alert alert-success" role="alert"><%= messages.successFlash[i] %></div>
     <% } %>
 <% } %>
 

@@ -1,15 +1,13 @@
-<!-- this is code for the signup page -->
+<%# Signup/Register page %>
 
 <%- include("../partials/header") -%>
-<%- include("../partials/homenav") -%>
+<%- include("../partials/navigationPublic") -%>
 
-
-<!-- javascript to flash -->
-<!--suppress HtmlFormInputWithoutLabel -->
+<%# Javscript to flash %>
 <script>
 
     $(document).ready(function () {
-        // show/hide password requirement notification
+        
         $("#password-req").hide();
         $("#signupPassword").focus(function() {
             $("#password-req").show(100);

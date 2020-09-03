@@ -1,11 +1,8 @@
-<!-- This is the page for displaying stats -->
-
-<!-- ARGUMENTS:
-    user - the user for which stats are being displayed
-    totalTags - the complete list of all tags on the site -->
+<%# Page for displaying stats %>
+<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site %>
 
 <%- include("../partials/header") -%>
-<%- include("../partials/navigation") -%>
+<%- include("../partials/navigationPrivate") -%>
 
 <script>
 
@@ -16,8 +13,8 @@
         Chart.pluginService.register({
             beforeDraw: function (chart) {
 
-                if(chart.config.options.correctwrong_plugin) {
-                    
+                if(chart.config.options.correctwrongPlugin) {
+
                     var width = chart.chart.width;
                     var height = chart.chart.height;
                     var ctx = chart.chart.ctx;
@@ -44,13 +41,13 @@
             }
         });
 
-        var ctx_passrate = document.getElementById("correctWrongChart");
+        var ctxPassrate = document.getElementById("correctWrongChart");
 
-        var style = ctx_passrate.style;
+        var style = ctxPassrate.style;
         style.marginLeft = "auto";
         style.marginRight = "auto";
 
-        var myChart = new Chart(ctx_passrate, {
+        var myChart = new Chart(ctxPassrate, {
             type: "pie",
             data: {
                 labels: ["Correct", "Wrong"],
@@ -73,7 +70,7 @@
                 }]
             },
             options: {
-                correctwrong_plugin: true,
+                correctwrongPlugin: true,
                 title: {
                     display: true,
                     text: "User Correct/Wrong Counts"
@@ -87,12 +84,12 @@
         });
 
         // render rating tracker charts
-        
+
         ["Physics", "Chemistry", "Biology"].forEach((subject) => {
 
-            var ctx_tracker = document.getElementById("ratingTrackerChart-" + subject);
+            var ctxTracker = document.getElementById("ratingTrackerChart-" + subject);
 
-            var style = ctx_tracker.style;
+            var style = ctxTracker.style;
             style.marginLeft = "auto";
             style.marginRight = "auto";
 
@@ -105,7 +102,7 @@
                 labels.push(i + " Ago");
             }
             labels.push("");
-            var myChart = new Chart(ctx_tracker, {
+            var myChart = new Chart(ctxTracker, {
                 type: "line",
                 data: {
                     labels: labels,
@@ -172,7 +169,7 @@
                     <% counter--; %>
                 <% } %>
             <% }); %>
-            
+
             <% if(counter == 0) { %>
                 <p>0 out of <%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
@@ -184,7 +181,7 @@
         <div class="col-5">
 
             <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart-Physics" width="400" height="400" class="my-4"></canvas>            
+                <canvas id="ratingTrackerChart-Physics" width="400" height="400" class="my-4"></canvas>
             </div>
             <input type="hidden" id="ratingTrackerArray-Physics" value="<%= user.stats.ratingTracker.physics.join('@') %>">
 
@@ -213,7 +210,7 @@
                     <% counter--; %>
                 <% } %>
             <% }); %>
-            
+
             <% if(counter == 0) { %>
                 <p>0 out of <%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
@@ -225,7 +222,7 @@
         <div class="col-5">
 
             <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart-Chemistry" width="400" height="400" class="my-4"></canvas>            
+                <canvas id="ratingTrackerChart-Chemistry" width="400" height="400" class="my-4"></canvas>
             </div>
             <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
 
@@ -255,7 +252,7 @@
                     <% counter--; %>
                 <% } %>
             <% }); %>
-            
+
             <% if(counter == 0) { %>
                 <p>0 out of <%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
@@ -267,16 +264,17 @@
         <div class="col-5">
 
             <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart-Biology" width="400" height="400" class="my-4"></canvas>            
+                <canvas id="ratingTrackerChart-Biology" width="400" height="400" class="my-4"></canvas>
             </div>
             <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
-            
+
         </div>
 
     </div>
 
 </div>
 
+<%# Correct/wrong chart %>
 <div class="container jumbotron my-5">
 
     <div class="row">
@@ -284,9 +282,8 @@
         <div class="col-4"></div>
 
         <div class="col-4">
-            <!-- correct/wrong chart -->
             <div class="canvas-container-center text-center">
-                <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>            
+                <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>
             </div>
             <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
             <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">

@@ -1,10 +1,8 @@
-<!-- This is the page routed to upon signin; root page -->
-
-<!-- ARGUMENTS:
-    user: the user logged in -->
+<%# Root page upon signin %>
+<%# ARGUMENTS: user- the user logged in right now %>
 
 <%- include("../partials/header") -%>
-<%- include("../partials/navigation") -%>
+<%- include("../partials/navigationPrivate") -%>
 
 <script>
 
@@ -17,10 +15,6 @@
             },
             mouseleave: function() {
                 $(this).fadeTo(200, 0.8);
-                /*$("#default-card").show(0);
-                $("#physics-card").hide(0);
-                $("#chem-card").hide(0);
-                $("#bio-card").hide(0);*/
             }
         });
 
@@ -57,17 +51,17 @@
     <%- include("../partials/flashes") -%>
 
     <div class="row">
-        
+
         <div class="col-4">
-            <a href="/train/Physics/choose_units"><img id="physics-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics icon"></a>
+            <a href="/train/Physics/chooseUnits"><img id="physics-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics icon"></a>
         </div>
 
         <div class="col-4">
-            <a href="/train/Chemistry/choose_units"><img id="chem-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Physics icon"></a>
+            <a href="/train/Chemistry/chooseUnits"><img id="chem-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Physics icon"></a>
         </div>
 
         <div class="col-4">
-            <a href="/train/Biology/choose_units"><img id="bio-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Physics icon"></a>
+            <a href="/train/Biology/chooseUnits"><img id="bio-icon" class="thumbnail rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Physics icon"></a>
         </div>
 
     </div>
@@ -96,15 +90,6 @@
 
     </div>
 
-	<!-- <h3 class="my-4">Latest Site Updates</h3>
-	<ul class="mb-4">
-		<li>7/10 - questions starting to go in!</li>
-		<li>7/11 - site ready for beta testing release</li>
-		<li>7/11 - basic training capability of site is set</li>
-	</ul>
-
-	<p>Cool stuff coming soon!</p>-->
-	
 </div>
 
 <%- include("../partials/footer") -%>
