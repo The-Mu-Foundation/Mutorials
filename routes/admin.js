@@ -3,6 +3,9 @@ const { tags } = require('../utils/constants/tags');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
+
+const VIEWS = "../views/"
+
 module.exports = (app, mongo) => {
     app.post('/admin/addquestion', (req, res, next) => {
         //const questionStore =  new MongoStore({mongooseConnection: mongo.db, collection: 'questions'});
@@ -65,7 +68,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addquestion', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(_dirname + '/views/admin/' + 'trainAddQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
+            res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
         }
         else {
             res.redirect('/');
@@ -74,7 +77,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addedSuccess', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(_dirname + '/views/admin/' + 'trainAddQuestionSuccess.ejs');
+            res.render(VIEWS + 'admin/train/addQuestionSuccess.ejs');
         }
         else {
             res.redirect('/');
@@ -83,7 +86,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addedFailure', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(_dirname + '/views/admin/' + 'trainAddQuestionFailure.ejs');
+            res.render(VIEWS + 'admin/train/addQuestionFailure.ejs');
         }
         else {
             res.redirect('/');

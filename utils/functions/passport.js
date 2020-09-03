@@ -1,6 +1,8 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
+const mongo = require('./mongo.js');
+const { genPassword, validPassword } = require('./password.js');
 
 module.exports = (app, mongo) => {
     passport.use(new LocalStrategy(
@@ -30,7 +32,7 @@ module.exports = (app, mongo) => {
         cb(null, user.id);
     });
     passport.deserializeUser(function (id, cb) {
-        User.findById(id, function (err, user) {
+        mongo.User.findById(id, function (err, user) {
             if (err) { return cb(err); }
             cb(null, user);
         });

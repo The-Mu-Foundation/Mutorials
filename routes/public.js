@@ -5,6 +5,8 @@ const passport = require('passport');
 const emailValidation = require('../utils/functions/emailValidation');
 const { genPassword, validPassword } = require('../utils/functions/password');
 
+const VIEWS = "../views/"
+
 module.exports = (app, mongo) => {
     // PUBLIC GET
 
@@ -18,7 +20,7 @@ module.exports = (app, mongo) => {
                 var userCount = result;
                 mongo.Ques.estimatedDocumentCount({}, function(err, result) {
                     var questionCount = result;
-                    res.render(__dirname + '/../' + '/views/public/' + 'index.ejs', { userCount: userCount, questionCount: questionCount });
+                    res.render(VIEWS + 'public/index.ejs', { userCount: userCount, questionCount: questionCount });
                 });
             });
         }
@@ -29,7 +31,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signin', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(__dirname + '/../' + '/views/public/' + 'signin.ejs');
+            res.render(VIEWS + 'public/signin.ejs');
         }
         else {
             res.redirect('/homepage');
@@ -38,7 +40,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signup', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(__dirname + '/../' + '/views/public/' + 'signup.ejs');
+            res.render(VIEWS + 'public/signup.ejs');
         }
         else {
             res.redirect('/homepage');
@@ -46,7 +48,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/latexCompiler', (req, res) => {
-        res.render(__dirname + '/../' + '/views/public/' + 'latexcompiler.ejs');
+        res.render(VIEWS + 'public/latexcompiler.ejs');
     });
 
     app.get('/forgotPassword', (req, res) => {
@@ -54,12 +56,12 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You\'ll need to change your password here.');
             res.redirect('/settings')
         } else {
-            res.render(__dirname + '/../' + '/views/public/' + 'forgotPassword.ejs');
+            res.render(VIEWS + 'public/forgotPassword.ejs');
         }
     });
 
     app.get('/whoWeAre', (req, res)  => {
-        res.render(__dirname + '/../' + '/views/public/' + 'whoWeAre.ejs');
+        res.render(VIEWS + 'public/whoWeAre.ejs');
     });
 
     // PUBLIC POST
