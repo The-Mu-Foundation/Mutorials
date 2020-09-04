@@ -64,6 +64,10 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'public/whoWeAre.ejs');
     });
 
+    app.get('/termsOfService', (req, res) => {
+        res.render(VIEWS + 'public/termsOfService.ejs');
+    });
+
     // PUBLIC POST
 
     app.post('/register', (req, res, next) => {
