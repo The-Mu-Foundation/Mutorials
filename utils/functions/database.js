@@ -97,4 +97,4 @@ function generateLeaderboard (User, subject, count) {
     //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
 }
 
-module.exports = { getQuestion: getQuestion, getQuestions: getQuestions, getRating: getRating, setRating: setRating, setQRating: setQRating, updateCounters: updateCounters, generateLeaderboard: generateLeaderboard};
+module.exports = { getQuestion: getQuestion, getQuestions: getQuestions, getRating: getRating, setRating: setRating, setQRating: setQRating, updateAll: updateAll, generateLeaderboard: generateLeaderboard};
