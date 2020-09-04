@@ -87,6 +87,15 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'The email you entered is not valid.');
             registerInputProblems1 = true;
         }
+        if (!req.body.agreeTOS) {
+            req.flash('errorFlash', 'You must agree to the Terms of Service and Privacy Policy to register an account with us.');
+            registerInputProblems1 = true;
+        }
+        if (!req.body.agreeAge) {
+            req.flash('errorFlash', 'You must affirm that you are at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.');
+            registerInputProblems1 = true;
+        }
+
 
         if (registerInputProblems1) {
             res.redirect('/signup');
