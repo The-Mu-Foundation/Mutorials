@@ -8,6 +8,7 @@ const session = require('express-session');
 const emailValidation = require('./utils/functions/emailValidation');
 const http = require('http');
 const https = require('https');
+import sslRedirect from 'heroku-ssl-redirect';
 
 // START EXPRESS SERVER
 const app = express();
@@ -22,12 +23,10 @@ const httpsConfig = {
 };
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(httpsConfig, app);
-// app.use((req, res, next) => {
-//     if (req.protocol === 'http') {
-//         res.redirect(301, `https://${req.headers.host}${req.url}`);
-//     }
-//     next();
-// });
+
+if (PORT != 3000) {
+    app.use(sslRedirect(['production'], 301));
+}
 
 var mongo = require('./utils/functions/mongo.js');
 
