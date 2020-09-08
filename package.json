@@ -21,6 +21,7 @@
         "express-flash-messages": "^0.1.1",
         "express-session": "^1.17.1",
         "express-validator": "^6.5.0",
+        "heroku-ssl-redirect": "^0.1.1",
         "html": "^1.0.0",
         "http-errors": "^1.6.3",
         "jsonwebtoken": "^8.5.1",
