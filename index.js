@@ -58,6 +58,6 @@ app.get('*', (req, res) => {
 
 // START http AND https SERVERS
 http.createServer(app).listen(PORT, function() {
-    console.log('Express server listening on port ' + PORT));
+    console.log('Express server listening on port ' + PORT);
 });
 
