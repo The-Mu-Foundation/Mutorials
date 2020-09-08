@@ -8,7 +8,7 @@ const session = require('express-session');
 const emailValidation = require('./utils/functions/emailValidation');
 const http = require('http');
 const https = require('https');
-import sslRedirect from 'heroku-ssl-redirect';
+var enforce = require('express-sslify');
 
 // START EXPRESS SERVER
 const app = express();
@@ -25,6 +25,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(httpsConfig, app);
 
 if (PORT != 3000) {
+    app.use(enforce.HTTPS({trustProtoHeader: true }));
     app.use(sslRedirect(['production'], 301));
 }
 
@@ -57,7 +58,7 @@ app.get('*', (req, res) => {
 });
 
 // START http AND https SERVERS
-app.listen(PORT, (req, res) => {
-    console.log(`Server Started at ${PORT}`);
+http.createServer(app).listen(PORT, function() {
+    console.log('Express server listening on port ' + PORT));
 });
 
