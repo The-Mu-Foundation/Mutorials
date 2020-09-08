@@ -26,7 +26,6 @@ const httpsServer = https.createServer(httpsConfig, app);
 
 if (PORT != 3000) {
     app.use(enforce.HTTPS({trustProtoHeader: true }));
-    app.use(sslRedirect(['production'], 301));
 }
 
 var mongo = require('./utils/functions/mongo.js');
