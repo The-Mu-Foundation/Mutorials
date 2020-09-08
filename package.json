@@ -20,6 +20,7 @@
         "express": "^4.17.1",
         "express-flash-messages": "^0.1.1",
         "express-session": "^1.17.1",
+        "express-sslify": "^1.2.0",
         "express-validator": "^6.5.0",
         "heroku-ssl-redirect": "^0.1.1",
         "html": "^1.0.0",
