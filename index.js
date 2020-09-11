@@ -32,7 +32,7 @@ const httpsServer = https.createServer(httpsConfig, app);
 var mongo = require('./utils/functions/mongo.js');
 
 app.use(session({
-    secret: 'blahblah',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     store: mongo.sessionStore
