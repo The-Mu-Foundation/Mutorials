@@ -95,7 +95,10 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.');
             registerInputProblems1 = true;
         }
-
+        if (!(/^\d+$/.test(req.body.age))) {
+            req.flash('errorFlash', 'Please enter a valid age!');
+            registerInputProblems1 = true;
+        }
         if (registerInputProblems1) {
             res.redirect('/signup');
             return; // to prevent ERRHTTPHEADERSSENT
@@ -113,7 +116,7 @@ module.exports = (app, mongo) => {
             profile: {
                 name: '',
                 location: 'Earth',
-                age: '',
+                age: req.body.age,
                 bio: ''
             },
             // if emailConfirmCode == 0, then email is confirmed
