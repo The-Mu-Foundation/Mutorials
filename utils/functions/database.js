@@ -11,7 +11,7 @@ async function getQuestions (Ques, ratingFloor, ratingCeiling, subject, units) {
     const gotQ = Ques.find({subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
     var tempQ = await gotQ.exec();
     for(i = 0; i < tempQ.length; i++){
-        const found = units.some(r=> tempQ[i].units.includes(r));
+        const found = units.some(r => tempQ[i].units.includes(r));
         if(!found){
             tempQ.splice(i, 1);
             i--;
@@ -35,8 +35,8 @@ function setRating (subject, newRating, req) {
 
 function updateAll (req, question, correct) {
     updateCounters(req, question, correct);
-    updateTracker(req, question, correct);
-    updateLastAnswered(req, question, correct);
+    updateTracker(req, question);
+    updateLastAnswered(req, question);
 }
 function updateCounters (req, question, correct) {
     if (correct) {
@@ -83,6 +83,16 @@ function updateLastAnswered (req, question) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 
+// update "to answer" queue field in user db
+function updateQuestionQueue (req, subject, id) {
+    req.user.stats.toAnswer[subject.toLowerCase()] = id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+function clearQuestionQueue (req, subject) {
+    req.user.stats.toAnswer[subject.toLowerCase()] = "";
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+
 // set question rating
 function setQRating (antsy, newQRate){
     antsy.rating = newQRate;
@@ -99,4 +109,4 @@ function generateLeaderboard (User, subject, count) {
     //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
 }
 
-module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, generateLeaderboard, updateAll };
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, generateLeaderboard };
