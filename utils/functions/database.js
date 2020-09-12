@@ -93,8 +93,26 @@ function clearQuestionQueue (req, subject) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 
+// things to update when skipping question
+async function skipQuestionUpdates(Ques, req, subject, id) {
+    
+    // deduct 8 rating for skipping
+    var originalRating = getRating(subject, req);
+    var deduction = originalRating > 8 ? originalRating-8 : 0;
+    setRating(subject, deduction, req);
+
+    // update rating tracker
+    let q = await getQuestion(Ques, id);
+    updateTracker(req, q);
+
+    // add +1 wrong for question and give question one rating
+    q.rating += 1;
+    q.stats.fail += 1;
+    db.collection("questions").findOneAndUpdate({ _id: q._id }, { $set: { stats: q.stats, rating: q.rating } });
+}
+
 // set question rating
-function setQRating (antsy, newQRate){
+function setQRating (antsy, newQRate) {
     antsy.rating = newQRate;
     db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
 }
@@ -109,4 +127,4 @@ function generateLeaderboard (User, subject, count) {
     //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
 }
 
-module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, generateLeaderboard };
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard };
