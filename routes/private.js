@@ -74,7 +74,7 @@ module.exports = (app, mongo) => {
                     // modify ratings
                     var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
                     var oldQRating = antsy.rating;
-                    if(req.user.stats.lastAnswered != antsy.Id) {
+                    if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
@@ -101,7 +101,7 @@ module.exports = (app, mongo) => {
                     // modify ratings
                     var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
                     var oldQRating = antsy.rating;
-                    if(req.user.stats.lastAnswered != antsy.Id) {
+                    if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
@@ -130,7 +130,7 @@ module.exports = (app, mongo) => {
                     // modify ratings
                     var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
                     var oldQRating = antsy.rating;
-                    if(req.user.stats.lastAnswered != antsy.Id) {
+                    if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
@@ -165,7 +165,7 @@ module.exports = (app, mongo) => {
             req.user.profile.location = req.body.location;
             req.user.profile.age = req.body.age;
 
-            mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
 
             console.log('Profile has been updated');
 
@@ -178,7 +178,7 @@ module.exports = (app, mongo) => {
                         req.flash('errorFlash', 'Sorry, this username already exists.');
                     } else {
                         console.log('username does not exist');
-                        mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { ign: req.body.ign } });
+                        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { ign: req.body.ign } });
                         req.flash('successFlash', 'We successfully changed your username.');
                     }
                 });
@@ -199,7 +199,7 @@ module.exports = (app, mongo) => {
                             mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
                         });
                         req.flash('successFlash', 'You need to confirm your email. Please check your email to confirm it.');
-                        mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: { username: req.body.username } });
+                        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
                         console.log('email updated');
                     }
                 });
@@ -216,7 +216,7 @@ module.exports = (app, mongo) => {
                         const newPass = genPassword(req.body.newpw);
                         req.user.hash = newPass.hash;
                         req.user.salt = newPass.salt;
-                        mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+                        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
                     } else {
                         req.flash('errorFlash', 'passwords don\'t match');
                     }
@@ -224,7 +224,7 @@ module.exports = (app, mongo) => {
                     req.flash('errorFlash', 'Password does not meet requirments.');
                 }
             }
-            //mongo.db.collection('users').findOneAndUpdate({ Id: req.user.Id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
+            //mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
             res.redirect('/settings');
         }
