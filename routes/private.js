@@ -84,6 +84,9 @@ module.exports = (app, mongo) => {
 
                         // refund rating deducted for skip
                         setRating(antsy.subject[0], oldUserRating, req);
+                                                
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -108,6 +111,9 @@ module.exports = (app, mongo) => {
 
                         // refund rating deducted for skip
                         setRating(antsy.subject[0], oldUserRating, req);
+                                                
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -134,6 +140,9 @@ module.exports = (app, mongo) => {
 
                         // refund rating deducted for skip
                         setRating(antsy.subject[0], oldUserRating, req);
+                        
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -244,6 +253,26 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/train/train.ejs');
             //res.render(VIEWS + 'private/leaderboard.ejs');
             // req.params.subject
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
+    app.get('/profile', (req, res) => {
+        if (req.isAuthenticated()) {
+            res.redirect('/profile/' + req.user.ign);
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
+    app.get('/profile/:username', (req, res) => {
+        if (req.isAuthenticated()) {
+            mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
+                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags });
+            });
         }
         else {
             res.redirect('/');

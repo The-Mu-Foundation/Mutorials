@@ -56,7 +56,7 @@ function updateCounters (req, question, correct) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
-function updateTracker (req, question, correct) {
+function updateTracker (req, question) {
     // update rating tracker
     var tracker;
     if(req.user.stats.ratingTracker === undefined) {
@@ -75,10 +75,12 @@ function updateTracker (req, question, correct) {
         req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
     }
     req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
-function updateLastAnswered (req, question, correct) {
+function updateLastAnswered (req, question) {
     // updated "last answered" field with question ID
     req.user.stats.lastAnswered = question._id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 
 // set question rating
@@ -97,4 +99,4 @@ function generateLeaderboard (User, subject, count) {
     //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
 }
 
-module.exports = { getQuestion: getQuestion, getQuestions: getQuestions, getRating: getRating, setRating: setRating, setQRating: setQRating, updateAll: updateAll, generateLeaderboard: generateLeaderboard};
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, generateLeaderboard, updateAll };
