@@ -6,7 +6,8 @@ const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, generateLeaderboard } = require('../utils/functions/database');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard } = require('../utils/functions/database');
+
 
 const VIEWS = __dirname + '/../views/'
 
@@ -168,19 +169,10 @@ module.exports = (app, mongo) => {
 
             const { subject, id, redirect } = req.body;
 
-            // deduct 8 rating for skipping
-            var originalRating = getRating(subject, req);
-            var deduction = originalRating > 8 ? originalRating-8 : 0;
-            setRating(subject, deduction, req);
 
-            // update rating tracker
-            let q = await getQuestion(mongo.Ques, id);
-            updateTracker(req, q);
+            // updates when skipping question
+            skipQuestionUpdates(mongo.Ques, req, subject, id);
 
-            // add +1 wrong for question and give question one rating
-            q.rating += 1;
-            q.stats.fail += 1;
-            mongo.db.collection("questions").findOneAndUpdate({ _id: q._id }, { $set: { stats: q.stats, rating: q.rating } });
 
             // clear pending question
             clearQuestionQueue(req, subject);
@@ -487,6 +479,12 @@ module.exports = (app, mongo) => {
                 res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user });
                 
             } else {
+
+
+                // deduct 8 rating if previously queued question was skipped
+                if(q) {
+                    skipQuestionUpdates(mongo.Ques, req, req.params.subject.toLowerCase(), q._id);
+                }
 
                 // get parameters set up
                 var ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
