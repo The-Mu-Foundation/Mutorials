@@ -8,6 +8,7 @@ const { adminList, contributorList } = require('../utils/constants/sitesettings'
 const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard } = require('../utils/functions/database');
 
+
 const VIEWS = __dirname + '/../views/'
 
 module.exports = (app, mongo) => {
@@ -168,8 +169,10 @@ module.exports = (app, mongo) => {
 
             const { subject, id, redirect } = req.body;
 
+
             // updates when skipping question
             skipQuestionUpdates(mongo.Ques, req, subject, id);
+
 
             // clear pending question
             clearQuestionQueue(req, subject);
@@ -476,6 +479,7 @@ module.exports = (app, mongo) => {
                 res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user });
                 
             } else {
+
 
                 // deduct 8 rating if previously queued question was skipped
                 if(q) {
