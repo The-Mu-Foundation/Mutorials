@@ -128,3 +128,4 @@ function generateLeaderboard (User, subject, count) {
 }
 
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard };
+

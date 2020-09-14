@@ -27,7 +27,7 @@
 			answer = $("#correctanswer").val();
 			answerExplanation = $("#answer-explanation").val();
 			author = $("#author").val();
-            sourceStatement = $("source-statement").val();
+            sourceStatement = $("#source-statement").val();
 
 
 			// radio values
@@ -44,6 +44,7 @@
 					externalSource = srcInputs[i].id;
 				}
 			}
+			//sourceStatement = 
 
 
 			// checkbox values - returns ARRAY
@@ -151,14 +152,15 @@
 			<label class="custom-control-label" for="SAT2">SAT2 (Scholastic Aptitude Test 2)</label>
 		</div>
 		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="Comp" value="Comp">
+			<input class="custom-control-input" type="radio" name="answerChoice" id="Competition" value="Comp">
 			<label class="custom-control-label" for="Comp">Competition problem</label>
 		</div>
-    </form>
-    <div class="form-group">
+	</form>
+	<div class="form-group">
 		<p>If the question is not original, please give a statement regarding the source:</p>
-		<input type="text" class="form-control" id="source-statement" placeholder="Enter the statement/title (with capitalization)">
-    </div>
+		<textarea class="form-control" id="source-statement" placeholder="Enter the statement/title (with capitalization)"></textarea>
+	</div>
+  
 </div>
 
 <div class="jumbotron container">

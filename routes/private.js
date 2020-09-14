@@ -8,6 +8,7 @@ const { adminList, contributorList } = require('../utils/constants/sitesettings'
 const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard } = require('../utils/functions/database');
 
+
 const VIEWS = __dirname + '/../views/'
 
 module.exports = (app, mongo) => {
@@ -167,6 +168,7 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
 
             const { subject, id, redirect } = req.body;
+
 
             // updates when skipping question
             skipQuestionUpdates(mongo.Ques, req, subject, id);

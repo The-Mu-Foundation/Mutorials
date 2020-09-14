@@ -1,5 +1,6 @@
 const adminList = [
     "mutorialsproject@gmail.com"
+    //"ethan.l.shen@gmail.com"
 ];
 const contributorList = [];
 
