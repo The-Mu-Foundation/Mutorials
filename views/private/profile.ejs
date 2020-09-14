@@ -21,19 +21,19 @@
 
                     ctx.restore();
 
-                    var fontSize = "1.5";
+                    var fontSize = "1";
                     ctx.font = fontSize + "em sans-serif";
 
                     ctx.fillStyle = "#8d0f0f";
                     var text = "Wrong: <%= Math.round(100*(user.stats.wrong)/(user.stats.correct+user.stats.wrong)) %>%";
                     var textX = Math.round((width - ctx.measureText(text).width) / 2);
-                    var textY = (height/2) + 25;
+                    var textY = (height/2) + 35;
                     ctx.fillText(text, textX, textY);
 
                     ctx.fillStyle = "#208d0f";
                     text = "Correct: <%= Math.round(100*(user.stats.correct)/(user.stats.correct+user.stats.wrong)) %>%";
                     textX = Math.round((width - ctx.measureText(text).width) / 2);
-                    textY -= 30;
+                    textY -= 35;
                     ctx.fillText(text, textX, textY);
 
                     ctx.save();
@@ -85,214 +85,205 @@
 
         // render rating tracker charts
 
+        var ratingData = {
+            "Physics": [],
+            "Chemistry": [],
+            "Biology": [],
+            "Labels": []
+        }
+
+        console.log(ratingData);
+
+        
         ["Physics", "Chemistry", "Biology"].forEach((subject) => {
-
-            var ctxTracker = document.getElementById("ratingTrackerChart-" + subject);
-
-            var style = ctxTracker.style;
-            style.marginLeft = "auto";
-            style.marginRight = "auto";
 
             var tracker = $("#ratingTrackerArray-" + subject).val().split('@');
             if(tracker.length < 2) {
                 tracker.unshift(tracker[0]);
             }
-            var labels = [];
-            for(var i = tracker.length; i > 0; i--) {
-                labels.push(i + " Ago");
-            }
-            labels.push("");
-            var myChart = new Chart(ctxTracker, {
-                type: "line",
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: "Rating History",
-                        data: tracker,
-                        backgroundColor: "rgba(100, 200, 230, 1)",
-                        borderColor: "rgba(100, 200, 230, 1)",
-                        fill: false,
-                        borderWidth: 5
+            ratingData[subject] = tracker;
+        });
+
+        const labelLength = Math.max(ratingData["Physics"].length, ratingData["Chemistry"].length, ratingData["Biology"].length);
+        var labels = ratingData["Labels"];
+        for(var i = labelLength; i > 0; i--) {
+            labels.push(i + " Ago");
+        }
+        labels.push("");
+        ratingData["Labels"] = labels;
+
+        var ctxTracker = document.getElementById("ratingTrackerChart");
+
+        var style = ctxTracker.style;
+        style.marginLeft = "auto";
+        style.marginRight = "auto";
+
+        var myChart = new Chart(ctxTracker, {
+            type: "line",
+            data: {
+                labels: ratingData["Labels"],
+                datasets: [{
+                    label: "Physics Rating History",
+                    data: ratingData["Physics"],
+                    backgroundColor: "rgba(100, 200, 230, 1)",
+                    borderColor: "rgba(100, 200, 230, 1)",
+                    fill: false,
+                    borderWidth: 5
+                }, {
+                    label: "Chemistry Rating History",
+                    data: ratingData["Chemistry"],
+                    backgroundColor: "rgba(245, 170, 40, 1)",
+                    borderColor: "rgba(245, 170, 40, 1)",
+                    fill: false,
+                    borderWidth: 5
+                }, {
+                    label: "Biology Rating History",
+                    data: ratingData["Biology"],
+                    backgroundColor: "rgba(40, 240, 110, 1)",
+                    borderColor: "rgba(40, 240, 110, 1)",
+                    fill: false,
+                    borderWidth: 5
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: "Rating History"
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: Math.round((Math.min(Math.min.apply(null, ratingData["Physics"]), Math.min.apply(null, ratingData["Chemistry"]), Math.min.apply(null, ratingData["Biology"]))-50)/50)*50,
+                            max: Math.round((Math.max(Math.max.apply(null, ratingData["Physics"]), Math.max.apply(null, ratingData["Chemistry"]), Math.max.apply(null, ratingData["Biology"]))+50)/50)*50,
+                            stepSize: 50
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            display: false
+                        }
                     }]
                 },
-                options: {
-                    title: {
-                        display: true,
-                        text: subject + " Rating Tracker"
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                min: Math.round((Math.min.apply(null, tracker)-50)/50)*50,
-                                max: Math.round((Math.max.apply(null, tracker)+50)/50)*50,
-                                stepSize: 50
-                            }
-                        }],
-                        xAxes: [{
-                            ticks: {
-                                display: false
-                            }
-                        }]
-                    },
-                    responsive: true
-                }
-            });
-
+                responsive: true
+            }
         });
 
     }
 
 </script>
 
-<h1 class="my-5 container display-2"><strong><%= user.ign %></strong>'s Stats</h1>
+<h3 class="my-5 container display-3"><strong><%= user.ign %></strong></h3>
 
-<div class="container jumbotron mt-5">
+<div class="mt-5 container">
 
-    <div class="row">
-
-        <div class="col-7">
-
-            <h3 class="display-4">Physics: <font color="green"><%= user.rating.physics != -1 ? user.rating.physics : "Unrated" %></font></h3>
-
-            <h5 class="mt-3">Collected Physics Tags:</h5>
-            <% var counter = 0; %>
-            <% user.stats.collectedTags.forEach((tag) => { %>
-                <% counter++; %>
-                <% if(Object.keys(totalTags["Physics"]["Units"]).includes(tag)) { %>
-                    <button class="btn btn-primary btn-sm my-1" disabled><%= tag %></button>
-                <% } else if(Object.keys(totalTags["Physics"]["Concepts"]).includes(tag)) { %>
-                    <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
-                <% } else { %>
-                    <% counter--; %>
-                <% } %>
-            <% }); %>
-
-            <% if(counter == 0) { %>
-                <p>0 out of <%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> possible tags</p>
-            <% } else { %>
-                <p><%= counter %>/<%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> tags in this subject have been collected</p>
-            <% } %>
-
-        </div>
-
-        <div class="col-5">
-
-            <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart-Physics" width="400" height="400" class="my-4"></canvas>
-            </div>
-            <input type="hidden" id="ratingTrackerArray-Physics" value="<%= user.stats.ratingTracker.physics.join('@') %>">
-
-        </div>
-
-    </div>
-</div>
-
-<div class="container jumbotron">
-
-    <div class="row">
-
-        <div class="col-7">
-
-            <h3 class="display-4">Chemistry: <font color="green"><%= user.rating.chemistry != -1 ? user.rating.chemistry : "Unrated" %></font></h3>
-
-            <h5 class="mt-3">Collected Chemistry Tags:</h5>
-            <% var counter = 0; %>
-            <% user.stats.collectedTags.forEach((tag) => { %>
-                <% counter++; %>
-                <% if(Object.keys(totalTags["Chemistry"]["Units"]).includes(tag)) { %>
-                    <button class="btn btn-primary btn-sm my-1" disabled><%= tag %></button>
-                <% } else if(Object.keys(totalTags["Chemistry"]["Concepts"]).includes(tag)) { %>
-                    <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
-                <% } else { %>
-                    <% counter--; %>
-                <% } %>
-            <% }); %>
-
-            <% if(counter == 0) { %>
-                <p>0 out of <%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> possible tags</p>
-            <% } else { %>
-                <p><%= counter %>/<%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> tags in this subject have been collected</p>
-            <% } %>
-
-        </div>
-
-        <div class="col-5">
-
-            <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart-Chemistry" width="400" height="400" class="my-4"></canvas>
-            </div>
-            <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="container jumbotron mb-5">
-
-    <div class="row">
-
-        <div class="col-7">
-
-            <h3 class="display-4">Biology: <font color="green"><%= user.rating.biology != -1 ? user.rating.biology : "Unrated" %></font></h3>
-
-            <h5 class="mt-3">Collected Biology Tags:</h5>
-            <% var counter = 0; %>
-            <% user.stats.collectedTags.forEach((tag) => { %>
-                <% counter++; %>
-                <% if(Object.keys(totalTags["Biology"]["Units"]).includes(tag)) { %>
-                    <button class="btn btn-primary btn-sm my-1" disabled><%= tag %></button>
-                <% } else if(Object.keys(totalTags["Biology"]["Concepts"]).includes(tag)) { %>
-                    <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
-                <% } else { %>
-                    <% counter--; %>
-                <% } %>
-            <% }); %>
-
-            <% if(counter == 0) { %>
-                <p>0 out of <%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> possible tags</p>
-            <% } else { %>
-                <p><%= counter %>/<%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> tags in this subject have been collected</p>
-            <% } %>
-
-        </div>
-
-        <div class="col-5">
-
-            <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart-Biology" width="400" height="400" class="my-4"></canvas>
-            </div>
-            <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
-
-        </div>
-
-    </div>
-
-</div>
-
-<%# Correct/wrong chart %>
-<div class="container jumbotron my-5">
-
-    <div class="row">
-
-        <div class="col-4"></div>
-
-        <div class="col-4">
-            <div class="canvas-container-center text-center">
-                <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>
-            </div>
-            <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
-            <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
-        </div>
-
-        <div class="col-4"></div>
-
-    </div>
-
+	<div class="row">
+	
+		<div class="col-3 jumbotron">
+			<div class="">
+                
+				<h4 class="mb-3"><%= user.profile.name ? user.profile.name : "Unnamed User" %></h4>
+                
+                <p class="mb-3"><%= user.profile.age ? "Age: " + user.profile.age : ""%></p>
+                <p class="mb-3"><%= user.profile.location ? "Location: " + user.profile.location : "Lives within 8000 miles of Antartica" %></p>
+                <p class="mb-3"><%= user.profile.bio ? user.profile.bio : "This is a very mysterious person who likes pink butterflies and blue cows. Mu!" %></p>
+			</div>
+		</div>
+		
+		<div class="col-9">
+			<div class="jumbotron">
+			
+				<div class="row">
+					<div class="col-7">
+                        <div class="canvas-container-center text-center">
+                            <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
+                        </div>
+                        <input type="hidden" id="ratingTrackerArray-Physics" value="<%= user.stats.ratingTracker.physics.join('@') %>">
+                        <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
+                        <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
+					</div>
+					<div class="col-5">
+                        <div class="canvas-container-center text-center">
+                            <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>
+                        </div>
+                        <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
+                        <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
+					</div>
+                </div>
+                
+                <div class="mt-5">
+                    <h3 class="mb-3 text-center">Collected Tags</h3>
+                    <div class="row">
+                        <div class="col-4">
+                            <h5 class="mb-3 text-center">Physics</h5>
+                            <% var counter = 0; %>
+                            <% user.stats.collectedTags.forEach((tag) => { %>
+                                <% counter++; %>
+                                <% if(Object.keys(totalTags["Physics"]["Units"]).includes(tag)) { %>
+                                    <button class="btn btn-primary btn-sm my-1" disabled><%= tag %></button>
+                                <% } else if(Object.keys(totalTags["Physics"]["Concepts"]).includes(tag)) { %>
+                                    <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
+                                <% } else { %>
+                                    <% counter--; %>
+                                <% } %>
+                            <% }); %>
+                
+                            <% if(counter == 0) { %>
+                                <p class="text-center">0 out of <%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> possible tags</p>
+                            <% } else { %>
+                                <p class="mt-3"><%= counter %>/<%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> tags in this subject have been collected</p>
+                            <% } %>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-3 text-center">Chemistry</h5>
+                            <% var counter = 0; %>
+                            <% user.stats.collectedTags.forEach((tag) => { %>
+                                <% counter++; %>
+                                <% if(Object.keys(totalTags["Chemistry"]["Units"]).includes(tag)) { %>
+                                    <button class="btn btn-primary btn-sm my-1" disabled><%= tag %></button>
+                                <% } else if(Object.keys(totalTags["Chemistry"]["Concepts"]).includes(tag)) { %>
+                                    <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
+                                <% } else { %>
+                                    <% counter--; %>
+                                <% } %>
+                            <% }); %>
+                
+                            <% if(counter == 0) { %>
+                                <p class="text-center">0 out of <%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> possible tags</p>
+                            <% } else { %>
+                                <p class="mt-3"><%= counter %>/<%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> tags in this subject have been collected</p>
+                            <% } %>                            
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-3 text-center">Biology</h5>
+                            <% var counter = 0; %>
+                            <% user.stats.collectedTags.forEach((tag) => { %>
+                                <% counter++; %>
+                                <% if(Object.keys(totalTags["Biology"]["Units"]).includes(tag)) { %>
+                                    <button class="btn btn-primary btn-sm my-1" disabled><%= tag %></button>
+                                <% } else if(Object.keys(totalTags["Biology"]["Concepts"]).includes(tag)) { %>
+                                    <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
+                                <% } else { %>
+                                    <% counter--; %>
+                                <% } %>
+                            <% }); %>
+                
+                            <% if(counter == 0) { %>
+                                <p class="text-center">0 out of <%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> possible tags</p>
+                            <% } else { %>
+                                <p class="mt-3"><%= counter %>/<%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> tags in this subject have been collected</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+				
+			</div>
+		</div>
+        
+	</div>
+	
 </div>
 
 <%- include("../partials/footer") -%>

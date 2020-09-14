@@ -173,7 +173,6 @@ module.exports = (app, mongo) => {
             // updates when skipping question
             skipQuestionUpdates(mongo.Ques, req, subject, id);
 
-
             // clear pending question
             clearQuestionQueue(req, subject);
 
@@ -479,7 +478,6 @@ module.exports = (app, mongo) => {
                 res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user });
                 
             } else {
-
 
                 // deduct 8 rating if previously queued question was skipped
                 if(q) {

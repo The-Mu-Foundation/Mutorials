@@ -93,7 +93,6 @@ function clearQuestionQueue (req, subject) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 
-
 // things to update when skipping question
 async function skipQuestionUpdates(Ques, req, subject, id) {
     
