@@ -154,20 +154,22 @@ module.exports = (app, mongo) => {
                 req.flash('errorFlash', 'Please enter a valid age!');
             }
             req.user.profile.age = req.body.age;
+            if (req.user.profile.age > 13) {
+                req.user.profile.name = req.body.name;
+                req.user.profile.bio = req.body.bio;
+                req.user.profile.location = req.body.location;
+                console.log('Profile has been updated');
+            } else {
+                req.user.profile.name = "";
+                req.user.profile.bio = "";
+                req.user.profile.location = "Earth";
+            }
             if (req.user.profile.name != req.body.name ||
                 req.user.profile.bio != req.body.bio ||
                 req.user.profile.location != req.body.location) {
-                if (req.user.profile.age > 13) {
-                    req.user.profile.name = req.body.name;
-                    req.user.profile.bio = req.body.bio;
-                    req.user.profile.location = req.body.location;
-                } else {
-                    req.flash('You have to be over 13 to give us your name or location or to have a bio.');
-                }
+                req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
             }
             mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
-
-            console.log('Profile has been updated');
 
             // change account settings
 
