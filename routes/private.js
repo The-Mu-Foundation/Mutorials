@@ -6,7 +6,8 @@ const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateAll, generateLeaderboard } = require('../utils/functions/database');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard } = require('../utils/functions/database');
+
 
 const VIEWS = __dirname + '/../views/'
 
@@ -64,16 +65,21 @@ module.exports = (app, mongo) => {
 
             // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
             if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
-                    var isRight = false;
+                var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+
+                    // clear pending question
+                    clearQuestionQueue(req, antsy.subject[0]);
 
                     // check answer
                     if (antsy.answer[0] == req.body.answerChoice) {
                         isRight = true;
                     }
+
                     // modify ratings
-                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                     var oldQRating = antsy.rating;
+                    // update stats
                     if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -81,9 +87,9 @@ module.exports = (app, mongo) => {
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
                     } else {
-
-                        // refund rating deducted for skip
-                        setRating(antsy.subject[0], oldUserRating, req);
+                                                
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -93,11 +99,16 @@ module.exports = (app, mongo) => {
                 var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
 
+                    // clear pending question
+                    clearQuestionQueue(req, antsy.subject[0]);
+
                     // check answer
                     isRight = arraysEqual(antsy.answer, req.body.saChoice);
+
                     // modify ratings
-                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                     var oldQRating = antsy.rating;
+                    // update stats
                     if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -106,8 +117,8 @@ module.exports = (app, mongo) => {
                         updateAll(req, antsy, isRight);
                     } else {
 
-                        // refund rating deducted for skip
-                        setRating(antsy.subject[0], oldUserRating, req);
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
@@ -117,13 +128,19 @@ module.exports = (app, mongo) => {
                 var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
 
+                    // clear pending question
+                    clearQuestionQueue(req, antsy.subject[0]);
+
                     // check answer
                     if (antsy.answer[0] == req.body.freeAnswer.trim()) {
                         isRight = true;
                     }
+
                     // modify ratings
-                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                     var oldQRating = antsy.rating;
+
+                    // update stats
                     if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -131,14 +148,35 @@ module.exports = (app, mongo) => {
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
                     } else {
-
-                        // refund rating deducted for skip
-                        setRating(antsy.subject[0], oldUserRating, req);
+                        
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
                 });
             }
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
+    app.post('/train/skipQuestion', async (req, res, next) => {
+        if (req.isAuthenticated()) {
+
+            const { subject, id, redirect } = req.body;
+
+
+            // updates when skipping question
+            skipQuestionUpdates(mongo.Ques, req, subject, id);
+
+            // clear pending question
+            clearQuestionQueue(req, subject);
+
+            // redirect
+            res.redirect(redirect);
+            
         }
         else {
             res.redirect('/');
@@ -170,6 +208,8 @@ module.exports = (app, mongo) => {
                 req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
             }
             mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+
+            console.log('Profile has been updated');
 
             // change account settings
 
@@ -255,6 +295,26 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/train/train.ejs');
             //res.render(VIEWS + 'private/leaderboard.ejs');
             // req.params.subject
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
+    app.get('/profile', (req, res) => {
+        if (req.isAuthenticated()) {
+            res.redirect('/profile/' + req.user.ign);
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
+    app.get('/profile/:username', (req, res) => {
+        if (req.isAuthenticated()) {
+            mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
+                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags });
+            });
         }
         else {
             res.redirect('/');
@@ -407,32 +467,53 @@ module.exports = (app, mongo) => {
         }
     })
 
-    app.get('/train/:subject/displayQuestion', (req, res) => {
+    app.get('/train/:subject/displayQuestion', async (req, res) => {
         var curQ = null;
         if (req.isAuthenticated()) {
-
-            // get parameters set up
-            var units = req.query.units.split(',');
-            var ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
-            var floor = ceilingFloor.floor;
-            var ceiling = ceilingFloor.ceiling;
 
             // no cache
             res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             res.setHeader('Pragma', 'no-cache');
             res.setHeader('Expires', '0');
 
-            // deduct rating (skip question)
-            var originalRating = getRating(req.params.subject, req);
-            var deduction = originalRating > 8 ? originalRating-8 : 0;
-            setRating(req.params.subject, deduction, req);
-            req.user.rating[req.params.subject.toLowerCase()] = originalRating;
+            // define units and attempt to get queued question
+            var units = req.query.units.split(',');
+            var q = "";
+            if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
+                q = await getQuestion(mongo.Ques, req.user.stats.toAnswer[req.params.subject.toLowerCase()]);
+            }
 
-            // get question
-            const qs = getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
-                curQ = qs[Math.floor(Math.random() * qs.length)];
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
-            });
+            // Test if they have a question pending to answer which is valid for their units selected
+            if(q && units.some(r => q.units.includes(r))) {
+
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user });
+                
+            } else {
+
+                // deduct 8 rating if previously queued question was skipped
+                if(q) {
+                    skipQuestionUpdates(mongo.Ques, req, req.params.subject.toLowerCase(), q._id);
+                }
+
+                // get parameters set up
+                var ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
+                var floor = ceilingFloor.floor;
+                var ceiling = ceilingFloor.ceiling;
+
+                // get question
+                getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => {
+
+                    // select random question
+                    curQ = qs[Math.floor(Math.random() * qs.length)];
+                    
+                    // update pending question field
+                    updateQuestionQueue(req, req.params.subject, curQ._id);
+
+                    // push to frontend
+                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
+                });
+
+            }
         } else {
             res.redirect('/');
         }

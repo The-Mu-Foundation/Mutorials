@@ -11,7 +11,7 @@ async function getQuestions (Ques, ratingFloor, ratingCeiling, subject, units) {
     const gotQ = Ques.find({subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
     var tempQ = await gotQ.exec();
     for(i = 0; i < tempQ.length; i++){
-        const found = units.some(r=> tempQ[i].units.includes(r));
+        const found = units.some(r => tempQ[i].units.includes(r));
         if(!found){
             tempQ.splice(i, 1);
             i--;
@@ -35,8 +35,8 @@ function setRating (subject, newRating, req) {
 
 function updateAll (req, question, correct) {
     updateCounters(req, question, correct);
-    updateTracker(req, question, correct);
-    updateLastAnswered(req, question, correct);
+    updateTracker(req, question);
+    updateLastAnswered(req, question);
 }
 function updateCounters (req, question, correct) {
     if (correct) {
@@ -56,7 +56,7 @@ function updateCounters (req, question, correct) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
-function updateTracker (req, question, correct) {
+function updateTracker (req, question) {
     // update rating tracker
     var tracker;
     if(req.user.stats.ratingTracker === undefined) {
@@ -75,14 +75,44 @@ function updateTracker (req, question, correct) {
         req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
     }
     req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
-function updateLastAnswered (req, question, correct) {
+function updateLastAnswered (req, question) {
     // updated "last answered" field with question ID
     req.user.stats.lastAnswered = question._id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+
+// update "to answer" queue field in user db
+function updateQuestionQueue (req, subject, id) {
+    req.user.stats.toAnswer[subject.toLowerCase()] = id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+function clearQuestionQueue (req, subject) {
+    req.user.stats.toAnswer[subject.toLowerCase()] = "";
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+
+// things to update when skipping question
+async function skipQuestionUpdates(Ques, req, subject, id) {
+    
+    // deduct 8 rating for skipping
+    var originalRating = getRating(subject, req);
+    var deduction = originalRating > 8 ? originalRating-8 : 0;
+    setRating(subject, deduction, req);
+
+    // update rating tracker
+    let q = await getQuestion(Ques, id);
+    updateTracker(req, q);
+
+    // add +1 wrong for question and give question one rating
+    q.rating += 1;
+    q.stats.fail += 1;
+    db.collection("questions").findOneAndUpdate({ _id: q._id }, { $set: { stats: q.stats, rating: q.rating } });
 }
 
 // set question rating
-function setQRating (antsy, newQRate){
+function setQRating (antsy, newQRate) {
     antsy.rating = newQRate;
     db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
 }
@@ -97,4 +127,5 @@ function generateLeaderboard (User, subject, count) {
     //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
 }
 
-module.exports = { getQuestion: getQuestion, getQuestions: getQuestions, getRating: getRating, setRating: setRating, setQRating: setQRating, updateCounters: updateCounters, generateLeaderboard: generateLeaderboard};
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard };
+
