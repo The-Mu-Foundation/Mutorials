@@ -7,7 +7,7 @@
 <script>
 
     $(document).ready(function () {
-        
+
         $("#password-req").hide();
         $("#signupPassword").focus(function() {
             $("#password-req").show(100);
@@ -29,16 +29,26 @@
     <form action="/register" method="post">
 
         <div class="form-group">
-            <input type="ign" class="form-control" id="ign" placeholder="Username" name="ign">
+            <input type="text" class="form-control" id="ign" placeholder="Username" name="ign">
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" id="signupEmail" placeholder="Email Address" name="username">
+            <input type="email" class="form-control" id="signupEmail" placeholder="Email Address" name="username">
         </div>
         <div class="form-group">
             <input type="password" class="form-control" id="signupPassword" placeholder="Password" name="password">
             <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
         </div>
-
+        <div class="form-group">
+            <input type="number" class="form-control" id="age" name="age" placeholder="Age">
+        </div>
+        <div class="form-group">
+            <input type="checkbox" class="form-check-input" id="agreeTOS" name="agreeTOS" value="agreeAge">
+            <label class="form-check-label" for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a> and <a href='/termsOfService#privacy-policy'>Privacy Policy</a>.</label><br>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" class="form-check-input" id="agreeAge" name="agreeAge" value="agreeAge">
+            <label class="form-check-label" for="agreeAge">I am at least 13 years old, or I have permission from my parent, guardian, teacher, or school to use Mutorials.</label><br>
+        </div>
         <div class="mt-4 ml-1">
             <a class="btn btn-secondary" id="cancel" href="/">Cancel</a>
             <input class="btn btn-primary" type="submit" value="Sign Up">
