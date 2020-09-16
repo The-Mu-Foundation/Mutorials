@@ -15,10 +15,10 @@ module.exports = (app, mongo) => {
                 || parseDelimiter(req.body.tags).length < 1
                 || req.body.rating.length < 1
                 || parseDelimiter(req.body.answer)[0].length < 1
-                || req.body.answerEx.length < 1
+                || req.body.answerExplanation.length < 1
                 || req.body.author.length < 1
                 || req.body.type.length < 1
-                || req.body.extSource.length < 1
+                || req.body.externalSource.length < 1
                 || req.body.subject.length < 1
                 || req.body.units.length < 1) {
                 req.flash('errorFlash', 'You\'re forgetting a field.');
@@ -45,10 +45,11 @@ module.exports = (app, mongo) => {
                 tags: parseDelimiter(req.body.tags),
                 rating: req.body.rating,
                 answer: parseDelimiter(req.body.answer),
-                answerEx: req.body.answerEx,
+                answer_ex: req.body.answerExplanation,
                 author: req.body.author,
                 type: req.body.type,
-                extSource: req.body.extSource,
+                ext_source: req.body.externalSource,
+                source_statement: req.body.sourceStatement,
                 subject: req.body.subject,
                 units: req.body.units,
                 stats: {
