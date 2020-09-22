@@ -31,7 +31,7 @@ if (PORT != 3000) {
 var mongo = require('./utils/functions/mongo.js');
 
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'testing',
     resave: false,
     saveUninitialized: true,
     store: mongo.sessionStore

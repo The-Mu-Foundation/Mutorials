@@ -288,13 +288,12 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/leaderboard/:subject', (req, res) => {
+    app.get('/leaderboard', async (req, res) => {
         if (req.isAuthenticated()) {
-            // DOESN'T WORK YET, NEEDA FIX IT
-            var leaderboard = generateLeaderboard(mongo.User, req.params.subject, 3);
-            res.render(VIEWS + 'private/train/train.ejs');
-            //res.render(VIEWS + 'private/leaderboard.ejs');
-            // req.params.subject
+            
+            var leaderboard = await generateLeaderboard(mongo.User, 10);
+
+            res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard });
         }
         else {
             res.redirect('/');
