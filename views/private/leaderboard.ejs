@@ -1,0 +1,125 @@
+<%# Leaderboard page to see the top trainers in each subject %>
+<%# ARGUMENTS: rankings - an object containing 3 arrays of ranking for the 3 subjects %>
+
+<%- include("../partials/header") -%>
+<%- include("../partials/navigationPrivate") -%>
+
+<h1 class="my-5 container text-center display-3">Rating Leaderboard</h1>
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-4 jumbotron">
+            <h3 class="text-center">Physics</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let rankPhysics = 1; %>
+                    <% rankings.physics.forEach((user) => { %>
+                        <% let style = ""; %>
+                        <% if(rankPhysics == 1) { style = "background-color:#ffd700"; } %>
+                        <% if(rankPhysics == 2) { style = "background-color:#c0c0c0"; } %>
+                        <% if(rankPhysics == 3) { style = "background-color:#cd7f32"; } %>
+                        <tr style=<%= style %>>
+                            <% if(rankPhysics == 1) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_First.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankPhysics == 2) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Second.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankPhysics == 3) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Third.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else { %>
+                                <th scope="row"><%= rankPhysics %></th>
+                            <% } %>
+                            <td><a href="/profile/<%= user.ign %>"><%= user.ign %></a></td>
+                            <td><%= user.rating.physics %></td>
+                        </tr>
+                        <% rankPhysics++; %>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-4 jumbotron">
+            <h3 class="text-center">Chemistry</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let rankChem = 1; %>
+                    <% rankings.chem.forEach((user) => { %>
+                        <% let style = ""; %>
+                        <% if(rankChem == 1) { style = "background-color:#ffd700"; } %>
+                        <% if(rankChem == 2) { style = "background-color:#c0c0c0"; } %>
+                        <% if(rankChem == 3) { style = "background-color:#cd7f32"; } %>
+                        <tr style=<%= style %>>
+                            <% if(rankChem == 1) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_First.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankChem == 2) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Second.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankChem == 3) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Third.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else { %>
+                                <th scope="row"><%= rankChem %></th>
+                            <% } %>
+                            <td><a href="/profile/<%= user.ign %>"><%= user.ign %></a></td>
+                            <td><%= user.rating.chemistry %></td>
+                        </tr>
+                        <% rankChem++; %>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-4 jumbotron">
+            <h3 class="text-center">Biology</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let rankBio = 1; %>
+                    <% rankings.bio.forEach((user) => { %>
+                        <% let style = ""; %>
+                        <% if(rankBio == 1) { style = "background-color:#ffd700"; } %>
+                        <% if(rankBio == 2) { style = "background-color:#c0c0c0"; } %>
+                        <% if(rankBio == 3) { style = "background-color:#cd7f32"; } %>
+                        <tr style=<%= style %>>
+                            <% if(rankBio == 1) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_First.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankBio == 2) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Second.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankBio == 3) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Third.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else { %>
+                                <th scope="row"><%= rankBio %></th>
+                            <% } %>
+                            <td><a href="/profile/<%= user.ign %>"><%= user.ign %></a></td>
+                            <td><%= user.rating.biology %></td>
+                        </tr>
+                        <% rankBio++; %>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<%- include("../partials/footer") -%>
