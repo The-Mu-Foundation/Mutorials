@@ -36,7 +36,6 @@ module.exports = (app, mongo) => {
             res.redirect('/train/' + req.body.subj + '/chooseUnits');
         }
         */
-
         if(req.isAuthenticated()){
             var units = null;
             /*
@@ -47,11 +46,12 @@ module.exports = (app, mongo) => {
             */
             if (req.body.qNum == 1) {
                 units = req.body.unitChoice;
+                if (!units) {
+                    req.flash('errorFlash', 'Please choose at least one unit.');
+                    res.redirect('/train/' + req.body.subj + '/chooseUnits');
+                }
                 if (units) { //nothing happens if units is empty
                     res.redirect('/train/' + req.body.subj + '/displayQuestion?units=' + units.toString());
-                }
-                if(!units){
-                    res.redirect('/train/' + req.body.subj + '/chooseUnits'); //maybe flash
                 }
                 //app.set('questionz', questions);
                 //units cannot have commas
@@ -506,9 +506,10 @@ module.exports = (app, mongo) => {
                     // select random question
                     curQ = qs[Math.floor(Math.random() * qs.length)];
 
+                    console.log(curQ);
                     if (!curQ) {
-                        req.flash('error_flash', 'We couldn\'t find any questions for your rating in the units you selected.');
-                        res.redirect('train/chooseUnits');
+                        req.flash('errorFlash', 'We couldn\'t find any questions for your rating in the units you selected.');
+                        res.redirect('/train/' + req.params.subject + '/chooseUnits');
                         return;
                     }
 
