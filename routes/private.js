@@ -36,7 +36,6 @@ module.exports = (app, mongo) => {
             res.redirect('/train/' + req.body.subj + '/chooseUnits');
         }
         */
-
         if(req.isAuthenticated()){
             var units = null;
             /*
@@ -47,11 +46,12 @@ module.exports = (app, mongo) => {
             */
             if (req.body.qNum == 1) {
                 units = req.body.unitChoice;
+                if (!units) {
+                    req.flash('errorFlash', 'Please choose at least one unit.');
+                    res.redirect('/train/' + req.body.subj + '/chooseUnits');
+                }
                 if (units) { //nothing happens if units is empty
                     res.redirect('/train/' + req.body.subj + '/displayQuestion?units=' + units.toString());
-                }
-                if(!units){
-                    res.redirect('/train/' + req.body.subj + '/chooseUnits'); //maybe flash
                 }
                 //app.set('questionz', questions);
                 //units cannot have commas
@@ -87,7 +87,7 @@ module.exports = (app, mongo) => {
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
                     } else {
-                                                
+
                         // update tracker
                         updateTracker(req, antsy);
                     }
@@ -148,7 +148,7 @@ module.exports = (app, mongo) => {
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
                     } else {
-                        
+
                         // update tracker
                         updateTracker(req, antsy);
                     }
@@ -176,7 +176,7 @@ module.exports = (app, mongo) => {
 
             // redirect
             res.redirect(redirect);
-            
+
         }
         else {
             res.redirect('/');
@@ -486,7 +486,7 @@ module.exports = (app, mongo) => {
             if(q && units.some(r => q.units.includes(r))) {
 
                 res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user });
-                
+
             } else {
 
                 // deduct 8 rating if previously queued question was skipped
@@ -504,7 +504,14 @@ module.exports = (app, mongo) => {
 
                     // select random question
                     curQ = qs[Math.floor(Math.random() * qs.length)];
-                    
+
+                    console.log(curQ);
+                    if (!curQ) {
+                        req.flash('errorFlash', 'We couldn\'t find any questions for your rating in the units you selected.');
+                        res.redirect('/train/' + req.params.subject + '/chooseUnits');
+                        return;
+                    }
+
                     // update pending question field
                     updateQuestionQueue(req, req.params.subject, curQ._id);
 
