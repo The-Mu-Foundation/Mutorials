@@ -87,7 +87,7 @@ module.exports = (app, mongo) => {
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
                     } else {
-                                                
+
                         // update tracker
                         updateTracker(req, antsy);
                     }
@@ -148,7 +148,7 @@ module.exports = (app, mongo) => {
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
                     } else {
-                        
+
                         // update tracker
                         updateTracker(req, antsy);
                     }
@@ -176,7 +176,7 @@ module.exports = (app, mongo) => {
 
             // redirect
             res.redirect(redirect);
-            
+
         }
         else {
             res.redirect('/');
@@ -193,9 +193,21 @@ module.exports = (app, mongo) => {
             }
             req.user.profile.age = req.body.age;
             if (req.user.profile.age > 13) {
-                req.user.profile.name = req.body.name;
-                req.user.profile.bio = req.body.bio;
-                req.user.profile.location = req.body.location;
+                if (req.body.name == filter.clean(req.body.name)) {
+                    req.user.profile.name = req.body.name;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
+                if (req.body.bio == filter.clean(req.body.name)) {
+                    req.user.profile.bio = req.body.bio;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
+                if (req.body.location == filter.clean(req.body.location)) {
+                    req.user.profile.location = req.body.location;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
                 console.log('Profile has been updated');
             } else {
                 req.user.profile.name = "";
@@ -487,7 +499,7 @@ module.exports = (app, mongo) => {
             if(q && units.some(r => q.units.includes(r))) {
 
                 res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user });
-                
+
             } else {
 
                 // deduct 8 rating if previously queued question was skipped
@@ -505,7 +517,7 @@ module.exports = (app, mongo) => {
 
                     // select random question
                     curQ = qs[Math.floor(Math.random() * qs.length)];
-                    
+
                     // update pending question field
                     updateQuestionQueue(req, req.params.subject, curQ._id);
 
