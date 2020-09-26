@@ -54,7 +54,7 @@ module.exports = (app, mongo) => {
     app.get('/forgotPassword', (req, res) => {
         if (req.isAuthenticated()) {
             req.flash('errorFlash', 'You\'ll need to change your password here.');
-            res.redirect('/settings')
+            res.redirect('/settings');
         } else {
             res.render(VIEWS + 'public/forgotPassword.ejs');
         }
@@ -175,10 +175,12 @@ module.exports = (app, mongo) => {
                         require('crypto').randomBytes(6, function (ex, buf) {
                             confirmCode = buf.toString('hex');
                             mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
+                            debugger;
                             emailValidation.emailCodeSend(req.body.username, confirmCode);
                         });
                         req.flash('forgotPassUser', req.body.username);
                         res.redirect('/forgotPassword');
+                        return;
                     } else {
                         req.flash('errorFlash', 'That email isn\'t registered with us.');
                         res.redirect('/signin');
@@ -216,7 +218,7 @@ module.exports = (app, mongo) => {
                             res.redirect('/signin');
                         }
                     } else {
-                        req.flash('errorFlash', 'The email is incorrect, please try again');
+                        req.flash('errorFlash', 'The email is incorrect, please try again.');
                         req.flash('forgotPassUser', req.body.username);
                         res.redirect('/forgotPassword');
                     }
