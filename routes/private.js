@@ -5,8 +5,9 @@ const { tags } = require('../utils/constants/tags');
 const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
-const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard } = require('../utils/functions/database');
+const { arraysEqual } = require('../utils/functions/general');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/'
@@ -36,7 +37,6 @@ module.exports = (app, mongo) => {
             res.redirect('/train/' + req.body.subj + '/chooseUnits');
         }
         */
-
         if(req.isAuthenticated()){
             var units = null;
             /*
@@ -47,11 +47,12 @@ module.exports = (app, mongo) => {
             */
             if (req.body.qNum == 1) {
                 units = req.body.unitChoice;
+                if (!units) {
+                    req.flash('errorFlash', 'Please choose at least one unit.');
+                    res.redirect('/train/' + req.body.subj + '/chooseUnits');
+                }
                 if (units) { //nothing happens if units is empty
                     res.redirect('/train/' + req.body.subj + '/displayQuestion?units=' + units.toString());
-                }
-                if(!units){
-                    res.redirect('/train/' + req.body.subj + '/chooseUnits'); //maybe flash
                 }
                 //app.set('questionz', questions);
                 //units cannot have commas
@@ -132,7 +133,7 @@ module.exports = (app, mongo) => {
                     clearQuestionQueue(req, antsy.subject[0]);
 
                     // check answer
-                    if (antsy.answer[0] == req.body.freeAnswer.trim()) {
+                    if (antsy.answer[0].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
                         isRight = true;
                     }
 
@@ -301,13 +302,12 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/leaderboard/:subject', (req, res) => {
+    app.get('/leaderboard', async (req, res) => {
         if (req.isAuthenticated()) {
-            // DOESN'T WORK YET, NEEDA FIX IT
-            var leaderboard = generateLeaderboard(mongo.User, req.params.subject, 3);
-            res.render(VIEWS + 'private/train/train.ejs');
-            //res.render(VIEWS + 'private/leaderboard.ejs');
-            // req.params.subject
+            
+            var leaderboard = await generateLeaderboard(mongo.User, 10);
+
+            res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard });
         }
         else {
             res.redirect('/');
@@ -447,6 +447,16 @@ module.exports = (app, mongo) => {
         }
     })
 
+    app.get('/train/daily', async (req, res) => {
+        if (req.isAuthenticated()) {
+            const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+            res.render(VIEWS + 'private/train/dailyQuestion.ejs', { question });
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
     app.get('/train/:subject/proficiency', (req, res) => {
         // called when rating isn't set for subject
         if (req.isAuthenticated()) {
@@ -518,6 +528,13 @@ module.exports = (app, mongo) => {
 
                     // select random question
                     curQ = qs[Math.floor(Math.random() * qs.length)];
+
+                    console.log(curQ);
+                    if (!curQ) {
+                        req.flash('errorFlash', 'We couldn\'t find any questions for your rating in the units you selected.');
+                        res.redirect('/train/' + req.params.subject + '/chooseUnits');
+                        return;
+                    }
 
                     // update pending question field
                     updateQuestionQueue(req, req.params.subject, curQ._id);

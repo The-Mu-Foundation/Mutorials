@@ -13,7 +13,7 @@ var enforce = require('express-sslify');
 // START EXPRESS SERVER
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_secret';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'devsecret';
 
 // https SETUP
 const httpsConfig = {

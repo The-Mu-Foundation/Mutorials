@@ -118,14 +118,43 @@ function setQRating (antsy, newQRate) {
 }
 
 // generate a leaderboard for a certain subject; count is the number of people on board
-function generateLeaderboard (User, subject, count) {
-    var query = { rating: { physics: {}, biology: {}, chemistry: {}}};
-    query.rating[subject] = { $gte: 500 };
-    User.find(query).lean().exec(function(err, arr) {
-        console.log(arr);
-    });
-    //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
+async function generateLeaderboard (User, count) {
+
+    // NOTE: change the $gte to a higher number once we get more users
+    let physics = await User.find({ "rating.physics": { $gte: 500 } }).sort({ "rating.physics": -1 }).limit(count).exec();
+    let chem = await User.find({ "rating.chemistry": { $gte: 500 } }).sort({ "rating.chemistry": -1 }).limit(count).exec();
+    let bio = await User.find({ "rating.biology": { $gte: 500 } }).sort({ "rating.biology": -1 }).limit(count).exec();
+
+    return { physics, chem, bio };
+    
 }
 
-module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard };
+async function getDailyQuestion(Daily, Ques) {
+
+    // attempt to get daily object
+    const date = new Date().toISOString().split('T')[0];
+    let question = await Daily.findOne({ date }).exec();
+
+    if(question) {
+
+        // if daily object exists
+        let content = await Ques.findById(question.question).exec();
+        return content;
+    } else {
+
+        // if daily object does not exist, create a new one
+        const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
+        const selection = questions[Math.floor(Math.random() * questions.length)];
+
+        let question = new Daily({
+            question: selection._id
+        })
+        await question.save();
+
+        return selection;
+    }
+}
+
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue,
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion };
 
