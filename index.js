@@ -13,6 +13,7 @@ var enforce = require('express-sslify');
 // START EXPRESS SERVER
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_secret';
 
 // https SETUP
 const httpsConfig = {
@@ -31,7 +32,7 @@ if (PORT != 3000) {
 var mongo = require('./utils/functions/mongo.js');
 
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     store: mongo.sessionStore
