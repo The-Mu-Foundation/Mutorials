@@ -5,8 +5,9 @@ const { tags } = require('../utils/constants/tags');
 const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
-const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard } = require('../utils/functions/database');
+const { arraysEqual } = require('../utils/functions/general');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/'
@@ -132,7 +133,7 @@ module.exports = (app, mongo) => {
                     clearQuestionQueue(req, antsy.subject[0]);
 
                     // check answer
-                    if (antsy.answer[0] == req.body.freeAnswer.trim()) {
+                    if (antsy.answer[0].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
                         isRight = true;
                     }
 
@@ -432,6 +433,16 @@ module.exports = (app, mongo) => {
             res.redirect('/');
         }
     })
+
+    app.get('/train/daily', async (req, res) => {
+        if (req.isAuthenticated()) {
+            const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+            res.render(VIEWS + 'private/train/dailyQuestion.ejs', { question });
+        }
+        else {
+            res.redirect('/');
+        }
+    });
 
     app.get('/train/:subject/proficiency', (req, res) => {
         // called when rating isn't set for subject

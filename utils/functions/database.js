@@ -129,5 +129,32 @@ async function generateLeaderboard (User, count) {
     
 }
 
-module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, clearQuestionQueue, skipQuestionUpdates, generateLeaderboard };
+async function getDailyQuestion(Daily, Ques) {
+
+    // attempt to get daily object
+    const date = new Date().toISOString().split('T')[0];
+    let question = await Daily.findOne({ date }).exec();
+
+    if(question) {
+
+        // if daily object exists
+        let content = await Ques.findById(question.question).exec();
+        return content;
+    } else {
+
+        // if daily object does not exist, create a new one
+        const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
+        const selection = questions[Math.floor(Math.random() * questions.length)];
+
+        let question = new Daily({
+            question: selection._id
+        })
+        await question.save();
+
+        return selection;
+    }
+}
+
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue,
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion };
 
