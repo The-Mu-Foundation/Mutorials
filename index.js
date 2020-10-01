@@ -45,7 +45,7 @@ app.use((req, res, next) => {
     res.locals.successFlash = req.flash('successFlash');
     res.locals.errorFlash = req.flash('errorFlash');
     if (req.user) {
-        app.locals.darkMode = req.user.dark_mode || false;
+        app.locals.darkMode = req.user.preferences.dark_mode || false;
     } else {
         app.locals.darkMode = false;
     }

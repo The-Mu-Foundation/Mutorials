@@ -194,7 +194,7 @@ module.exports = (app, mongo) => {
             }
             req.user.profile.age = req.body.age;
             console.log(!!req.body.darkMode);
-            req.user.dark_mode = !!req.body.darkMode;
+            req.user.preferences.dark_mode = !!req.body.darkMode;
             if (req.user.profile.age > 13) {
                 req.user.profile.name = req.body.name;
                 req.user.profile.bio = req.body.bio;
@@ -210,7 +210,7 @@ module.exports = (app, mongo) => {
                 req.user.profile.location != req.body.location) {
                 req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
             }
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, dark_mode: req.user.dark_mode } }, {upsert: true});
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
 
             console.log('Profile has been updated');
 
