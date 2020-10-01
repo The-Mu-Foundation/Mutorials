@@ -132,7 +132,7 @@ async function generateLeaderboard (User, count) {
 async function getDailyQuestion(Daily, Ques) {
 
     // attempt to get daily object
-    const date = new Date().toISOString().split('T')[0];
+    const date = await new Date().toISOString().split('T')[0];
     let question = await Daily.findOne({ date }).exec();
 
     if(question) {
@@ -144,9 +144,9 @@ async function getDailyQuestion(Daily, Ques) {
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
-        const selection = questions[Math.floor(Math.random() * questions.length)];
+        const selection = await questions[Math.floor(Math.random() * questions.length)];
 
-        let question = new Daily({
+        let question = await new Daily({
             question: selection._id
         })
         await question.save();
