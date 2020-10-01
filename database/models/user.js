@@ -33,8 +33,9 @@ const userSchema = new mongoose.Schema({
         physics: Number,
         chemistry: Number,
         biology: Number
-    }
+    },
     // first index is phys, then chem, then bio; fourth index is 1/0 for proficiency
+    dark_mode: Boolean
 });
 
 module.exports = { userSchema : userSchema };
