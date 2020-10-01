@@ -1,5 +1,7 @@
 // MODULE IMPORTS
 const passport = require('passport');
+var Filter = require('bad-words');
+filter = new Filter();
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
@@ -76,6 +78,10 @@ module.exports = (app, mongo) => {
         var registerInputProblems1 = false;
         if (req.body.ign.length < 1) {
             req.flash('errorFlash', 'Please enter a username.');
+            registerInputProblems1 = true;
+        }
+        if (req.body.ign != filter.clean(req.body.ign)) {
+            req.flash('errorFlash', 'Please don\'t use bad words :)');
             registerInputProblems1 = true;
         }
         if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
