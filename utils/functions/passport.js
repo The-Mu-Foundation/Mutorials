@@ -1,31 +1,39 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
+const { verify } = require('hcaptcha');
 const mongo = require('./mongo.js');
 const { genPassword, validPassword } = require('./password.js');
 
+// hCaptcha SETUP
+const hcaptchaSecret = process.env.HCAPTCHA_SECRET || '0x0000000000000000000000000000000000000000';
+
 module.exports = (app, mongo) => {
-    passport.use(new LocalStrategy(
-        // called when passport.authenticate is used()
-        function (username, password, cb) {
-            username = username.toLowerCase();
-            mongo.User.find({ username: username })
-                .then((user) => {
-                    if (!user[0]) { return cb(null, false); }
+    passport.use(new LocalStrategy({
+            passReqToCallback: true
+        }, (req, username, password, cb) => {
+            verify(hcaptchaSecret, req.body['h-captcha-response']).then((data) => { if (data['success']) {
+                username = username.toLowerCase();
+                mongo.User.find({ username: username })
+                    .then((user) => {
+                        if (!user[0]) { return cb(null, false); }
 
-                    const isValid = validPassword(password, user[0].hash, user[0].salt);
+                        const isValid = validPassword(password, user[0].hash, user[0].salt);
 
-                    if (isValid) {
-                        return cb(null, user[0]);
-                    } else {
+                        if (isValid) {
+                            return cb(null, user[0]);
+                        } else {
 
-                        return cb(null, false);
-                    }
+                            return cb(null, false);
+                        }
 
-                })
-                .catch((err) => {
-                    cb(err);
-                });
+                    })
+                    .catch((err) => {
+                        cb(err);
+                    });
+            } else {
+                return cb(null, false);
+            }}).catch(console.error);
         }
     ));
     passport.serializeUser(function (user, cb) {
