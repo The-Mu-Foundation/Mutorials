@@ -51,6 +51,32 @@
     <%# Custom CSS for site %>
     <style>
 
+        <% if (locals.darkMode) { %>
+        body {
+            background-color: #37393f;
+        }
+
+        .jumbotron {
+            background-color: #414449;
+        }
+
+        .card-body {
+            background-color: #37393f;
+        }
+
+        .form-control {
+            background-color: #414449 !important;
+            color: #ffffff !important;
+        }
+
+        .modal-header, .modal-body, .modal-footer {
+            background-color: #37393f;
+        }
+
+        * {
+            color: #ffffff;
+        }
+        <% } %>
         /*p {
             font-family: helvetica;
         }*/
@@ -80,6 +106,14 @@
         background-color: #000;
         }
 
+        input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance:textfield;
+        }
         .facebook {
         background: #3B5998;
         color: white;
@@ -120,6 +154,11 @@
         }*/
 
     </style>
+    <% if (locals.darkMode) { %>
+    <script>
+        Chart.defaults.global.defaultFontColor = "#ffffff";
+    </script>
+    <% } %>
 
 </head>
 

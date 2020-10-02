@@ -80,7 +80,24 @@
 
 		<input class="btn btn-primary" type="submit" value="Update Profile">
 
-	</div>
+    </div>
+    
+    <%# Personal preferences tweaks %>
+	<div class="jumbotron container">
+
+		<h3 class="mb-4">Personalization</h3>
+
+		<div class="form-group row">
+            <div class="col-sm-10 my-2">
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="darkMode" name="darkMode" <% if (locals.darkMode) { %> checked <% } %>>
+                    <label for="darkMode" class="col-sm-2 custom-control-label">Dark Mode</label>
+                </div>
+            </div>
+        </div>
+
+        <input class="btn btn-primary" type="submit" value="Update Preferences">
+    </div>
 
     <%# Private account tweaks %>
 	<div class="jumbotron container">

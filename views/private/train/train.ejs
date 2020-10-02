@@ -7,14 +7,18 @@
 
 <div class="jumbotron container mt-5">
 
-	
+
 	<div class="row">
 
         <div class="col-6">
 
             <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
 
+                <% if (locals.darkMode) { %>
+				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Dark.svg" alt="Card image cap" style="background-color: #37393f">
+                <% } else { %>
 				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" alt="Card image cap">
+                <% } %>
 
 				<div class="card-body">
 					<div class="card-block text-center">
@@ -25,14 +29,18 @@
 				</div>
 
             </div>
-            
+
         </div>
 
         <div class="col-6">
 
             <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
 
+                <% if (locals.darkMode) { %>
+				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Dark.svg" alt="Card image cap" style="background-color: #37393f">
+                <% } else { %>
 				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" alt="Card image cap">
+                <% } %>
 
 				<div class="card-body">
 					<div class="card-block text-center">

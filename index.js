@@ -41,9 +41,14 @@ app.use(session({
 require('./utils/functions/passport.js')(app, mongo);
 
 app.use(flash()); // express-flash-messages config
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     res.locals.successFlash = req.flash('successFlash');
     res.locals.errorFlash = req.flash('errorFlash');
+    if (req.user) {
+        app.locals.darkMode = req.user.preferences.dark_mode || false;
+    } else {
+        app.locals.darkMode = false;
+    }
     next();
 });
 

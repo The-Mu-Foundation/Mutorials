@@ -193,22 +193,37 @@ module.exports = (app, mongo) => {
                 req.flash('errorFlash', 'Please enter a valid age!');
             }
             req.user.profile.age = req.body.age;
+            console.log(!!req.body.darkMode);
+            req.user.preferences.dark_mode = !!req.body.darkMode;
             if (req.user.profile.age > 13) {
-                req.user.profile.name = req.body.name;
-                req.user.profile.bio = req.body.bio;
-                req.user.profile.location = req.body.location;
+                if (req.body.name == filter.clean(req.body.name)) {
+                    req.user.profile.name = req.body.name;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
+                if (req.body.bio == filter.clean(req.body.name)) {
+                    req.user.profile.bio = req.body.bio;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
+                if (req.body.location == filter.clean(req.body.location)) {
+                    req.user.profile.location = req.body.location;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
                 console.log('Profile has been updated');
             } else {
                 req.user.profile.name = "";
                 req.user.profile.bio = "";
                 req.user.profile.location = "Earth";
             }
-            if (req.user.profile.name != req.body.name ||
+            if (req.user.profile.name < 13 &&
+                ( req.user.profile.name != req.body.name ||
                 req.user.profile.bio != req.body.bio ||
-                req.user.profile.location != req.body.location) {
+                req.user.profile.location != req.body.location)) {
                 req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
             }
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
 
             console.log('Profile has been updated');
 
@@ -291,7 +306,7 @@ module.exports = (app, mongo) => {
 
     app.get('/leaderboard', async (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             var leaderboard = await generateLeaderboard(mongo.User, 10);
 
             res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard });
