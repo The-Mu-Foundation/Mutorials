@@ -41,18 +41,11 @@ app.use(session({
 require('./utils/functions/passport.js')(app, mongo);
 
 app.use(flash()); // express-flash-messages config
-app.use((req, res, next) => {
-    try {
-        console.log('asdf');
-        next();
-    } catch (e) {
-        console.log('enter');
-        console.error(error);
-        req.flash('errorFlash', 'Internal Server Error');
-        res.redirect('/');
-    }
-});
 app.use((err, req, res, next) => {
+    if (res.headersSent) {
+        console.log('yes');
+        return next(err);
+    }
     console.error(err.stack);
     req.flash('errorFlash', 'Error 500: Internal Server Error. Something broke on our end, sorry about that.');
     res.redirect('/');
@@ -75,11 +68,6 @@ require('./routes/private.js')(app, mongo);
 require('./routes/admin.js')(app, mongo);
 
 // WILDCARD FOR ALL OTHER ROUTES
-
-app.get('/error', (req, res) => {
-    throw 'error';
-    res.redirect('/');
-});
 
 app.get('*', (req, res) => {
     res.redirect('/');
