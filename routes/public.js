@@ -171,6 +171,7 @@ module.exports = (app, mongo) => {
                 mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
                     if (count > 0) {
                         req.flash('successFlash', 'Check your email for the code.');
+                        req.flash('forgotPassUser', req.body.username);
                         var confirmCode;
                         require('crypto').randomBytes(6, function (ex, buf) {
                             confirmCode = buf.toString('hex');
@@ -178,7 +179,6 @@ module.exports = (app, mongo) => {
                             debugger;
                             emailValidation.emailCodeSend(req.body.username, confirmCode);
                         });
-                        req.flash('forgotPassUser', req.body.username);
                         res.redirect('/forgotPassword');
                         return;
                     } else {
