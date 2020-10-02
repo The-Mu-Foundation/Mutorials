@@ -69,7 +69,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addquestion', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary });
+            res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary, pageName: "ADMIN Add Question" });
         }
         else {
             res.redirect('/');
@@ -78,7 +78,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addedSuccess', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(VIEWS + 'admin/train/addQuestionSuccess.ejs');
+            res.render(VIEWS + 'admin/train/addQuestionSuccess.ejs', { pageName: "ADMIN AddQ Success" });
         }
         else {
             res.redirect('/');
@@ -87,7 +87,7 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/addedFailure', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(VIEWS + 'admin/train/addQuestionFailure.ejs');
+            res.render(VIEWS + 'admin/train/addQuestionFailure.ejs', { pageName: "ADMIN AddQ Fail" });
         }
         else {
             res.redirect('/');

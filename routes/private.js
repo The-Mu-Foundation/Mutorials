@@ -93,7 +93,8 @@ module.exports = (app, mongo) => {
                         updateTracker(req, antsy);
                     }
                     // render answer page
-                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
@@ -122,7 +123,8 @@ module.exports = (app, mongo) => {
                         updateTracker(req, antsy);
                     }
                     // render answer page
-                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
@@ -154,7 +156,8 @@ module.exports = (app, mongo) => {
                         updateTracker(req, antsy);
                     }
                     // render answer page
-                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
                 });
             }
         }
@@ -309,7 +312,7 @@ module.exports = (app, mongo) => {
 
             var leaderboard = await generateLeaderboard(mongo.User, 10);
 
-            res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard });
+            res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard, pageName: "Leaderboard" });
         }
         else {
             res.redirect('/');
@@ -328,7 +331,7 @@ module.exports = (app, mongo) => {
     app.get('/profile/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
-                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags });
+                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile" });
             });
         }
         else {
@@ -338,7 +341,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/home.ejs');
+            res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
         }
         else {
             res.redirect('/');
@@ -347,7 +350,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/equations', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations });
+            res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations, pageName: "Mutorials Equation Sheet" });
         }
         else {
             res.redirect('/');
@@ -356,7 +359,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/constants', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants });
+            res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants, pageName: "Mutorials Constant Sheet" });
         }
         else {
             res.redirect('/');
@@ -365,7 +368,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/taglist', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags });
+            res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags, pageName: "Mutorials Tags" });
         }
         else {
             res.redirect('/');
@@ -374,7 +377,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/about', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/about.ejs');
+            res.render(VIEWS + 'private/references/about.ejs', { pageName: "About Mutorials" });
         }
         else {
             res.redirect('/');
@@ -390,7 +393,7 @@ module.exports = (app, mongo) => {
             cc.then((value) => {
                 if (!value) {
                     debugger;
-                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username });
+                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username, pageName: "Email Confirmation" });
                 } else {
                     req.flash('errorFlash', 'You\'ve already confirmed your email.');
                     res.redirect('/');
@@ -403,7 +406,7 @@ module.exports = (app, mongo) => {
 
     app.get('/settings', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/settings.ejs', { user: req.user });
+            res.render(VIEWS + 'private/settings.ejs', { user: req.user, pageName: "Settings" });
         }
         else {
             res.redirect('/');
@@ -422,7 +425,7 @@ module.exports = (app, mongo) => {
     app.get('/stats/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
-                res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags });
+                res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Stats" });
             });
         }
         else {
@@ -432,7 +435,7 @@ module.exports = (app, mongo) => {
 
     app.get('/train', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/train/train.ejs');
+            res.render(VIEWS + 'private/train/train.ejs', { pageName: "Train" });
         }
         else {
             res.redirect('/');
@@ -442,7 +445,7 @@ module.exports = (app, mongo) => {
     app.get('/train/chooseSubject', (req, res) => {
         const qNum = 0;
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/train/chooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum });
+            res.render(VIEWS + 'private/train/chooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum, pageName: "Train Subject" });
         }
         else {
             res.redirect('/');
@@ -451,8 +454,9 @@ module.exports = (app, mongo) => {
 
     app.get('/train/daily', async (req, res) => {
         if (req.isAuthenticated()) {
+            const date = await new Date().toISOString().split('T')[0];
             const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
-            res.render(VIEWS + 'private/train/dailyQuestion.ejs', { question });
+            res.render(VIEWS + 'private/train/dailyQuestion.ejs', { question, pageName: date + " Challenge" });
         }
         else {
             res.redirect('/');
@@ -466,7 +470,7 @@ module.exports = (app, mongo) => {
                 //req.user.rating[req.params.subject.toLowerCase()] = 0;
                 //req.user.save();
                 //mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
-                res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject });
+                res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject, pageName: req.params.subject + " Proficiency" });
             }
             else {
                 res.redirect('/train');
@@ -484,7 +488,8 @@ module.exports = (app, mongo) => {
                 res.redirect('/train/' + req.params.subject + '/proficiency'); //ROUTING FIX
             }
             else {
-                res.render(VIEWS + 'private/train/chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum, unitPresets: presetUnitOptions[req.params.subject] });
+                res.render(VIEWS + 'private/train/chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum,
+                    unitPresets: presetUnitOptions[req.params.subject], pageName: "Train Units" });
             }
         }
         else {
@@ -511,7 +516,7 @@ module.exports = (app, mongo) => {
             // Test if they have a question pending to answer which is valid for their units selected
             if(q && units.some(r => q.units.includes(r))) {
 
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user });
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
 
             } else {
 
@@ -542,7 +547,7 @@ module.exports = (app, mongo) => {
                     updateQuestionQueue(req, req.params.subject, curQ._id);
 
                     // push to frontend
-                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
+                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
                 });
 
             }
