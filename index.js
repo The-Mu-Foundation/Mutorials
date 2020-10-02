@@ -52,6 +52,11 @@ app.use((req, res, next) => {
         res.redirect('/');
     }
 });
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    req.flash('errorFlash', 'Error 500: Internal Server Error. Something broke on our end, sorry about that.');
+    res.redirect('/');
+});
 
 app.use((req, res, next) => {
     res.locals.successFlash = req.flash('successFlash');
