@@ -1,6 +1,5 @@
 # [Mutorials](https://www.mutorials.org/)
 
-[![website status](https://img.shields.io/website?down_color=red&down_message=offline&label=Website%20status&logo=Mutorials&style=for-the-badge&up_color=blue&up_message=online&url=https%3A%2F%2Fwww.mutorials.org)](https://www.mutorials.org)
 [![discord](https://img.shields.io/discord/682073068440780810?color=blue&label=discord&style=for-the-badge)](https://discord.gg/6aKHyKD)
 
 Mutorials is a free, adaptive, open-source trainer for science students, created by The Mu Foundation, a 501(c)(3) nonprofit. Please see our website for more info :)
