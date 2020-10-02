@@ -39,7 +39,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signin', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(VIEWS + 'public/signin.ejs', { hcaptchaToken: hcaptchaToken });
+            res.render(VIEWS + 'public/signin.ejs', { hcaptchaToken: hcaptchaToken, pageName: "Sign-in to Mutorials" });
         }
         else {
             res.redirect('/homepage');
@@ -48,7 +48,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signup', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(VIEWS + 'public/signup.ejs', { hcaptchaToken: hcaptchaToken });
+            res.render(VIEWS + 'public/signup.ejs', { hcaptchaToken: hcaptchaToken, pageName: "Sign-up to Mutorials" });
         }
         else {
             res.redirect('/homepage');
@@ -56,24 +56,24 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/latexCompiler', (req, res) => {
-        res.render(VIEWS + 'public/latexcompiler.ejs');
+        res.render(VIEWS + 'public/latexcompiler.ejs', { pageName: "LaTeX Compiler" });
     });
 
     app.get('/forgotPassword', (req, res) => {
         if (req.isAuthenticated()) {
             req.flash('errorFlash', 'You\'ll need to change your password here.');
-            res.redirect('/settings')
+            res.redirect('/settings');
         } else {
-            res.render(VIEWS + 'public/forgotPassword.ejs');
+            res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
         }
     });
 
     app.get('/whoWeAre', (req, res)  => {
-        res.render(VIEWS + 'public/whoWeAre.ejs');
+        res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials" });
     });
 
     app.get('/termsOfService', (req, res) => {
-        res.render(VIEWS + 'public/termsOfService.ejs');
+        res.render(VIEWS + 'public/termsOfService.ejs', { pageName: "Mutorials TOS" });
     });
 
     // PUBLIC POST
