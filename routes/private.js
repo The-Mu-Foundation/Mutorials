@@ -7,7 +7,7 @@ const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual } = require('../utils/functions/general');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion } = require('../utils/functions/database');
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/'
@@ -294,12 +294,13 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/homepage', (req, res) => {
+    app.get('/homepage', async (req, res) => {
         if (req.isAuthenticated()) {
             if (adminList.includes(req.user.username)) {
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
             } else {
-                res.render(VIEWS + 'private/homepage.ejs', { user: req.user });
+                let siteData = await getSiteData(mongo.User, mongo.Ques);
+                res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData });
             }
         }
         else {

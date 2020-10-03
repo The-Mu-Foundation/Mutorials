@@ -155,6 +155,43 @@ async function getDailyQuestion(Daily, Ques) {
     }
 }
 
+async function getSiteData(User, Ques) {
+
+    let userCount = await User.estimatedDocumentCount({});
+    let questionCount = await Ques.estimatedDocumentCount({});
+    
+    let tagCounter = () => {
+        let { tags } = require('../constants/tags');
+        let counter = 0;
+        Object.entries(tags).forEach((subjEntry) => {
+            Object.entries(subjEntry[1]).forEach((typeEntry) => {
+                Object.entries(typeEntry[1]).forEach((tagEntry) => {
+                    counter += tagEntry.length;
+                })
+            });
+        });
+        return counter;
+    }
+
+    let tagCount = await tagCounter();
+    let proficientCount = await User.countDocuments({
+        $or: [
+            { 'rating.physics': { $gte: 2500 } },
+            { 'rating.chemistry': { $gte: 2500 } },
+            { 'rating.biology': { $gte: 2500 } }
+        ]
+    });
+
+    let siteData = {
+        userCount,
+        questionCount,
+        tagCount,
+        proficientCount
+    }
+
+    return siteData;
+}
+
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData };
 
