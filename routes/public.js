@@ -8,6 +8,7 @@ filter = new Filter();
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
 const { genPassword, validPassword } = require('../utils/functions/password');
+const { getSiteData } = require('../utils/functions/database');
 
 const VIEWS = "../views/"
 
@@ -20,17 +21,10 @@ module.exports = (app, mongo) => {
 
     // `username` is email
     // `ign` is username
-    app.get('/', (req, res) => {
+    app.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
-            //var userCount = 0;
-            //var questionCount = 0;
-            mongo.User.estimatedDocumentCount({}, function(err, result) {
-                var userCount = result;
-                mongo.Ques.estimatedDocumentCount({}, function(err, result) {
-                    var questionCount = result;
-                    res.render(VIEWS + 'public/index.ejs', { userCount: userCount, questionCount: questionCount });
-                });
-            });
+            let siteData = await getSiteData(mongo.User, mongo.Ques);
+            res.render(VIEWS + 'public/index.ejs', { siteStats: siteData });
         }
         else {
             res.redirect('/homepage');

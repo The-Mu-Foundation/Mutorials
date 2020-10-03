@@ -1,5 +1,4 @@
 <%# Code for landing page %>
-<%# ARGUMENTS: userCount - estimated user count, questionCount - estimated question count %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPublic") -%>
@@ -18,10 +17,11 @@
 <%- include("../partials/components/iconBar") -%>
 
 <%# Jumbotron and contents inside %>
-<div class="container mt-5">
-    <div class="jumbotron">
-        <h1 class="display-2 text-center" style="font-family: helvetica,sans-serif;">We are Mutorials</h1>
-        <br>
+<div class="jumbotron container mt-5">
+    <div class="">
+
+        <h1 class="display-2 text-center">We are Mutorials</h1>
+
         <div id="mu-carousel" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
                 <li data-target="#mu-carousel" data-slide-to="0" class="active"></li>
@@ -46,15 +46,13 @@
                 <span class="sr-only">Next</span>
             </a>
         </div>
-        <br>
-        <br>
+
         <p class="mt-4">Mutorials is a free, adaptive science trainer suited to individual needs.<br>We strive to keep students motivated, and to make them academically excellent.</p>
-        <%# NOTE: There is still a fake number; remember to change this later %>
-        <p>Currently supporting <strong><%= userCount %></strong> users with a database of <strong>489</strong> questions.</p>
 
         <footer class="center"><br><hr><br>Copyright © 2020 The Mu Foundation. All Rights Reserved.<br><a href='/termsOfService#terms-of-service'>Terms of Service</a> | <a href='/termsOfService#privacy-policy'>Privacy Policy</a></footer>
     </div>
 </div>
 
+<%- include("../partials/components/siteStats") -%>
 
 <%- include("../partials/footer") -%>
