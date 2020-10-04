@@ -6,6 +6,7 @@ const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual } = require('../utils/functions/general');
+const { genPassword } = require('../utils/functions/password');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
 
@@ -211,7 +212,7 @@ module.exports = (app, mongo) => {
                 } else {
                     req.flash('errorFlash', 'Keep it appropriate.');
                 }
-                if (req.body.bio == filter.clean(req.body.name)) {
+                if (req.body.bio == filter.clean(req.body.bio)) {
                     if (req.body.bio.length <= 150) {
                         req.user.profile.bio = req.body.bio;
                     } else {
