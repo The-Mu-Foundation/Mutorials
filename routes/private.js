@@ -270,22 +270,26 @@ module.exports = (app, mongo) => {
             }
 
             if(req.body.username && req.body.username != req.user.username) {
-                mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
-                    if (count > 0) {
-                        console.log('email exists');
-                        req.flash('errorFlash', 'We already have an account with that email. Try signing in with that one.');
-                    } else {
-                        console.log('email does not exist');
-                        var confirmCode;
-                        require('crypto').randomBytes(6, function (ex, buf) {
-                            confirmCode = buf.toString('hex');
-                            mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
-                        });
-                        req.flash('successFlash', 'You need to confirm your email. Please check your email to confirm it.');
-                        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
-                        console.log('email updated');
-                    }
-                });
+                if (!emailValidation.regexCheck(req.body.username)) {
+                    req.flash('errorFlash', 'The email you entered is not valid.');
+                } else {
+                    mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
+                        if (count > 0) {
+                            console.log('email exists');
+                            req.flash('errorFlash', 'We already have an account with that email. Try signing in with that one.');
+                        } else {
+                            console.log('email does not exist');
+                            var confirmCode;
+                            require('crypto').randomBytes(6, function (ex, buf) {
+                                confirmCode = buf.toString('hex');
+                                mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
+                            });
+                            req.flash('successFlash', 'You need to confirm your email. Please check your email to confirm it.');
+                            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
+                            console.log('email updated');
+                        }
+                    });
+                }
             } else {
                 console.log('Empty email or no change');
             }
