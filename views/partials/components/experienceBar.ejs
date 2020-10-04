@@ -22,8 +22,7 @@
     </script>
     
     <div class="progress" style="height: 20px;" id="experience-bar">
-        <%# Progress bar isn't scaled out of 100, but instead leaves a 1% padding on each end %>
-        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: <%= 1+98*Math.round(experience.remainder/experience.totalToNext) %>%"></div>
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: <%= Math.round(100*experience.remainder/experience.totalToNext) %>%"></div>
     </div>
     <p id="experience-stats" class="text-center"><strong>Level <%= experience.level %></strong> (<%= experience.remainder %>/<%= experience.totalToNext %> XP to Level <%= experience.level+1 %>)</p>
     

@@ -65,7 +65,7 @@ module.exports = (app, mongo) => {
 
             if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
                 var isRight = false;
-                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                     // clear pending question
                     clearQuestionQueue(req, antsy.subject[0]);
@@ -92,13 +92,14 @@ module.exports = (app, mongo) => {
                         addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
+                    let experienceStats = await calculateLevel(req.user.stats.experience);
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
                 var isRight = false;
-                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                     // clear pending question
                     clearQuestionQueue(req, antsy.subject[0]);
@@ -123,13 +124,14 @@ module.exports = (app, mongo) => {
                         addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
+                    let experienceStats = await calculateLevel(req.user.stats.experience);
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
                 var isRight = false;
-                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                     // clear pending question
                     clearQuestionQueue(req, antsy.subject[0]);
@@ -157,8 +159,9 @@ module.exports = (app, mongo) => {
                         addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
+                    let experienceStats = await calculateLevel(req.user.stats.experience);
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
             }
         } else {
@@ -521,10 +524,13 @@ module.exports = (app, mongo) => {
                 q = await getQuestion(mongo.Ques, req.user.stats.toAnswer[req.params.subject.toLowerCase()]);
             }
 
+            // get experience stats
+            let experienceStats = await calculateLevel(req.user.stats.experience);
+
             // Test if they have a question pending to answer which is valid for their units selected
             if(q && units.some(r => q.units.includes(r))) {
 
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
 
             } else {
 
@@ -555,7 +561,7 @@ module.exports = (app, mongo) => {
                     updateQuestionQueue(req, req.params.subject, curQ._id);
 
                     // push to frontend
-                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
+                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
                 });
 
             }
