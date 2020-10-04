@@ -88,6 +88,10 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Please enter a username.');
             registerInputProblems1 = true;
         }
+        if (!(/[\w\-\.\~]+/.test(req.body.ign))) {
+            req.flash('errorFlash', 'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.');
+            registerInputProblems1 = true;
+        }
         if (req.body.ign != filter.clean(req.body.ign)) {
             req.flash('errorFlash', 'Please don\'t use bad words :)');
             registerInputProblems1 = true;
@@ -117,7 +121,7 @@ module.exports = (app, mongo) => {
             res.redirect('/signup');
             return; // to prevent ERRHTTPHEADERSSENT
         }
-        
+
 
         const saltHash = genPassword(req.body.password);
 
@@ -179,7 +183,7 @@ module.exports = (app, mongo) => {
             }
             res.redirect('/signin');
         });
-        
+
     });
 
     app.post('/login', passport.authenticate('local', {
