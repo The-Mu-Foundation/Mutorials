@@ -38,6 +38,11 @@ function ratingCeilingFloor(userRating) {
 
 function calculateLevel(experience) {
 
+    // if experience doesn't exist
+    if(!experience) {
+        experience = 0;
+    }
+    
     let total = experience;
     let level = 1;
     let decrement = 100*Math.pow(level, 1.2);

@@ -305,12 +305,7 @@ module.exports = (app, mongo) => {
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
             } else {
                 let siteData = await getSiteData(mongo.User, mongo.Ques);
-                var experienceStats = {
-                    level: 1, remainder: 0, totalToNext: 100
-                }
-                if(req.user.stats.experience) {
-                    experienceStats = await calculateLevel(req.user.stats.experience);
-                }
+                let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, experienceStats });
             }
         }
@@ -343,12 +338,7 @@ module.exports = (app, mongo) => {
     app.get('/profile/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
-                var experienceStats = {
-                    level: 1, remainder: 0, totalToNext: 100
-                }
-                if(obj.stats.experience) {
-                    experienceStats = await calculateLevel(obj.stats.experience);
-                }
+                let experienceStats = await calculateLevel(obj.stats.experience);
                 res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
             });
         }
