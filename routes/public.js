@@ -84,6 +84,10 @@ module.exports = (app, mongo) => {
                 registerInputProblems1 = true;
             }
         });
+        if (req.body.ign.length > 30){
+            req.flash('errorFlash', 'Your username is too long');
+            registerInputProblems1 = true;
+        }
         if (req.body.ign.length < 1) {
             req.flash('errorFlash', 'Please enter a username.');
             registerInputProblems1 = true;
@@ -93,7 +97,7 @@ module.exports = (app, mongo) => {
             registerInputProblems1 = true;
         }
         if (req.body.ign != filter.clean(req.body.ign)) {
-            req.flash('errorFlash', 'Please don\'t use bad words :)');
+            req.flash('errorFlash', 'Keep it appropriate.');
             registerInputProblems1 = true;
         }
         if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
