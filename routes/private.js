@@ -1,5 +1,5 @@
 // FUNCTION IMPORTS
-const { calculateRatings, ratingCeilingFloor } = require('../utils/functions/siteAlgorithms');
+const { calculateRatings, ratingCeilingFloor, calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { presetUnitOptions } = require('../utils/constants/presets');
 const { tags } = require('../utils/constants/tags');
 const { referenceSheet } = require('../utils/constants/referencesheet');
@@ -305,7 +305,13 @@ module.exports = (app, mongo) => {
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
             } else {
                 let siteData = await getSiteData(mongo.User, mongo.Ques);
-                res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData });
+                var experienceStats = {
+                    level: 1, remainder: 0, totalToNext: 100
+                }
+                if(req.user.stats.experience) {
+                    experienceStats = await calculateLevel(req.user.stats.experience);
+                }
+                res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, experienceStats });
             }
         }
         else {
@@ -336,8 +342,14 @@ module.exports = (app, mongo) => {
 
     app.get('/profile/:username', (req, res) => {
         if (req.isAuthenticated()) {
-            mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
-                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile" });
+            mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
+                var experienceStats = {
+                    level: 1, remainder: 0, totalToNext: 100
+                }
+                if(obj.stats.experience) {
+                    experienceStats = await calculateLevel(obj.stats.experience);
+                }
+                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
             });
         }
         else {

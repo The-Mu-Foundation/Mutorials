@@ -44,11 +44,15 @@
 
 </script>
 
-<h1 class="my-5 container text-center display-3">Welcome, <%= user.ign %></h1>
+<h1 class="mt-5 mb-1 container text-center display-3">Welcome, <%= user.ign %></h1>
+
+<div class="container my-3">
+    <%- include("../partials/components/experienceBar") -%>
+</div>
 
 <%- include("../partials/components/iconBar") -%>
 
-<div class="jumbotron container">
+<div class="jumbotron container mt-2">
 
     <div class="row">
 

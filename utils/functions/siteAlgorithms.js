@@ -49,7 +49,7 @@ function calculateLevel(experience) {
         decrement = 100*Math.pow(level, 1.2);
     }
     
-    return { level, remainder: Math.round(total) };
+    return { level, remainder: Math.round(total), totalToNext: Math.round(decrement) };
 }
 
-module.exports = { calculateRatings : calculateRatings, ratingCeilingFloor : ratingCeilingFloor };
+module.exports = { calculateRatings , ratingCeilingFloor, calculateLevel };
