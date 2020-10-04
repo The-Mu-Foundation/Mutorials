@@ -14,9 +14,8 @@ const VIEWS = __dirname + '/../views/'
 
 module.exports = (app, mongo) => {
     app.post('/private/initialRating', (req, res, next) => {
-        //initial ratings set proficiency
+        // initial ratings set proficiency
 
-        //req.params.level, req.params.subject
         if (req.isAuthenticated()) {
             req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
             mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
@@ -64,7 +63,6 @@ module.exports = (app, mongo) => {
     app.post('/train/checkAnswer', (req, res, next) => {
         if (req.isAuthenticated()) {
 
-            // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
             if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
                 var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
@@ -160,8 +158,7 @@ module.exports = (app, mongo) => {
                         newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
                 });
             }
-        }
-        else {
+        } else {
             res.redirect('/');
         }
     });
@@ -196,6 +193,7 @@ module.exports = (app, mongo) => {
                 req.flash('errorFlash', 'Please enter a valid age!');
             }
             req.user.profile.age = req.body.age;
+
             console.log(!!req.body.darkMode);
             req.user.preferences.dark_mode = !!req.body.darkMode;
             if (req.user.profile.age > 13) {
