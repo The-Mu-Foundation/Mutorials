@@ -176,7 +176,7 @@ async function getSiteData(User, Ques) {
         Object.entries(tags).forEach((subjEntry) => {
             Object.entries(subjEntry[1]).forEach((typeEntry) => {
                 Object.entries(typeEntry[1]).forEach((tagEntry) => {
-                    counter += tagEntry.length;
+                    counter += 1;
                 })
             });
         });
