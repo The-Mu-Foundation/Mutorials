@@ -123,21 +123,21 @@
             data: {
                 labels: ratingData["Labels"],
                 datasets: [{
-                    label: "Physics Rating History",
+                    label: "Physics",
                     data: ratingData["Physics"],
                     backgroundColor: "rgba(100, 200, 230, 1)",
                     borderColor: "rgba(100, 200, 230, 1)",
                     fill: false,
                     borderWidth: 5
                 }, {
-                    label: "Chemistry Rating History",
+                    label: "Chemistry",
                     data: ratingData["Chemistry"],
                     backgroundColor: "rgba(245, 170, 40, 1)",
                     borderColor: "rgba(245, 170, 40, 1)",
                     fill: false,
                     borderWidth: 5
                 }, {
-                    label: "Biology Rating History",
+                    label: "Biology",
                     data: ratingData["Biology"],
                     backgroundColor: "rgba(40, 240, 110, 1)",
                     borderColor: "rgba(40, 240, 110, 1)",
@@ -151,7 +151,8 @@
                     text: "Rating History"
                 },
                 legend: {
-                    display: false
+                    display: true,
+                    position: "bottom"
                 },
                 scales: {
                     yAxes: [{
