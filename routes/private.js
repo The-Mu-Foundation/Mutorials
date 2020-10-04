@@ -1,12 +1,12 @@
 // FUNCTION IMPORTS
-const { calculateRatings, ratingCeilingFloor } = require('../utils/functions/ratings');
+const { calculateRatings, ratingCeilingFloor } = require('../utils/functions/siteAlgorithms');
 const { presetUnitOptions } = require('../utils/constants/presets');
 const { tags } = require('../utils/constants/tags');
 const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual } = require('../utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
 
 
@@ -89,6 +89,7 @@ module.exports = (app, mongo) => {
 
                         // update tracker
                         updateTracker(req, antsy);
+                        addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
@@ -119,6 +120,7 @@ module.exports = (app, mongo) => {
 
                         // update tracker
                         updateTracker(req, antsy);
+                        addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
@@ -152,6 +154,7 @@ module.exports = (app, mongo) => {
 
                         // update tracker
                         updateTracker(req, antsy);
+                        addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,

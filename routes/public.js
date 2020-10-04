@@ -140,6 +140,7 @@ module.exports = (app, mongo) => {
             },
             // if emailConfirmCode == 0, then email is confirmed
             stats: {
+                experience: 0,
                 correct: 0,
                 wrong: 0,
                 collectedTags: []

@@ -37,6 +37,7 @@ function updateAll (req, question, correct) {
     updateCounters(req, question, correct);
     updateTracker(req, question);
     updateLastAnswered(req, question);
+    addExperience(req, correct ? question.rating : Math.ceil(question.rating/2));
 }
 function updateCounters (req, question, correct) {
     if (correct) {
@@ -80,6 +81,15 @@ function updateTracker (req, question) {
 function updateLastAnswered (req, question) {
     // updated "last answered" field with question ID
     req.user.stats.lastAnswered = question._id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+function addExperience(req, amount) {
+    // add experience points to user
+    if(req.user.stats.experience) {
+        req.user.stats.experience += amount;
+    } else {
+        req.user.stats.experience = amount;
+    }
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 
@@ -192,6 +202,6 @@ async function getSiteData(User, Ques) {
     return siteData;
 }
 
-module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue,
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData };
 

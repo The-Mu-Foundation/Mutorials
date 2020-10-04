@@ -36,4 +36,20 @@ function ratingCeilingFloor(userRating) {
     return { floor : floor, ceiling : ceiling };
 }
 
+function calculateLevel(experience) {
+
+    let total = experience;
+    let level = 1;
+    let decrement = 100*Math.pow(level, 1.2);
+
+    while(total-decrement >= 0) {
+        
+        total -= decrement;
+        level += 1;
+        decrement = 100*Math.pow(level, 1.2);
+    }
+    
+    return { level, remainder: Math.round(total) };
+}
+
 module.exports = { calculateRatings : calculateRatings, ratingCeilingFloor : ratingCeilingFloor };
