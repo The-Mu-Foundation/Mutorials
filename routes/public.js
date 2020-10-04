@@ -85,7 +85,7 @@ module.exports = (app, mongo) => {
             }
         });
         if (req.body.ign.length > 30){
-            req.flash('errorFlash', 'Your username is too long');
+            req.flash('errorFlash', 'Your username is too long.');
             registerInputProblems1 = true;
         }
         if (req.body.ign.length < 1) {

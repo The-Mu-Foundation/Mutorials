@@ -7,6 +7,7 @@ const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual } = require('../utils/functions/general');
 const { genPassword } = require('../utils/functions/password');
+const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
 
@@ -298,14 +299,14 @@ module.exports = (app, mongo) => {
 
             if(req.body.newpw) {
 
-                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
+                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw >= 7) {
                     if (req.body.newpw == req.body.confirmnewpw) {
                         const newPass = genPassword(req.body.newpw);
                         req.user.hash = newPass.hash;
                         req.user.salt = newPass.salt;
                         mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
                     } else {
-                        req.flash('errorFlash', 'passwords don\'t match');
+                        req.flash('errorFlash', 'Passwords don\'t match.');
                     }
                 } else {
                     req.flash('errorFlash', 'Password does not meet requirments.');
