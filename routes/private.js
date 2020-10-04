@@ -299,7 +299,7 @@ module.exports = (app, mongo) => {
 
             if(req.body.newpw) {
 
-                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw >= 7) {
+                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw.length >= 7) {
                     if (req.body.newpw == req.body.confirmnewpw) {
                         const newPass = genPassword(req.body.newpw);
                         req.user.hash = newPass.hash;
