@@ -23,6 +23,7 @@ module.exports = (app, mongo) => {
             res.redirect('/train/' + req.body.subject + '/chooseUnits');
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -162,6 +163,7 @@ module.exports = (app, mongo) => {
             }
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -183,6 +185,7 @@ module.exports = (app, mongo) => {
 
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -290,6 +293,7 @@ module.exports = (app, mongo) => {
             res.redirect('/settings');
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -303,6 +307,7 @@ module.exports = (app, mongo) => {
             }
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -315,6 +320,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard, pageName: "Leaderboard" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -324,6 +330,7 @@ module.exports = (app, mongo) => {
             res.redirect('/profile/' + req.user.ign);
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -335,6 +342,7 @@ module.exports = (app, mongo) => {
             });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -344,6 +352,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -353,6 +362,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations, pageName: "Mutorials Equation Sheet" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -362,6 +372,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants, pageName: "Mutorials Constant Sheet" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -371,6 +382,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags, pageName: "Mutorials Tags" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -380,6 +392,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/references/about.ejs', { pageName: "About Mutorials" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -400,6 +413,7 @@ module.exports = (app, mongo) => {
                 }
             });
         } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -409,6 +423,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/settings.ejs', { user: req.user, pageName: "Settings" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -418,6 +433,7 @@ module.exports = (app, mongo) => {
             res.redirect('/stats/' + req.user.ign);
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -429,6 +445,7 @@ module.exports = (app, mongo) => {
             });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -438,6 +455,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/train/train.ejs', { pageName: "Train" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -448,6 +466,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/train/chooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum, pageName: "Train Subject" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     })
@@ -459,6 +478,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/train/dailyQuestion.ejs', { question, pageName: date + " Challenge" });
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
@@ -477,6 +497,7 @@ module.exports = (app, mongo) => {
             }
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     })
@@ -493,6 +514,7 @@ module.exports = (app, mongo) => {
             }
         }
         else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     })
@@ -552,6 +574,7 @@ module.exports = (app, mongo) => {
 
             }
         } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
