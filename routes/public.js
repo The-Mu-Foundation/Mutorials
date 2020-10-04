@@ -92,7 +92,7 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Please enter a username.');
             registerInputProblems1 = true;
         }
-        if (!(/[\w\-\.\~]+/.test(req.body.ign))) {
+        if (!(/^[\w\-\.\~]+$/.test(req.body.ign))) {
             req.flash('errorFlash', 'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.');
             registerInputProblems1 = true;
         }

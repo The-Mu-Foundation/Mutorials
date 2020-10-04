@@ -249,10 +249,10 @@ module.exports = (app, mongo) => {
             // change account settings
 
             if (req.body.ign && req.body.ign != req.user.ign) {
-                if (!(/[\w\-\.\~]+/.test(req.body.ign))) {
+                if (!(/^[\w\-\.\~]+$/.test(req.body.ign))) {
                     req.flash('errorFlash', 'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.');
                 } else if (req.body.ign.length > 30) {
-                    req.flash('errorFlash', 'Please keep your username under 30 characers long.');
+                    req.flash('errorFlash', 'Please keep your username under 30 characters long.');
                 } else {
                     mongo.User.countDocuments({ ign: req.body.ign }, function (err, count) {
                         if (count > 0) {
@@ -272,7 +272,7 @@ module.exports = (app, mongo) => {
             if(req.body.username && req.body.username != req.user.username) {
                 mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
                     if (count > 0) {
-                        console.log('email exists'); // flash
+                        console.log('email exists');
                         req.flash('errorFlash', 'We already have an account with that email. Try signing in with that one.');
                     } else {
                         console.log('email does not exist');
