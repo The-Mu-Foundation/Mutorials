@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
         bio: String
     },
     stats: {
+        experience: Number,
         correct: Number,
         wrong: Number,
         collectedTags: Array,
