@@ -46,9 +46,9 @@
 
 <h1 class="my-5 container text-center display-3">Welcome, <%= user.ign %></h1>
 
-<div class="jumbotron container">
+<%- include("../partials/components/iconBar") -%>
 
-    <%- include("../partials/flashes") -%>
+<div class="jumbotron container">
 
     <div class="row">
 
@@ -91,5 +91,7 @@
     </div>
 
 </div>
+
+<%- include("../partials/components/siteStats") -%>
 
 <%- include("../partials/footer") -%>

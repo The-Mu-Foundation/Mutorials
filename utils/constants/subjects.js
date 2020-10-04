@@ -23,7 +23,8 @@ const subjectUnitDictionary = {
         "Wave Optics",
         "Relativity",
         "Quantum Physics",
-        "Nuclear Energy and Elementary Particles"
+        "Nuclear Energy and Elementary Particles",
+        "Lab Skills"
     ],
     "Chemistry": ["Stoichiometry",
         "Gases",
@@ -39,7 +40,8 @@ const subjectUnitDictionary = {
         "Organic Chemistry",
         "Chemical Reactions",
         "Materials Chemistry",
-        "Biochemistry"
+        "Biochemistry",
+        "Lab Skills"
     ],
     "Biology": ["Cell Biology",
         "Molecular Biology",

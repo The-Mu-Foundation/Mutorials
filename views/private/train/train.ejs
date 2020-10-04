@@ -3,27 +3,58 @@
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
 
+<link rel="stylesheet" type="text/css" href="design/visuals.css">
+
 <div class="jumbotron container mt-5">
-	<head>
-		<link rel="stylesheet" type="text/css" href="design/visuals.css">
-	</head>
-	<body>
 
-		<div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
 
+	<div class="row">
+
+        <div class="col-6">
+
+            <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
+
+                <% if (locals.darkMode) { %>
+				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Dark.svg" alt="Card image cap" style="background-color: #37393f">
+                <% } else { %>
 				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" alt="Card image cap">
+                <% } %>
 
 				<div class="card-body">
 					<div class="card-block text-center">
-						<h5 class="card-title">Training</h5>
-						<p class="card-text">Click on this button to begin training in: Physics, Biology, or Chemistry</p>
+						<h5 class="card-title">Classic Training</h5>
+						<p class="card-text">Train with our classic ELO adapative system in Physics, Biology, or Chemistry</p>
 						<button type="button" class="btn btn-primary" onclick="window.location.href='/train/chooseSubject'" id="train">Start Training!</button>
 					</div>
 				</div>
 
-		</div>
+            </div>
 
-	</body>
+        </div>
+
+        <div class="col-6">
+
+            <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
+
+                <% if (locals.darkMode) { %>
+				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Dark.svg" alt="Card image cap" style="background-color: #37393f">
+                <% } else { %>
+				<img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" alt="Card image cap">
+                <% } %>
+
+				<div class="card-body">
+					<div class="card-block text-center">
+						<h5 class="card-title">Daily Question</h5>
+						<p class="card-text">View a new and challenging problem every day! Questions are updated at 00:00 UTC.</p>
+						<button type="button" class="btn btn-primary" onclick="window.location.href='/train/daily'" id="train">See Challenge!</button>
+					</div>
+				</div>
+
+            </div>
+
+        </div>
+
+	</div>
 </div>
 
 <%- include("../../partials/footer") -%>

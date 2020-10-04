@@ -13,6 +13,7 @@ var enforce = require('express-sslify');
 // START EXPRESS SERVER
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'devsecret';
 
 // https SETUP
 const httpsConfig = {
@@ -31,7 +32,7 @@ if (PORT != 3000) {
 var mongo = require('./utils/functions/mongo.js');
 
 app.use(session({
-    secret: 'blahblah',
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     store: mongo.sessionStore
@@ -40,9 +41,14 @@ app.use(session({
 require('./utils/functions/passport.js')(app, mongo);
 
 app.use(flash()); // express-flash-messages config
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     res.locals.successFlash = req.flash('successFlash');
     res.locals.errorFlash = req.flash('errorFlash');
+    if (req.user) {
+        app.locals.darkMode = req.user.preferences.dark_mode || false;
+    } else {
+        app.locals.darkMode = false;
+    }
     next();
 });
 

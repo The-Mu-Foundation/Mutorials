@@ -1,5 +1,6 @@
 /.vscode
 .DS_Store
-*.iml
+.iml
 .idea/
 .idea/**
+CODEOWNERS

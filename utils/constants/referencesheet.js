@@ -14,7 +14,7 @@ const referenceSheet = {
         "Work Equation": "$\\Delta E = W = F_{||}d = Fd\\cos{\\theta}$",
         "Power Equation": "$P = \\frac{\\Delta E}{\\Delta t} = I\\Delta V$\"",
         "First Rotational Kinematics Equation": "$\\Delta\\theta = \\omega_0t = \\frac{1}{2}at^2$",
-        "Second Rotational Kinematics Equation": "$\\omega = \\omega_0+at$",
+        "Second Rotational Kinematics Equation": "$\\omega = \\omega_0+\\alpha t$",
         "Simple Harmonic Motion Equation": "$x = A\\cos{(2\\pi ft)}$",
         "Net Torque Equation": "$\\vec{\\alpha} = \\frac{\\Sigma \\vec{\\tau}}{I} = \\frac{\\vec\\tau_{net}}{I}$",
         "Torque Equation": "$\\tau = r_{\\perp}F = rF\\sin\\theta$",

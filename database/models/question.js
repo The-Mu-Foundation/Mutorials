@@ -11,6 +11,7 @@ const qSchema = new mongoose.Schema({
     author: String,
     type: String,
     ext_source: String,
+    source_statement: String,
     subject: Array,
     units: Array,
     stats: {

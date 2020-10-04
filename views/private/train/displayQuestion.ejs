@@ -119,9 +119,10 @@
 
             <div class="col-10">
 
-                <p class="lead">
-                    <% if(newQues.extSource != "original") { %>
-                        <p>Question Source: <%= newQues.extSource %></p>
+                <p class="lead mb-3">
+                    <% if(newQues.ext_source != "original") { %>
+                        <p>Question Source: <%= newQues.ext_source %></p>
+                        <p><%= newQues.source_statement %></p>
                     <% } %>
                 </p>
 
@@ -209,7 +210,7 @@
         </div>
 
         <%# Skip question %>
-        <div class="jumbotron container">
+        <div class="mt-2">
 
             <div id="skip-dialogue-1">
                 <h3 class="display-4" style="font-size: 1.5rem;">Question's content out of reach of your knowledge?</h3>
@@ -217,12 +218,15 @@
             </div>
 
             <div id="skip-dialogue-2">
-                <h3>Are you sure you want to skip this question?</h3>
-                <p>A new question will be randomly chosen, but you will lose <strong>5</strong> rating for skipping. If you refresh the page while on a question page it will be counted as a skip.</p>
                 <h3 class="display-4" style="font-size: 1.5rem;">Are you sure you want to skip this question?</h3>
                 <p>A new question will be randomly chosen, but you will lose 8 rating for skipping</p>
-                <button type="button" class="btn btn-secondary" id="no-skip">No</button>
-                <a href="/train/<%= subject %>/displayQuestion?units=<%=units%>"><button type="button" class="btn btn-primary" id="yes-skip">Yes</button></a>
+                <form action="/train/skipQuestion" method="POST">
+                    <button type="button" class="btn btn-secondary" id="no-skip">No</button>
+                    <button type="submit" class="btn btn-primary" id="yes-skip">Yes</button>
+                    <input type="hidden" name="id" value="<%= newQues._id %>">
+                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+                    <input type="hidden" name="subject" value="<%= subject %>">
+                </form>
             </div>
 
         </div>

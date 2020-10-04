@@ -5,8 +5,10 @@ const { tags } = require('../utils/constants/tags');
 const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
-const { arraysEqual, parseDelimiter } = require('../utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateAll, generateLeaderboard } = require('../utils/functions/database');
+const { arraysEqual } = require('../utils/functions/general');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
+
 
 const VIEWS = __dirname + '/../views/'
 
@@ -34,7 +36,6 @@ module.exports = (app, mongo) => {
             res.redirect('/train/' + req.body.subj + '/chooseUnits');
         }
         */
-
         if(req.isAuthenticated()){
             var units = null;
             /*
@@ -45,11 +46,12 @@ module.exports = (app, mongo) => {
             */
             if (req.body.qNum == 1) {
                 units = req.body.unitChoice;
+                if (!units) {
+                    req.flash('errorFlash', 'Please choose at least one unit.');
+                    res.redirect('/train/' + req.body.subj + '/chooseUnits');
+                }
                 if (units) { //nothing happens if units is empty
                     res.redirect('/train/' + req.body.subj + '/displayQuestion?units=' + units.toString());
-                }
-                if(!units){
-                    res.redirect('/train/' + req.body.subj + '/chooseUnits'); //maybe flash
                 }
                 //app.set('questionz', questions);
                 //units cannot have commas
@@ -62,16 +64,21 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
 
             if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
-                    var isRight = false;
+                var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+
+                    // clear pending question
+                    clearQuestionQueue(req, antsy.subject[0]);
 
                     // check answer
                     if (antsy.answer[0] == req.body.answerChoice) {
                         isRight = true;
                     }
+
                     // modify ratings
-                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                     var oldQRating = antsy.rating;
+                    // update stats
                     if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -80,22 +87,28 @@ module.exports = (app, mongo) => {
                         updateAll(req, antsy, isRight);
                     } else {
 
-                        // refund rating deducted for skip
-                        setRating(antsy.subject[0], oldUserRating, req);
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
-                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
                 var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
 
+                    // clear pending question
+                    clearQuestionQueue(req, antsy.subject[0]);
+
                     // check answer
                     isRight = arraysEqual(antsy.answer, req.body.saChoice);
+
                     // modify ratings
-                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                     var oldQRating = antsy.rating;
+                    // update stats
                     if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -104,24 +117,31 @@ module.exports = (app, mongo) => {
                         updateAll(req, antsy, isRight);
                     } else {
 
-                        // refund rating deducted for skip
-                        setRating(antsy.subject[0], oldUserRating, req);
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
-                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
                 var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
 
+                    // clear pending question
+                    clearQuestionQueue(req, antsy.subject[0]);
+
                     // check answer
-                    if (antsy.answer[0] == req.body.freeAnswer.trim()) {
+                    if (antsy.answer[0].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
                         isRight = true;
                     }
+
                     // modify ratings
-                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()] + 8;
+                    var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                     var oldQRating = antsy.rating;
+
+                    // update stats
                     if(req.user.stats.lastAnswered != antsy._id) {
                         setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                         setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
@@ -130,14 +150,36 @@ module.exports = (app, mongo) => {
                         updateAll(req, antsy, isRight);
                     } else {
 
-                        // refund rating deducted for skip
-                        setRating(antsy.subject[0], oldUserRating, req);
+                        // update tracker
+                        updateTracker(req, antsy);
                     }
                     // render answer page
-                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject, newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user });
+                    res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
                 });
             }
         } else {
+            res.redirect('/');
+        }
+    });
+
+    app.post('/train/skipQuestion', async (req, res, next) => {
+        if (req.isAuthenticated()) {
+
+            const { subject, id, redirect } = req.body;
+
+
+            // updates when skipping question
+            skipQuestionUpdates(mongo.Ques, req, subject, id);
+
+            // clear pending question
+            clearQuestionQueue(req, subject);
+
+            // redirect
+            res.redirect(redirect);
+
+        }
+        else {
             res.redirect('/');
         }
     });
@@ -147,13 +189,42 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
 
             // change profile settings
-
-            req.user.profile.name = req.body.name;
-            req.user.profile.bio = req.body.bio;
-            req.user.profile.location = req.body.location;
+            if (!(/^\d+$/.test(req.body.age))) {
+                req.flash('errorFlash', 'Please enter a valid age!');
+            }
             req.user.profile.age = req.body.age;
 
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } });
+            console.log(!!req.body.darkMode);
+            req.user.preferences.dark_mode = !!req.body.darkMode;
+            if (req.user.profile.age > 13) {
+                if (req.body.name == filter.clean(req.body.name)) {
+                    req.user.profile.name = req.body.name;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
+                if (req.body.bio == filter.clean(req.body.name)) {
+                    req.user.profile.bio = req.body.bio;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
+                if (req.body.location == filter.clean(req.body.location)) {
+                    req.user.profile.location = req.body.location;
+                } else {
+                    req.flash('Please don\'t use bad words :)');
+                }
+                console.log('Profile has been updated');
+            } else {
+                req.user.profile.name = "";
+                req.user.profile.bio = "";
+                req.user.profile.location = "Earth";
+            }
+            if (req.user.profile.name < 13 &&
+                ( req.user.profile.name != req.body.name ||
+                req.user.profile.bio != req.body.bio ||
+                req.user.profile.location != req.body.location)) {
+                req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
+            }
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
 
             console.log('Profile has been updated');
 
@@ -221,12 +292,13 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/homepage', (req, res) => {
+    app.get('/homepage', async (req, res) => {
         if (req.isAuthenticated()) {
             if (adminList.includes(req.user.username)) {
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
             } else {
-                res.render(VIEWS + 'private/homepage.ejs', { user: req.user });
+                let siteData = await getSiteData(mongo.User, mongo.Ques);
+                res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData });
             }
         }
         else {
@@ -234,13 +306,32 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/leaderboard/:subject', (req, res) => {
+    app.get('/leaderboard', async (req, res) => {
         if (req.isAuthenticated()) {
-            // DOESN'T WORK YET, NEEDA FIX IT
-            var leaderboard = generateLeaderboard(mongo.User, req.params.subject, 3);
-            res.render(VIEWS + 'private/train/train.ejs');
-            //res.render(VIEWS + 'private/leaderboard.ejs');
-            // req.params.subject
+
+            var leaderboard = await generateLeaderboard(mongo.User, 10);
+
+            res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard, pageName: "Leaderboard" });
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
+    app.get('/profile', (req, res) => {
+        if (req.isAuthenticated()) {
+            res.redirect('/profile/' + req.user.ign);
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+
+    app.get('/profile/:username', (req, res) => {
+        if (req.isAuthenticated()) {
+            mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
+                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile" });
+            });
         }
         else {
             res.redirect('/');
@@ -249,7 +340,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/home.ejs');
+            res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
         }
         else {
             res.redirect('/');
@@ -258,7 +349,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/equations', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations });
+            res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations, pageName: "Mutorials Equation Sheet" });
         }
         else {
             res.redirect('/');
@@ -267,7 +358,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/constants', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants });
+            res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants, pageName: "Mutorials Constant Sheet" });
         }
         else {
             res.redirect('/');
@@ -276,7 +367,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/taglist', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags });
+            res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags, pageName: "Mutorials Tags" });
         }
         else {
             res.redirect('/');
@@ -285,7 +376,7 @@ module.exports = (app, mongo) => {
 
     app.get('/references/about', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/about.ejs');
+            res.render(VIEWS + 'private/references/about.ejs', { pageName: "About Mutorials" });
         }
         else {
             res.redirect('/');
@@ -301,7 +392,7 @@ module.exports = (app, mongo) => {
             cc.then((value) => {
                 if (!value) {
                     debugger;
-                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username });
+                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username, pageName: "Email Confirmation" });
                 } else {
                     req.flash('errorFlash', 'You\'ve already confirmed your email.');
                     res.redirect('/');
@@ -314,7 +405,7 @@ module.exports = (app, mongo) => {
 
     app.get('/settings', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/settings.ejs', { user: req.user });
+            res.render(VIEWS + 'private/settings.ejs', { user: req.user, pageName: "Settings" });
         }
         else {
             res.redirect('/');
@@ -333,7 +424,7 @@ module.exports = (app, mongo) => {
     app.get('/stats/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
-                res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags });
+                res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Stats" });
             });
         }
         else {
@@ -343,7 +434,7 @@ module.exports = (app, mongo) => {
 
     app.get('/train', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/train/train.ejs');
+            res.render(VIEWS + 'private/train/train.ejs', { pageName: "Train" });
         }
         else {
             res.redirect('/');
@@ -353,12 +444,23 @@ module.exports = (app, mongo) => {
     app.get('/train/chooseSubject', (req, res) => {
         const qNum = 0;
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/train/chooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum });
+            res.render(VIEWS + 'private/train/chooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum, pageName: "Train Subject" });
         }
         else {
             res.redirect('/');
         }
     })
+
+    app.get('/train/daily', async (req, res) => {
+        if (req.isAuthenticated()) {
+            const date = await new Date().toISOString().split('T')[0];
+            const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+            res.render(VIEWS + 'private/train/dailyQuestion.ejs', { question, pageName: date + " Challenge" });
+        }
+        else {
+            res.redirect('/');
+        }
+    });
 
     app.get('/train/:subject/proficiency', (req, res) => {
         // called when rating isn't set for subject
@@ -367,7 +469,7 @@ module.exports = (app, mongo) => {
                 //req.user.rating[req.params.subject.toLowerCase()] = 0;
                 //req.user.save();
                 //mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
-                res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject });
+                res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject, pageName: req.params.subject + " Proficiency" });
             }
             else {
                 res.redirect('/train');
@@ -385,7 +487,8 @@ module.exports = (app, mongo) => {
                 res.redirect('/train/' + req.params.subject + '/proficiency'); //ROUTING FIX
             }
             else {
-                res.render(VIEWS + 'private/train/chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum, unitPresets: presetUnitOptions[req.params.subject] });
+                res.render(VIEWS + 'private/train/chooseUnits.ejs', { subject: req.params.subject, units: subjectUnitDictionary[req.params.subject], qNum: qNum,
+                    unitPresets: presetUnitOptions[req.params.subject], pageName: "Train Units" });
             }
         }
         else {
@@ -393,32 +496,60 @@ module.exports = (app, mongo) => {
         }
     })
 
-    app.get('/train/:subject/displayQuestion', (req, res) => {
+    app.get('/train/:subject/displayQuestion', async (req, res) => {
         var curQ = null;
         if (req.isAuthenticated()) {
-
-            // get parameters set up
-            var units = req.query.units.split(',');
-            var ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
-            var floor = ceilingFloor.floor;
-            var ceiling = ceilingFloor.ceiling;
 
             // no cache
             res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             res.setHeader('Pragma', 'no-cache');
             res.setHeader('Expires', '0');
 
-            // deduct rating (skip question)
-            var originalRating = getRating(req.params.subject, req);
-            var deduction = originalRating > 8 ? originalRating-8 : 0;
-            setRating(req.params.subject, deduction, req);
-            req.user.rating[req.params.subject.toLowerCase()] = originalRating;
+            // define units and attempt to get queued question
+            var units = req.query.units.split(',');
+            var q = "";
+            if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
+                q = await getQuestion(mongo.Ques, req.user.stats.toAnswer[req.params.subject.toLowerCase()]);
+            }
 
-            // get question
-            const qs = getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => { //copy exact then format for getquestion(s) for it to work
-                curQ = qs[Math.floor(Math.random() * qs.length)];
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user });
-            });
+            // Test if they have a question pending to answer which is valid for their units selected
+            if(q && units.some(r => q.units.includes(r))) {
+
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
+
+            } else {
+
+                // deduct 8 rating if previously queued question was skipped
+                if(q) {
+                    skipQuestionUpdates(mongo.Ques, req, req.params.subject.toLowerCase(), q._id);
+                }
+
+                // get parameters set up
+                var ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
+                var floor = ceilingFloor.floor;
+                var ceiling = ceilingFloor.ceiling;
+
+                // get question
+                getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => {
+
+                    // select random question
+                    curQ = qs[Math.floor(Math.random() * qs.length)];
+
+                    console.log(curQ);
+                    if (!curQ) {
+                        req.flash('errorFlash', 'We couldn\'t find any questions for your rating in the units you selected.');
+                        res.redirect('/train/' + req.params.subject + '/chooseUnits');
+                        return;
+                    }
+
+                    // update pending question field
+                    updateQuestionQueue(req, req.params.subject, curQ._id);
+
+                    // push to frontend
+                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
+                });
+
+            }
         } else {
             res.redirect('/');
         }

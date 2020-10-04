@@ -11,7 +11,7 @@ async function getQuestions (Ques, ratingFloor, ratingCeiling, subject, units) {
     const gotQ = Ques.find({subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
     var tempQ = await gotQ.exec();
     for(i = 0; i < tempQ.length; i++){
-        const found = units.some(r=> tempQ[i].units.includes(r));
+        const found = units.some(r => tempQ[i].units.includes(r));
         if(!found){
             tempQ.splice(i, 1);
             i--;
@@ -35,8 +35,8 @@ function setRating (subject, newRating, req) {
 
 function updateAll (req, question, correct) {
     updateCounters(req, question, correct);
-    updateTracker(req, question, correct);
-    updateLastAnswered(req, question, correct);
+    updateTracker(req, question);
+    updateLastAnswered(req, question);
 }
 function updateCounters (req, question, correct) {
     if (correct) {
@@ -56,7 +56,7 @@ function updateCounters (req, question, correct) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
-function updateTracker (req, question, correct) {
+function updateTracker (req, question) {
     // update rating tracker
     var tracker;
     if(req.user.stats.ratingTracker === undefined) {
@@ -75,26 +75,123 @@ function updateTracker (req, question, correct) {
         req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
     }
     req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
-function updateLastAnswered (req, question, correct) {
+function updateLastAnswered (req, question) {
     // updated "last answered" field with question ID
     req.user.stats.lastAnswered = question._id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+
+// update "to answer" queue field in user db
+function updateQuestionQueue (req, subject, id) {
+    req.user.stats.toAnswer[subject.toLowerCase()] = id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+function clearQuestionQueue (req, subject) {
+    req.user.stats.toAnswer[subject.toLowerCase()] = "";
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+
+// things to update when skipping question
+async function skipQuestionUpdates(Ques, req, subject, id) {
+    
+    // deduct 8 rating for skipping
+    var originalRating = getRating(subject, req);
+    var deduction = originalRating > 8 ? originalRating-8 : 0;
+    setRating(subject, deduction, req);
+
+    // update rating tracker
+    let q = await getQuestion(Ques, id);
+    updateTracker(req, q);
+
+    // add +1 wrong for question and give question one rating
+    q.rating += 1;
+    q.stats.fail += 1;
+    db.collection("questions").findOneAndUpdate({ _id: q._id }, { $set: { stats: q.stats, rating: q.rating } });
 }
 
 // set question rating
-function setQRating (antsy, newQRate){
+function setQRating (antsy, newQRate) {
     antsy.rating = newQRate;
     db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
 }
 
 // generate a leaderboard for a certain subject; count is the number of people on board
-function generateLeaderboard (User, subject, count) {
-    var query = { rating: { physics: {}, biology: {}, chemistry: {}}};
-    query.rating[subject] = { $gte: 500 };
-    User.find(query).lean().exec(function(err, arr) {
-        console.log(arr);
-    });
-    //var leaderboard = User.find( { rating: { $exists: true}} ).sort({points : -1}).limit(count).toArray();
+async function generateLeaderboard (User, count) {
+
+    // NOTE: change the $gte to a higher number once we get more users
+    let physics = await User.find({ "rating.physics": { $gte: 500 } }).sort({ "rating.physics": -1 }).limit(count).exec();
+    let chem = await User.find({ "rating.chemistry": { $gte: 500 } }).sort({ "rating.chemistry": -1 }).limit(count).exec();
+    let bio = await User.find({ "rating.biology": { $gte: 500 } }).sort({ "rating.biology": -1 }).limit(count).exec();
+
+    return { physics, chem, bio };
+    
 }
 
-module.exports = { getQuestion: getQuestion, getQuestions: getQuestions, getRating: getRating, setRating: setRating, setQRating: setQRating, updateAll: updateAll, generateLeaderboard: generateLeaderboard};
+async function getDailyQuestion(Daily, Ques) {
+
+    // attempt to get daily object
+    const date = await new Date().toISOString().split('T')[0];
+    let question = await Daily.findOne({ date }).exec();
+
+    if(question) {
+
+        // if daily object exists
+        let content = await Ques.findById(question.question).exec();
+        return content;
+    } else {
+
+        // if daily object does not exist, create a new one
+        const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
+        const selection = await questions[Math.floor(Math.random() * questions.length)];
+
+        let question = await new Daily({
+            question: selection._id
+        })
+        await question.save();
+
+        return selection;
+    }
+}
+
+async function getSiteData(User, Ques) {
+
+    let userCount = await User.estimatedDocumentCount({});
+    let questionCount = await Ques.estimatedDocumentCount({});
+    
+    let tagCounter = () => {
+        let { tags } = require('../constants/tags');
+        let counter = 0;
+        Object.entries(tags).forEach((subjEntry) => {
+            Object.entries(subjEntry[1]).forEach((typeEntry) => {
+                Object.entries(typeEntry[1]).forEach((tagEntry) => {
+                    counter += tagEntry.length;
+                })
+            });
+        });
+        return counter;
+    }
+
+    let tagCount = await tagCounter();
+    let proficientCount = await User.countDocuments({
+        $or: [
+            { 'rating.physics': { $gte: 2500 } },
+            { 'rating.chemistry': { $gte: 2500 } },
+            { 'rating.biology': { $gte: 2500 } }
+        ]
+    });
+
+    let siteData = {
+        userCount,
+        questionCount,
+        tagCount,
+        proficientCount
+    }
+
+    return siteData;
+}
+
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue,
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData };
+

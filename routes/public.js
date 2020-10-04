@@ -1,28 +1,30 @@
 // MODULE IMPORTS
 const passport = require('passport');
+const { verify } = require('hcaptcha');
+var Filter = require('bad-words');
+
+filter = new Filter();
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
 const { genPassword, validPassword } = require('../utils/functions/password');
+const { getSiteData } = require('../utils/functions/database');
 
 const VIEWS = "../views/"
+
+// hCaptcha SETUP
+const hcaptchaSecret = process.env.HCAPTCHA_SECRET || '0x0000000000000000000000000000000000000000';
+const hcaptchaToken  = process.env.HCAPTCHA_TOKEN  || '10000000-ffff-ffff-ffff-000000000001';
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
 
     // `username` is email
     // `ign` is username
-    app.get('/', (req, res) => {
+    app.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
-            //var userCount = 0;
-            //var questionCount = 0;
-            mongo.User.estimatedDocumentCount({}, function(err, result) {
-                var userCount = result;
-                mongo.Ques.estimatedDocumentCount({}, function(err, result) {
-                    var questionCount = result;
-                    res.render(VIEWS + 'public/index.ejs', { userCount: userCount, questionCount: questionCount });
-                });
-            });
+            let siteData = await getSiteData(mongo.User, mongo.Ques);
+            res.render(VIEWS + 'public/index.ejs', { siteStats: siteData });
         }
         else {
             res.redirect('/homepage');
@@ -31,7 +33,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signin', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(VIEWS + 'public/signin.ejs');
+            res.render(VIEWS + 'public/signin.ejs', { hcaptchaToken: hcaptchaToken, pageName: "Sign-in to Mutorials" });
         }
         else {
             res.redirect('/homepage');
@@ -40,7 +42,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signup', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(VIEWS + 'public/signup.ejs');
+            res.render(VIEWS + 'public/signup.ejs', { hcaptchaToken: hcaptchaToken, pageName: "Sign-up to Mutorials" });
         }
         else {
             res.redirect('/homepage');
@@ -48,7 +50,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/latexCompiler', (req, res) => {
-        res.render(VIEWS + 'public/latexcompiler.ejs');
+        res.render(VIEWS + 'public/latexcompiler.ejs', { pageName: "LaTeX Compiler" });
     });
 
     app.get('/forgotPassword', (req, res) => {
@@ -56,12 +58,16 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You\'ll need to change your password here.');
             res.redirect('/settings');
         } else {
-            res.render(VIEWS + 'public/forgotPassword.ejs');
+            res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
         }
     });
 
     app.get('/whoWeAre', (req, res)  => {
-        res.render(VIEWS + 'public/whoWeAre.ejs');
+        res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials" });
+    });
+
+    app.get('/termsOfService', (req, res) => {
+        res.render(VIEWS + 'public/termsOfService.ejs', { pageName: "Mutorials TOS" });
     });
 
     // PUBLIC POST
@@ -70,8 +76,20 @@ module.exports = (app, mongo) => {
         req.body.username = req.body.username.toLowerCase();
         req.body.ign = req.body.ign.toLowerCase();
         var registerInputProblems1 = false;
+
+        console.log('hcaptcha: ' + Boolean(req.body['h-captcha-response']));
+        verify(hcaptchaSecret, req.body['h-captcha-response']).then((data) => {
+            if (!Boolean(req.body['h-captcha-response'])) {
+                req.flash('errorFlash', 'Invalid captcha.');
+                registerInputProblems1 = true;
+            }
+        });
         if (req.body.ign.length < 1) {
             req.flash('errorFlash', 'Please enter a username.');
+            registerInputProblems1 = true;
+        }
+        if (req.body.ign != filter.clean(req.body.ign)) {
+            req.flash('errorFlash', 'Please don\'t use bad words :)');
             registerInputProblems1 = true;
         }
         if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
@@ -83,11 +101,23 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'The email you entered is not valid.');
             registerInputProblems1 = true;
         }
-
+        if (!req.body.agreeTOS) {
+            req.flash('errorFlash', 'You must agree to the Terms of Service and Privacy Policy to register an account with us.');
+            registerInputProblems1 = true;
+        }
+        if (!req.body.agreeAge) {
+            req.flash('errorFlash', 'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.');
+            registerInputProblems1 = true;
+        }
+        if (!(/^\d+$/.test(req.body.age))) {
+            req.flash('errorFlash', 'Please enter a valid age!');
+            registerInputProblems1 = true;
+        }
         if (registerInputProblems1) {
             res.redirect('/signup');
             return; // to prevent ERRHTTPHEADERSSENT
         }
+        
 
         const saltHash = genPassword(req.body.password);
 
@@ -101,7 +131,7 @@ module.exports = (app, mongo) => {
             profile: {
                 name: '',
                 location: 'Earth',
-                age: '',
+                age: req.body.age,
                 bio: ''
             },
             // if emailConfirmCode == 0, then email is confirmed
@@ -134,11 +164,10 @@ module.exports = (app, mongo) => {
                 }
             } else {
                 console.log('new one');
-                newUser.save()
-                    .then((user) => {
-                        //passport.authenticate('local', {failureRedirect: '/signin', successRedirect: '/train'});
-                        console.log(user);
-                    });
+                newUser.save().then((user) => {
+                    //passport.authenticate('local', {failureRedirect: '/signin', successRedirect: '/train'});
+                    console.log(user);
+                });
                 req.flash('successFlash', 'We successfully signed you up!');
                 var confirmCode;
                 require('crypto').randomBytes(6, function (ex, buf) {
@@ -150,11 +179,13 @@ module.exports = (app, mongo) => {
             }
             res.redirect('/signin');
         });
+        
     });
+
     app.post('/login', passport.authenticate('local', {
         failureRedirect: '/signin',
         successRedirect: '/homepage',
-        failureFlash: 'Invalid username or password.',
+        failureFlash: 'Invalid username or password (or invalid captcha).',
         successFlash: 'Welcome!'
     }),
         (req, res, next) => {
