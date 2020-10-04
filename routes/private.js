@@ -231,16 +231,20 @@ module.exports = (app, mongo) => {
             // change account settings
 
             if (req.body.ign && req.body.ign != req.user.ign) {
-                mongo.User.countDocuments({ ign: req.body.ign }, function (err, count) {
-                    if (count > 0) {
-                        console.log('username exists');
-                        req.flash('errorFlash', 'Sorry, this username already exists.');
-                    } else {
-                        console.log('username does not exist');
-                        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { ign: req.body.ign } });
-                        req.flash('successFlash', 'We successfully changed your username.');
-                    }
-                });
+                if (!(/[\w\-\.\~]+/.test(req.body.ign))) {
+                    req.flash('errorFlash', 'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.');
+                } else {
+                    mongo.User.countDocuments({ ign: req.body.ign }, function (err, count) {
+                        if (count > 0) {
+                            console.log('username exists');
+                            req.flash('errorFlash', 'Sorry, this username already exists.');
+                        } else {
+                            console.log('username does not exist');
+                            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { ign: req.body.ign } });
+                            req.flash('successFlash', 'We successfully changed your username.');
+                        }
+                    });
+                }
             } else {
                 console.log('Empty username or no change');
             }
