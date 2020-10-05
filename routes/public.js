@@ -92,6 +92,7 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Please enter a username.');
             registerInputProblems1 = true;
         }
+
         if (!(/^[\w\-\.\~]+$/.test(req.body.ign))) {
             req.flash('errorFlash', 'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.');
             registerInputProblems1 = true;
@@ -144,6 +145,7 @@ module.exports = (app, mongo) => {
             },
             // if emailConfirmCode == 0, then email is confirmed
             stats: {
+                experience: 0,
                 correct: 0,
                 wrong: 0,
                 collectedTags: []
@@ -206,18 +208,20 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You\'ll need to change your password here.');
             res.redirect('/settings')
         } else {
+            app.locals.forgotPassUser = req.body.username;
             if (!req.body.enteredCode) {
-                mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
+                mongo.User.countDocuments({ username: req.body.username }, (err, count) => {
                     if (count > 0) {
                         req.flash('successFlash', 'Check your email for the code.');
                         var confirmCode;
-                        require('crypto').randomBytes(6, function (ex, buf) {
+                        require('crypto').randomBytes(6, (ex, buf) => {
                             confirmCode = buf.toString('hex');
                             mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
+                            debugger;
                             emailValidation.emailCodeSend(req.body.username, confirmCode);
                         });
-                        req.flash('forgotPassUser', req.body.username);
                         res.redirect('/forgotPassword');
+                        return;
                     } else {
                         req.flash('errorFlash', 'That email isn\'t registered with us.');
                         res.redirect('/signin');
@@ -237,17 +241,14 @@ module.exports = (app, mongo) => {
                                         res.redirect('/signin');
                                     } else {
                                         req.flash('errorFlash', 'The password doesn\'t fit the requirements.');
-                                        req.flash('forgotPassUser', req.body.username);
                                         res.redirect('/forgotPassword');
                                     }
                                 } else {
                                     req.flash('errorFlash', 'The passwords don\'t match. Please try again.');
-                                    req.flash('forgotPassUser', req.body.username);
                                     res.redirect('/forgotPassword');
                                 }
                             } else {
                                 req.flash('errorFlash', 'The code is wrong. Please try again.');
-                                req.flash('forgotPassUser', req.body.username);
                                 res.redirect('/forgotPassword');
                             }
                         } else {
@@ -255,8 +256,7 @@ module.exports = (app, mongo) => {
                             res.redirect('/signin');
                         }
                     } else {
-                        req.flash('errorFlash', 'The email is incorrect, please try again');
-                        req.flash('forgotPassUser', req.body.username);
+                        req.flash('errorFlash', 'The email is incorrect, please try again.');
                         res.redirect('/forgotPassword');
                     }
                 });

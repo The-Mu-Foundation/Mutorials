@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
     service: 'Mailgun',
     auth: {
         user: 'email_confirmation@noreply.mutorials.org',
-        pass: '20b8d86294b492e6a78ac0043dd03df4-a83a87a9-c636447c'
+        pass: process.env.MAILGUN_CREDENTIALS
     }
 });
 

@@ -1,5 +1,5 @@
 // FUNCTION IMPORTS
-const { calculateRatings, ratingCeilingFloor } = require('../utils/functions/ratings');
+const { calculateRatings, ratingCeilingFloor, calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { presetUnitOptions } = require('../utils/constants/presets');
 const { tags } = require('../utils/constants/tags');
 const { referenceSheet } = require('../utils/constants/referencesheet');
@@ -8,7 +8,7 @@ const { adminList, contributorList } = require('../utils/constants/sitesettings'
 const { arraysEqual } = require('../utils/functions/general');
 const { genPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue,
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
 
 
@@ -16,9 +16,8 @@ const VIEWS = __dirname + '/../views/'
 
 module.exports = (app, mongo) => {
     app.post('/private/initialRating', (req, res, next) => {
-        //initial ratings set proficiency
+        // initial ratings set proficiency
 
-        //req.params.level, req.params.subject
         if (req.isAuthenticated()) {
             req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
             mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
@@ -66,10 +65,9 @@ module.exports = (app, mongo) => {
     app.post('/train/checkAnswer', (req, res, next) => {
         if (req.isAuthenticated()) {
 
-            // the page keeps loading if the answer is left blank; this doesn't do any harm per se, but its a bug that needs to be fixed
             if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
                 var isRight = false;
-                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                     // clear pending question
                     clearQuestionQueue(req, antsy.subject[0]);
@@ -93,15 +91,17 @@ module.exports = (app, mongo) => {
 
                         // update tracker
                         updateTracker(req, antsy);
+                        addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
+                    let experienceStats = await calculateLevel(req.user.stats.experience);
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
                 var isRight = false;
-                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                     // clear pending question
                     clearQuestionQueue(req, antsy.subject[0]);
@@ -123,15 +123,17 @@ module.exports = (app, mongo) => {
 
                         // update tracker
                         updateTracker(req, antsy);
+                        addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
+                    let experienceStats = await calculateLevel(req.user.stats.experience);
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
             }
             else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
                 var isRight = false;
-                const antsy = getQuestion(mongo.Ques, req.body.id).then(antsy => {
+                const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                     // clear pending question
                     clearQuestionQueue(req, antsy.subject[0]);
@@ -156,14 +158,15 @@ module.exports = (app, mongo) => {
 
                         // update tracker
                         updateTracker(req, antsy);
+                        addExperience(req, Math.ceil(antsy.rating/20));
                     }
                     // render answer page
+                    let experienceStats = await calculateLevel(req.user.stats.experience);
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, pageName: "Answer Explanation" });
+                        newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
             }
-        }
-        else {
+        } else {
             res.redirect('/');
         }
     });
@@ -197,11 +200,13 @@ module.exports = (app, mongo) => {
             if (!(/^\d+$/.test(req.body.age))) {
                 req.flash('errorFlash', 'Please enter a valid age!');
             }
+
             if (req.body.age < 1 || req.body.age > 150) {
                 req.flash('errorFlash', 'You\'ve got to be at least 1 and younger than 150 to use Mutorials ;)');
             } else {
                 req.user.profile.age = req.body.age;
             }
+
             req.user.preferences.dark_mode = !!req.body.darkMode;
             if (req.user.profile.age > 13) {
                 if (req.body.name == filter.clean(req.body.name)) {
@@ -250,6 +255,7 @@ module.exports = (app, mongo) => {
             // change account settings
 
             if (req.body.ign && req.body.ign != req.user.ign) {
+
                 if (!(/^[\w\-\.\~]+$/.test(req.body.ign))) {
                     req.flash('errorFlash', 'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.');
                 } else if (req.body.ign.length > 30) {
@@ -327,7 +333,8 @@ module.exports = (app, mongo) => {
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
             } else {
                 let siteData = await getSiteData(mongo.User, mongo.Ques);
-                res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData });
+                let experienceStats = await calculateLevel(req.user.stats.experience);
+                res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, experienceStats });
             }
         }
         else {
@@ -358,8 +365,9 @@ module.exports = (app, mongo) => {
 
     app.get('/profile/:username', (req, res) => {
         if (req.isAuthenticated()) {
-            mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
-                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile" });
+            mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
+                let experienceStats = await calculateLevel(obj.stats.experience);
+                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
             });
         }
         else {
@@ -541,10 +549,13 @@ module.exports = (app, mongo) => {
                 q = await getQuestion(mongo.Ques, req.user.stats.toAnswer[req.params.subject.toLowerCase()]);
             }
 
+            // get experience stats
+            let experienceStats = await calculateLevel(req.user.stats.experience);
+
             // Test if they have a question pending to answer which is valid for their units selected
             if(q && units.some(r => q.units.includes(r))) {
 
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
 
             } else {
 
@@ -575,7 +586,7 @@ module.exports = (app, mongo) => {
                     updateQuestionQueue(req, req.params.subject, curQ._id);
 
                     // push to frontend
-                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, pageName: "Classic Trainer" });
+                    res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
                 });
 
             }
