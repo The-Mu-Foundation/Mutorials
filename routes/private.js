@@ -374,11 +374,15 @@ module.exports = (app, mongo) => {
     app.get('/profile/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
-                let experienceStats = await calculateLevel(obj.stats.experience);
-                res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
+                if (obj) {
+                    let experienceStats = await calculateLevel(obj.stats.experience);
+                    res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
+                } else {
+                    req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
+                    res.redirect('/');
+                }
             });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -478,7 +482,12 @@ module.exports = (app, mongo) => {
     app.get('/stats/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
-                res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Stats" });
+                if (obj) {
+                    res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Stats" });
+                } else {
+                    req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
+                    res.redirect('/');
+                }
             });
         }
         else {
