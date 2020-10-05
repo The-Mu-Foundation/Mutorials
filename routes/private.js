@@ -6,6 +6,8 @@ const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual } = require('../utils/functions/general');
+const { genPassword } = require('../utils/functions/password');
+const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
 
@@ -198,25 +200,41 @@ module.exports = (app, mongo) => {
             if (!(/^\d+$/.test(req.body.age))) {
                 req.flash('errorFlash', 'Please enter a valid age!');
             }
-            req.user.profile.age = req.body.age;
 
-            console.log(!!req.body.darkMode);
+            if (req.body.age < 1 || req.body.age > 150) {
+                req.flash('errorFlash', 'You\'ve got to be at least 1 and younger than 150 to use Mutorials ;)');
+            } else {
+                req.user.profile.age = req.body.age;
+            }
+
             req.user.preferences.dark_mode = !!req.body.darkMode;
             if (req.user.profile.age > 13) {
                 if (req.body.name == filter.clean(req.body.name)) {
-                    req.user.profile.name = req.body.name;
+                    if (req.body.name.length <= 50) {
+                        req.user.profile.name = req.body.name;
+                    } else {
+                        req.flash('errorFlash', 'Please keep your name under 50 characters long.');
+                    }
                 } else {
-                    req.flash('Please don\'t use bad words :)');
+                    req.flash('errorFlash', 'Keep it appropriate.');
                 }
-                if (req.body.bio == filter.clean(req.body.name)) {
-                    req.user.profile.bio = req.body.bio;
+                if (req.body.bio == filter.clean(req.body.bio)) {
+                    if (req.body.bio.length <= 150) {
+                        req.user.profile.bio = req.body.bio;
+                    } else {
+                        req.flash('errorFlash', 'Please keep your bio under 150 characters long.');
+                    }
                 } else {
-                    req.flash('Please don\'t use bad words :)');
+                    req.flash('errorFlash', 'Keep it appropriate.');
                 }
                 if (req.body.location == filter.clean(req.body.location)) {
-                    req.user.profile.location = req.body.location;
+                    if (req.body.location.length <= 50) {
+                        req.user.profile.location = req.body.location;
+                    } else {
+                        req.flash('errorFlash', 'Please keep your location under 50 characters long.');
+                    }
                 } else {
-                    req.flash('Please don\'t use bad words :)');
+                    req.flash('errorFlash', 'Keep it appropriate.');
                 }
                 console.log('Profile has been updated');
             } else {
@@ -237,8 +255,11 @@ module.exports = (app, mongo) => {
             // change account settings
 
             if (req.body.ign && req.body.ign != req.user.ign) {
-                if (!(/[\w\-\.\~]+/.test(req.body.ign))) {
+
+                if (!(/^[\w\-\.\~]+$/.test(req.body.ign))) {
                     req.flash('errorFlash', 'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.');
+                } else if (req.body.ign.length > 30) {
+                    req.flash('errorFlash', 'Please keep your username under 30 characters long.');
                 } else {
                     mongo.User.countDocuments({ ign: req.body.ign }, function (err, count) {
                         if (count > 0) {
@@ -256,22 +277,26 @@ module.exports = (app, mongo) => {
             }
 
             if(req.body.username && req.body.username != req.user.username) {
-                mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
-                    if (count > 0) {
-                        console.log('email exists'); // flash
-                        req.flash('errorFlash', 'We already have an account with that email. Try signing in with that one.');
-                    } else {
-                        console.log('email does not exist');
-                        var confirmCode;
-                        require('crypto').randomBytes(6, function (ex, buf) {
-                            confirmCode = buf.toString('hex');
-                            mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
-                        });
-                        req.flash('successFlash', 'You need to confirm your email. Please check your email to confirm it.');
-                        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
-                        console.log('email updated');
-                    }
-                });
+                if (!emailValidation.regexCheck(req.body.username)) {
+                    req.flash('errorFlash', 'The email you entered is not valid.');
+                } else {
+                    mongo.User.countDocuments({ username: req.body.username }, function (err, count) {
+                        if (count > 0) {
+                            console.log('email exists');
+                            req.flash('errorFlash', 'We already have an account with that email. Try signing in with that one.');
+                        } else {
+                            console.log('email does not exist');
+                            var confirmCode;
+                            require('crypto').randomBytes(6, function (ex, buf) {
+                                confirmCode = buf.toString('hex');
+                                mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
+                            });
+                            req.flash('successFlash', 'You need to confirm your email. Please check your email to confirm it.');
+                            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { username: req.body.username } });
+                            console.log('email updated');
+                        }
+                    });
+                }
             } else {
                 console.log('Empty email or no change');
             }
@@ -280,14 +305,14 @@ module.exports = (app, mongo) => {
 
             if(req.body.newpw) {
 
-                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
+                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw.length >= 7) {
                     if (req.body.newpw == req.body.confirmnewpw) {
                         const newPass = genPassword(req.body.newpw);
                         req.user.hash = newPass.hash;
                         req.user.salt = newPass.salt;
                         mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
                     } else {
-                        req.flash('errorFlash', 'passwords don\'t match');
+                        req.flash('errorFlash', 'Passwords don\'t match.');
                     }
                 } else {
                     req.flash('errorFlash', 'Password does not meet requirments.');
