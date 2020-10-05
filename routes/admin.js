@@ -60,6 +60,7 @@ module.exports = (app, mongo) => {
             //collection.insertOne({})
             newQ.save();
         } else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
             res.redirect('/');
         }
     });
@@ -72,6 +73,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary, pageName: "ADMIN Add Question" });
         }
         else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
             res.redirect('/');
         }
     });
@@ -81,6 +83,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'admin/train/addQuestionSuccess.ejs', { pageName: "ADMIN AddQ Success" });
         }
         else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
             res.redirect('/');
         }
     });
@@ -90,6 +93,7 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'admin/train/addQuestionFailure.ejs', { pageName: "ADMIN AddQ Fail" });
         }
         else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
             res.redirect('/');
         }
     });
