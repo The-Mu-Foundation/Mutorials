@@ -8,21 +8,21 @@
     
         $(document).ready(function() {
     
-            console.log("hi1");
-            $("#experience-stats").hide(0);
-            $("#experience-bar").mouseenter(function() {
-                $("#experience-stats").show(100);
+            $("#experience-indicator").fadeTo(0, 0.7);
+            $("#experience-bar").on({
+                mouseenter: function() {
+                    $("#experience-indicator").fadeTo(200, 1);
+                },
+                mouseleave: function() {
+                    $("#experience-indicator").fadeTo(200, 0.7);
+                }
             });
-            $("#experience-bar").mouseleave(function() {
-                $("#experience-stats").hide(100);
-            });
-    
         });
-        
+            
     </script>
     
     <div class="progress" style="height: 20px;" id="experience-bar">
-        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: <%= Math.round(100*experience.remainder/experience.totalToNext) %>%"></div>
+        <div id="experience-indicator" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: <%= Math.round(100*experience.remainder/experience.totalToNext) %>%"></div>
     </div>
     <p id="experience-stats" class="text-center"><strong>Level <%= experience.level %></strong> (<%= experience.remainder %>/<%= experience.totalToNext %> XP to Level <%= experience.level+1 %>)</p>
     
