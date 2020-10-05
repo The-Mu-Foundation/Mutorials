@@ -1,0 +1,25 @@
+<%# Template for a bar with stats about the website %>
+
+<% try { %>
+    <% let stats = siteStats; %>
+    <div class="row">
+        <div class="col-3">
+            <h1 class="text-center display-3"><span class="badge badge-pill badge-primary"><%= stats.userCount %></span></h1>
+            <h5 class="text-center">Users Registered</h5>
+        </div>
+        <div class="col-3">
+            <h1 class="text-center display-3"><span class="badge badge-pill badge-primary"><%= stats.questionCount %></span></h1>
+            <h5 class="text-center">Questions in Database</h5>
+        </div>
+        <div class="col-3">
+            <h1 class="text-center display-3"><span class="badge badge-pill badge-primary"><%= stats.tagCount %></span></h1>
+            <h5 class="text-center">Question Tags</h5>
+        </div>
+        <div class="col-3">
+            <h1 class="text-center display-3"><span class="badge badge-pill badge-primary"><%= stats.proficientCount %></span></h1>
+            <h5 class="text-center">Users 2500+</h5>
+        </div>
+    </div>
+<% } catch(err) { %>
+    <p class="text-center"><font color="red">[Site component can not be displayed due to an internal error]</font></p>
+<% } %>

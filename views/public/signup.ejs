@@ -8,7 +8,6 @@
 <script>
 
     $(document).ready(function () {
-
         $("#password-req").hide();
         $("#signupPassword").focus(function() {
             $("#password-req").show(100);
@@ -16,6 +15,16 @@
         $("#signupPassword").blur(function() {
             window.setTimeout(function() {
                 $("#password-req").hide(100);
+            }, 1000);
+        });
+
+        $("#username-characters").hide();
+        $("#ign").focus(function() {
+            $("#username-characters").show(100);
+        });
+        $("#ign").blur(function() {
+            window.setTimeout(function() {
+                $("#username-characters").hide(100);
             }, 1000);
         });
     });
@@ -31,6 +40,7 @@
 
         <div class="form-group">
             <input type="text" class="form-control" id="ign" placeholder="Username" name="ign">
+            <p class="container mb-4 mt-2" id="username-characters">You may use only <strong>letters</strong>, <strong>numbers</strong>, underscore (_), hyphen(-), period(.), and tilde(~) in your username.</p>
         </div>
         <div class="form-group">
             <input type="email" class="form-control" id="signupEmail" placeholder="Email Address" name="username">

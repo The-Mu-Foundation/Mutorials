@@ -123,21 +123,21 @@
             data: {
                 labels: ratingData["Labels"],
                 datasets: [{
-                    label: "Physics Rating History",
+                    label: "Physics",
                     data: ratingData["Physics"],
                     backgroundColor: "rgba(100, 200, 230, 1)",
                     borderColor: "rgba(100, 200, 230, 1)",
                     fill: false,
                     borderWidth: 5
                 }, {
-                    label: "Chemistry Rating History",
+                    label: "Chemistry",
                     data: ratingData["Chemistry"],
                     backgroundColor: "rgba(245, 170, 40, 1)",
                     borderColor: "rgba(245, 170, 40, 1)",
                     fill: false,
                     borderWidth: 5
                 }, {
-                    label: "Biology Rating History",
+                    label: "Biology",
                     data: ratingData["Biology"],
                     backgroundColor: "rgba(40, 240, 110, 1)",
                     borderColor: "rgba(40, 240, 110, 1)",
@@ -151,7 +151,8 @@
                     text: "Rating History"
                 },
                 legend: {
-                    display: false
+                    display: true,
+                    position: "bottom"
                 },
                 scales: {
                     yAxes: [{
@@ -175,9 +176,13 @@
 
 </script>
 
-<h3 class="my-5 container display-3"><strong><%= user.ign %></strong></h3>
+<h3 class="mt-5 mb-3 container display-3"><strong><%= user.ign %></strong></h3>
 
-<div class="mt-5 container">
+<div class="container">
+    <%- include("../partials/components/experienceBar") -%>
+</div>
+
+<div class="mt-3 container">
 
 	<div class="row">
 	

@@ -37,6 +37,7 @@ function updateAll (req, question, correct) {
     updateCounters(req, question, correct);
     updateTracker(req, question);
     updateLastAnswered(req, question);
+    addExperience(req, correct ? question.rating : Math.ceil(question.rating/2));
 }
 function updateCounters (req, question, correct) {
     if (correct) {
@@ -80,6 +81,15 @@ function updateTracker (req, question) {
 function updateLastAnswered (req, question) {
     // updated "last answered" field with question ID
     req.user.stats.lastAnswered = question._id;
+    db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
+}
+function addExperience(req, amount) {
+    // add experience points to user
+    if(req.user.stats.experience) {
+        req.user.stats.experience += amount;
+    } else {
+        req.user.stats.experience = amount;
+    }
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 
@@ -155,6 +165,43 @@ async function getDailyQuestion(Daily, Ques) {
     }
 }
 
-module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion };
+async function getSiteData(User, Ques) {
+
+    let userCount = await User.estimatedDocumentCount({});
+    let questionCount = await Ques.estimatedDocumentCount({});
+    
+    let tagCounter = () => {
+        let { tags } = require('../constants/tags');
+        let counter = 0;
+        Object.entries(tags).forEach((subjEntry) => {
+            Object.entries(subjEntry[1]).forEach((typeEntry) => {
+                Object.entries(typeEntry[1]).forEach((tagEntry) => {
+                    counter += 1;
+                })
+            });
+        });
+        return counter;
+    }
+
+    let tagCount = await tagCounter();
+    let proficientCount = await User.countDocuments({
+        $or: [
+            { 'rating.physics': { $gte: 2500 } },
+            { 'rating.chemistry': { $gte: 2500 } },
+            { 'rating.biology': { $gte: 2500 } }
+        ]
+    });
+
+    let siteData = {
+        userCount,
+        questionCount,
+        tagCount,
+        proficientCount
+    }
+
+    return siteData;
+}
+
+module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData };
 
