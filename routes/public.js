@@ -8,7 +8,7 @@ filter = new Filter();
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
 const { genPassword, validPassword } = require('../utils/functions/password');
-const { getSiteData } = require('../utils/functions/database');
+const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 
 const VIEWS = "../views/"
 
@@ -24,7 +24,9 @@ module.exports = (app, mongo) => {
     app.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
             let siteData = await getSiteData(mongo.User, mongo.Ques);
-            res.render(VIEWS + 'public/index.ejs', { siteStats: siteData });
+            const date = await new Date().toISOString().split('T')[0];
+            const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+            res.render(VIEWS + 'public/index.ejs', { siteStats: siteData, question });
         }
         else {
             res.redirect('/homepage');

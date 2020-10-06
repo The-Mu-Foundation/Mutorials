@@ -200,7 +200,25 @@
 
 
                 <div class="mt-5" id="answer">
-                    <h5>The correct answer is: <%= question.answer[0] %></h5>
+
+                    <% if(question.type == "mc") { %>
+
+                        <h5>The correct answer is: <%= String.fromCharCode(64+parseInt(question.answer[0])) %></h5>
+                    <% } else if(question.type == "sa") { %>
+    
+                        <% let answerString = ""; %>
+                        <% let index = 1; %>
+                        <% question.answer.forEach((answer) => { %>
+                            <% answerString += answer != question.answer.length ? (String.fromCharCode(64+parseInt(answer)) + ", ") : String.fromCharCode(64+parseInt(answer)); %>
+                            <% index++; %>
+                        <% }) %>
+
+                        <h5>The correct answer is: <%= answerString %></h5>
+                    <% } else if(question.type == "fr") { %>
+
+                        <h5>The correct answer is: <%= question.answer[0] %></h5>
+                    <% } %>
+
                     <h3>Answer Explanation:</h3>
                     <p><%- question.answer_ex %></p>
                 </div>
