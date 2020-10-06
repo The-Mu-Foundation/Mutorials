@@ -7,12 +7,30 @@
 
 <%# Jumbotron and contents inside %>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        var typed_options = {
+            strings: ['free', 'challenging', 'adaptive', 'open-source'],
+            typeSpeed: 40,
+            backSpeed: 40,
+            backDelay: 1500,
+            startDelay: 500,
+            loop: true,
+            preStringTyped: (pos, self) => {
+                $("#typed-a").html((pos > 1) ? "an" : "a");
+            },
+        };
+        var typed = new Typed("#typed-span", typed_options);
+        typed.start();
+    });
+</script>
+
 <div class="container mt-5">
 
     <%- include("../partials/flashes") -%>
 
-    <h1 class="text-center display-2">This is Mutorials</h1>
-    <h5 class="text-center">Mutorials is a free, adaptive science trainer suited to individual needs.<br>We strive to keep students motivated, and to make them academically excellent.</h5>
+    <h2 class="text-center"><strong>Mutorials</strong> is <span id="typed-a">a</span> <em id="typed-span"></em> science trainer.</h2>
+    <h5 class="text-center">We strive to keep students motivated, and to make them academically excellent.</h5>
 </div>
 
 <div class="container mt-5">
@@ -29,7 +47,7 @@
                 <h1 class="text-center">Physics</h1>
             </div>
         </div>
-       
+
     </div>
 
     <div class="my-4 container">
@@ -43,7 +61,7 @@
             <div class="col-8">
                 <img class="d-block w-100 rounded" src="https://f000.backblazeb2.com/file/mutorials/graphics/Carousel_Chem.png" alt="Chemistry">
             </div>
-        </div>      
+        </div>
 
     </div>
 
@@ -72,7 +90,7 @@
     <div class="row">
 
         <div class="col-7">
-            
+
             <%- include("../partials/components/dailySnippet") -%>
         </div>
 
