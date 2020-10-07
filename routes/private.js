@@ -19,8 +19,12 @@ module.exports = (app, mongo) => {
         // initial ratings set proficiency
 
         if (req.isAuthenticated()) {
-            req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
-            mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+            if (req.user.rating[req.body.subject.toLowerCase()] == -1) {
+                req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
+                mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+            } else {
+                req.flash('errorFlash', 'You\'ve already set your proficiency for that subject');
+            }
             res.redirect('/train/' + req.body.subject + '/chooseUnits');
         }
         else {
