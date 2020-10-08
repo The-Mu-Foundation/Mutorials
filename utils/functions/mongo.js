@@ -4,6 +4,7 @@ const InitiateMongoServer = require('../../database/config/db');
 const { userSchema } = require('../../database/models/user');
 const { qSchema } = require('../../database/models/question');
 const { dailySchema } = require('../../database/models/daily');
+const { siteDataSchema } = require('../../database/models/siteData');
 
 // START MONGO SERVER
 InitiateMongoServer();
@@ -13,6 +14,7 @@ const MongoStore = require('connect-mongo')(session);
 const Ques = db.model('Ques', qSchema, 'questions');
 const User = db.model('User', userSchema);
 const Daily = db.model('Daily', dailySchema);
+const SiteData = db.model('SiteData', siteDataSchema);
 
 // SESSION COLLECTION
 const sessionStore = new MongoStore({ mongooseConnection: db, collection: 'sessions' });
@@ -24,6 +26,7 @@ module.exports = {
     Ques: Ques,
     User: User,
     Daily: Daily,
+    SiteData: SiteData,
     sessionStore: sessionStore
 }
 

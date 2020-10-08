@@ -9,7 +9,7 @@ const { arraysEqual } = require('../utils/functions/general');
 const { genPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData } = require('../utils/functions/database');
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/'
@@ -92,6 +92,9 @@ module.exports = (app, mongo) => {
 
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
+
+                        // update site data
+                        incrementSolveCounter(mongo.SiteData, antsy.subject[0].toLowerCase(), isRight);
                     } else {
 
                         // update tracker
@@ -124,6 +127,9 @@ module.exports = (app, mongo) => {
 
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
+                        
+                        // update site data
+                        incrementSolveCounter(mongo.SiteData, antsy.subject[0].toLowerCase(), isRight);
                     } else {
 
                         // update tracker
@@ -159,6 +165,9 @@ module.exports = (app, mongo) => {
 
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
+
+                        // update site data
+                        incrementSolveCounter(mongo.SiteData, antsy.subject[0].toLowerCase(), isRight);
                     } else {
 
                         // update tracker
@@ -341,7 +350,7 @@ module.exports = (app, mongo) => {
             if (adminList.includes(req.user.username)) {
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
             } else {
-                let siteData = await getSiteData(mongo.User, mongo.Ques);
+                let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
                 let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, experienceStats });
             }

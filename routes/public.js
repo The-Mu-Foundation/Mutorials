@@ -23,7 +23,7 @@ module.exports = (app, mongo) => {
     // `ign` is username
     app.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
-            let siteData = await getSiteData(mongo.User, mongo.Ques);
+            let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
             const date = await new Date().toISOString().split('T')[0];
             const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
             res.render(VIEWS + 'public/index.ejs', { siteStats: siteData, question });
