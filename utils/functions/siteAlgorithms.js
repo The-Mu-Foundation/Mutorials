@@ -42,18 +42,18 @@ function calculateLevel(experience) {
     if(!experience) {
         experience = 0;
     }
-    
+
     let total = experience;
     let level = 1;
     let decrement = 1000*Math.pow(level, 1.2);
 
     while(total-decrement >= 0) {
-        
+
         total -= decrement;
         level += 1;
         decrement = 1000*Math.pow(level, 1.2);
     }
-    
+
     return { level, remainder: Math.round(total), totalToNext: Math.round(decrement) };
 }
 

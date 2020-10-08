@@ -65,8 +65,62 @@ module.exports = (app, mongo) => {
         }
     });
 
-
     //ADMIN GET ROUTES
+    app.get('/devbutton', (req, res) => {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
+            req.flash('successFlash', 'success click button');
+            var contributorIDDictionary = {
+                "ANJ": "Joseph",
+                "AWATEO": "Om",
+                "CHENJ": "Jeffrey",
+                "CHENR": "Ray",
+                "CHUNGJ": "Jaewon",
+                "DENGC": "Colin",
+                "DESAII": "Ishaan",
+                "DONNERJ": "Jake",
+                "DWIVEDYA": "Aditi",
+                "GUIE": "Elsa",
+                "KOTHAKOTAG": "Gnapika",
+                "LAMA": "Allison",
+                "LIA": "Anna",
+                "LIH": "Hanting",
+                "LIM": "Michael",
+                "LIS": "Sophia",
+                "MAE": "Erik",
+                "MEHTAK": "Kareena",
+                "ORONAE": "Eli",
+                "PANDEYR": "Rohan",
+                "PARKS": "Sean",
+                "RAIZMANA": "Ariel",
+                "RAOP": "Pranshu",
+                "SHENE": "Ethan",
+                "SONGJ": "Jeffrey",
+                "STEDMANA": "Alex",
+                "SUR": "Richard",
+                "THIRUV": "Ved",
+                "UPADHYAYO": "Ojasw",
+                "WANGW": "William",
+                "WUA": "Allen",
+                "WUL": "Lucas",
+                "WUS": "Sarah",
+                "XIAOW": "Wendy",
+                "YANGC": "Claire",
+                "YANN": "Nina",
+                "YAOS": "Selina",
+                "YOOI": "Ian",
+                "YUA": "Andrew",
+                "ZHANGK": "Kevin",
+                "ZHENGC": "Clarence",
+                "ZHIA": "Alicia"
+            }
+            for (const [key, value] of Object.entries(contributorIDDictionary)) {
+                mongo.db.
+            res.redirect('/homepage');
+        } else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
+            res.redirect('/');
+        }
+    });
 
     app.get('/admin/addquestion', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
