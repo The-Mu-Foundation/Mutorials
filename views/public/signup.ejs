@@ -36,18 +36,20 @@
 <div class="jumbotron container">
     <%- include("../partials/flashes") -%>
 
+    <p class="container mb-3">Already have an account? <a href="/signin">Sign in</a></p>
+
     <form action="/register" method="post">
 
         <div class="form-group">
             <input type="text" class="form-control" id="ign" placeholder="Username" name="ign">
-            <p class="container mb-4 mt-2" id="username-characters">You may use only <strong>letters</strong>, <strong>numbers</strong>, underscore (_), hyphen(-), period(.), and tilde(~) in your username.</p>
+            <p class="container mb-3 mt-1" id="username-characters">You may use only <strong>letters</strong>, <strong>numbers</strong>, underscore (_), hyphen(-), period(.), and tilde(~) in your username.</p>
         </div>
         <div class="form-group">
             <input type="email" class="form-control" id="signupEmail" placeholder="Email Address" name="username">
         </div>
         <div class="form-group">
             <input type="password" class="form-control" id="signupPassword" placeholder="Password" name="password">
-            <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
+            <p class="container mb-3 mt-1" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
         </div>
         <div class="form-group">
             <input type="number" class="form-control" id="age" name="age" placeholder="Age">

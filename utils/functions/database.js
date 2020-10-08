@@ -93,6 +93,16 @@ function addExperience(req, amount) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 
+async function incrementSolveCounter(SiteData, subject, correct) {
+    let data = await SiteData.findOne({ tag: "QUESTIONS" }).exec();
+    let counts = data.data;
+    counts.attempts[subject] += 1;
+    if(correct) {
+        counts.solves[subject] += 1;
+    }
+    db.collection("sitedatas").findOneAndUpdate({ tag: "QUESTIONS" }, { $set: { data: counts } });
+}
+
 // update "to answer" queue field in user db
 function updateQuestionQueue (req, subject, id) {
     req.user.stats.toAnswer[subject.toLowerCase()] = id;
@@ -165,7 +175,7 @@ async function getDailyQuestion(Daily, Ques) {
     }
 }
 
-async function getSiteData(User, Ques) {
+async function getSiteData(User, Ques, SiteData) {
 
     let userCount = await User.estimatedDocumentCount({});
     let questionCount = await Ques.estimatedDocumentCount({});
@@ -185,6 +195,7 @@ async function getSiteData(User, Ques) {
 
     let tagCount = await tagCounter();
     let proficientCount = await User.countDocuments({
+        // any users with at least 1 rating above 2500
         $or: [
             { 'rating.physics': { $gte: 2500 } },
             { 'rating.chemistry': { $gte: 2500 } },
@@ -192,16 +203,22 @@ async function getSiteData(User, Ques) {
         ]
     });
 
+    let totalQuestionData = await SiteData.findOne({ tag: "QUESTIONS" }).exec();
+    let totalSolves = totalQuestionData.data.solves;
+    let totalAttempts = totalQuestionData.data.attempts;
+
     let siteData = {
         userCount,
         questionCount,
         tagCount,
-        proficientCount
+        proficientCount,
+        totalSolves,
+        totalAttempts
     }
 
     return siteData;
 }
 
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter };
 
