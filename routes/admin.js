@@ -4,6 +4,7 @@ const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
 const { getSiteData } = require('../utils/functions/database');
+const { getAdminData } = require('../utils/functions/admin');
 
 const VIEWS = "../views/"
 
@@ -103,7 +104,8 @@ module.exports = (app, mongo) => {
     app.get('/admin/analytics', async (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
             let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
-            res.render(VIEWS + 'admin/analytics.ejs', { siteData, pageName: "ADMIN Analytics" });
+            let adminData = await getAdminData(mongo.User, mongo.Ques, mongo.SiteData);
+            res.render(VIEWS + 'admin/analytics.ejs', { siteData, adminData, pageName: "ADMIN Analytics" });
         }
         else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
