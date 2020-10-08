@@ -3,10 +3,12 @@ const { tags } = require('../utils/constants/tags');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
+const { getSiteData } = require('../utils/functions/database');
 
 const VIEWS = "../views/"
 
 module.exports = (app, mongo) => {
+
     app.post('/admin/addquestion', (req, res, next) => {
         //const questionStore =  new MongoStore({mongooseConnection: mongo.db, collection: 'questions'});
 
@@ -91,6 +93,37 @@ module.exports = (app, mongo) => {
     app.get('/admin/addedFailure', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
             res.render(VIEWS + 'admin/train/addQuestionFailure.ejs', { pageName: "ADMIN AddQ Fail" });
+        }
+        else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/admin/analytics', async (req, res) => {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
+            let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
+            res.render(VIEWS + 'admin/analytics.ejs', { siteData, pageName: "ADMIN Analytics" });
+        }
+        else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/admin/contributorStats', async (req, res) => {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
+            res.render(VIEWS + 'admin/contributorStats.ejs', { siteData, pageName: "ADMIN Contributor Stats" });
+        }
+        else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/admin/editQuestion', async (req, res) => {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
+            res.render(VIEWS + 'admin/train/editQuestion.ejs', { pageName: "ADMIN Edit Question" });
         }
         else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
