@@ -27,7 +27,11 @@
     <h1 class="my-5 container">Sign in to Mutorials!</h1>
 
     <div class="jumbotron container">
+
         <%- include("../partials/flashes") -%>
+
+        <p class="container mb-3">Don't have an account? <a href="/signup">Sign up</a></p>
+
         <form action="/login" method="post">
             <div class="form-group">
                 <input type="text" class="form-control" id="loginEmail" placeholder="Email Address" name="username">
