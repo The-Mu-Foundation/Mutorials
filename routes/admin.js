@@ -68,7 +68,6 @@ module.exports = (app, mongo) => {
     //ADMIN GET ROUTES
     app.get('/devbutton', (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            req.flash('successFlash', 'success click button');
             var contributorIDDictionary = {
                 "ANJ": "Joseph",
                 "AWATEO": "Om",
@@ -113,8 +112,11 @@ module.exports = (app, mongo) => {
                 "ZHENGC": "Clarence",
                 "ZHIA": "Alicia"
             }
-            for (const [key, value] of Object.entries(contributorIDDictionary)) {
-                mongo.db.
+            for (const contributorID in contributorIDDictionary) {
+                console.log(contributorID + '\t' + contributorIDDictionary[contributorID]);
+                mongo.db.collection("questions").updateMany({ "author": contributorIDDictionary[contributorID] }, { $set: { "author": contributorID } });
+            }
+            req.flash('successFlash', 'SUCCESS');
             res.redirect('/homepage');
         } else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
