@@ -3,12 +3,25 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
 
-<h1 class="my-5 container">MUTORIALS ADMIN HOMEPAGE</h1>
+<h1 class="my-5 container text-center">Mutorials Admin Control Center</h1>
+
+<div class="container">
+    <%- include ("../partials/flashes") -%>
+</div>
+
 <div class="jumbotron container">
 
-    <%- include ("../partials/flashes") -%>
-    <h3 class="mb-4">Quick access links:</h3>
+    <h3 class="mb-4">Database control:</h3>
     <a class="btn btn-primary btn-lg btn-block my-2" href="/admin/addQuestion">Add Question</a>
+    <a class="btn btn-primary btn-lg btn-block my-2" href="/admin/editQuestion">Edit Question</a>
+
+</div>
+
+<div class="jumbotron container">
+
+    <h3 class="mb-4">Stat Querying/Fetching:</h3>
+    <a class="btn btn-primary btn-lg btn-block my-2" href="/admin/contributorStats">Contributor Stats</a>
+    <a class="btn btn-primary btn-lg btn-block my-2" href="/admin/analytics">Site Analytics</a>
 
 </div>
 

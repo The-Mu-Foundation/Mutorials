@@ -1,0 +1,77 @@
+<%# Analytics page with more detailed information about the site %>
+<%# ARGUMENTS: siteData - data about the site to display, adminData - specific data for admins %>
+
+<%- include("../partials/header") -%>
+<%- include("../partials/navigationPrivate") -%>
+
+<h1 class="my-5 container display-2 text-center">Mutorials Admin Analytics</h1>
+
+<div class="jumbotron container">
+
+    <div class="container">
+        <h5 class="">User count: <%= siteData.userCount %></h5>
+        <h5 class="">Question count: <%= siteData.questionCount %></h5>
+        <h5 class="">2500+ User count: <%= siteData.proficientCount %></h5>
+    </div>
+
+    <h3 class="mt-4 mb-3 text-center">Subject-wise question data</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Physics</th>
+                <th scope="col">Chemistry</th>
+                <th scope="col">Biology</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Question Count</th>
+                <td><%= adminData.physicsQuestionCount %></td>
+                <td><%= adminData.chemistryQuestionCount %></td>
+                <td><%= adminData.biologyQuestionCount %></td>
+            </tr>
+            <tr>
+                <th scope="row">Average Rating</th>
+                <td><%= adminData.physicsAverageRating %></td>
+                <td><%= adminData.chemistryAverageRating %></td>
+                <td><%= adminData.biologyAverageRating %></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 class="mt-4 mb-3 text-center">Subject-wise total attempts and solves</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Physics</th>
+                <th scope="col">Chemistry</th>
+                <th scope="col">Biology</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Attempts</th>
+                <td><%= siteData.totalAttempts.physics %></td>
+                <td><%= siteData.totalAttempts.chemistry %></td>
+                <td><%= siteData.totalAttempts.biology %></td>
+            </tr>
+            <tr>
+                <th scope="row">Solves</th>
+                <td><%= siteData.totalSolves.physics %></td>
+                <td><%= siteData.totalSolves.chemistry %></td>
+                <td><%= siteData.totalSolves.biology %></td>
+            </tr>
+            <tr>
+                <th scope="row">Passrate</th>
+                <td><%= Math.round(100*siteData.totalSolves.physics/siteData.totalAttempts.physics) %>%</td>
+                <td><%= Math.round(100*siteData.totalSolves.chemistry/siteData.totalAttempts.chemistry) %>%</td>
+                <td><%= Math.round(100*siteData.totalSolves.biology/siteData.totalAttempts.biology) %>%</td>
+            </tr>
+        </tbody>
+      </table>
+
+</div>
+
+<%- include("../partials/footer") -%>

@@ -1,0 +1,86 @@
+<%# Analytics page for contributor stats %>
+<%# ARGUMENTS: siteData - data about the site to display, adminData - specific data for admins %>
+
+<%- include("../partials/header") -%>
+<%- include("../partials/navigationPrivate") -%>
+
+<%# Backend queries %>
+
+<script>
+	$(document).ready(function () {
+
+		// hide no results found
+        $("#no-results").hide(0);
+        $("#success").hide(0);
+
+		$("#submit").click(function () {
+
+			// free response text values
+			let id = $("#MuID").val();
+
+            $.get("/admin/getContributorStats", { id }, (data) => {
+                
+                if(data.status == "Error") {
+
+                    $("#no-results").show(500);
+                    $("#success").hide(100);
+                } else {
+                    
+                    $("#hours").text(data.data.hourSum);
+                    $("#average-rating").text(data.data.ratingAverage);
+                    $("#physics-written").text(data.data.physicsWritten);
+                    $("#chemistry-written").text(data.data.chemistryWritten);
+                    $("#biology-written").text(data.data.biologyWritten);
+
+                    $("#success").text("Showing results for " + id);
+                    
+                    $("#no-results").hide(100);
+                    $("#success").show(500);
+                }
+            });
+		
+		});
+	});
+</script>
+
+<h1 class="my-5 container display-2 text-center">Mutorials Contributor Query</h1>
+
+<div class="jumbotron container">
+
+    <div class="container">
+        <h3>Enter a Mutorials ID to query:</h3>
+        <input class="form-control my-1" type="text" placeholder="MutorialsID" id="MuID" >
+        <input class="btn btn-primary my-1" value="Send Query" type="button" id="submit">
+
+        <div class="my-2 alert alert-success" id="success"></div>
+        <div class="my-2 alert alert-danger" id="no-results">No data was found for this contributor</div>
+    </div>
+    
+    <div class="container mt-3">
+        <h5>Approximate hours: <span id="hours">XXX</span></h5>
+        <h5>Average rating: <span id="average-rating">XXX</span></h5>
+    </div>
+
+    <h3 class="text-center mt-4 mb-3">Question Writing Stats</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Physics</th>
+                <th scope="col">Chemistry</th>
+                <th scope="col">Biology</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Written</th>
+                <td id="physics-written">XXX</td>
+                <td id="chemistry-written">XXX</td>
+                <td id="biology-written">XXX</td>
+            </tr>
+        </tbody>
+      </table>
+
+</div>
+
+<%- include("../partials/footer") -%>

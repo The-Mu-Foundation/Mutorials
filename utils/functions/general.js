@@ -19,4 +19,12 @@ function parseDelimiter(input) {
     return input.split("@");
 }
 
-module.exports = { arraysEqual : arraysEqual, parseDelimiter : parseDelimiter };
+function average(nums) {
+    let sum = 0;
+    nums.forEach((num) => {
+        sum += num;
+    })
+    return sum/nums.length;
+}
+
+module.exports = { arraysEqual , parseDelimiter, average };
