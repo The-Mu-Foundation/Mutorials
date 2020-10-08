@@ -4,7 +4,7 @@ const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
 const { getSiteData } = require('../utils/functions/database');
-const { getAdminData } = require('../utils/functions/admin');
+const { getAdminData, queryContributor } = require('../utils/functions/admin');
 
 const VIEWS = "../views/"
 
@@ -115,7 +115,18 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/contributorStats', async (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(VIEWS + 'admin/contributorStats.ejs', { siteData, pageName: "ADMIN Contributor Stats" });
+            res.render(VIEWS + 'admin/contributorStats.ejs', { pageName: "ADMIN Contributor Stats" });
+        }
+        else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/admin/getContributorStats', async (req, res) => {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
+            let contributor = await queryContributor(req.query.id, mongo.Ques);
+            res.json(contributor);
         }
         else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
