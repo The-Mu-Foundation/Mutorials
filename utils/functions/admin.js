@@ -85,9 +85,9 @@ function calculateHours(subject, rating) {
     if(subject == "Physics") {
         return 0.2*Math.pow(Math.E, 0.0006*rating);
     } else if(subject == "Chemistry") {
-        return 0.3*Math.pow(Math.E, 0.0005*rating);
+        return 0.2*Math.pow(Math.E, 0.0005*rating);
     } else if(subject == "Biology") {
-        return 3.5*Math.pow(Math.E, 0.0003*rating);
+        return 0.2*Math.pow(Math.E, 0.0003*rating);
     }
 }
 
