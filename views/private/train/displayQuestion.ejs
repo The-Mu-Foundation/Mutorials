@@ -108,6 +108,7 @@
 </div>
 
 <div class="jumbotron container mt-3">
+    <%- include("../../partials/flashes") -%>
 
     <% try { %>
 
@@ -153,6 +154,7 @@
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
                         <input type="hidden" name="subject" value="<%= subject %>">
                         <input type="hidden" name="units" value="<%= units %>">
+                        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
                     </form>
                 <% } else if(newQues.type == "sa") { %>
 
@@ -176,6 +178,7 @@
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
                         <input type="hidden" name="subject" value="<%= subject %>">
                         <input type="hidden" name="units" value="<%= units %>">
+                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
                     </form>
                 <% } else if(newQues.type == "fr") { %>
 
@@ -194,6 +197,7 @@
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
                         <input type="hidden" name="subject" value="<%= subject %>">
                         <input type="hidden" name="units" value="<%= units %>">
+                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
                     </form>
                 <% } else { %>
                     <% throw "invalid type"; %>

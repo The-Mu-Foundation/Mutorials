@@ -179,8 +179,12 @@ module.exports = (app, mongo) => {
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
                         newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
+            } else {
+                req.flash('errorFlash', 'Please choose an answer next time... We treated that as a skip (-8 rating).');
+                skipQuestionUpdates(mongo.Ques, req, req.body.subject, req.body.id);
+                clearQuestionQueue(req, req.body.subject);
+                res.redirect(req.body.redirect);
             }
-
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
@@ -191,15 +195,10 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
 
             const { subject, id, redirect } = req.body;
-
-
-            // updates when skipping question
             skipQuestionUpdates(mongo.Ques, req, subject, id);
 
-            // clear pending question
             clearQuestionQueue(req, subject);
 
-            // redirect
             res.redirect(redirect);
 
         }
