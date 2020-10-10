@@ -219,6 +219,17 @@ async function getSiteData(User, Ques, SiteData) {
     return siteData;
 }
 
+// returns 10 most recent announcements
+async function getAnnouncements(SiteData, numberToFetch) {
+    
+    let announcements = await SiteData.findOne({ tag: "ANNOUNCEMENTS" }).exec();
+    let siteAnnouncements = announcements.data.site;
+    
+    let recentAnnouncements = siteAnnouncements.reverse().slice(0, numberToFetch);
+
+    return recentAnnouncements;
+}
+
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements };
 
