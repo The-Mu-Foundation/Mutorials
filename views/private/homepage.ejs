@@ -101,8 +101,19 @@
 
 </div>
 
-<div class="container mb-4">
+<div class="container">
     <%- include("../partials/components/siteStats") -%>
+</div>
+
+<div class="container mb-4">
+    <div class="row">
+        <div class="col-6">
+            <%- include("../partials/components/dailySnippet") -%>
+        </div>
+        <div class="col-6">
+            <%- include("../partials/components/announcementSnippet") -%>
+        </div>
+    </div>
 </div>
 
 <%- include("../partials/footer") -%>

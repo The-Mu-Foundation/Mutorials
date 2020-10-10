@@ -3,7 +3,7 @@ const { tags } = require('../utils/constants/tags');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
-const { getSiteData } = require('../utils/functions/database');
+const { getSiteData, getAnnouncements } = require('../utils/functions/database');
 const { getAdminData, queryContributor } = require('../utils/functions/admin');
 const mongoose = require("mongoose");
 var db = mongoose.connection;
@@ -150,7 +150,8 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/announcements', async (req, res) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
-            res.render(VIEWS + 'admin/announcements.ejs', { pageName: "ADMIN Announcements" });
+            let announcements = await getAnnouncements(mongo.SiteData, 10);
+            res.render(VIEWS + 'admin/announcements.ejs', { announcements, pageName: "ADMIN Announcements" });
         }
         else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');

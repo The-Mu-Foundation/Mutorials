@@ -1,4 +1,5 @@
 <%# Admin page to manage announcements %>
+<%# ARGUMENTS: announcements - an array of the current announcements%>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -72,17 +73,19 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col-1"></th>
+                <th scope="col-1">Date</th>
                 <th scope="col-3">Title</th>
                 <th scope="col-8">Text</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th scope="row">Date</th>
-                <td id="physics-written">XXX</td>
-                <td id="chemistry-written">XXX</td>
-            </tr>
+            <% announcements.forEach((announcement) => { %>
+                <tr>
+                    <th scope="row"><%= announcement.date %></th>
+                    <td><%= announcement.date %></td>
+                    <td><%= announcement.text %></td>
+                </tr>
+            <% }); %>
         </tbody>
       </table>
 
