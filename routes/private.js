@@ -345,6 +345,17 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/announcements', async (req, res) => {
+        if (req.isAuthenticated()) {
+            let announcements = await getAnnouncements(mongo.SiteData, 20);
+            res.render(VIEWS + 'private/announcements.ejs', { announcements, pageName: "Announcements" });
+        }
+        else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.get('/homepage', async (req, res) => {
         if (req.isAuthenticated()) {
             if (adminList.includes(req.user.username)) {
