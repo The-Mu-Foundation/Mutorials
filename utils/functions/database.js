@@ -155,6 +155,10 @@ async function getDailyQuestion(Daily, Ques) {
     const date = await new Date().toISOString().split('T')[0];
     let question = await Daily.findOne({ date }).exec();
 
+    // I CAN'T FIGURE OUT THE BUG, I'M ADDING THESE LOG STATEMENTS AND LOOKING AT THEM LATER IN THE HEROKU LOGS
+    console.log("Datestamp: " + date);
+    console.log("Daily question: " + question.question);
+
     if(question) {
 
         // if daily object exists
