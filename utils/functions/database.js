@@ -157,14 +157,18 @@ async function getDailyQuestion(Daily, Ques) {
 
     // I CAN'T FIGURE OUT THE BUG, I'M ADDING THESE LOG STATEMENTS AND LOOKING AT THEM LATER IN THE HEROKU LOGS
     console.log("Datestamp: " + date);
-    console.log("Daily question: " + question.question);
+    console.log("Daily question: " + (question ? question.question : "Not found - new one will be created"));
 
     if(question) {
+
+        console.log("Inside if-statement, question found");
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
         return content;
     } else {
+
+        console.log("Inside else-statement, question not found");
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
