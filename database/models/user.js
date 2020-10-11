@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema({
     preferences: {
         dark_mode: Boolean
     }
+    question: {
+        answer: Array,
+        answer_ex: Array
+    }
 });
 
 module.exports = { userSchema : userSchema };
