@@ -1,3 +1,0 @@
-
-function generate(question, answer) {
-

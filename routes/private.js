@@ -127,7 +127,7 @@ module.exports = (app, mongo) => {
 
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
-                        
+
                         // update site data
                         incrementSolveCounter(mongo.SiteData, antsy.subject[0].toLowerCase(), isRight);
                     } else {
@@ -628,6 +628,13 @@ module.exports = (app, mongo) => {
 
                     // update pending question field
                     updateQuestionQueue(req, req.params.subject, curQ._id);
+
+                    // randomise curQ
+                    rQ = randomise(curQ.question, curQ.type, curQ.choices, curQ.answer, curQ.answer_ex);
+                    curQ.question = rQ.question;
+                    curQ.choices = rQ.choices;
+                    curQ.answer = rQ.answer;
+                    curQ.answer_ex = rQ.answer_ex;
 
                     // push to frontend
                     res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
