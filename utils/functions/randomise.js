@@ -1,7 +1,7 @@
 module.exports = {
     generate: (question, type, choices, answer, answer_ex) => {
         // TODO: update user with question's answer
-        // TODO: sig fig support
+        // TODO: sin, cos, tan support
 
         /// INPUT:
         /// question:  string
@@ -20,27 +20,22 @@ module.exports = {
             choices = [choices];
         }
         var evalPrefix = "";
-        // parse question for numbers
         var generatedNumbers = [];
-        const numbers = question.matchAll(/&([a-z])=\((\d*), (\d*), (\d+?|c)\)&/g);
+        const numbers = question.matchAll(/&([a-z])=\((\d*), (\d*), (\d+?)\)&/g);
         for (let number of numbers) {
-            generatedNumbers.push({ name: number[0], value: Math.random() * (number[2]-number[1]) + number[1] });
+            generatedNumbers.push({ name: number[0], value: Number.parseFloat(Math.random()*(number[2]-number[1])+number[1]).toPrecision(number[3]) });
         }
-        // replace question with generated numbers
         generatedNumbers.forEach(number => {
-            // replace question with generated numbers
-            question = question.replace(RegExp("&("+number.name+")=\((\d*), (\d*), (\d+?|c)\)&", 'g'), number.value);
-            // generate eval string prefix (use of "let" prevents `eval` from polluting namespace)
+            question = question.replace(RegExp("&("+number.name+")=\((\d*), (\d*), (\d+?)\)&", 'g'), number.value);
             evalPrefix = evalPrefix + "let " + number.name + " = " + number.value + "; ";
         });
-        // parse question and choices to parse evaluation blocks
         question = [question]; answer = [answer]; answer_ex = [answer_ex];
         [question, choices].forEach(part => {
             part.forEach(text => {
-                const evalBlocks = text.matchAll(/&&(.+?)&&/g);
+                const evalBlocks = text.matchAll(/&&\[(.+?), (\d+)\]&&/g);
                 for (let evalBlock of evalBlocks) {
                     if (/^[a-z\^\+\/\*\(\)]+$/.test(evalBlock[0]) && /^( *\w *\W *)+\w *$/.test(evalBlock[0])) {
-                        text = text.replace(evalBlock, eval(evalPrefix + evalBlock));
+                        text = text.replace(evalBlock, Number.parseFloat(eval(evalPrefix + evalBlock)).toPrecision(evalBlock[1]));
                     }
                 }
             });
