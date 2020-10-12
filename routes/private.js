@@ -344,6 +344,21 @@ module.exports = (app, mongo) => {
             res.redirect('/');
         }
     });
+    
+    app.post('/deleteAccount', async (req,res) => {
+         
+        if (req.isAuthenticated()) {
+            mongo.db.collection('users').deleteOne({ _id: req.user._id });
+            req.logout();
+            console.log('Deleted Account');
+            req.flash('successFlash','Goodbye.');
+            res.redirect('/');
+        }
+        else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
 
     app.get('/announcements', async (req, res) => {
         if (req.isAuthenticated()) {
