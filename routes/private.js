@@ -209,11 +209,12 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/changeInfo', (req, res) => {
-        // settings page
+    // Settings page
+    
+   
+    // change profile settings
+    app.post('/changeProfile', (req, res) => {
         if (req.isAuthenticated()) {
-
-            // change profile settings
             if (!(/^\d+$/.test(req.body.age))) {
                 req.flash('errorFlash', 'Please enter a valid age!');
             }
@@ -224,7 +225,6 @@ module.exports = (app, mongo) => {
                 req.user.profile.age = req.body.age;
             }
 
-            req.user.preferences.dark_mode = !!req.body.darkMode;
             if (req.user.profile.age > 13) {
                 if (req.body.name == filter.clean(req.body.name)) {
                     if (req.body.name.length <= 50) {
@@ -253,7 +253,6 @@ module.exports = (app, mongo) => {
                 } else {
                     req.flash('errorFlash', 'Keep it appropriate.');
                 }
-                console.log('Profile has been updated');
             } else {
                 req.user.profile.name = "";
                 req.user.profile.bio = "";
@@ -261,15 +260,44 @@ module.exports = (app, mongo) => {
             }
             if (req.user.profile.name < 13 &&
                 ( req.user.profile.name != req.body.name ||
-                req.user.profile.bio != req.body.bio ||
-                req.user.profile.location != req.body.location)) {
+                    req.user.profile.bio != req.body.bio ||
+                    req.user.profile.location != req.body.location)) {
                 req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
             }
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
+            // mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }}}, {upsert: true});
+            console.log(req.user);
 
+            res.redirect('/settings');
             console.log('Profile has been updated');
+        }
+            else {
+                req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+                res.redirect('/');
+            }
+        });
+    
+    // change user preferences
+    app.post('/changePreferences', (req, res) => {
+        if (req.isAuthenticated()) {
+            
+            req.user.preferences.dark_mode = !!req.body.darkMode;
 
-            // change account settings
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
+            
+            console.log('Updated preferences');
+
+            res.redirect('/settings');
+        } else{
+                req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+                res.redirect('/');
+        }
+    });
+
+
+    // change account settings
+    app.post('/changeSettings', (req, res) => {
+        if (req.isAuthenticated()) {
 
             if (req.body.ign && req.body.ign != req.user.ign) {
 

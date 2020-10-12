@@ -35,7 +35,7 @@ $(document).ready(function() {
                         $("#password-req").hide(100);
                         }, 1000);
                 });
-};
+});
 </script>
 
 <h1 class="my-5 container">Settings</h1>
@@ -44,27 +44,28 @@ $(document).ready(function() {
     <div class="alert alert-danger" role="alert">Careful! You have unsaved changes!</div>
 </div>
 
-<form action="/changeInfo" method="POST">
 
+<form action="/changeProfile" method="POST">
     <%# Public profile tweaks %>
-	<div class="jumbotron container">
+    <div class="jumbotron container">
+
         <%- include("../partials/flashes") -%>
         <h3 class="mb-4">Profile</h3>
 
-		<div class="form-group row">
-			<label for="name" class="col-sm-2 col-form-label">Name</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="name" name="name" value="<%= user.profile.name %>" placeholder="Enter your name here">
-			</div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" name="name" value="<%= user.profile.name %>" placeholder="Enter your name here">
+            </div>
         </div>
         <div class="form-group row">
-			<label for="Bio" class="col-sm-2 col-form-label">Bio</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="bio" name="bio" value="<%= user.profile.bio %>" placeholder="Introduce yourself!">
-			</div>
-		</div>
-		<div class="form-group row">
-			<label for="Location" class="col-sm-2 col-form-label">Location</label>
+            <label for="Bio" class="col-sm-2 col-form-label">Bio</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="bio" name="bio" value="<%= user.profile.bio %>" placeholder="Introduce yourself!">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Location" class="col-sm-2 col-form-label">Location</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" id="location" name="location" value="<%= user.profile.location %>" placeholder="Where do you live?">
 			</div>
@@ -79,13 +80,15 @@ $(document).ready(function() {
 		<input class="btn btn-primary" type="submit" value="Update Profile">
 
     </div>
-    
+</form>
+
+<form action="/changePreferences" method="POST"> 
     <%# Personal preferences tweaks %>
-	<div class="jumbotron container">
+    <div class="jumbotron container">
 
-		<h3 class="mb-4">Personalization</h3>
+        <h3 class="mb-4">Personalization</h3>
 
-		<div class="form-group row">
+        <div class="form-group row">
             <div class="col-sm-10 my-2">
                 <div class="custom-control custom-switch">
                     <input type="checkbox" class="custom-control-input" id="darkMode" name="darkMode" <% if (locals.darkMode) { %> checked <% } %>>
@@ -96,7 +99,9 @@ $(document).ready(function() {
 
         <input class="btn btn-primary" type="submit" value="Update Preferences">
     </div>
+</form>
 
+<form action="/changeSettings" method="POST" >
     <%# Private account tweaks %>
 	<div class="jumbotron container">
 
