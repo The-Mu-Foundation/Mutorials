@@ -1,7 +1,6 @@
 module.exports = {
     generate: (question, type, choices, answer, answer_ex) => {
         // TODO: update user with question's answer
-        // TODO: sin, cos, tan support
 
         /// INPUT:
         /// question:  string
@@ -34,8 +33,9 @@ module.exports = {
             part.forEach(text => {
                 const evalBlocks = text.matchAll(/&&\[(.+?), (\d+)\]&&/g);
                 for (let evalBlock of evalBlocks) {
-                    if (/^[a-z0-9\^\+\/\*\(\)]+$/.test(evalBlock[0]) && /^( *\w *\W *)+\w *$/.test(evalBlock[0].replace(/(\(|\))/g, "") )) {
-                        text = text.replace(evalBlock, Number.parseFloat(eval(evalPrefix + evalBlock)).toPrecision(evalBlock[1]));
+                    const testEvalBlock = evalBlock.replace(/(sin|cos|tan|\(|\))/g, "");
+                    if (/^[a-z0-9\^\+\/\*\(\)]+$/.test(testEvalBlock) && /^( *\w *\W *)+\w *$/.test(testEvalBlock)) {
+                        text = text.replace(evalBlock, Number.parseFloat(eval(evalPrefix + evalBlock.replace(/(sin|cos|tan)/g, "Math.$1"))).toPrecision(evalBlock[1]));
                     }
                 }
             });
