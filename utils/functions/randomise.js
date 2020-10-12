@@ -34,7 +34,7 @@ module.exports = {
             part.forEach(text => {
                 const evalBlocks = text.matchAll(/&&\[(.+?), (\d+)\]&&/g);
                 for (let evalBlock of evalBlocks) {
-                    if (/^[a-z\^\+\/\*\(\)]+$/.test(evalBlock[0]) && /^( *\w *\W *)+\w *$/.test(evalBlock[0])) {
+                    if (/^[a-z0-9\^\+\/\*\(\)]+$/.test(evalBlock[0]) && /^( *\w *\W *)+\w *$/.test(evalBlock[0].replace(/(\(|\))/g, "") )) {
                         text = text.replace(evalBlock, Number.parseFloat(eval(evalPrefix + evalBlock)).toPrecision(evalBlock[1]));
                     }
                 }
