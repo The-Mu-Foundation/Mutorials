@@ -209,11 +209,10 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/changeInfo', (req, res) => {
-        // settings page
+    // change profile settings
+    app.post('/changeProfile', (req, res) => {
         if (req.isAuthenticated()) {
 
-            // change profile settings
             if (!(/^\d+$/.test(req.body.age))) {
                 req.flash('errorFlash', 'Please enter a valid age!');
             }
@@ -263,13 +262,26 @@ module.exports = (app, mongo) => {
                 ( req.user.profile.name != req.body.name ||
                 req.user.profile.bio != req.body.bio ||
                 req.user.profile.location != req.body.location)) {
-                req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
+                req.flash('errorFlash', 'You have to be over 13 to give us your name, location or a bio.');
             }
             mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
-
+            
             console.log('Profile has been updated');
 
-            // change account settings
+            res.redirect('/settings');
+        }
+        else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+
+    });
+
+
+
+    // change account settings
+    app.post('/changeSettings', (req, res) => {
+        if (req.isAuthenticated()) {
 
             if (req.body.ign && req.body.ign != req.user.ign) {
 
