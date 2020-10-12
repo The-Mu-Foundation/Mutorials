@@ -1,4 +1,7 @@
 module.exports = {
+    test: (question) => {
+        return question.test(/&([a-z])=\((\d*), (\d*), (\d+?)\)&/g);
+    },
     generate: (question, type, choices, answer, answer_ex) => {
         // TODO: update user with question's answer
 

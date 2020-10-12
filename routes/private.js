@@ -7,6 +7,7 @@ const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual } = require('../utils/functions/general');
 const { genPassword } = require('../utils/functions/password');
+const randomise = require('../utils/functions/randomise');
 const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter } = require('../utils/functions/database');
@@ -630,11 +631,15 @@ module.exports = (app, mongo) => {
                     updateQuestionQueue(req, req.params.subject, curQ._id);
 
                     // randomise curQ
-                    rQ = randomise(curQ.question, curQ.type, curQ.choices, curQ.answer, curQ.answer_ex);
-                    curQ.question = rQ.question;
-                    curQ.choices = rQ.choices;
-                    curQ.answer = rQ.answer;
-                    curQ.answer_ex = rQ.answer_ex;
+                    if (randomise.test) {
+                        console.log("randomised question");
+                        rQ = randomise.generate(curQ.question, curQ.type, curQ.choices, curQ.answer, curQ.answer_ex);
+                        curQ.question = rQ.question;
+                        curQ.choices = rQ.choices;
+                        curQ.answer = rQ.answer;
+                        curQ.answer_ex = rQ.answer_ex;
+                    }
+                    mongo.db('users').findOneAndUpdate({ id: req.user._id }, { $set: { question: { answer: curQ.answer, answer_ex: curQ.answer_ex } } }, { upsert: true });
 
                     // push to frontend
                     res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
