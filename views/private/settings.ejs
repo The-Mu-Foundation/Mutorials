@@ -6,16 +6,16 @@
 
 <script>
 
-$(document).ready(function() {
+    $(document).ready(function() {
 
         // configure unsaved changes alert
         $("#unsaved-alert").hide(0);
 
         var setUnsavedAlertFor = function(id) {
-        $("#" + id).on("input", function() {
+            $("#" + id).on("input", function() {
                 $("#unsaved-alert").show(500);
                 $("#" + id).css({ "border": '#FFA500 2px solid' });
-                });
+            });
         }
 
         setUnsavedAlertFor("name");
@@ -28,14 +28,14 @@ $(document).ready(function() {
         // show/hide password requirement notification
         $("#password-req").hide();
         $("#newpw").focus(function() {
-                $("#password-req").show(100);
-                });
+            $("#password-req").show(100);
+        });
         $("#newpw").blur(function() {
-                window.setTimeout(function() {
-                        $("#password-req").hide(100);
-                        }, 1000);
-                });
-});
+            window.setTimeout(function() {
+                $("#password-req").hide(100);
+            }, 1000);
+        });
+    });
 </script>
 
 <h1 class="my-5 container">Settings</h1>
@@ -66,18 +66,18 @@ $(document).ready(function() {
         </div>
         <div class="form-group row">
             <label for="Location" class="col-sm-2 col-form-label">Location</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="location" name="location" value="<%= user.profile.location %>" placeholder="Where do you live?">
-			</div>
-		</div>
-		<div class="form-group row">
-			<label for="Age" class="col-sm-2 col-form-label">Age</label>
-			<div class="col-sm-10">
-				<input type="number" class="form-control" id="age" name="age" value="<%= user.profile.age %>" placeholder="Enter your age here">
-			</div>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="location" name="location" value="<%= user.profile.location %>" placeholder="Where do you live?">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Age" class="col-sm-2 col-form-label">Age</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="age" name="age" value="<%= user.profile.age %>" placeholder="Enter your age here">
+            </div>
         </div>
 
-		<input class="btn btn-primary" type="submit" value="Update Profile">
+        <input class="btn btn-primary" type="submit" value="Update Profile">
 
     </div>
 </form>
@@ -103,39 +103,39 @@ $(document).ready(function() {
 
 <form action="/changeSettings" method="POST" >
     <%# Private account tweaks %>
-	<div class="jumbotron container">
+    <div class="jumbotron container">
 
-		<h3 class="mb-4">Account</h3>
+        <h3 class="mb-4">Account</h3>
 
-			<div class="form-group row">
-				<label for="Username" class="col-sm-2 col-form-label">Username</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="ign" name="ign" value="<%= user.ign %>" placeholder="Change your username">
-				</div>
-			</div>
-			<div class="form-group row">
-				<label for="Email" class="col-sm-2 col-form-label">Email</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" placeholder="Change your linked email">
-				</div>
-			</div>
-			<div class="form-group row">
-				<label for="Password" class="col-sm-2 col-form-label">Change Password</label>
-				<div class="col-sm-10">
-					<input type="password" name="password" class="form-control" id="Password" placeholder="Current password">
-				</div>
-				<label for="NewPW" class="col-sm-2 col-form-label"></label>
-				<div class="col-sm-10 mt-1">
-					<input type="password" class="form-control" name="newpw" id="newpw" placeholder="New password">
-				</div>
-				<label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
-				<div class="col-sm-10 mt-1">
-                    <input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
-                    <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
-				</div>
-			</div>
+        <div class="form-group row">
+            <label for="Username" class="col-sm-2 col-form-label">Username</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="ign" name="ign" value="<%= user.ign %>" placeholder="Change your username">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" placeholder="Change your linked email">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Password" class="col-sm-2 col-form-label">Change Password</label>
+            <div class="col-sm-10">
+                <input type="password" name="password" class="form-control" id="Password" placeholder="Current password">
+            </div>
+            <label for="NewPW" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10 mt-1">
+                <input type="password" class="form-control" name="newpw" id="newpw" placeholder="New password">
+            </div>
+            <label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10 mt-1">
+                <input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
+                <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
+            </div>
+        </div>
 
-            <input class="btn btn-primary" type="submit" value="Update Account">
+        <input class="btn btn-primary" type="submit" value="Update Account">
     </div>
 </form>
 

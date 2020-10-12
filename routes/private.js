@@ -13,7 +13,7 @@ const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTrack
     getAnnouncements } = require('../utils/functions/database');
 
 
-const VIEWS = __dirname + '/../views/'
+const VIEWS = __dirname + '/../views/';
 
 module.exports = (app, mongo) => {
     app.post('/private/initialRating', (req, res, next) => {
@@ -27,8 +27,7 @@ module.exports = (app, mongo) => {
                 req.flash('errorFlash', 'You\'ve already set your proficiency for that subject');
             }
             res.redirect('/train/' + req.body.subject + '/chooseUnits');
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -58,12 +57,12 @@ module.exports = (app, mongo) => {
                     req.flash('errorFlash', 'Please choose at least one unit.');
                     res.redirect('/train/' + req.body.subj + '/chooseUnits');
                 }
+
                 if (units) { //nothing happens if units is empty
                     res.redirect('/train/' + req.body.subj + '/displayQuestion?units=' + units.toString());
                 }
                 //app.set('questionz', questions);
                 //units cannot have commas
-
             }
         }
     });
@@ -107,8 +106,7 @@ module.exports = (app, mongo) => {
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
                         newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
-            }
-            else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
+            } else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
                 var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
@@ -128,7 +126,7 @@ module.exports = (app, mongo) => {
 
                         // update counters & tag collector
                         updateAll(req, antsy, isRight);
-                        
+
                         // update site data
                         incrementSolveCounter(mongo.SiteData, antsy.subject[0].toLowerCase(), isRight);
                     } else {
@@ -142,8 +140,7 @@ module.exports = (app, mongo) => {
                     res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
                         newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
                 });
-            }
-            else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
+            } else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
                 var isRight = false;
                 const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
@@ -202,16 +199,15 @@ module.exports = (app, mongo) => {
 
             res.redirect(redirect);
 
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
 
     // Settings page
-    
-   
+
+
     // change profile settings
     app.post('/changeProfile', (req, res) => {
         if (req.isAuthenticated()) {
@@ -270,27 +266,26 @@ module.exports = (app, mongo) => {
 
             res.redirect('/settings');
             console.log('Profile has been updated');
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
         }
-            else {
-                req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
-                res.redirect('/');
-            }
-        });
-    
+    });
+
     // change user preferences
     app.post('/changePreferences', (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             req.user.preferences.dark_mode = !!req.body.darkMode;
 
             mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
-            
+
             console.log('Updated preferences');
 
             res.redirect('/settings');
         } else{
-                req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
-                res.redirect('/');
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
         }
     });
 
@@ -366,23 +361,21 @@ module.exports = (app, mongo) => {
             //mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
             res.redirect('/settings');
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
     });
-    
+
     app.post('/deleteAccount', async (req,res) => {
-         
+
         if (req.isAuthenticated()) {
             mongo.db.collection('users').deleteOne({ _id: req.user._id });
             req.logout();
             console.log('Deleted Account');
             req.flash('successFlash','Goodbye.');
             res.redirect('/');
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -392,8 +385,7 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             let announcements = await getAnnouncements(mongo.SiteData, 20);
             res.render(VIEWS + 'private/announcements.ejs', { announcements, pageName: "Announcements" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -410,8 +402,7 @@ module.exports = (app, mongo) => {
                 let announcements = await getAnnouncements(mongo.SiteData, 3);
                 res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, experienceStats, question, announcements });
             }
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -423,8 +414,7 @@ module.exports = (app, mongo) => {
             var leaderboard = await generateLeaderboard(mongo.User, 10);
 
             res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard, pageName: "Leaderboard" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -433,8 +423,7 @@ module.exports = (app, mongo) => {
     app.get('/profile', (req, res) => {
         if (req.isAuthenticated()) {
             res.redirect('/profile/' + req.user.ign);
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -460,8 +449,7 @@ module.exports = (app, mongo) => {
     app.get('/references', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -470,8 +458,7 @@ module.exports = (app, mongo) => {
     app.get('/references/equations', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations, pageName: "Mutorials Equation Sheet" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -480,8 +467,7 @@ module.exports = (app, mongo) => {
     app.get('/references/constants', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants, pageName: "Mutorials Constant Sheet" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -490,8 +476,7 @@ module.exports = (app, mongo) => {
     app.get('/references/taglist', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags, pageName: "Mutorials Tags" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -500,8 +485,7 @@ module.exports = (app, mongo) => {
     app.get('/references/about', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/references/about.ejs', { pageName: "About Mutorials" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -531,8 +515,7 @@ module.exports = (app, mongo) => {
     app.get('/settings', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/settings.ejs', { user: req.user, pageName: "Settings" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -541,8 +524,7 @@ module.exports = (app, mongo) => {
     app.get('/stats', (req, res) => {
         if (req.isAuthenticated()) {
             res.redirect('/stats/' + req.user.ign);
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -558,8 +540,7 @@ module.exports = (app, mongo) => {
                     res.redirect('/');
                 }
             });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -568,8 +549,7 @@ module.exports = (app, mongo) => {
     app.get('/train', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/train/train.ejs', { pageName: "Train" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
@@ -579,12 +559,11 @@ module.exports = (app, mongo) => {
         const qNum = 0;
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/train/chooseSubject.ejs', { subjects: subjectUnitDictionary, qNum: qNum, pageName: "Train Subject" });
-        }
-        else {
+        } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
-    })
+    });
 
     app.get('/train/daily', async (req, res) => {
         if (req.isAuthenticated()) {
@@ -615,7 +594,7 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
-    })
+    });
 
     app.get('/train/:subject/chooseUnits', (req, res) => {
         const qNum = 1;
@@ -632,7 +611,7 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
-    })
+    });
 
     app.get('/train/:subject/displayQuestion', async (req, res) => {
         var curQ = null;
@@ -654,7 +633,7 @@ module.exports = (app, mongo) => {
             let experienceStats = await calculateLevel(req.user.stats.experience);
 
             // Test if they have a question pending to answer which is valid for their units selected
-            if(q && units.some(r => q.units.includes(r))) {
+            if (q && units.some(r => q.units.includes(r))) {
 
                 res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
 
