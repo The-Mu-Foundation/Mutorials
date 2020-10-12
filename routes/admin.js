@@ -3,12 +3,47 @@ const { tags } = require('../utils/constants/tags');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
-const { getSiteData } = require('../utils/functions/database');
+const { getSiteData, getAnnouncements } = require('../utils/functions/database');
 const { getAdminData, queryContributor } = require('../utils/functions/admin');
+const mongoose = require("mongoose");
+var db = mongoose.connection;
 
 const VIEWS = "../views/"
 
 module.exports = (app, mongo) => {
+
+    app.post('/admin/addAnnouncement', async (req, res, next) => {
+
+        if(req.isAuthenticated() && (adminList.includes(req.user.username))) {
+
+            try {
+
+                let SiteData = mongo.SiteData;
+                let announcements = await SiteData.findOne({ tag: "ANNOUNCEMENTS" }).exec();
+                const date = await new Date().toISOString();
+
+                let siteAnnouncements = announcements.data.site;
+                siteAnnouncements = [...siteAnnouncements, {
+                    date,
+                    author: req.body.author,
+                    title: req.body.title,
+                    text: req.body.text
+                }];
+
+                announcements.data.site = siteAnnouncements;
+
+                db.collection("sitedatas").findOneAndUpdate({ tag: "ANNOUNCEMENTS" }, { $set: { data: announcements.data } });
+            } catch(err) {
+                res.json({ status: "Error" });
+            }
+            
+            res.json({ status: "Success" });
+
+        } else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
+            res.redirect('/');
+        }
+    });
 
     app.post('/admin/addquestion', (req, res, next) => {
         //const questionStore =  new MongoStore({mongooseConnection: mongo.db, collection: 'questions'});
@@ -106,6 +141,17 @@ module.exports = (app, mongo) => {
             let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
             let adminData = await getAdminData(mongo.User, mongo.Ques, mongo.SiteData);
             res.render(VIEWS + 'admin/analytics.ejs', { siteData, adminData, pageName: "ADMIN Analytics" });
+        }
+        else {
+            req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/admin/announcements', async (req, res) => {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
+            let announcements = await getAnnouncements(mongo.SiteData, 10);
+            res.render(VIEWS + 'admin/announcements.ejs', { announcements, pageName: "ADMIN Announcements" });
         }
         else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');

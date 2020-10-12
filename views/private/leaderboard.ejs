@@ -37,7 +37,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankPhysics %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
                             <td><%= user.rating.physics %></td>
                         </tr>
                         <% rankPhysics++; %>
@@ -73,7 +73,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankChem %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
                             <td><%= user.rating.chemistry %></td>
                         </tr>
                         <% rankChem++; %>
@@ -109,7 +109,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankBio %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
                             <td><%= user.rating.biology %></td>
                         </tr>
                         <% rankBio++; %>

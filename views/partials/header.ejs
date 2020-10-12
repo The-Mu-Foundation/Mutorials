@@ -164,10 +164,24 @@
             width: 286px;
             overflow: hidden;
         }
-        /*.crop-img {
-            height: auto;
-            width: 286px;
-        }*/
+        
+        .mu-rounded {
+            border-radius: 10%
+        }
+
+        tr th {
+            -moz-border-radius-topleft: 15px;
+            -moz-border-radius-bottomleft: 15px;
+            -webkit-border-top-left-radius: 15px;
+            -webkit-border-bottom-left-radius: 15px;
+        }
+
+        tr td:last-child {
+            -moz-border-radius-topright: 15px;
+            -moz-border-radius-bottomright: 15px;
+            -webkit-border-top-right-radius: 15px;
+            -webkit-border-bottom-right-radius: 15px;
+        }
 
     </style>
     <% if (locals.darkMode) { %>

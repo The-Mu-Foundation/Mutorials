@@ -157,10 +157,14 @@ async function getDailyQuestion(Daily, Ques) {
 
     if(question) {
 
+        console.log("Inside if-statement, question found");
+
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
         return content;
     } else {
+
+        console.log("Inside else-statement, question not found");
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
@@ -219,6 +223,17 @@ async function getSiteData(User, Ques, SiteData) {
     return siteData;
 }
 
+// returns 10 most recent announcements
+async function getAnnouncements(SiteData, numberToFetch) {
+    
+    let announcements = await SiteData.findOne({ tag: "ANNOUNCEMENTS" }).exec();
+    let siteAnnouncements = announcements.data.site;
+    
+    let recentAnnouncements = siteAnnouncements.reverse().slice(0, numberToFetch);
+
+    return recentAnnouncements;
+}
+
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements };
 
