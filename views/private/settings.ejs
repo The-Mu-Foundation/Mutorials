@@ -3,19 +3,21 @@
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
+<%- include("../partials/components/confirmDeleteAcc") -%>
+
 
 <script>
 
-    $(document).ready(function() {
+$(document).ready(function() {
 
         // configure unsaved changes alert
         $("#unsaved-alert").hide(0);
 
         var setUnsavedAlertFor = function(id) {
-            $("#" + id).on("input", function() {
+        $("#" + id).on("input", function() {
                 $("#unsaved-alert").show(500);
                 $("#" + id).css({ "border": '#FFA500 2px solid' });
-            });
+                });
         }
 
         setUnsavedAlertFor("name");
@@ -28,16 +30,14 @@
         // show/hide password requirement notification
         $("#password-req").hide();
         $("#newpw").focus(function() {
-            $("#password-req").show(100);
-        });
+                $("#password-req").show(100);
+                });
         $("#newpw").blur(function() {
-            window.setTimeout(function() {
-                $("#password-req").hide(100);
-            }, 1000);
-        });
-
-    });
-
+                window.setTimeout(function() {
+                        $("#password-req").hide(100);
+                        }, 1000);
+                });
+};
 </script>
 
 <h1 class="my-5 container">Settings</h1>
@@ -134,7 +134,19 @@
 
             <input class="btn btn-primary" type="submit" value="Update Account">
     </div>
+</form>
 
+<form id="delete-account-form" action="/deleteAccount" method="POST">
+    <div class="jumbotron container">
+
+        <h3 class="mb-4">Delete Account</h3>
+
+        <div class="form-group row">
+            <div class="col-sm-10 my-2">
+                <input type="button" class="btn btn-danger" id="submitBtn" value="Delete Account" data-toggle="modal" data-target="#confirm-delete-acc" />
+            </div>
+        </div>
+    </div>
 </form>
 
 <%- include("../partials/footer") -%>
