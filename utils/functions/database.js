@@ -163,7 +163,7 @@ async function getDailyQuestion(Daily, Ques) {
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
 
-        console.log(cotent);
+        console.log(content);
 
         return content;
     } else {
