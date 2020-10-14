@@ -177,8 +177,10 @@ async function getDailyQuestion(Daily, Ques) {
         console.log("selected problem.");
         console.log(selection);
 
+        // Manually set daily question date, maybe the defaults are weird?
         let question = await new Daily({
-            question: selection._id
+            question: selection._id,
+            date: date
         })
 
         await question.save();
