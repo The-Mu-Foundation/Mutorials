@@ -165,6 +165,7 @@ async function getDailyQuestion(Daily, Ques) {
 
         console.log(content);
 
+
         return content;
     } else {
 
