@@ -155,31 +155,18 @@ async function getDailyQuestion(Daily, Ques) {
     const date = await new Date().toISOString().split('T')[0];
     let question = await Daily.findOne({ date }).exec();
 
-    console.log("getDailyQuestion called, date:", date);
-
     if(question) {
-        console.log("daily question found");
-
-        console.log("Inside if-statement, question found");
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
 
-        console.log(content);
-
-
         return content;
     } else {
-
-        console.log("daily question not found, generating...");
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
         const selection = await questions[Math.floor(Math.random() * questions.length)];
         
-        console.log("selected problem.");
-        console.log(selection);
-
         // Manually set daily question date, maybe the defaults are weird?
         let question = await new Daily({
             question: selection._id,
@@ -188,9 +175,6 @@ async function getDailyQuestion(Daily, Ques) {
 
         await question.save();
         
-        console.log("created and saved question");
-        console.log(question);
-
         return selection;
     }
 }
