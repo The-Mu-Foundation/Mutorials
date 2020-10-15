@@ -159,7 +159,6 @@ async function getDailyQuestion(Daily, Ques) {
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
-
         return content;
     } else {
 
@@ -172,7 +171,6 @@ async function getDailyQuestion(Daily, Ques) {
             question: selection._id,
             date: date
         })
-
         await question.save();
         
         return selection;

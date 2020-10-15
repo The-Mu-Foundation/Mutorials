@@ -14,7 +14,7 @@
                 <div class="my-3">
                     <h6 class="card-title my-1"><%= announcement.title %></h6>
                     <p class="card-text my-1"><small class="text-muted">Posted <%= announcement.date.split('T')[0] %></small></p>
-                    <p class="card-text my-1"><%= announcement.text %></p>
+                    <p class="card-text my-1"><%- announcement.text %></p>
                 </div>
             <% }); %>
 

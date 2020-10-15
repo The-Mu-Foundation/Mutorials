@@ -82,8 +82,8 @@
             <% announcements.forEach((announcement) => { %>
                 <tr>
                     <th scope="row"><%= announcement.date %></th>
-                    <td><%= announcement.date %></td>
-                    <td><%= announcement.text %></td>
+                    <td><%= announcement.title %></td>
+                    <td><%- announcement.text %></td>
                 </tr>
             <% }); %>
         </tbody>
