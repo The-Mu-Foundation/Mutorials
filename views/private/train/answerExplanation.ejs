@@ -231,6 +231,11 @@
                 <p><%- newQues.answer_ex %></p>
             </div>
 
+            <% if(newQues.source_statement) { %>
+                <hr>
+                <p class="text-center"><%= newQues.source_statement %></p>
+            <% } %>
+
         </div>
 
         <%# Question data %>

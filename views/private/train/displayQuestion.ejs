@@ -33,65 +33,37 @@
         style.marginLeft = "auto";
         style.marginRight = "auto";
 
-        const higherRating = Math.max($("#userRating").val(), $("#questionRating").val());
         var myChart = new Chart(ctxRating, {
-            type: "bar",
+            type: "pie",
             data: {
-                labels: ["Current Rating"],
+                labels: ["User", "Question"],
                 datasets: [{
-                    label: "User Rating",
-                    data: [$("#userRating").val()],
+                    label: "Current Rating",
+                    data: [$("#userRating").val(), $("#questionRating").val()],
                     backgroundColor: [
-                        "rgba(80, 185, 20, 0.7)"
-                    ],
-                    hoverBackgroundColor: [
-                        "rgba(80, 185, 20, 1)"
-                    ],
-                    borderWidth: 2,
-                    barPercentage: 0.6
-                }, {
-                    label: "Question Rating",
-                    data: [$("#questionRating").val()],
-                    backgroundColor: [
+                        "rgba(80, 185, 20, 0.7)",
                         "rgba(85, 190, 230, 0.7)"
                     ],
                     hoverBackgroundColor: [
+                        "rgba(80, 185, 20, 1)",
                         "rgba(85, 190, 230, 1)"
                     ],
+                    borderColor: [
+                        "rgba(255, 255, 255, 0.5)",
+                        "rgba(255, 255, 255, 0.5)"
+                    ],
                     borderWidth: 2,
-                    barPercentage: 0.6
                 }]
             },
             options: {
-                elements: {
-                    rectangle: {
-                        borderWidth: 2
-                    }
-                },
                 title: {
-                    display: false
+                    display: true,
+                    text: "Current Ratings"
                 },
                 legend: {
                     display: false
                 },
-                scales: {
-                        xAxes: [{
-                            ticks: {
-                                display: false
-                            },
-                            gridLines: {
-                                display: false
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                min: 0,
-                                max: Math.round((higherRating+100)/100)*100,
-                                stepSize: 100,
-                                display: false
-                            }
-                        }]
-                    },
+                cutoutPercentage: 40,
                 responsive: true
             }
         });
@@ -122,7 +94,7 @@
 
         <div class="row">
 
-            <div class="col-10">
+            <div class="col-9">
 
                 <p class="lead mb-3">
                     <% if(newQues.ext_source != "original") { %>
@@ -205,10 +177,10 @@
 
             </div>
 
-            <div class="col-2">
+            <div class="col-3">
 
                 <div class="canvas-container-center text-center">
-                    <canvas id="ratingChart" width="400" height="1000"></canvas>
+                    <canvas id="ratingChart" width="400" height="400"></canvas>
                 </div>
                 <input type="hidden" id="userRating" value="<%= user.rating[subject.toLowerCase()] %>">
                 <input type="hidden" id="questionRating" value="<%= newQues.rating %>">
@@ -256,5 +228,9 @@
     <% } %>
 
 </div>
+
+<% if(newQues.source_statement) { %>
+    <p class="text-center mb-5"><%= newQues.source_statement %></p>
+<% } %>
 
 <%- include("../../partials/footer") -%>

@@ -10,7 +10,7 @@
     <div class="jumbotron container">
         <h3 class=""><%= announcement.title %></h3>
         <p class=""><em>Posted <%= announcement.date.split('T')[0] %></em></p>
-        <p class=""><%= announcement.text %></p>
+        <p class=""><%- announcement.text %></p>
     </div>
 <% }); %>
 
