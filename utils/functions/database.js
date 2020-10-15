@@ -150,34 +150,46 @@ async function generateLeaderboard (User, count) {
 }
 
 async function getDailyQuestion(Daily, Ques) {
-
+    
     // attempt to get daily object
     const date = await new Date().toISOString().split('T')[0];
     let question = await Daily.findOne({ date }).exec();
 
-    // I CAN'T FIGURE OUT THE BUG, I'M ADDING THESE LOG STATEMENTS AND LOOKING AT THEM LATER IN THE HEROKU LOGS
-    console.log("Datestamp: " + date);
-    console.log("Daily question: " + (question ? question.question : "Not found - new one will be created"));
+    console.log("getDailyQuestion called, date:", date);
 
     if(question) {
+        console.log("daily question found");
 
         console.log("Inside if-statement, question found");
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
+
+        console.log(content);
+
+
         return content;
     } else {
 
-        console.log("Inside else-statement, question not found");
+        console.log("daily question not found, generating...");
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
         const selection = await questions[Math.floor(Math.random() * questions.length)];
+        
+        console.log("selected problem.");
+        console.log(selection);
 
+        // Manually set daily question date, maybe the defaults are weird?
         let question = await new Daily({
-            question: selection._id
+            question: selection._id,
+            date: date
         })
+
         await question.save();
+        
+        console.log("created and saved question");
+        console.log(question);
 
         return selection;
     }

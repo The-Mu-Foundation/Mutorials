@@ -4,7 +4,7 @@ Once you clone this repository, you have a couple options:
 - fix bugs
 - implement new features
 
-Reference [GitHub](https://github.com/The-Mu-Foundation/Mutorials/issues) to see what we need help with.
+Reference [GitHub](https://github.com/The-Mu-Foundation/Mutorials/issues) to see what we need help with. Look for issues that aren't assigned, and please **add a comment** on the issue saying that you want to work on it. This helps us because we 1. know who's working on what and 2. if the issue has already been fixed/implemented, we can let you know :).
 
 ## Mutorials Code Conventions
 These are to be followed all the time 😁.
@@ -27,11 +27,12 @@ These are to be followed all the time 😁.
 - camelCase for everything; this includes but is not limited to file names, variables (including functions), routes, etc.
     - EXCEPTION: mongoose Schema declarations follow PascalCase
     - EXCEPTION: environment variables use GIANT_SNAKE_CASE
-- All admin routes (get or post) should start with "/admin/"
+- All admin routes (get or post) should start with `/admin/`
+- All API routes should start with `/api/`
 
 #### Frontend
 - JavaScript variables follow camelCase, similar to backend
-- For variables, use const for variables that will not be changed and use let for variables that will be changed. Do not use var.
+- For variables, use `const` for variables that will not be changed and use `let` for variables that will be changed. Do not use `var`.
 - Following Bootstrap conventions, kebab-case will be used for classes, ids, names, and all of the other HTML tags
 
 #### General
@@ -40,18 +41,18 @@ These are to be followed all the time 😁.
 
 ### Comments
 #### Backend
-- In index.js, all comments should go inside functions; no floating comments
+- In `index.js`, all comments should go inside functions; no floating comments
     - EXCEPTION: comments in ALL CAPS that describe either configuration or describe other large blocks of code.
 - In helper files, put a comment on top of each function being exported to briefly detail what it does
 
 #### Frontend
 - All comments must be ejs comments (so that they aren’t rendered into the page)
-- All .ejs files should have a comment at the top briefly detailing what the page does and what the arguments are
+- All `.ejs` files should have a comment at the top briefly detailing what the page does and what the arguments are
 
 #### General
 - Comments NEVER go on a line that already has code in it
     - EXCEPTION: when using mongoose functions such as findOneAndUpdate, it is ok to use /* */ inline comments
-- Make comments succinct and ONLY about important code functionality; ex. “// connects to database” is ok, “// prints to console” is not
+- Make comments succinct and ONLY about important code functionality; ex. `// connects to database` is ok, `// prints to console` is not
 - If you don’t need the code, delete it, don’t comment it out.
 
 ### Optimization
@@ -64,8 +65,9 @@ These are to be followed all the time 😁.
 - All “special variables” (i.e. constants to be initialized early) are declared at the top of the file, below any imports
 
 #### Routing
-- Organize routes by POST/public-GET/private-GET/admin-GET (with comments in all caps declaring each of these blocks; reference code)
-- Routes should be in alphabetical order within these 4 categories
+- Public routes should go in `routes/public.js`, private routes in `routes/private.js`, and admin routes in `routes/admin.js`.
+- Within each file, put the POST routes first and the GET routes second.
+- Routes should be in alphabetical order within these 2 categories.
 
 ### JavaScript
 DISCLAIMER: these are nitpicky things which we just want to standardize

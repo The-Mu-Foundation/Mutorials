@@ -32,6 +32,7 @@ const tags = {
             "ACCL": "Acceleration",
             "ANGACC": "Angular Acceleration",
             "ANGMOM": "Angular Momentum",
+            "CAM": "Conservation of Angular Momentum",
             "BUOY": "Buoyancy",
             "CALC": "Requires calculus",
             "CEN": "Conservation of Energy",
@@ -58,6 +59,7 @@ const tags = {
             "NEW1": "Newton's First Law",
             "NEW2": "Newton's Second Law",
             "NEW3": "Newton's Third Law",
+            "NORM": "Normal Force",
             "PE": "Potential Energy",
             "PUL": "Pulley",
             "PWR": "Power",
@@ -97,9 +99,17 @@ const tags = {
             "TCHEM": "Thermochemistry"
         },
         "Concepts": {
+            "CONV": "Conversions",
+            "COVB": "Covalent Bonding",
+            "EMP": "Empirical Formulas",
+            "ENEG": "Electronegativity",
+            "IONB": "Ionic Bonding",
             "KANE": "Alkanes",
             "KENE": "Alkenes",
-            "KYNE": "Alkynes"
+            "KYNE": "Alkynes",
+            "LIMIT": "Limiting Reactant",
+            "MGEO": "Molecular Geometry",
+            "POL": "Polarity"
         }
     },
     "Biology": {

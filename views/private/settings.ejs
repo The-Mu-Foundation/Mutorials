@@ -35,9 +35,7 @@
                 $("#password-req").hide(100);
             }, 1000);
         });
-
     });
-
 </script>
 
 <h1 class="my-5 container">Settings</h1>
@@ -46,48 +44,51 @@
     <div class="alert alert-danger" role="alert">Careful! You have unsaved changes!</div>
 </div>
 
-<form action="/changeInfo" method="POST">
 
+<form action="/changeProfile" method="POST">
     <%# Public profile tweaks %>
-	<div class="jumbotron container">
+    <div class="jumbotron container">
+
         <%- include("../partials/flashes") -%>
         <h3 class="mb-4">Profile</h3>
 
-		<div class="form-group row">
-			<label for="name" class="col-sm-2 col-form-label">Name</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="name" name="name" value="<%= user.profile.name %>" placeholder="Enter your name here">
-			</div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" name="name" value="<%= user.profile.name %>" placeholder="Enter your name here">
+            </div>
         </div>
         <div class="form-group row">
-			<label for="Bio" class="col-sm-2 col-form-label">Bio</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="bio" name="bio" value="<%= user.profile.bio %>" placeholder="Introduce yourself!">
-			</div>
-		</div>
-		<div class="form-group row">
-			<label for="Location" class="col-sm-2 col-form-label">Location</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="location" name="location" value="<%= user.profile.location %>" placeholder="Where do you live?">
-			</div>
-		</div>
-		<div class="form-group row">
-			<label for="Age" class="col-sm-2 col-form-label">Age</label>
-			<div class="col-sm-10">
-				<input type="number" class="form-control" id="age" name="age" value="<%= user.profile.age %>" placeholder="Enter your age here">
-			</div>
+            <label for="Bio" class="col-sm-2 col-form-label">Bio</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="bio" name="bio" value="<%= user.profile.bio %>" placeholder="Introduce yourself!">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Location" class="col-sm-2 col-form-label">Location</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="location" name="location" value="<%= user.profile.location %>" placeholder="Where do you live?">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Age" class="col-sm-2 col-form-label">Age</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="age" name="age" value="<%= user.profile.age %>" placeholder="Enter your age here">
+            </div>
         </div>
 
-		<input class="btn btn-primary" type="submit" value="Update Profile">
+        <input class="btn btn-primary" type="submit" value="Update Profile">
 
     </div>
-    
+</form>
+
+<form action="/changePreferences" method="POST"> 
     <%# Personal preferences tweaks %>
-	<div class="jumbotron container">
+    <div class="jumbotron container">
 
-		<h3 class="mb-4">Personalization</h3>
+        <h3 class="mb-4">Personalization</h3>
 
-		<div class="form-group row">
+        <div class="form-group row">
             <div class="col-sm-10 my-2">
                 <div class="custom-control custom-switch">
                     <input type="checkbox" class="custom-control-input" id="darkMode" name="darkMode" <% if (locals.darkMode) { %> checked <% } %>>
@@ -98,43 +99,84 @@
 
         <input class="btn btn-primary" type="submit" value="Update Preferences">
     </div>
-
-    <%# Private account tweaks %>
-	<div class="jumbotron container">
-
-		<h3 class="mb-4">Account</h3>
-
-			<div class="form-group row">
-				<label for="Username" class="col-sm-2 col-form-label">Username</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="ign" name="ign" value="<%= user.ign %>" placeholder="Change your username">
-				</div>
-			</div>
-			<div class="form-group row">
-				<label for="Email" class="col-sm-2 col-form-label">Email</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" placeholder="Change your linked email">
-				</div>
-			</div>
-			<div class="form-group row">
-				<label for="Password" class="col-sm-2 col-form-label">Change Password</label>
-				<div class="col-sm-10">
-					<input type="password" name="password" class="form-control" id="Password" placeholder="Current password">
-				</div>
-				<label for="NewPW" class="col-sm-2 col-form-label"></label>
-				<div class="col-sm-10 mt-1">
-					<input type="password" class="form-control" name="newpw" id="newpw" placeholder="New password">
-				</div>
-				<label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
-				<div class="col-sm-10 mt-1">
-                    <input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
-                    <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
-				</div>
-			</div>
-
-            <input class="btn btn-primary" type="submit" value="Update Account">
-    </div>
-
 </form>
 
+<form action="/changeSettings" method="POST" >
+    <%# Private account tweaks %>
+    <div class="jumbotron container">
+
+        <h3 class="mb-4">Account</h3>
+
+        <div class="form-group row">
+            <label for="Username" class="col-sm-2 col-form-label">Username</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="ign" name="ign" value="<%= user.ign %>" placeholder="Change your username">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" placeholder="Change your linked email">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="Password" class="col-sm-2 col-form-label">Change Password</label>
+            <div class="col-sm-10">
+                <input type="password" name="password" class="form-control" id="Password" placeholder="Current password">
+            </div>
+            <label for="NewPW" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10 mt-1">
+                <input type="password" class="form-control" name="newpw" id="newpw" placeholder="New password">
+            </div>
+            <label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10 mt-1">
+                <input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
+                <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
+            </div>
+        </div>
+
+        <input class="btn btn-primary" type="submit" value="Update Account">
+    </div>
+</form>
+
+<form id="delete-account-form" action="/deleteAccount" method="POST">
+    <div class="jumbotron container">
+
+        <h3 class="mb-4">Delete Account</h3>
+
+        <div class="form-group row">
+            <div class="col-sm-10 my-2">
+                <input type="button" class="btn btn-danger" id="submitBtn" value="Delete Account" data-toggle="modal" data-target="#confirm-delete-acc" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<%# Modal for confirming deletion of account %>
+
+<div class="modal fade" id="confirm-delete-acc" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Confirm Delete Account
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your Account?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a href="#" id="delete-account-confirm" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('#delete-account-confirm').click(function(){
+        /* when the submit button in the modal is clicked, submit the form */
+        $('#delete-account-form').submit();
+    });
+</script>
 <%- include("../partials/footer") -%>

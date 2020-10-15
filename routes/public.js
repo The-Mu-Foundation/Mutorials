@@ -107,6 +107,10 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'The password you entered does not meet the requirements.');
             registerInputProblems1 = true;
         }
+        if (req.body.password!=req.body.confirmPassword) {
+            req.flash('errorFlash', 'The passwords did not match. Please try again.');
+            registerInputProblems1 = true;
+        }
         if (!emailValidation.regexCheck(req.body.username)) {
             console.log(req.body.username);
             req.flash('errorFlash', 'The email you entered is not valid.');
