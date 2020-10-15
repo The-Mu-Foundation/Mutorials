@@ -160,8 +160,6 @@ async function getDailyQuestion(Daily, Ques) {
     if(question) {
         console.log("daily question found");
 
-        console.log("Inside if-statement, question found");
-
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
 
