@@ -9,7 +9,7 @@
 <div class="container jumbotron mt-5">
 
     <h3>What are tags?</h3>
-    <p>Mutorials uses tags to classify questions into further subtopics. A full list of tags can be found on this page. Tags in <span class="badge badge-primary">blue</span> are tags which represent a whole official unit.</p>
+    <p>Mutorials uses tags to classify questions into further subtopics. A full list of tags can be found on this page. Tags in <span class="badge badge-primary">blue</span> are tags which represent a whole unit at Mutorials.</p>
 
 </div>
 
@@ -17,29 +17,31 @@
 
     <div class="container jumbotron mt-5">
 
-        <h3 class="mb-3"><%= subject %></h3>
+        <h2 class="text-center mt-4 mb-3"><%= subject %> Tags</h2>
+        <table class="table">
+            <thead>
+                <tr class="d-flex">
+                    <th class="col-4"><h4>Tag Name</h4></th>
+                    <th class="col-8"><h4>Tag Description</h4></th>
+                </tr>
+            </thead>
+            <tbody>
 
-        <% Object.keys(tags[subject]["Units"]).forEach((unitTag) => { %>
+                <% Object.keys(tags[subject]["Units"]).forEach((unitTag) => { %>
+                    <tr class="d-flex">
+                        <td class="col-4"><h5><span class="badge badge-primary"><%= unitTag %></span></h5></td>
+                        <td class="col-8"><%= tags[subject]["Units"][unitTag] %></td>
+                    </tr>
+                <% }); %>
 
-            <div class="row">
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-primary btn-sm btn-block form-control" id="<%= subject %> - <%= unitTag %>" disabled><%= unitTag %></button>
-                </div>
-                <label for="<%= subject %> - <%= unitTag %>" class="col-sm-10 col-form-label"><%= tags[subject]["Units"][unitTag] %></label>
-            </div>
-
-        <% }) %>
-
-        <% Object.keys(tags[subject]["Concepts"]).forEach((conceptTag) => { %>
-
-            <div class="row">
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-info btn-sm btn-block form-control" id="<%= subject %> - <%= conceptTag %>" disabled><%= conceptTag %></button>
-                </div>
-                <label for="<%= subject %> - <%= conceptTag %>" class="col-sm-10 col-form-label"><%= tags[subject]["Concepts"][conceptTag] %></label>
-            </div>
-
-        <% }) %>
+                <% Object.keys(tags[subject]["Concepts"]).forEach((conceptTag) => { %>
+                    <tr class="d-flex">
+                        <td class="col-4"><h5><span class="badge badge-light"><%= conceptTag %></span></h5></td>
+                        <td class="col-8"><%= tags[subject]["Concepts"][conceptTag] %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
 
     </div>
 
