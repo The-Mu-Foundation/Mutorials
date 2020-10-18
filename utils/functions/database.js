@@ -155,12 +155,18 @@ async function getDailyQuestion(Daily, Ques) {
     const date = await new Date().toISOString().split('T')[0];
     let question = await Daily.findOne({ date }).exec();
 
+    console.log("getDailyQuestion called, date: ", date);
+
     if(question) {
+        console.log("daily question found");
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
+      
         return content;
     } else {
+
+        console.log("daily question not found, generating...");
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
@@ -171,6 +177,7 @@ async function getDailyQuestion(Daily, Ques) {
             question: selection._id,
             date: date
         })
+        
         await question.save();
         
         return selection;
