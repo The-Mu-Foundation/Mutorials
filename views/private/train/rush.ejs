@@ -83,6 +83,8 @@
                 index++;
             });
 
+            MathJax.typeset();
+
             for(let i = 1; i < index; i++) {
 
                 $("#" + i).one("click", async () => {
@@ -121,6 +123,8 @@
                 
                 $("#question-statement").html(question.statement);
                 $("#hiddenQuestionID").text(question.id);
+
+                MathJax.typeset();
 
                 if(strikes < 3 && seconds > 0) {
 
