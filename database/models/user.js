@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
             physics: Array,
             chemistry: Array,
             biology: Array
+        },
+        rush: {
+            highscore: Number,
+            attempts: Number
         }
     },
     email_confirm_code: String,

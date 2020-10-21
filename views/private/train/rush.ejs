@@ -1,0 +1,267 @@
+<%# Page for problem rush %>
+
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
+
+<%# JS code %>
+<script>
+
+    $(document).ready(function () {
+
+        // starting values
+        let score = 0;
+        let seconds = 301;
+        let strikes = 0;
+        let timerGoing = false;
+
+        // configure start dialogue
+        $("#rush-canvas").hide(0);
+        $("#results-page").hide(0);
+        
+        $("#start-rush").one("click", () => {
+            $("#instructions").hide(500);
+            $("#rush-canvas").show(500);
+
+            timerGoing = true;
+
+            startRush();
+        });
+
+        // declare timer functions
+        const secondsToString = (seconds) => {
+            
+            let minutes = Math.floor(seconds/60);
+            seconds = seconds % 60;
+
+            if(seconds < 10) {
+                seconds = "0" + seconds;
+            }
+
+            return minutes + ":" + seconds;
+        }
+
+        window.setInterval(() => {
+
+            if(timerGoing) {
+
+                seconds -= 1;
+                
+                if(seconds < 0) {
+                    seconds = 0;
+                }
+
+                $("#timer").text(secondsToString(seconds));
+            }
+
+        }, 1000);
+
+        // hide strikes and correct/wrong dialogue, as well as q statement and answer choices
+        $("#strike-1").hide(0);
+        $("#strike-2").hide(0);
+        $("#strike-3").hide(0);
+        $("#correct").hide(0);
+        $("#wrong").hide(0);
+        $("#question-statement").hide(0);
+        $("#answers").hide(0);
+
+        // function to load and delete child nodes
+        function removeAllChildren(selector) {
+            const parent = document.querySelector(selector);
+            while (parent.firstChild) {
+                parent.removeChild(parent.firstChild);
+            }
+        }
+        
+        function addAnswers(choices, selector) {
+
+            let index = 1;
+
+            choices.forEach((choice) => {
+
+                $(selector).append('<button class="btn btn-lg btn-block btn-primary" id="' + index + '">' + choice + '</button>');
+
+                index++;
+            });
+
+            for(let i = 1; i < index; i++) {
+
+                $("#" + i).one("click", async () => {
+                    
+                    $("#question-statement").hide(400);
+                    $("#answers").hide(400);
+
+                    let correct = await submitAnswer(i, $("#hiddenQuestionID").text());
+
+                    if(correct) {
+
+                        score += 1;
+                        $("#score").text("Score: " + score);
+                        
+                        $("#correct").show(400);
+                    } else {
+
+                        strikes += 1;
+                        $("#wrong").show(400);
+
+                        $("#strike-" + strikes).show(400);
+                    }
+
+                    if(strikes < 3 && seconds > 0) {
+                        setTimeout(loadQuestion(score), 800);
+                    }
+                });
+            }
+        }
+
+
+        // functions to load question and submit answer
+        let loadQuestion = (score) => {
+
+            $.get("/train/rush/loadQuestion", { score }, async (question) => {
+                
+                $("#question-statement").html(question.statement);
+                $("#hiddenQuestionID").text(question.id);
+
+                if(strikes < 3 && seconds > 0) {
+
+                    await removeAllChildren("#answers");
+                    await addAnswers(question.choices, "#answers");
+                    
+                    $("#question-statement").show(400);
+                    $("#answers").show(400);
+
+                    $("#correct").hide(400);
+                    $("#wrong").hide(400);
+                }
+
+            });
+        }
+
+        let submitAnswer = async (index, id) => {
+            
+            let data = await $.get("/train/rush/checkAnswer", { index, id });
+
+            return data.correct;
+
+        }
+
+        // actual rush starts!
+        let startRush = async () => {
+
+            loadQuestion(score);
+        }
+        
+        // define when rush ends
+        window.setInterval(() => {
+
+            if(seconds <= 0 || strikes >= 3) {
+                
+                timerGoing = false;
+                seconds = 301;
+                strikes = 0;
+                
+                $("#correct").hide(400);
+                $("#wrong").hide(400);
+                $("#question-statement").hide(400);
+                $("#answers").hide(400);
+
+                removeAllChildren("#answers");
+
+                $("#results-page").show(800);
+                $("#final-score").text("Final Score: " + score);
+
+                $.get("/train/rush/results", { score }, (data) => {
+
+                    $("#highscore").text("Highscore: " + Math.max(score, data.highscore));
+                });
+
+            }
+        }, 400);
+
+        // play again function
+        $("#play-again").click(() => {
+
+            $("#results-page").hide(500);
+            $("#strike-1").hide(400);
+            $("#strike-2").hide(400);
+            $("#strike-3").hide(400);
+
+            score = 0;
+
+            timerGoing = true;
+
+            startRush();
+        });
+    });
+
+</script>
+
+<h1 class="display-3 text-center mt-5 mb-3">Mutorials Problem Rush</h1>
+
+<div class="jumbotron container mb-5" id="instructions">
+
+    <h3>What is Problem Rush?</h3>
+
+    <p class="mt-3">Problem Rush is a fast-paced game testing your knowledge of science. The rules are simple:</p>
+    <ul>
+        <li>You are given questions one after another which are increasingly difficult</li>
+        <li>Try to solve as many as you can within 5 minutes!</li>
+        <li>The game ends when 5 minutes are up, or after you get 3 questions wrong</li>
+    </ul>
+
+    <button class="btn btn-lg btn-block btn-primary mt-4" id="start-rush">Start Rush!</button>
+
+</div>
+
+<div class="jumbotron container mb-5" id="rush-canvas">
+
+    <div class="row">
+
+        <div class="col-8">
+
+            <%# Empty containers to be interpolated by jQuery %>
+            <h5 id="question-statement"></h5>
+            <div id="answers" class="mt-3"></div>
+
+            <div class="alert alert-success" id="correct">Your answer is correct!</div>
+            <div class="alert alert-danger" id="wrong">Your answer is incorrect!</div>
+
+            <div id="results-page">
+                
+                <h1 class="text-center">Game Over!</h1>
+
+                <h3 class="text-center mt-3" id="highscore">Highscore: XXX</h3>
+
+                <h3 class="text-center mb-4" id="final-score">Final Score: XXX</h3>
+                
+                <button class="btn btn-lg btn-block btn-primary" id="play-again">Play Again</button>
+
+                <a class="btn btn-lg btn-block btn-secondary" href="/train">Exit</a>
+            </div>
+
+        </div>
+        <div class="col-4">
+            
+            <h2 class="display-2 text-center" id="timer">5:00</h1>
+            
+            <h3 class="text-center" id="score">Score: 0</h3>
+
+            <div class="row">
+                <div class="col-4">
+                    <h1 class="display-1 text-center" id="strike-1"><span class="badge badge-danger">X</span></h1>
+                </div>
+                <div class="col-4">
+                    <h1 class="display-1 text-center" id="strike-2"><span class="badge badge-danger">X</span></h1>
+                </div>
+                <div class="col-4">
+                    <h1 class="display-1 text-center" id="strike-3"><span class="badge badge-danger">X</span></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="hiddenQuestionID" value="">
+
+</div>
+
+<%- include("../../partials/footer") -%>
