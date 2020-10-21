@@ -155,18 +155,13 @@ async function getDailyQuestion(Daily, Ques) {
     const date = await new Date().toISOString().split('T')[0];
     let question = await Daily.findOne({ date }).exec();
 
-    console.log("getDailyQuestion called, date: ", date);
-
     if(question) {
-        console.log("daily question found");
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
       
         return content;
     } else {
-
-        console.log("daily question not found, generating...");
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
@@ -239,6 +234,34 @@ async function getAnnouncements(SiteData, numberToFetch) {
     return recentAnnouncements;
 }
 
+// updates problem rush stats
+async function updateRushStats(user, score) {
+    
+    if(!user.stats.rush) {
+        user.stats.rush = {
+            attempts: 0,
+            highscore: 0
+        }
+    }
+
+    if(!user.stats.rush.highscore) {
+        user.stats.rush.highscore = 0;
+    }
+
+    if(!user.stats.rush.attempts) {
+        user.stats.rush.attempts = 0;
+    }
+
+    user.stats.rush.attempts += 1;
+
+    if(user.stats.rush.highscore < score) {
+        
+        user.stats.rush.highscore = score;
+    }
+
+    db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { stats: user.stats } });
+}
+
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats };
 

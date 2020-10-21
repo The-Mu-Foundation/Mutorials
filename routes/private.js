@@ -10,7 +10,7 @@ const { genPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter,
-    getAnnouncements } = require('../utils/functions/database');
+    getAnnouncements, updateRushStats } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/';
@@ -577,13 +577,124 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/train/rush', async (req, res) => {
+        if (req.isAuthenticated()) {
+            res.render(VIEWS + 'private/train/rush.ejs', { pageName: "Problem Rush" });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/train/rush/loadQuestion', async (req, res) => {
+        if (req.isAuthenticated()) {
+            
+            try {
+
+                let score = parseInt(req.query.score);
+
+                let lowerBound = 500+score*100;
+                let upperBound = 500+(score+1)*100-1;
+                if(score == 0) {
+                    lowerBound = 0;
+                }
+
+                let selection = undefined;
+                while(!selection) {
+
+                    let questions = await mongo.Ques.find({ type: "mc", rating: { $gte: lowerBound, $lte: upperBound } }).exec();
+                    selection = questions[Math.floor(questions.length*Math.random())];
+
+                    lowerBound -= 50;
+                    upperBound += 50;
+                }
+
+                res.json({
+                    status: "Success",
+                    id: selection._id,
+                    rating: selection.rating,
+                    statement: selection.question,
+                    choices: selection.choices
+                });
+            } catch(err) {
+
+                res.json({
+                    status: "Error"
+                });
+            }
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/train/rush/checkAnswer', async (req, res) => {
+        if (req.isAuthenticated()) {
+            
+            try {
+
+                let choice = req.query.index;
+                let id = req.query.id;
+
+                let question = await mongo.Ques.findOne({ _id: id}).exec();
+
+                let correct = true;
+                if(question.answer[0] != choice) {
+                    correct = false;
+                }
+
+                res.json({
+                    status: "Success",
+                    correct
+                });
+            } catch(err) {
+
+                res.json({
+                    status: "Error"
+                });
+            }
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/train/rush/results', async (req, res) => {
+        if (req.isAuthenticated()) {
+            
+            try {
+
+                let score = req.query.score;
+
+                await updateRushStats(req.user, score);
+                
+                let user = await mongo.User.findOne({ _id: req.user._id }).exec();;
+
+                let highscore = user.stats.rush.highscore;
+                
+                res.json({
+                    status: "Success",
+                    highscore
+                });
+                
+            } catch(err) {
+
+                res.json({
+                    status: "Error"
+                });
+            }
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.get('/train/:subject/proficiency', (req, res) => {
+
         // called when rating isn't set for subject
         if (req.isAuthenticated()) {
             if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
-                //req.user.rating[req.params.subject.toLowerCase()] = 0;
-                //req.user.save();
-                //mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+                
                 res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject, pageName: req.params.subject + " Proficiency" });
             }
             else {
