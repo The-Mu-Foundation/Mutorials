@@ -8,7 +8,7 @@ const { adminList, contributorList } = require('../utils/constants/sitesettings'
 const { arraysEqual } = require('../utils/functions/general');
 const { genPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateAll, updateQuestionQueue, addExperience,
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter,
     getAnnouncements, updateRushStats } = require('../utils/functions/database');
 
@@ -642,6 +642,12 @@ module.exports = (app, mongo) => {
                 if(question.answer[0] != choice) {
                     correct = false;
                 }
+
+                // backend site data updates
+                incrementSolveCounter(mongo.SiteData, question.subject[0].toLowerCase(), correct);
+                addExperience(req, correct ? (question.rating/2) : (question.rating/4));
+                updateCounters(req, question, correct);
+                setQRating(question, correct ? Math.max(0, question.rating - 1) : question.rating + 1);
 
                 res.json({
                     status: "Success",
