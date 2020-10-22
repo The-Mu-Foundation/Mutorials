@@ -14,6 +14,8 @@
         let strikes = 0;
         let timerGoing = false;
 
+        let questionTracker = [];
+
         // configure start dialogue
         $("#rush-canvas").hide(0);
         $("#results-page").hide(0);
@@ -49,6 +51,10 @@
                 if(seconds < 0) {
                     seconds = 0;
                 }
+
+                try {
+                    questionTracker[questionTracker.length - 1].timeSpent += 1;
+                } catch(err) {}
 
                 $("#timer").text(secondsToString(seconds));
             }
@@ -108,6 +114,8 @@
                         $("#strike-" + strikes).show(400);
                     }
 
+                    questionTracker[questionTracker.length - 1].correct = correct ? 1 : -1;
+
                     if(strikes < 3 && seconds > 0) {
                         setTimeout(loadQuestion(score), 800);
                     }
@@ -121,6 +129,14 @@
 
             $.get("/train/rush/loadQuestion", { score }, async (question) => {
                 
+                questionTracker.push({
+                    id: question.id,
+                    rating: question.rating,
+                    subject: question.subject,
+                    correct: 0,
+                    timeSpent: 0
+                });
+
                 $("#question-statement").html(question.statement);
                 $("#hiddenQuestionID").text(question.id);
 
@@ -149,6 +165,26 @@
 
         }
 
+        // function to interpolate the rush result report
+        let interpolateReport = async (questions) => {
+            
+            await removeAllChildren("#question-rows");
+
+            console.log(questions);
+
+            questions.forEach((question) => {
+                
+                let style = (question.correct == 1) ? "background-color:#5cb85c" : ((question.correct == -1) ? "background-color:#d9534f" : "background-color:#808080");
+
+                $("#question-rows").append('<tr style=' + style +'><td>' +
+                    question.rating +'</td><td>' +
+                    question.subject + '</td><td>' +
+                    question.timeSpent + '</td><td>' + 
+                    question.id + '</td></tr>');
+                
+            });
+        }
+
         // actual rush starts!
         let startRush = async () => {
 
@@ -164,6 +200,8 @@
                 seconds = 301;
                 strikes = 0;
                 
+                interpolateReport(questionTracker);
+
                 $("#correct").hide(400);
                 $("#wrong").hide(400);
                 $("#question-statement").hide(400);
@@ -191,6 +229,7 @@
             $("#strike-3").hide(400);
 
             score = 0;
+            questionTracker = [];
 
             timerGoing = true;
 
@@ -237,6 +276,19 @@
                 <h3 class="text-center mt-3" id="highscore">Highscore: XXX</h3>
 
                 <h3 class="text-center mb-4" id="final-score">Final Score: XXX</h3>
+
+                <table class="table mb-4">
+                    <thead>
+                        <tr>
+                            <th scope="col">Rating</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col">Seconds Spent</th>
+                            <th scope="col">ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="question-rows">
+                    </tbody>
+                </table>
                 
                 <button class="btn btn-lg btn-block btn-primary" id="play-again">Play Again</button>
 
