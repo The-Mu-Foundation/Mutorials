@@ -612,6 +612,7 @@ module.exports = (app, mongo) => {
                 res.json({
                     status: "Success",
                     id: selection._id,
+                    subject: selection.subject[0],
                     rating: selection.rating,
                     statement: selection.question,
                     choices: selection.choices
