@@ -162,8 +162,9 @@ module.exports = (app, mongo) => {
                 biology: -1
             }
         });
-        // check for duplicate user
-        mongo.db.collection('users').findOne({ username: req.body.username }).then((user) => {
+
+        // check for duplicate username AND email
+        mongo.db.collection('users').findOne({ $or:[ { ign: req.body.ign }, { username: req.body.username } ]}).then((user) => {
             if (user) {
                 console.log('used');
                 var registerInputProblems2 = false;
