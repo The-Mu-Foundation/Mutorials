@@ -9,6 +9,7 @@ filter = new Filter();
 const emailValidation = require('../utils/functions/emailValidation');
 const { genPassword, validPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
+const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 
 const VIEWS = "../views/"
 
@@ -23,10 +24,21 @@ module.exports = (app, mongo) => {
     // `ign` is username
     app.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
+
             let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
-            const date = await new Date().toISOString().split('T')[0];
             const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
-            res.render(VIEWS + 'public/index.ejs', { siteStats: siteData, question });
+
+            let experience = await mongo.User.find({ "stats.experience": { $gte: 10000 } }).sort({ "stats.experience": -1 }).limit(6).exec();
+
+            experience = experience.map(user => {
+                return {
+                    level: calculateLevel(user.stats.experience),
+                    experience: user.stats.experience,
+                    ign: user.ign
+                }
+            });
+
+            res.render(VIEWS + 'public/index.ejs', { siteStats: siteData, question, experience });
         }
         else {
             res.redirect('/homepage');

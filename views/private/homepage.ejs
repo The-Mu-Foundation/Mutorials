@@ -41,6 +41,18 @@
         });
 
     });
+    
+    window.onload = () => {
+
+        // init AOS
+        AOS.init({
+            disable: function () {
+                var maxWidth = 800;
+                return window.innerWidth < maxWidth;
+            },
+            mirror: true
+        });
+    }
 
 </script>
 
@@ -66,11 +78,11 @@
         </div>
 
         <div class="col-4">
-            <a href="/train/Chemistry/chooseUnits"><img id="chem-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Physics icon"></a>
+            <a href="/train/Chemistry/chooseUnits"><img id="chem-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Chem icon"></a>
         </div>
 
         <div class="col-4">
-            <a href="/train/Biology/chooseUnits"><img id="bio-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Physics icon"></a>
+            <a href="/train/Biology/chooseUnits"><img id="bio-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Bio icon"></a>
         </div>
 
     </div>
