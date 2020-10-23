@@ -214,7 +214,7 @@
 
                 $.get("/train/rush/results", { score }, (data) => {
 
-                    $("#highscore").text("Highscore: " + Math.max(score, data.highscore));
+                    $("#highscore").text("High Score: " + Math.max(score, data.highscore));
                 });
 
             }
@@ -273,7 +273,7 @@
                 
                 <h1 class="text-center">Game Over!</h1>
 
-                <h3 class="text-center mt-3" id="highscore">Highscore: XXX</h3>
+                <h3 class="text-center mt-3" id="highscore">High Score: XXX</h3>
 
                 <h3 class="text-center mb-4" id="final-score">Final Score: XXX</h3>
 

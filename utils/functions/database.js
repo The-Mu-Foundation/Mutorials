@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 var db = mongoose.connection;
 
+const { calculateLevel } = require("./siteAlgorithms");
+
 // input a string (the question ID), returns question entry
 function getQuestion(Ques, id) {
     return Ques.findById(id).exec();
@@ -141,11 +143,22 @@ function setQRating (antsy, newQRate) {
 async function generateLeaderboard (User, count) {
 
     // NOTE: change the $gte to a higher number once we get more users
-    let physics = await User.find({ "rating.physics": { $gte: 500 } }).sort({ "rating.physics": -1 }).limit(count).exec();
-    let chem = await User.find({ "rating.chemistry": { $gte: 500 } }).sort({ "rating.chemistry": -1 }).limit(count).exec();
-    let bio = await User.find({ "rating.biology": { $gte: 500 } }).sort({ "rating.biology": -1 }).limit(count).exec();
+    let physics = await User.find({ "rating.physics": { $gte: 1000 } }).sort({ "rating.physics": -1 }).limit(count).exec();
+    let chem = await User.find({ "rating.chemistry": { $gte: 1000 } }).sort({ "rating.chemistry": -1 }).limit(count).exec();
+    let bio = await User.find({ "rating.biology": { $gte: 1000 } }).sort({ "rating.biology": -1 }).limit(count).exec();
 
-    return { physics, chem, bio };
+    let rush = await User.find({ "stats.rush.highscore": { $gte: 10 } }).sort({ "stats.rush.highscore": -1 }).limit(count).exec();
+    let experience = await User.find({ "stats.experience": { $gte: 10000 } }).sort({ "stats.experience": -1 }).limit(count).exec();
+
+    experience = experience.map(user => {
+        return {
+            level: calculateLevel(user.stats.experience),
+            experience: user.stats.experience,
+            ign: user.ign
+        }
+    });
+
+    return { physics, chem, bio, rush, experience };
     
 }
 
