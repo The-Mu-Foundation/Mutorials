@@ -62,6 +62,10 @@
     <%# animate.css import %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
+    <%# Animate On Scroll import %>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <%# Custom CSS for site %>
     <style>
 
@@ -180,6 +184,16 @@
             -moz-border-radius-topright: 15px;
             -moz-border-radius-bottomright: 15px;
             -webkit-border-top-right-radius: 15px;
+            -webkit-border-bottom-right-radius: 15px;
+        }
+
+        .icon-bar a:first-child {
+            -moz-border-radius-topright: 15px;
+            -webkit-border-top-right-radius: 15px;
+        }
+
+        .icon-bar a:last-child {
+            -moz-border-radius-bottomright: 15px;
             -webkit-border-bottom-right-radius: 15px;
         }
 
