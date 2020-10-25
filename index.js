@@ -5,10 +5,10 @@ const LocalStrategy = require('passport-local').Strategy;
 const express = require('express');
 var flash = require('express-flash-messages');
 const session = require('express-session');
-const emailValidation = require('./utils/functions/emailValidation');
 const http = require('http');
 const https = require('https');
 var enforce = require('express-sslify');
+const emailValidation = require('./utils/functions/emailValidation');
 
 // START EXPRESS SERVER
 const app = express();
