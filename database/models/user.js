@@ -31,7 +31,8 @@ const userSchema = new mongoose.Schema({
         rush: {
             highscore: Number,
             attempts: Number
-        }
+        },
+        units: Object
     },
     email_confirm_code: String,
     rating: {

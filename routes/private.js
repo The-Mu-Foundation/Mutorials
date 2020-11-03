@@ -530,11 +530,49 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/statsAdditional', async (req, res) => {
+
+        if (req.isAuthenticated()) {
+            
+            try {
+
+                let { physicsRating, chemistryRating, biologyRating, experience, rushHighscore } = req.query;
+                
+                let globalPhysicsRank = (await mongo.User.countDocuments({ "rating.physics": { $gt: physicsRating } })) + 1;
+                let globalChemistryRank = (await mongo.User.countDocuments({ "rating.chemistry": { $gt: chemistryRating } })) + 1;
+                let globalBiologyRank = (await mongo.User.countDocuments({ "rating.biology": { $gt: biologyRating } })) + 1;
+                let globalExperienceRank = (await mongo.User.countDocuments({ "stats.experience": { $gt: experience } })) + 1;
+                let globalRushRank = (await mongo.User.countDocuments({ "stats.rush.highscore": { $gt: rushHighscore } })) + 1;
+
+                res.json({
+                    status: "Success",
+                    globalRank: {
+                        physics: globalPhysicsRank,
+                        chemistry: globalChemistryRank,
+                        biology: globalBiologyRank,
+                        experience: globalExperienceRank,
+                        rush: globalRushRank
+                    }
+                });
+                
+            } catch(err) {
+
+                res.json({
+                    status: "Error"
+                });
+            }
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.get('/stats/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
                 if (obj) {
-                    res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Stats" });
+                    let userLevel = calculateLevel(obj.stats.experience);
+                    res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, userLevel, pageName: obj.ign + "'s Stats" });
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
                     res.redirect('/');
@@ -637,7 +675,7 @@ module.exports = (app, mongo) => {
                 let choice = req.query.index;
                 let id = req.query.id;
 
-                let question = await mongo.Ques.findOne({ _id: id}).exec();
+                let question = await mongo.Ques.findOne({ _id: id }).exec();
 
                 let correct = true;
                 if(question.answer[0] != choice) {

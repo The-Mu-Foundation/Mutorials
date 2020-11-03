@@ -42,6 +42,8 @@ function updateAll (req, question, correct) {
     addExperience(req, correct ? question.rating : Math.ceil(question.rating/2));
 }
 function updateCounters (req, question, correct) {
+
+    // configure general counters
     if (correct) {
         // update counters
         req.user.stats.correct++;
@@ -56,6 +58,57 @@ function updateCounters (req, question, correct) {
         req.user.stats.wrong++;
         question.stats.fail++;
     }
+
+    // unit-specific counters
+    if(!req.user.stats.units) {
+        req.user.stats.units = {};
+    }
+    question.units.forEach((unit) => {
+
+        let unitName = unit.split(' ')[2];
+
+        if(!req.user.stats.units["" + unitName]) {
+            req.user.stats.units["" + unitName] = {
+                correct: 0,
+                wrong: 0,
+                highestQRating: 100,
+                highestQCorrectRating: 100,
+                pastResults: [],
+                pastRatings: []
+            };
+        }
+
+        // temporary tracker
+        let tempUnit = req.user.stats.units["" + unitName];
+
+        if(question.rating > tempUnit.highestQRating) {
+            tempUnit.highestQRating = question.rating;
+        }
+
+        if(correct) {
+            tempUnit.correct++;
+            tempUnit.pastResults.push(1);
+            if(question.rating > tempUnit.highestQCorrectRating) {
+                tempUnit.highestQCorrectRating = question.rating;
+            }
+        } else {
+            tempUnit.wrong++;
+            tempUnit.pastResults.push(-1);
+        }
+
+        tempUnit.pastRatings.push(question.rating);
+
+        while(tempUnit.pastRatings.length > 15) {
+            tempUnit.pastRatings.shift();
+        }
+        while(tempUnit.pastResults.length > 15) {
+            tempUnit.pastResults.shift();
+        }
+
+        req.user.stats.units["" + unitName] = tempUnit;
+
+    });
+
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
