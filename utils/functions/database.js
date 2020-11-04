@@ -65,21 +65,20 @@ function updateCounters (req, question, correct) {
     }
     question.units.forEach((unit) => {
 
-        let unitName = unit.split(' ')[2];
-
-        if(!req.user.stats.units["" + unitName]) {
-            req.user.stats.units["" + unitName] = {
+        if(!req.user.stats.units["" + unit]) {
+            req.user.stats.units["" + unit] = {
                 correct: 0,
                 wrong: 0,
                 highestQRating: 100,
                 highestQCorrectRating: 100,
                 pastResults: [],
-                pastRatings: []
+                pastRatings: [],
+                lastTouched: ""
             };
         }
 
         // temporary tracker
-        let tempUnit = req.user.stats.units["" + unitName];
+        let tempUnit = req.user.stats.units["" + unit];
 
         if(question.rating > tempUnit.highestQRating) {
             tempUnit.highestQRating = question.rating;
@@ -105,7 +104,9 @@ function updateCounters (req, question, correct) {
             tempUnit.pastResults.shift();
         }
 
-        req.user.stats.units["" + unitName] = tempUnit;
+        tempUnit.lastTouched = new Date().toISOString().split('T')[0];
+
+        req.user.stats.units["" + unit] = tempUnit;
 
     });
 

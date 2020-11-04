@@ -1,5 +1,6 @@
 <%# Page for displaying stats %>
-<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site, userLevel - user's experience data %>
+<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site,
+    analytics - a list of analytics about the user, userLevel - user's experience data %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -208,6 +209,42 @@
                 <p><%= counter %>/<%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> tags in this subject have been collected</p>
             <% } %>
 
+            <% if(analytics.strengths.physics.length > 0) { %>
+                <h3 class="mt-3">Areas of Mastery:</h3>
+                <h3>
+                    <% analytics.strengths.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.studying.physics.length > 0) { %>
+                <h3 class="mt-3">Currently Studying:</h3>
+                <h3>
+                    <% analytics.studying.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.weaknesses.physics.length > 0) { %>
+                <h3 class="mt-3">Recommended Training:</h3>
+                <h3>
+                    <% analytics.weaknesses.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.favorites.physics.length > 0) { %>
+                <h3 class="mt-3">Favorite Units:</h3>
+                <h3>
+                    <% analytics.favorites.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
         </div>
 
         <div class="col-5">
@@ -249,6 +286,42 @@
                 <p>0 out of <%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
                 <p><%= counter %>/<%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> tags in this subject have been collected</p>
+            <% } %>
+
+            <% if(analytics.strengths.chemistry.length > 0) { %>
+                <h3 class="mt-3">Areas of Mastery:</h3>
+                <h3>
+                    <% analytics.strengths.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.studying.chemistry.length > 0) { %>
+                <h3 class="mt-3">Currently Studying:</h3>
+                <h3>
+                    <% analytics.studying.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.weaknesses.chemistry.length > 0) { %>
+                <h3 class="mt-3">Recommended Training:</h3>
+                <h3>
+                    <% analytics.weaknesses.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.favorites.chemistry.length > 0) { %>
+                <h3 class="mt-3">Favorite Units:</h3>
+                <h3>
+                    <% analytics.favorites.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
             <% } %>
 
         </div>
@@ -293,6 +366,42 @@
                 <p>0 out of <%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
                 <p><%= counter %>/<%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> tags in this subject have been collected</p>
+            <% } %>
+
+            <% if(analytics.strengths.biology.length > 0) { %>
+                <h3 class="mt-3">Areas of Mastery:</h3>
+                <h3>
+                    <% analytics.strengths.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.studying.biology.length > 0) { %>
+                <h3 class="mt-3">Currently Studying:</h3>
+                <h3>
+                    <% analytics.studying.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.weaknesses.biology.length > 0) { %>
+                <h3 class="mt-3">Recommended Training:</h3>
+                <h3>
+                    <% analytics.weaknesses.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.favorites.biology.length > 0) { %>
+                <h3 class="mt-3">Favorite Units:</h3>
+                <h3>
+                    <% analytics.favorites.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
             <% } %>
 
         </div>

@@ -1,5 +1,5 @@
 // FUNCTION IMPORTS
-const { calculateRatings, ratingCeilingFloor, calculateLevel } = require('../utils/functions/siteAlgorithms');
+const { calculateRatings, ratingCeilingFloor, calculateLevel, analyze } = require('../utils/functions/siteAlgorithms');
 const { presetUnitOptions } = require('../utils/constants/presets');
 const { tags } = require('../utils/constants/tags');
 const { referenceSheet } = require('../utils/constants/referencesheet');
@@ -569,10 +569,11 @@ module.exports = (app, mongo) => {
 
     app.get('/stats/:username', (req, res) => {
         if (req.isAuthenticated()) {
-            mongo.User.findOne({ ign: req.params.username }, function (err, obj) {
+            mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
-                    let userLevel = calculateLevel(obj.stats.experience);
-                    res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, userLevel, pageName: obj.ign + "'s Stats" });
+                    let userLevel = await calculateLevel(obj.stats.experience);
+                    let analytics = await analyze(req.user.stats.units ? req.user.stats.units : {});
+                    res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, userLevel, analytics, pageName: obj.ign + "'s Stats" });
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
                     res.redirect('/');

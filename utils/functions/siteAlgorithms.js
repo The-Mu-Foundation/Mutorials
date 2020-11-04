@@ -57,4 +57,48 @@ function calculateLevel(experience) {
     return { level, remainder: Math.round(total), totalToNext: Math.round(decrement) };
 }
 
-module.exports = { calculateRatings , ratingCeilingFloor, calculateLevel };
+function analyze(unitData) {
+
+    let strengths = {
+        physics: [],
+        biology: [],
+        chemistry: []
+    };
+    let weaknesses = {
+        physics: [],
+        biology: [],
+        chemistry: []
+    };
+    let studying = {
+        physics: [],
+        biology: [],
+        chemistry: []
+    };
+    let favorites = {
+        physics: [],
+        biology: [],
+        chemistry: []
+    };
+
+    for (const [unit, data] of Object.entries(unitData)) {
+        
+        let performance = data.pastResults.reduce((a, b) => a + b, 0);
+        let averageRating = data.pastRatings.reduce((a, b) => a + b, 0)/data.pastRatings.length;
+        
+        if(performance >= 7 || (performance >= 5 && averageRating >= 1500) || (performance >= 3 && averageRating >= 2100)) {
+            strengths[unit.split(' ')[0].toLowerCase()].push("" + unit);
+        } else if(performance <= -5 || (performance <= -3 && averageRating <= 1800) || (performance <= -1 && averageRating <= 1000)) {
+            weaknesses[unit.split(' ')[0].toLowerCase()].push("" + unit);
+        } else {
+            studying[unit.split(' ')[0].toLowerCase()].push("" + unit);
+        }
+
+        if(data.correct + data.wrong >= 100) {
+            favorites[unit.split(' ')[0].toLowerCase()].push("" + units);
+        }
+    }
+
+    return { strengths, weaknesses, studying, favorites }
+}
+
+module.exports = { calculateRatings , ratingCeilingFloor, calculateLevel, analyze };
