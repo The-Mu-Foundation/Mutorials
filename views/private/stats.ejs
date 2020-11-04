@@ -1,10 +1,41 @@
 <%# Page for displaying stats %>
-<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site %>
+<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site,
+    analytics - a list of analytics about the user, userLevel - user's experience data %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
 
 <script>
+
+    $(document).ready(function() {
+        
+        $("#experience-indicator").fadeTo(0, 0.7);
+        $("#experience-bar").on({
+            mouseenter: function() {
+                $("#experience-indicator").fadeTo(200, 1);
+            },
+            mouseleave: function() {
+                $("#experience-indicator").fadeTo(200, 0.7);
+            }
+        });
+
+        let physicsRating = parseInt("<%= user.rating.physics %>");
+        let chemistryRating = parseInt("<%= user.rating.chemistry %>");
+        let biologyRating = parseInt("<%= user.rating.biology %>");
+        let experience = parseInt("<%= user.stats.experience %>");
+        let rushHighscore = parseInt("<%= user.stats.rush.highscore %>");
+        $.get("/statsAdditional", { physicsRating, chemistryRating, biologyRating, experience, rushHighscore }, (data) => {
+                
+            if(data.status == "Success") {
+                
+                $("#physics-global-rank").html('Global Rank: <font color="blue">#' + data.globalRank.physics + '</font>');
+                $("#chemistry-global-rank").html('Global Rank: <font color="blue">#' + data.globalRank.chemistry + '</font>');
+                $("#biology-global-rank").html('Global Rank: <font color="blue">#' + data.globalRank.biology + '</font>');
+                $("#experience-global-rank").html('Global Rank: <font color="blue">#' + data.globalRank.experience + '</font>');
+                $("#rush-global-rank").html('Global Rank: <font color="blue">#' + data.globalRank.rush + '</font>');
+            }
+        });
+    });
 
     window.onload = function () {
 
@@ -25,13 +56,13 @@
                     ctx.font = fontSize + "em sans-serif";
 
                     ctx.fillStyle = "#8d0f0f";
-                    var text = "Wrong: <%= Math.round(100*(user.stats.wrong)/(user.stats.correct+user.stats.wrong)) %>%";
+                    var text = "Wrong: <%= user.stats.correct+user.stats.wrong != 0 ? Math.round(100*(user.stats.wrong)/(user.stats.correct+user.stats.wrong)) : 0  %>%";
                     var textX = Math.round((width - ctx.measureText(text).width) / 2);
                     var textY = (height/2) + 25;
                     ctx.fillText(text, textX, textY);
 
                     ctx.fillStyle = "#208d0f";
-                    text = "Correct: <%= Math.round(100*(user.stats.correct)/(user.stats.correct+user.stats.wrong)) %>%";
+                    text = "Correct: <%= user.stats.correct+user.stats.wrong != 0 ? Math.round(100*(user.stats.correct)/(user.stats.correct+user.stats.wrong)) : 0 %>%";
                     textX = Math.round((width - ctx.measureText(text).width) / 2);
                     textY -= 30;
                     ctx.fillText(text, textX, textY);
@@ -53,7 +84,7 @@
                 labels: ["Correct", "Wrong"],
                 datasets: [{
                     label: "User Correct/Wrong Counts",
-                    data: [$("#correctcount").val(), $("#wrongcount").val()],
+                    data: [$("#correctcount").val()+$("#wrongcount").val() != 0 ? $("#correctcount").val() : 1, $("#wrongcount").val()],
                     backgroundColor: [
                         "rgba(80, 185, 20, 1)",
                         "rgba(215, 80, 80, 1)"
@@ -157,6 +188,8 @@
 
             <h3 class="display-4">Physics: <font color="green"><%= user.rating.physics != -1 ? user.rating.physics : "Unrated" %></font></h3>
 
+            <h2 class="mt-3" id="physics-global-rank">Global Rank: XXX</h2>
+
             <h5 class="mt-3">Collected Physics Tags:</h5>
             <% var counter = 0; %>
             <% user.stats.collectedTags.forEach((tag) => { %>
@@ -174,6 +207,42 @@
                 <p>0 out of <%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
                 <p><%= counter %>/<%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> tags in this subject have been collected</p>
+            <% } %>
+
+            <% if(analytics.strengths.physics.length > 0) { %>
+                <h3 class="mt-3">Areas of Mastery:</h3>
+                <h3>
+                    <% analytics.strengths.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.studying.physics.length > 0) { %>
+                <h3 class="mt-3">Currently Studying:</h3>
+                <h3>
+                    <% analytics.studying.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.weaknesses.physics.length > 0) { %>
+                <h3 class="mt-3">Recommended Training:</h3>
+                <h3>
+                    <% analytics.weaknesses.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.favorites.physics.length > 0) { %>
+                <h3 class="mt-3">Favorite Units:</h3>
+                <h3>
+                    <% analytics.favorites.physics.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
             <% } %>
 
         </div>
@@ -198,6 +267,8 @@
 
             <h3 class="display-4">Chemistry: <font color="green"><%= user.rating.chemistry != -1 ? user.rating.chemistry : "Unrated" %></font></h3>
 
+            <h2 class="mt-3" id="chemistry-global-rank">Global Rank: XXX</h2>
+
             <h5 class="mt-3">Collected Chemistry Tags:</h5>
             <% var counter = 0; %>
             <% user.stats.collectedTags.forEach((tag) => { %>
@@ -215,6 +286,42 @@
                 <p>0 out of <%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
                 <p><%= counter %>/<%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> tags in this subject have been collected</p>
+            <% } %>
+
+            <% if(analytics.strengths.chemistry.length > 0) { %>
+                <h3 class="mt-3">Areas of Mastery:</h3>
+                <h3>
+                    <% analytics.strengths.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.studying.chemistry.length > 0) { %>
+                <h3 class="mt-3">Currently Studying:</h3>
+                <h3>
+                    <% analytics.studying.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.weaknesses.chemistry.length > 0) { %>
+                <h3 class="mt-3">Recommended Training:</h3>
+                <h3>
+                    <% analytics.weaknesses.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.favorites.chemistry.length > 0) { %>
+                <h3 class="mt-3">Favorite Units:</h3>
+                <h3>
+                    <% analytics.favorites.chemistry.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
             <% } %>
 
         </div>
@@ -240,6 +347,8 @@
 
             <h3 class="display-4">Biology: <font color="green"><%= user.rating.biology != -1 ? user.rating.biology : "Unrated" %></font></h3>
 
+            <h2 class="mt-3" id="biology-global-rank">Global Rank: XXX</h2>
+
             <h5 class="mt-3">Collected Biology Tags:</h5>
             <% var counter = 0; %>
             <% user.stats.collectedTags.forEach((tag) => { %>
@@ -257,6 +366,42 @@
                 <p>0 out of <%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> possible tags</p>
             <% } else { %>
                 <p><%= counter %>/<%= Object.keys(totalTags["Biology"]["Units"]).length + Object.keys(totalTags["Biology"]["Concepts"]).length %> tags in this subject have been collected</p>
+            <% } %>
+
+            <% if(analytics.strengths.biology.length > 0) { %>
+                <h3 class="mt-3">Areas of Mastery:</h3>
+                <h3>
+                    <% analytics.strengths.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.studying.biology.length > 0) { %>
+                <h3 class="mt-3">Currently Studying:</h3>
+                <h3>
+                    <% analytics.studying.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.weaknesses.biology.length > 0) { %>
+                <h3 class="mt-3">Recommended Training:</h3>
+                <h3>
+                    <% analytics.weaknesses.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
+            <% } %>
+
+            <% if(analytics.favorites.biology.length > 0) { %>
+                <h3 class="mt-3">Favorite Units:</h3>
+                <h3>
+                    <% analytics.favorites.biology.forEach((unit) => { %>
+                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                    <% }); %>
+                </h3>
             <% } %>
 
         </div>
@@ -279,9 +424,10 @@
 
     <div class="row">
 
-        <div class="col-4"></div>
-
         <div class="col-4">
+
+            <h1 class="text-center">Performance</h1>
+
             <div class="canvas-container-center text-center">
                 <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>
             </div>
@@ -289,7 +435,32 @@
             <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
         </div>
 
-        <div class="col-4"></div>
+        <div class="col-8">
+
+            <h1 class="text-center">Site Experience</h1>
+
+            <h3 class="my-3 text-center" id="experience-global-rank">Global Rank: XXX</h3>
+
+            <div class="progress" style="height: 20px; background-color:rgb(220, 220, 220)" id="experience-bar">
+                <div id="experience-indicator" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: <%= Math.round(100*userLevel.remainder/userLevel.totalToNext) %>%"></div>
+            </div>
+            <p id="experience-stats" class="text-center"><strong>Level <%= userLevel.level %></strong> (<%= userLevel.remainder %>/<%= userLevel.totalToNext %> XP to Level <%= userLevel.level+1 %>)</p>
+
+
+            <h1 class="text-center mt-5">Problem Rush</h1>
+
+            <h3 class="my-3 text-center" id="rush-global-rank">Global Rank: XXX</h3>
+
+            <div class="row">
+                <div class="col-6">
+                    <h3 class="text-center">Attempts: <font color="green"><%= user.stats.rush.attempts ? user.stats.rush.attempts : 0 %></font></h3>
+                </div>
+                <div class="col-6">
+                    <h3 class="text-center">High Score: <font color="green"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></font></h3>
+                </div>
+            </div>
+
+        </div>
 
     </div>
 

@@ -28,7 +28,7 @@ module.exports = (app, mongo) => {
             let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
             const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
 
-            let experience = await mongo.User.find({ "stats.experience": { $gte: 10000 } }).sort({ "stats.experience": -1 }).limit(6).exec();
+            let experience = await mongo.User.find({ "stats.experience": { $gte: 10000 } }).sort({ "stats.experience": -1 }).limit(10).exec();
 
             experience = experience.map(user => {
                 return {
