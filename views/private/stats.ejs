@@ -24,6 +24,7 @@
         let biologyRating = parseInt("<%= user.rating.biology %>");
         let experience = parseInt("<%= user.stats.experience ? user.stats.experience : 0 %>");
         let rushHighscore = parseInt("<%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %>");
+
         $.get("/statsAdditional", { physicsRating, chemistryRating, biologyRating, experience, rushHighscore }, (data) => {
                 
             if(data.status == "Success") {
