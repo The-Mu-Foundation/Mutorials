@@ -22,8 +22,8 @@
         let physicsRating = parseInt("<%= user.rating.physics %>");
         let chemistryRating = parseInt("<%= user.rating.chemistry %>");
         let biologyRating = parseInt("<%= user.rating.biology %>");
-        let experience = parseInt("<%= user.stats.experience %>");
-        let rushHighscore = parseInt("<%= user.stats.rush.highscore %>");
+        let experience = parseInt("<%= user.stats.experience ? user.stats.experience : 0 %>");
+        let rushHighscore = parseInt("<%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %>");
         $.get("/statsAdditional", { physicsRating, chemistryRating, biologyRating, experience, rushHighscore }, (data) => {
                 
             if(data.status == "Success") {
@@ -178,7 +178,7 @@
 
 </script>
 
-<h1 class="my-5 container display-2"><strong><a href="/profile/<%= user.ign %>"><%= user.ign %></a></strong>'s Stats</h1>
+<h1 class="my-5 container display-3"><strong><a href="/profile/<%= user.ign %>"><%= user.ign %></a></strong>'s Stats</h1>
 
 <div class="container jumbotron mt-5">
 
