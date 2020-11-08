@@ -433,7 +433,7 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
-                    let experienceStats = await calculateLevel(obj.stats.experience);
+                    let experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
                     res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
@@ -571,8 +571,10 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
-                    let userLevel = await calculateLevel(obj.stats.experience);
-                    let analytics = await analyze(req.user.stats.units ? req.user.stats.units : {});
+
+                    let userLevel = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
+                    let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
+
                     res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, userLevel, analytics, pageName: obj.ign + "'s Stats" });
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');

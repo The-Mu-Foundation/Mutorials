@@ -85,16 +85,19 @@
 
         // render rating tracker charts
 
-        var ratingData = {
+        let ratingData = {
             "Physics": [],
             "Chemistry": [],
             "Biology": [],
             "Labels": []
         }
         
-        ["Physics", "Chemistry", "Biology"].forEach((subject) => {
+        // DO NOT DELETE - ratingData is not defined if this is deleted
+        console.log(ratingData);
 
-            var tracker = $("#ratingTrackerArray-" + subject).val().split('@');
+        ["Physics", "Chemistry", "Biology"].forEach((subject) => {
+            
+            let tracker = $("#ratingTrackerArray-" + subject).val().split('@');
             if(tracker.length < 2) {
                 tracker.unshift(tracker[0]);
             }
@@ -186,11 +189,19 @@
 		<div class="col-3 jumbotron">
 			<div class="">
                 
-				<h4 class="mb-3"><%= user.profile.name ? user.profile.name : "Unnamed User" %></h4>
+				<h4><%= user.profile.name ? (user.profile.name.length <= 18 ? user.profile.name : user.profile.name.substring(0, 15)+"...") : "Unnamed User" %></h4>
                 
-                <p class="mb-3"><%= user.profile.age ? "Age: " + user.profile.age : ""%></p>
-                <p class="mb-3"><%= user.profile.location ? "Location: " + user.profile.location : "Lives within 8000 miles of Antartica" %></p>
-                <p class="mb-3"><%= user.profile.bio ? user.profile.bio : "This is a very mysterious person who likes pink butterflies and blue cows. Mu!" %></p>
+                <hr class="my-3">
+
+                <p"><%= user.profile.age ? "Age: " + user.profile.age : ""%></p>
+
+                <hr class="my-2">
+
+                <p><%= user.profile.location ? "Location: " + user.profile.location : "Lives within 8000 miles of Antartica" %></p>
+
+                <hr class="my-2">
+
+                <p><%= user.profile.bio ? user.profile.bio : "This is a very mysterious person who likes pink butterflies and blue cows. Mu!" %></p>
 			</div>
 		</div>
 		
@@ -216,7 +227,13 @@
 					</div>
                 </div>
                 
-                <div class="mt-5">
+                <hr class="my-4">
+
+                <h2 class="text-center">Problem Rush High Score: <font color="green"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></font></h2>
+
+                <hr class="my-4">
+
+                <div>
                     <h3 class="mb-3 text-center">Collected Tags</h3>
                     <div class="row">
                         <div class="col-4">
