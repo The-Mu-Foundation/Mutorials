@@ -99,10 +99,14 @@ const tags = {
             "TCHEM": "Thermochemistry"
         },
         "Concepts": {
+            "AVO": "Avogadro's Law",
+            "BOYLE": "Boyle's Law",
+            "CHAR": "Charles's Law",
             "CONV": "Conversions",
             "COVB": "Covalent Bonding",
             "EMP": "Empirical Formulas",
             "ENEG": "Electronegativity",
+            "GAYL": "Gay-Lussac's Law",
             "IONB": "Ionic Bonding",
             "KANE": "Alkanes",
             "KENE": "Alkenes",
