@@ -50,6 +50,15 @@
             }
         });
 
+        // search button configure
+        $("#search").click(function () {
+
+            // free response text values
+            let search = $("#query").val();
+
+            window.location.href = "/search?search=" + search;
+        });
+
     });
     
     window.onload = () => {
@@ -125,6 +134,17 @@
 
 <div class="container">
     <%- include("../partials/components/siteStats") -%>
+</div>
+
+<div class="container mt-4 d-block px-4 py-2 bg-secondary search-result">
+    <div class="row">
+        <div class="col-md-10">
+            <input class="form-control form-control-lg my-2" type="text" placeholder="Search Mutorials" id="query">
+        </div>
+        <div class="col-md-2">
+            <input class="btn btn-primary btn-lg btn-block my-2" value="Search" type="button" id="search">
+        </div>
+    </div>
 </div>
 
 <div class="container mb-4">

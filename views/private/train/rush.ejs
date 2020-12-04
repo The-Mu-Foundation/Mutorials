@@ -180,7 +180,7 @@
                     question.rating +'</td><td>' +
                     question.subject + '</td><td>' +
                     question.timeSpent + '</td><td>' + 
-                    question.id + '</td></tr>');
+                    '<span class="badge badge-secondary"><a href="/question/' + question.id + '" style="text-decoration: none;" target="_blank">' + question.id + '</a></span></td></tr>');
                 
             });
         }
