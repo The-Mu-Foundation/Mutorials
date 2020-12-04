@@ -141,23 +141,6 @@
         });
     }
 
-    // configure report button
-//    $(document).ready(function () {
-
-//        $("#initial-report-container").show(0);
-//        $("#report-container").hide(0);
-//
-//        $("#report").click(function () {
-//            $("#report-container").show(1000);
-//            $("#initial-report-container").hide(1000);
-//        });
-//        $("#cancel-report").click(function () {
-//            $("#initial-report-container").show(1000);
-//            $("#report-container").hide(1000);
-//        });
-
-//    });
-
 </script>
 
 <div class="container mt-5">
@@ -207,7 +190,6 @@
                             <% } else { %>
                                 <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= i %>" value="<%= i %>" disabled>
                             <% } %>
-                            <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= i %>" value="<%= i %>" disabled>
                             <% if(newQues.answer.includes(i)) { %>
                                 <label class="custom-control-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
                             <% } else if(userAnswer.includes(''+i)) { %>
@@ -254,7 +236,7 @@
                 <h5>Question rating: <%= oldQ %></h5>
             </div>
 
-            <% if(newQues.extSource != "original") { %>
+            <% if(newQues.ext_source != "original") { %>
                 <div>
                     <h5>Question Source: <%= newQues.ext_source %></h5>
                 </div>

@@ -467,6 +467,22 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/question/:id', (req, res) => {
+        if (req.isAuthenticated()) {
+            mongo.Ques.findOne({ _id: req.params.id }, async function (err, obj) {
+                if (obj) {
+                    res.render(VIEWS + 'private/question.ejs', { question: obj, pageName: "Question " + obj._id });
+                } else {
+                    req.flash('errorFlash', 'Error 404: File Not Found. That question doesn\'t exist.');
+                    res.redirect('/');
+                }
+            });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.get('/references', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
