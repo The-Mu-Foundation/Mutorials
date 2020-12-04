@@ -10,7 +10,7 @@ const { genPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter,
-    getAnnouncements, updateRushStats } = require('../utils/functions/database');
+    getAnnouncements, updateRushStats, querySite } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/';
@@ -512,14 +512,15 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/search', (req, res) => {
+    app.get('/search', async (req, res) => {
         if (req.isAuthenticated()) {
             let { search } = req.query;
             if(search) {
-                console.log(search);
-                res.render(VIEWS + 'private/search.ejs', { results: {}, query: search, pageName: "Search" });
+                let results = await querySite(search, mongo.User, mongo.Ques, mongo.siteData);
+                console.log(results);
+                res.render(VIEWS + 'private/search.ejs', { results, query: search, pageName: "Search: " + search });
             } else {
-                res.render(VIEWS + 'private/search.ejs', { results: {}, query: "", pageName: "Search" });
+                res.render(VIEWS + 'private/search.ejs', { results: [], query: "", pageName: "Search" });
             }
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');

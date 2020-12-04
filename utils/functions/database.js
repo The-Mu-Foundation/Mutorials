@@ -329,6 +329,86 @@ async function updateRushStats(user, score) {
     db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { stats: user.stats } });
 }
 
+async function querySite(search, User, Ques, SiteData) {
+    
+    results = [];
+
+    let possibleID = 0;
+    try {
+        possibleID = mongoose.Types.ObjectId(search.trim());
+    } catch(err) {
+        possibleID = mongoose.Types.ObjectId('000000000000000000000000');
+    }
+
+    // find matches
+    let userMatches = await User.find({
+        $or: [
+            { _id: possibleID },
+            { ign: { $regex: new RegExp(search), $options: 'ix' }},
+            { "profile.name": { $regex: new RegExp(search), $options: 'ix' }}
+        ]
+    }).exec();
+
+    let questionMatches = await Ques.find({
+        $or: [
+            { _id: possibleID },
+            { question: { $regex: new RegExp(search), $options: 'ix' }},
+            { choices: { $regex: new RegExp(search), $options: 'ix' }},
+            { tags: search.toUpperCase() },
+            { answer_ex: { $regex: new RegExp(search), $options: 'ix' }},
+            { ext_source: search },
+            { subject: { $regex: new RegExp(search), $options: 'ix' }},
+            { units: { $regex: new RegExp(search), $options: 'ix' }}
+        ]
+    }).sort({ rating: -1}).exec();
+
+    // load matches into results
+    questionMatches.forEach((question) => {
+        if(search.toUpperCase == question.question.toUpperCase() || question.tags.includes(search.toUpperCase()) || question._id.toString() == search.trim()) {
+            results.unshift({
+                exactMatch: true,
+                type: "QUESTION",
+                id: question._id,
+                title: question.subject[0] + " (" + question.rating + " Rated)",
+                preview: "ID: " + question._id + ", Relevant Tags: " + question.tags.join(" ")
+            });
+        } else {
+            results.push({
+                exactMatch: false,
+                type: "QUESTION",
+                id: question._id,
+                title: question.subject[0] + " (" + question.rating + " Rated)",
+                preview: "ID: " + question._id + ", Relevant Tags: " + question.tags.join(" ")
+            });
+        }
+    });
+
+    userMatches.forEach((user) => {
+
+        if(search.trim().toUpperCase() == user.ign.toUpperCase() || user._id.toString() == search.trim()) {
+            results.unshift({
+                exactMatch: true,
+                type: "USER",
+                id: user._id,
+                title: user.ign + (user.profile.name ? " (" + user.profile.name + ")" : ""),
+                preview: (user.profile.bio ? user.profile.bio + ", " : "") + "Experience: " + user.stats.experience + ", "
+                    + user.stats.collectedTags.length + " tags collected"
+            });
+        } else {
+            results.push({
+                exactMatch: false,
+                type: "USER",
+                id: user._id,
+                title: user.ign + (user.profile.name ? " (" + user.profile.name + ")" : ""),
+                preview: (user.profile.bio ? user.profile.bio + ", " : "") + "Experience: " + user.stats.experience + ", "
+                    + user.stats.collectedTags.length + " tags collected"
+            });
+        }
+    });
+
+    return results;
+}
+
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats, querySite };
 

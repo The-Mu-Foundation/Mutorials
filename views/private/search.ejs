@@ -34,10 +34,12 @@
     <% if(results.length > 0) { %>
 
         <div class="my-2 alert alert-success">Showing results for <em><%= query %></em></div>
-
         
         <% results.forEach((result) => { %>
 
+            <div class="d-block p-4 bg-secondary my-2 search-result">
+                Result
+            </div>
         <% }); %>
     <% } else if(query != "") { %>
 
