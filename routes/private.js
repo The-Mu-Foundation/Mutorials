@@ -391,6 +391,27 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/emailConfirmation', (req, res) => {
+        if (req.isAuthenticated()) {
+            debugger;
+            const cc = new Promise((resolve, reject) => {
+                resolve(emailValidation.checkCode(req.user.username, '0'));
+            });
+            cc.then((value) => {
+                if (!value) {
+                    debugger;
+                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username, pageName: "Email Confirmation" });
+                } else {
+                    req.flash('errorFlash', 'You\'ve already confirmed your email.');
+                    res.redirect('/');
+                }
+            });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.get('/homepage', async (req, res) => {
         if (req.isAuthenticated()) {
             if (adminList.includes(req.user.username)) {
@@ -491,21 +512,15 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/emailConfirmation', (req, res) => {
+    app.get('/search', (req, res) => {
         if (req.isAuthenticated()) {
-            debugger;
-            const cc = new Promise((resolve, reject) => {
-                resolve(emailValidation.checkCode(req.user.username, '0'));
-            });
-            cc.then((value) => {
-                if (!value) {
-                    debugger;
-                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username, pageName: "Email Confirmation" });
-                } else {
-                    req.flash('errorFlash', 'You\'ve already confirmed your email.');
-                    res.redirect('/');
-                }
-            });
+            let { search } = req.query;
+            if(search) {
+                console.log(search);
+                res.render(VIEWS + 'private/search.ejs', { results: {}, pageName: "Search" });
+            } else {
+                res.render(VIEWS + 'private/search.ejs', { results: {}, pageName: "Search" });
+            }
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
