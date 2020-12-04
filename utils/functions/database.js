@@ -389,16 +389,16 @@ async function querySite(search, User, Ques, SiteData) {
             results.unshift({
                 exactMatch: true,
                 type: "USER",
-                id: user._id,
+                id: user.ign,
                 title: user.ign + (user.profile.name ? " (" + user.profile.name + ")" : ""),
-                preview: (user.profile.bio ? user.profile.bio + ", " : "") + "Experience: " + user.stats.experience + ", "
+                preview: (user.profile.bio ? user.profile.bio + " " : "") + "Experience: " + user.stats.experience + ", "
                     + user.stats.collectedTags.length + " tags collected"
             });
         } else {
             results.push({
                 exactMatch: false,
                 type: "USER",
-                id: user._id,
+                id: user.ign,
                 title: user.ign + (user.profile.name ? " (" + user.profile.name + ")" : ""),
                 preview: (user.profile.bio ? user.profile.bio + ", " : "") + "Experience: " + user.stats.experience + ", "
                     + user.stats.collectedTags.length + " tags collected"
