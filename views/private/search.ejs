@@ -1,27 +1,49 @@
 <%# Search page for users %>
-<%# ARGUMENTS: results - the results of the search %>
+<%# ARGUMENTS: results - the results of the search, query - the last search %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
 
 <h1 class="my-5 container display-2 text-center">Mutorials Search</h1>
 
+<script>
+
+	$(document).ready(function () {
+
+		$("#submit").click(function () {
+
+			// free response text values
+			let search = $("#query").val();
+
+            window.location.href = "/search?search=" + search;
+		});
+	});
+</script>
+
 <div class="jumbotron container">
 
-    <div class="container">
-
-        <div class="row">
-            <div class="col-md-10">
-                <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="query" >
-            </div>
-            <div class="col-md-2">
-                <input class="btn btn-primary btn-lg btn-block my-2" value="Search" type="button" id="submit">
-            </div>
+    <div class="row">
+        <div class="col-md-10">
+            <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="query" >
         </div>
-        
+        <div class="col-md-2">
+            <input class="btn btn-primary btn-lg btn-block my-2" value="Search" type="button" id="submit">
+        </div>
     </div>
-    
+        
+    <% if(results.length > 0) { %>
 
+        <div class="my-2 alert alert-success">Showing results for <em><%= query %></em></div>
+
+        
+        <% results.forEach((result) => { %>
+
+        <% }); %>
+    <% } else if(query != "") { %>
+
+        <div class="my-2 alert alert-danger">No results found for <em><%= query %></em></div>
+    <% } %>
+    
 </div>
 
 <%- include("../partials/footer") -%>

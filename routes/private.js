@@ -517,9 +517,9 @@ module.exports = (app, mongo) => {
             let { search } = req.query;
             if(search) {
                 console.log(search);
-                res.render(VIEWS + 'private/search.ejs', { results: {}, pageName: "Search" });
+                res.render(VIEWS + 'private/search.ejs', { results: {}, query: search, pageName: "Search" });
             } else {
-                res.render(VIEWS + 'private/search.ejs', { results: {}, pageName: "Search" });
+                res.render(VIEWS + 'private/search.ejs', { results: {}, query: "", pageName: "Search" });
             }
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
