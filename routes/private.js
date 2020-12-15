@@ -10,7 +10,7 @@ const { genPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter,
-    getAnnouncements, updateRushStats } = require('../utils/functions/database');
+    getAnnouncements, updateRushStats, querySite } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/';
@@ -391,6 +391,27 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/emailConfirmation', (req, res) => {
+        if (req.isAuthenticated()) {
+            debugger;
+            const cc = new Promise((resolve, reject) => {
+                resolve(emailValidation.checkCode(req.user.username, '0'));
+            });
+            cc.then((value) => {
+                if (!value) {
+                    debugger;
+                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username, pageName: "Email Confirmation" });
+                } else {
+                    req.flash('errorFlash', 'You\'ve already confirmed your email.');
+                    res.redirect('/');
+                }
+            });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.get('/homepage', async (req, res) => {
         if (req.isAuthenticated()) {
             if (adminList.includes(req.user.username)) {
@@ -446,6 +467,22 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/question/:id', (req, res) => {
+        if (req.isAuthenticated()) {
+            mongo.Ques.findOne({ _id: req.params.id }, async function (err, obj) {
+                if (obj) {
+                    res.render(VIEWS + 'private/question.ejs', { question: obj, pageName: "Question " + obj._id });
+                } else {
+                    req.flash('errorFlash', 'Error 404: File Not Found. That question doesn\'t exist.');
+                    res.redirect('/');
+                }
+            });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.get('/references', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
@@ -491,21 +528,15 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/emailConfirmation', (req, res) => {
+    app.get('/search', async (req, res) => {
         if (req.isAuthenticated()) {
-            debugger;
-            const cc = new Promise((resolve, reject) => {
-                resolve(emailValidation.checkCode(req.user.username, '0'));
-            });
-            cc.then((value) => {
-                if (!value) {
-                    debugger;
-                    res.render(VIEWS + 'private/emailConfirmation.ejs', { email: req.user.username, pageName: "Email Confirmation" });
-                } else {
-                    req.flash('errorFlash', 'You\'ve already confirmed your email.');
-                    res.redirect('/');
-                }
-            });
+            let { search } = req.query;
+            if(search) {
+                let results = await querySite(search, mongo.User, mongo.Ques, mongo.siteData);
+                res.render(VIEWS + 'private/search.ejs', { results, query: search, pageName: "Search: " + search });
+            } else {
+                res.render(VIEWS + 'private/search.ejs', { results: [], query: "", pageName: "Search" });
+            }
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');

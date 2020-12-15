@@ -29,6 +29,8 @@ const subjectUnitDictionary = {
     "Chemistry": ["Stoichiometry",
         "Gases",
         "Thermochemistry",
+        "Atoms, Molecules, and Ions",
+        "Solutions",
         "Atomic Structure",
         "Bonding",
         "Chemical Kinetics",
@@ -41,7 +43,8 @@ const subjectUnitDictionary = {
         "Chemical Reactions",
         "Materials Chemistry",
         "Biochemistry",
-        "Lab Skills"
+        "Lab Skills",
+        "Physical Chemistry"                  
     ],
     "Biology": ["Cell Biology",
         "Molecular Biology",
