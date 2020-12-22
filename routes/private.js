@@ -381,26 +381,6 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/editFlashcard', async (req, res) => {
-        if(req.isAuthenticated()){
-            // req.body.
-            db.flashcards.findOne({'_id': req.body.flashcardID}).then(card => {
-                card.name = req.body.name;
-                card.tags = req.body.tags;
-                card.cards = req.body.cards;
-
-                db.flashcards.update({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
-
-            }, reason => {
-                console.log("There is an error"); //replace this with a flash
-            });
-            res.redirect('/study/flashcards/set/' + req.body.flashcardID);
-        } else {
-            res.redirect('/');
-        }
-
-    });
-
     app.get('/announcements', async (req, res) => {
         if (req.isAuthenticated()) {
             let announcements = await getAnnouncements(mongo.SiteData, 20);
@@ -892,6 +872,25 @@ module.exports = (app, mongo) => {
             res.render(VIEWS + 'private/study/study.ejs')
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.post('/study/flashcards/edit', async (req, res) => {
+        if(req.isAuthenticated()){
+            db.flashcards.findOne({'_id': req.body.flashcardID}).then(card => {
+                card.name = req.body.name;
+                card.tags = req.body.tags;
+                card.cards = req.body.cards;
+
+                db.flashcards.update({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
+
+            }, reason => {
+                console.log("There is an error"); //replace this with a flash
+                req.flash('errorFlash', 'We couldn\'t save that flashcard set... sorry about that.')
+            });
+            res.redirect('/study/flashcards/set/' + req.body.flashcardID);
+        } else {
             res.redirect('/');
         }
     });
