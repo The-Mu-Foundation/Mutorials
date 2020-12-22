@@ -13,6 +13,8 @@
             // free response text values
             let name = $("#name").val();
 
+            let tags = [];
+            let
             
         });
     });
@@ -25,7 +27,7 @@
     <div class="jumbotron my-3">
 
         <h2 class="text-center mb-2">Set Name</h2>
-        <input type="text" class="form-control" id="name" value="<%= set.name %>" placeholder="Title this study set">
+        <input type="text" class="form-control" id="name" value="<%= set.name %>" placeholder="Title this study set" maxlength="200">
 
         <h2 class="text-center mt-4 mb-2">Tags</h2>
         <div id="tags">
@@ -33,13 +35,13 @@
                 <% let indexTags = 1; %>
                 <% set.tags.forEach((tag) => { %>
                     <div class="col-12 col-lg-6">
-                        <input type="text" class="form-control my-1" id="<%= 'tag' + indexTags %>" value="<%= tag %>" placeholder="<%= 'Tag ' + indexTags %>">
+                        <input type="text" class="form-control my-1" id="<%= 'tag' + indexTags %>" value="<%= tag %>" placeholder="<%= 'Tag ' + indexTags %>" maxlength="20">
                     </div>
                     <% indexTags++; %>
                 <% }); %>
                 <% while(indexTags <= 20) { %>
                     <div class="col-12 col-lg-6">
-                        <input type="text" class="form-control my-1" id="<%= 'tag' + indexTags %>" value="" placeholder="<%= 'Tag ' + indexTags %>">
+                        <input type="text" class="form-control my-1" id="<%= 'tag' + indexTags %>" value="" placeholder="<%= 'Tag ' + indexTags %>" maxlength="20">
                     </div>
                     <% indexTags++; %>
                 <% } %>
@@ -56,15 +58,21 @@
             <% set.cards.forEach((card) => { %>
                 <div id="<%= 'card' + indexCard %>" class="d-block container my-2 px-4 py-2 bg-white custom-rounded">
                     <h5 class="text-center mt-2">Card <%= indexCard %></h5>
-                    <input type="text" class="form-control my-1" id="<%= 'front' + indexCard %>" value="<%= card.front %>" placeholder="<%= 'Front of card ' + indexCard %>">
-                    <textarea class="form-control mt-1 mb-3" id="<%= 'back' + indexCard %>" rows="3" value="<%= card.back %>" placeholder="<%= 'Back of card ' + indexCard %>">
+                    <div class="row">
+                        <input type="text" class="form-control my-1 col-12 col-lg-4" id="<%= 'front' + indexCard %>" value="<%= card.front %>" placeholder="<%= 'Front of card ' + indexCard %>" maxlength="300">
+                        <div class="col-12 col-lg-1"></div>
+                        <textarea class="form-control mt-1 mb-3 col-12 col-lg-7" id="<%= 'back' + indexCard %>" rows="3" value="<%= card.back %>" placeholder="<%= 'Back of card ' + indexCard %>" maxlength="1500"></textarea>    
+                    </div>
                 </div>
                 <% indexCard++; %>
             <% }); %>
             <div id="<%= 'card' + indexCard %>" class="d-block container my-2 px-4 py-2 bg-white custom-rounded">
                 <h5 class="text-center mt-2">Card <%= indexCard %></h5>
-                <input type="text" class="form-control my-1" id="<%= 'front' + indexCard %>" value="" placeholder="<%= 'Front of card ' + indexCard %>">
-                <textarea class="form-control mt-1 mb-3" id="<%= 'back' + indexCard %>" rows="3" value="" placeholder="<%= 'Back of card ' + indexCard %>"></textarea>
+                <div class="row">
+                    <input type="text" class="form-control my-1 col-12 col-lg-4" id="<%= 'front' + indexCard %>" value="" placeholder="<%= 'Front of card ' + indexCard %>" maxlength="300">
+                    <div class="col-12 col-lg-1"></div>
+                    <textarea class="form-control mt-1 mb-3 col-12 col-lg-7" id="<%= 'back' + indexCard %>" rows="3" value="" placeholder="<%= 'Back of card ' + indexCard %>" maxlength="1500"></textarea>
+                </div>
             </div>
         </div>
     </div>
