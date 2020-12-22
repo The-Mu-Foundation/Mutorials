@@ -564,11 +564,11 @@ module.exports = (app, mongo) => {
     app.get('/statsAdditional', async (req, res) => {
 
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let { physicsRating, chemistryRating, biologyRating, experience, rushHighscore } = req.query;
-                
+
                 let globalPhysicsRank = (await mongo.User.countDocuments({ "rating.physics": { $gt: physicsRating } })) + 1;
                 let globalChemistryRank = (await mongo.User.countDocuments({ "rating.chemistry": { $gt: chemistryRating } })) + 1;
                 let globalBiologyRank = (await mongo.User.countDocuments({ "rating.biology": { $gt: biologyRating } })) + 1;
@@ -585,7 +585,7 @@ module.exports = (app, mongo) => {
                         rush: globalRushRank
                     }
                 });
-                
+
             } catch(err) {
 
                 res.json({
@@ -660,7 +660,7 @@ module.exports = (app, mongo) => {
 
     app.get('/train/rush/loadQuestion', async (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let score = parseInt(req.query.score);
@@ -703,7 +703,7 @@ module.exports = (app, mongo) => {
 
     app.get('/train/rush/checkAnswer', async (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let choice = req.query.index;
@@ -740,22 +740,22 @@ module.exports = (app, mongo) => {
 
     app.get('/train/rush/results', async (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let score = req.query.score;
 
                 await updateRushStats(req.user, score);
-                
+
                 let user = await mongo.User.findOne({ _id: req.user._id }).exec();;
 
                 let highscore = user.stats.rush.highscore;
-                
+
                 res.json({
                     status: "Success",
                     highscore
                 });
-                
+
             } catch(err) {
 
                 res.json({
@@ -773,7 +773,7 @@ module.exports = (app, mongo) => {
         // called when rating isn't set for subject
         if (req.isAuthenticated()) {
             if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
-                
+
                 res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject, pageName: req.params.subject + " Proficiency" });
             }
             else {
@@ -865,6 +865,17 @@ module.exports = (app, mongo) => {
             res.redirect('/');
         }
     });
+    // flashcard stuff
+
+    app.get('/study', (req, res) => {
+        if (req.isAuthenticated()) {
+            res.render(VIEWS + 'private/study/study.ejs')
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+
+    })
 
     app.get('/logout', (req, res) => {
         if (req.isAuthenticated()) {
