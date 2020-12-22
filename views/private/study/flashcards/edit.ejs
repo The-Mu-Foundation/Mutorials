@@ -20,16 +20,18 @@
         <h2 class="mt-4 mb-2">Tags</h2>
         <div id="tags">
             <div class="row">
-                <% index = 1; %>
+                <% let index = 1; %>
                 <% set.tags.forEach((tag) => { %>
                     <div class="col-12 col-lg-6">
                         <input type="text" class="form-control" id="<%= 'tag' + index %>" value="<%= tag %>" placeholder="<%= 'Tag ' + index %>">
                     </div>
+                    <% index++; %>
                 <% }); %>
                 <% while(index <= 20) { %>
                     <div class="col-12 col-lg-6">
                         <input type="text" class="form-control" id="<%= 'tag' + index %>" value="" placeholder="<%= 'Tag ' + index %>">
                     </div>
+                    <% index++; %>
                 <% } %>
             </div>
 
@@ -40,14 +42,22 @@
 
         <h2 class="mb-2">Cards</h2>
         <div id="cards">
+            <% let index = 1; %>
             <% set.cards.forEach((card) => { %>
-                
+
+                <% index++; %>
             <% }); %>
+            <div id="<%= 'card' + index %>" class="d-block container my-2 px-4 bg-white custom-rounded">
+                <h5 class="text-center">Card <%= index %></h5>
+                <input type="text" class="form-control" id="<%= 'front' + index %>" value="<%= card.front %>" placeholder="<%= 'Front of card ' + index %>">
+                <textarea class="form-control" id="<%= 'back' + index %>" rows="3" value="<%= card.back %>" placeholder="<%= 'Back of card ' + index %>">
+
+            </div>
         </div>
     </div>
 
     <div class="container mt-4 mb-5">
-        <input class="btn btn-primary" type="submit" value="Save">
+        <input class="btn btn-primary" id="submit" value="Save">
         <a href="/study" class="btn btn-secondary" type="button">Discard</a>
     </div>
 </form>

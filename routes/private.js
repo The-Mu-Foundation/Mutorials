@@ -532,7 +532,7 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             let { search } = req.query;
             if(search) {
-                let results = await querySite(search, mongo.User, mongo.Ques, mongo.siteData);
+                let results = await querySite(search, mongo.User, mongo.Ques, mongo.Flashcard);
                 res.render(VIEWS + 'private/search.ejs', { results, query: search, pageName: "Search: " + search });
             } else {
                 res.render(VIEWS + 'private/search.ejs', { results: [], query: "", pageName: "Search" });
