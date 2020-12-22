@@ -37,19 +37,19 @@ const referenceSheet = {
         "Electron Mass": "$m_e = 9.11\\times10^{-31}\\:\\mathrm{kg}$",
         "Speed of Light": "$c = 3.00\\times10^8\\:\\mathrm{m/s}$",
         "Electron charge magnitude": "$e = 1.60\\times10^{-19}\\:\\mathrm{C}$",
-        "Coulomb's law constant": "$k = 1/4\\pi\\varepsilon_0 = 8.99\\times10^9\\:\\mathrm{Nm^2/C^2}$",
-        "Universal gravitational constant": "$6.67\\times10^{-11}:\\mathrm{Nm^2/kg^2}$",
-        "Acceleration due to gravity at Earth's surface": "$g = 9.809$",
+        "Coulomb's law constant": "$k = \\frac{\\pi\\varepsilon_0}{4} = 8.99\\times10^9\\:\\mathrm{Nm^2/C^2}$",
+        "Universal gravitational constant": "$6.67\\times10^{-11}\\:\\mathrm{Nm^2/kg^2}$",
+        "Acceleration due to gravity at Earth's surface": "$g = 9.809\\:\\mathrm{m/s^2}$",
         "Avogadro's number": "$N_0 = 6.02\\times10^{23}\\:\\mathrm{mol^{-1}}$",
-        "Universal gas constant": "$R = 8.31\\: \\mathrm{J/(mol\cdot K)}$",
+        "Universal gas constant": "$R = 8.31\\: \\mathrm{J/(mol\\cdot K)}$",
         "Boltzmann's constant": "$k_B = 1.38\\times10^{-23}\\:\\mathrm{J/K}$",
         "1 electron volt": "$1\\:\\mathrm{eV} = 1.60\\times10^{-19}\\:\\mathrm{J}$",
         "1 unified atomic mass unit": "$1\\:\\mathrm{u} = 1.66\\times10^{-27}\\:\\mathrm{kg} = 931\\:\\mathrm{MeV/c^2}$",
-        "Planck's constant": "$h = 6.63\\times10^{-34}\\:\\mathrm{J\cdot s} = 4.14\times10^{-15}\\:\\mathrm{eV\cdot s}$",
-        "Vacuum permittivity": "$\\varepsilon_$ = 8.85\\times 10^{-12}\\:\\mathrm{C^2/N\cdot m^2}",
-        "Vacuum permeability": "$\\mu_0 = 4\\pi\\times10^{-7}\\:\\mathrm{(T\cdot m)/A}$",
-        "Magnetic constant": "$k' = \\mu_0/4\\pi = 1\\times 10^{-7}\\:\\mathrm{(T\cdot m)/A}$",
-        "1 atmosphere pressure": "$1\\:\\mathrm{atm} = 1.0\\times10^5\\:\\mathrm{N/m^2} = 1.0\times 10^5\\:\\mathrm{Pa}$"
+        "Planck's constant": "$h = 6.63\\times10^{-34}\\:\\mathrm{J\\cdot s} = 4.14\\times10^{-15}\\:\\mathrm{eV\\cdot s}$",
+        "Vacuum permittivity": "$\\varepsilon_0 = 8.85\\times 10^{-12}\\:\\mathrm{C^2/N\\cdot m^2}$",
+        "Vacuum permeability": "$\\mu_0 = 4\\pi\\times10^{-7}\\:\\mathrm{(T\\cdot m)/A}$",
+        "Magnetic constant": "$k' = \\frac{\\mu_0}{4\\pi} = 1\\times 10^{-7}\\:\\mathrm{(T\\cdot m)/A}$",
+        "1 atmosphere pressure": "$1\\:\\mathrm{atm} = 1.0\\times10^5\\:\\mathrm{N/m^2} = 1.0\\times 10^5\\:\\mathrm{Pa}$"
         
     }
 };
