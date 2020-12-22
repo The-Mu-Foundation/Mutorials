@@ -10,7 +10,7 @@ const { genPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter,
-    getAnnouncements, updateRushStats, querySite } = require('../utils/functions/database');
+    getAnnouncements, updateRushStats, querySite, updateFields } = require('../utils/functions/database');
 
 
 const VIEWS = __dirname + '/../views/';
@@ -211,17 +211,19 @@ module.exports = (app, mongo) => {
     // change profile settings
     app.post('/changeProfile', (req, res) => {
         if (req.isAuthenticated()) {
-            if (!(/^\d+$/.test(req.body.age))) {
-                req.flash('errorFlash', 'Please enter a valid age!');
+            var date = new Date().getFullYear();
+            var age = date - req.body.yob;
+             if (!(/^\d+$/.test(age))) {
+                req.flash('errorFlash', 'Please enter a valid year of birth!');
             }
 
-            if (req.body.age < 1 || req.body.age > 150) {
-                req.flash('errorFlash', 'You\'ve got to be at least 1 and younger than 150 to use Mutorials ;)');
+            if (age < 0 || age > 150) {
+                req.flash('errorFlash', 'You\'ve got to be at least 0 and younger than 150 to use Mutorials ;)');
             } else {
-                req.user.profile.age = req.body.age;
+                req.user.profile.yob = req.body.yob; //entered age is adjusted in settings.ejs
             }
 
-            if (req.user.profile.age > 13) {
+            if (age > 13) {
                 if (req.body.name == filter.clean(req.body.name)) {
                     if (req.body.name.length <= 50) {
                         req.user.profile.name = req.body.name;
@@ -260,8 +262,8 @@ module.exports = (app, mongo) => {
                     req.user.profile.location != req.body.location)) {
                 req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
             }
-            // mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.age, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }}}, {upsert: true});
+            // mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.yob, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { yob: req.user.profile.yob, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }}}, {upsert: true});
             console.log(req.user);
 
             res.redirect('/settings');
@@ -415,7 +417,14 @@ module.exports = (app, mongo) => {
     app.get('/homepage', async (req, res) => {
         if (req.isAuthenticated()) {
             if (adminList.includes(req.user.username)) {
+                //mongo.db.collection('users').updateMany({}, {$rename: {'age': 'yob'}}).then( x => {
+                  //  console.log("yippee");
+                //}); //update field, delete
+                //var x = await updateFields();
+                //console.log(x);
+                //need change field values
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
+                
             } else {
                 let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
                 let experienceStats = await calculateLevel(req.user.stats.experience);
@@ -454,8 +463,12 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
+                    var thisAge = 0;
+                    if(req.user.profile.yob && obj.profile.yob != 2020){
+                        thisAge = new Date().getFullYear() - obj.profile.yob;
+                    }
                     let experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
-                    res.render(VIEWS + 'private/profile.ejs', { user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
+                    res.render(VIEWS + 'private/profile.ejs', { age: thisAge, user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
                     res.redirect('/');
@@ -545,7 +558,13 @@ module.exports = (app, mongo) => {
 
     app.get('/settings', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/settings.ejs', { user: req.user, pageName: "Settings" });
+            /*
+            var thisAge;
+            if(req.user.profile.yob && req.user.profile.yob != 2020){
+                thisAge = new Date().getFullYear() - req.user.profile.yob;
+            }
+            */
+            res.render(VIEWS + 'private/settings.ejs', {user: req.user, pageName: "Settings" });
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');

@@ -409,6 +409,10 @@ async function querySite(search, User, Ques, SiteData) {
     return results;
 }
 
+async function updateFields(){ //replace the parameters as needed for different purposes
+    db.collection('users').updateMany({'age': {$exists: true}}, {$rename: {'age': 'yob'}});
+}
+
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats, querySite };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats, querySite, updateFields };
 

@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     profile: {
         name: String,
         location: String,
-        age: String,
+        yob: Number, //used to be age
         bio: String
     },
     stats: {

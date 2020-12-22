@@ -90,6 +90,7 @@ module.exports = (app, mongo) => {
         req.body.username = req.body.username.toLowerCase();
         req.body.ign = req.body.ign.toLowerCase();
         var registerInputProblems1 = false;
+        
 
         console.log('hcaptcha: ' + Boolean(req.body['h-captcha-response']));
         verify(hcaptchaSecret, req.body['h-captcha-response']).then((data) => {
@@ -136,7 +137,7 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.');
             registerInputProblems1 = true;
         }
-        if (!(/^\d+$/.test(req.body.age))) {
+        if (!(/^\d+$/.test(new Date().getFullYear() - req.body.yob))) {
             req.flash('errorFlash', 'Please enter a valid age!');
             registerInputProblems1 = true;
         }
@@ -150,6 +151,10 @@ module.exports = (app, mongo) => {
 
         const salt = saltHash.salt;
         const hash = saltHash.hash;
+        var thisYob = req.body.yob;
+        if(!thisYob){
+            thisYob = 2020;
+        }
         const newUser = new mongo.User({
             username: req.body.username,
             ign: req.body.ign,
@@ -158,7 +163,7 @@ module.exports = (app, mongo) => {
             profile: {
                 name: '',
                 location: 'Earth',
-                age: req.body.age,
+                yob: thisYob,
                 bio: ''
             },
             // if emailConfirmCode == 0, then email is confirmed

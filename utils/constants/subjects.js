@@ -52,7 +52,8 @@ const subjectUnitDictionary = {
         "Ecology",
         "Evolution and Biodiversity",
         "Human Physiology",
-        "Plant and Animal Physiology"
+        "Plant and Animal Physiology",
+        "Lab Skills"
     ]
 };
 
