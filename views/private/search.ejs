@@ -24,20 +24,24 @@
 
     <div class="row">
         <div class="col-md-10">
-            <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="query" value="<%= query %>">
+            <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, flashcard sets, and more" id="query" value="<%= query %>">
         </div>
         <div class="col-md-2">
             <input class="btn btn-primary btn-lg btn-block my-2" value="Search" type="button" id="submit">
         </div>
     </div>
+    
+    <div class="">
         
+    </div>
+
     <% if(results.length > 0) { %>
         
         <% results.forEach((result) => { %>
 
             <a href="
                 <%= result.type == 'QUESTION' ? '/question/'+result.id : (result.type == 'USER' ? '/profile/'+result.id : '#') %>
-            " target="_blank" style="text-decoration: none;">
+            " target="_blank" style="text-decoration: none;" class="<%= result.type %> exact-<%= result.exactMatch %>">
                 <div class="d-block px-4 pt-2 pb-1 bg-light my-2 search-result">
                     <h4><span class="badge badge-secondary"><%= result.type %></span> <%= result.title %></h4>
                     <p><%= result.preview %></p>

@@ -329,7 +329,7 @@ async function updateRushStats(user, score) {
     db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { stats: user.stats } });
 }
 
-async function querySite(search, User, Ques, SiteData) {
+async function querySite(search, User, Ques, Flashcard) {
     
     results = [];
 
