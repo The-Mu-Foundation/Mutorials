@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema({
         },
         units: Object
     },
+    study: {
+        flashcards: {
+            favorites: [ mongoose.Schema.Types.ObjectId ],
+            created: [ mongoose.Schema.Types.ObjectId]
+        }
+    },
     email_confirm_code: String,
     rating: {
         physics: Number,
