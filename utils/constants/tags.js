@@ -208,7 +208,9 @@ const tags = {
             "PUN": "Punnett Squares",
             "TAXON": "Taxonomy",
             "TRSCRIP": "Transcription",
-            "TRSLATE": "Translation"
+            "TRSLATE": "Translation",
+            "PATHO": "Pathophysiology",
+            "ORG": "Organ Structure and Function"
         }
     }
 };
