@@ -894,6 +894,7 @@ module.exports = (app, mongo) => {
         }
     });
 
+    
     app.post('/study/flashcards/edit', async (req, res) => {
         if(req.isAuthenticated()){
             if(req.user._id == req.body.creator){
@@ -902,7 +903,7 @@ module.exports = (app, mongo) => {
                     card.tags = req.body.tags;
                     card.cards = req.body.cards;
 
-                    db.flashcards.updateOne({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
+                    mongo.Flashcard.updateOne({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
 
                 }, reason => {
                     console.log("There is an error"); //replace this with a flash
@@ -917,7 +918,7 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/study/flashcards/new', async(req, res) => {
+    app.post('/study/flashcards/new', async(req, res) => { //new set
         if(req.isAuthenticated()){
             const newFlashcard = new mongo.Flashcard({
                 name: "",
@@ -933,13 +934,45 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/study/flashcards/saveOne', (req, res) => {
+    app.post('/study/flashcards/saveOne', (req, res) => { //save a flashcard set
         if (req.isAuthenticated()){
             req.user.study.flashcards.favorites.push(req.body.flashcardID);
-            db.users.updateOne({'_id': req.user._id}, {$set: {study : {flashcards: {favorites: req.user.study.flashcards.favorites}}}});
+            mongo.users.updateOne({'_id': req.user._id}, {$set: {study : {flashcards: {favorites: req.user.study.flashcards.favorites}}}});
             req.flash('successFlash', 'Saved this set!');
         }
         else{
+            res.redirect('/');
+        }
+    });
+    
+    app.post('/study/flashcards/remove', (req, res) => { //unsave set
+        if (req.isAuthenticated()){
+            i = req.user.study.flashcards.favorites.indexOf(req.body.flashcardID);
+            if(i >= 0){
+                req.user.study.flashcards.favorites.splice(i, 1);
+            }
+            mongo.users.updateOne({'_id': req.user._id}, {$set: {study : {flashcards: {favorites: req.user.study.flashcards.favorites}}}});
+            if(i >= 0){
+                req.flash('successFlash', 'This set has been unsaved.');
+            } else{
+                req.flash('errorFlash', 'You cannot unsave a set you have not previously saved!');
+            }
+
+        } else {
+            res.redirect('/');
+        }
+    });
+
+    app.post('/study/flashcards/delete', (req, res) => { //delete a set you made
+        if(req.isAuthenticated()){
+            if(req.user._id = req.body.creator){
+                mongo.Flashcard.deleteOne({'_id': req.body.flashcardID});
+                req.flash('successFlash', 'This set has been deleted.');
+            } else {
+                req.flash('errorFlash', 'You cannot delete a set you did not create.');
+            }
+
+        } else {
             res.redirect('/');
         }
     });
