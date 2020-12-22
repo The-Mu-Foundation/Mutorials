@@ -1,0 +1,46 @@
+<%# Root page for studying %>
+<%# ARGUMENTS: none %>
+
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
+
+<h2 class="display-3 text-center mt-5 mb-4">Study Central</h2>
+
+<div class="jumbotron container">
+
+    <h1 class="text-center">Flashcards</h1>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12 col-xl-4">
+                <a href="/study/flashcards/new" class="d-block container my-2 px-4 bg-white custom-rounded" style="text-decoration: none;">
+                    <h2 class="display-4 text-center">
+                        <i class="fas fa-plus-square"></i>
+                        New
+                    </h2>
+                </a>
+            </div>
+            <div class="col-12 col-xl-4">
+                <a href="/study/flashcards/browse" class="d-block container my-2 px-4 bg-white custom-rounded" style="text-decoration: none;">
+                    <h2 class="display-4 text-center">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </h2>
+                </a>
+            </div>
+            <div class="col-12 col-xl-4">
+                <a href="/study/flashcards/saved" class="d-block container my-2 px-4 bg-white custom-rounded" style="text-decoration: none;">
+                    <h2 class="display-4 text-center">
+                        <i class="fas fa-folder"></i>
+                        Saved
+                    </h2>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<%- include("../../partials/footer") -%>
