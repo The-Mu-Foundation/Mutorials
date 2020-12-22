@@ -889,11 +889,27 @@ module.exports = (app, mongo) => {
                 console.log("There is an error"); //replace this with a flash
                 req.flash('errorFlash', 'We couldn\'t save that flashcard set... sorry about that.')
             });
-            res.redirect('/study/flashcards/set/' + req.body.flashcardID);
+            res.json({ status: "Success" });
         } else {
             res.redirect('/');
         }
     });
+
+    app.post('/newFlashcard', async(req, res) => {
+        if(req.isAuthenticated()){
+            const newFlashcard = new mongo.Flashcard({
+                name: "",
+                creator: req.user._id,
+                views: 0,
+                tags: [],
+                cards: []
+            })
+            newFlashcard.save();
+        } else {
+            res.redirect('/');
+        }
+    });
+        
 
     app.get('/study/flashcards/saved', (req, res) => {
         if (req.isAuthenticated()) {
