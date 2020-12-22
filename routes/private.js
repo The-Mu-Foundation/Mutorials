@@ -212,16 +212,15 @@ module.exports = (app, mongo) => {
     app.post('/changeProfile', (req, res) => {
         if (req.isAuthenticated()) {
             var date = new Date().getFullYear();
-            var age = date - req.user.profile.yob;
-            var newYob = date - req.body.age;
-             if (!(/^\d+$/.test(req.body.age))) {
-                req.flash('errorFlash', 'Please enter a valid age!');
+            var age = date - req.body.yob;
+             if (!(/^\d+$/.test(age))) {
+                req.flash('errorFlash', 'Please enter a valid year of birth!');
             }
 
             if (age < 0 || age > 150) {
                 req.flash('errorFlash', 'You\'ve got to be at least 0 and younger than 150 to use Mutorials ;)');
             } else {
-                req.user.profile.yob = newYob; //entered age is adjusted in settings.ejs
+                req.user.profile.yob = req.body.yob; //entered age is adjusted in settings.ejs
             }
 
             if (age > 13) {
@@ -559,11 +558,13 @@ module.exports = (app, mongo) => {
 
     app.get('/settings', (req, res) => {
         if (req.isAuthenticated()) {
+            /*
             var thisAge;
             if(req.user.profile.yob && req.user.profile.yob != 2020){
                 thisAge = new Date().getFullYear() - req.user.profile.yob;
             }
-            res.render(VIEWS + 'private/settings.ejs', { age: thisAge, user: req.user, pageName: "Settings" });
+            */
+            res.render(VIEWS + 'private/settings.ejs', {user: req.user, pageName: "Settings" });
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
