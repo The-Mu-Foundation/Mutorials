@@ -1,5 +1,5 @@
 <%# Page for displaying profile %>
-<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site %>
+<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site, age - current user age %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -8,6 +8,7 @@
 
     window.onload = function () {
 
+        //var age = new Date().getFullYear - user.profile.yob;
         // render correct/wrong chart
 
         Chart.pluginService.register({
@@ -193,7 +194,7 @@
                 
                 <hr class="my-3">
 
-                <p"><%= user.profile.age ? "Age: " + user.profile.age : ""%></p>
+                <p><%= user.profile.yob ? "Age: " + age  : ""%></p>
 
                 <hr class="my-2">
 
