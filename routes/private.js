@@ -883,7 +883,7 @@ module.exports = (app, mongo) => {
                 card.tags = req.body.tags;
                 card.cards = req.body.cards;
 
-                db.flashcards.update({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
+                db.flashcards.updateOne({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
 
             }, reason => {
                 console.log("There is an error"); //replace this with a flash
@@ -910,6 +910,16 @@ module.exports = (app, mongo) => {
         }
     });
         
+    app.post('/study/flashcards/saveOne', (req, res) => {
+        if (req.isAuthenticated()){
+            req.user.study.flashcards.favorites.push(req.body.flashcardID);
+            db.users.updateOne({'_id': req.user._id}, {$set: {study : {flashcards: {favorites: req.user.study.flashcards.favorites}}}});
+            console.log('Saved this set!'); //replace with flash
+        }
+        else{
+            res.redirect('/');
+        }
+    });
 
     app.get('/study/flashcards/saved', (req, res) => {
         if (req.isAuthenticated()) {
