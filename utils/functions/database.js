@@ -365,8 +365,9 @@ async function querySite(search, User, Ques, Flashcard) {
     let flashcardMatches = await Flashcard.find({
         $or: [
             { _id: possibleID },
+            { name: { $regex: new RegExp(search), $options: 'ix' }},
             { tags: search.toUpperCase() },
-            { cards: { $regex: new RegExp(search), $options: 'ix' } }
+            { units: { $regex: new RegExp(search), $options: 'ix' }}
         ]
     }).exec();
 
@@ -418,18 +419,18 @@ async function querySite(search, User, Ques, Flashcard) {
         if(search.toUpperCase() == flashcard.name.toUpperCase() || flashcard.tags.includes(search.toUpperCase()) || flashcard._id.toString() == search.trim()) {
             results.unshift({
                 exactMatch: true,
-                type: "FLASHCARD SET",
+                type: "FLASHCARD_SET",
                 id: flashcard._id,
-                title: flashcard.subject[0] + " (" + flashcard.rating + " Rated)",
-                preview: "ID: " + flashcard._id + ", Relevant Tags: " + flashcard.tags.join(" ")
+                title: flashcard.name,
+                preview: "none"
             });
         } else {
             results.push({
                 exactMatch: false,
-                type: "FLASHCARD SET",
+                type: "FLASHCARD_SET",
                 id: flashcard._id,
-                title: flashcard.subject[0] + " (" + flashcard.rating + " Rated)",
-                preview: "ID: " + flashcard._id + ", Relevant Tags: " + flashcard.tags.join(" ")
+                title: flashcard.name,
+                preview: "none"
             });
         }
     });
