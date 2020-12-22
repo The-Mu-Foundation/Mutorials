@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 // define user schema
 const flashcardSchema = new mongoose.Schema({
+    name: String,
     date: {
         type: String,
         default: new Date().toISOString()
@@ -18,3 +19,4 @@ const flashcardSchema = new mongoose.Schema({
 });
 
 module.exports = { flashcardSchema };
+

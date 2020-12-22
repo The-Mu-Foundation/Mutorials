@@ -874,8 +874,24 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
+    });
 
-    })
+    app.get('/study/flashcards/saved', (req, res) => {
+        if (req.isAuthenticated()) {
+            mongo.User.findOne({ _id: req.user._id }).populate('study.flashcards.favorites').populate('study.flashcards.created').exec((err, user) => {
+                if (err) {
+                    req.flash('errorFlash', 'You don\'t have any saved sets yet.');
+                }
+                console.log(user.study.flashcards);
+                res.render(VIEWS + 'private/study/flashcards/saved.ejs', {
+                    flashcards: user.study.flashcards
+                })
+            })
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
 
     app.get('/logout', (req, res) => {
         if (req.isAuthenticated()) {
@@ -884,3 +900,4 @@ module.exports = (app, mongo) => {
         res.redirect('/');
     });
 }
+
