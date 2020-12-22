@@ -1,11 +1,21 @@
 <%# Page for editing flashcards %>
 <%# ARGUMENTS: set - an object with the flashcard set %>
 
-<%- include("../../partials/header") -%>
-<%- include("../../partials/navigationPrivate") -%>
+<%- include("../../../partials/header") -%>
+<%- include("../../../partials/navigationPrivate") -%>
 
 <script>
-    // jquery here
+    
+    $(document).ready(function () {
+
+        $("#submit").click(function () {
+
+            // free response text values
+            let name = $("#name").val();
+
+            
+        });
+    });
 </script>
 
 <h2 class="display-3 text-center mt-5 mb-4">Edit Flashcard Set</h2>
@@ -14,24 +24,24 @@
     
     <div class="jumbotron my-3">
 
-        <h2 class="mb-2">Set Name</h2>
+        <h2 class="text-center mb-2">Set Name</h2>
         <input type="text" class="form-control" id="name" value="<%= set.name %>" placeholder="Title this study set">
 
-        <h2 class="mt-4 mb-2">Tags</h2>
+        <h2 class="text-center mt-4 mb-2">Tags</h2>
         <div id="tags">
             <div class="row">
-                <% let index = 1; %>
+                <% let indexTags = 1; %>
                 <% set.tags.forEach((tag) => { %>
                     <div class="col-12 col-lg-6">
-                        <input type="text" class="form-control" id="<%= 'tag' + index %>" value="<%= tag %>" placeholder="<%= 'Tag ' + index %>">
+                        <input type="text" class="form-control my-1" id="<%= 'tag' + indexTags %>" value="<%= tag %>" placeholder="<%= 'Tag ' + indexTags %>">
                     </div>
-                    <% index++; %>
+                    <% indexTags++; %>
                 <% }); %>
-                <% while(index <= 20) { %>
+                <% while(indexTags <= 20) { %>
                     <div class="col-12 col-lg-6">
-                        <input type="text" class="form-control" id="<%= 'tag' + index %>" value="" placeholder="<%= 'Tag ' + index %>">
+                        <input type="text" class="form-control my-1" id="<%= 'tag' + indexTags %>" value="" placeholder="<%= 'Tag ' + indexTags %>">
                     </div>
-                    <% index++; %>
+                    <% indexTags++; %>
                 <% } %>
             </div>
 
@@ -40,18 +50,21 @@
 
     <div class="jumbotron my-3">
 
-        <h2 class="mb-2">Cards</h2>
+        <h2 class="text-center mb-2">Cards</h2>
         <div id="cards">
-            <% let index = 1; %>
+            <% let indexCard = 1; %>
             <% set.cards.forEach((card) => { %>
-
-                <% index++; %>
+                <div id="<%= 'card' + indexCard %>" class="d-block container my-2 px-4 py-2 bg-white custom-rounded">
+                    <h5 class="text-center mt-2">Card <%= indexCard %></h5>
+                    <input type="text" class="form-control my-1" id="<%= 'front' + indexCard %>" value="<%= card.front %>" placeholder="<%= 'Front of card ' + indexCard %>">
+                    <textarea class="form-control mt-1 mb-3" id="<%= 'back' + indexCard %>" rows="3" value="<%= card.back %>" placeholder="<%= 'Back of card ' + indexCard %>">
+                </div>
+                <% indexCard++; %>
             <% }); %>
-            <div id="<%= 'card' + index %>" class="d-block container my-2 px-4 bg-white custom-rounded">
-                <h5 class="text-center">Card <%= index %></h5>
-                <input type="text" class="form-control" id="<%= 'front' + index %>" value="<%= card.front %>" placeholder="<%= 'Front of card ' + index %>">
-                <textarea class="form-control" id="<%= 'back' + index %>" rows="3" value="<%= card.back %>" placeholder="<%= 'Back of card ' + index %>">
-
+            <div id="<%= 'card' + indexCard %>" class="d-block container my-2 px-4 py-2 bg-white custom-rounded">
+                <h5 class="text-center mt-2">Card <%= indexCard %></h5>
+                <input type="text" class="form-control my-1" id="<%= 'front' + indexCard %>" value="" placeholder="<%= 'Front of card ' + indexCard %>">
+                <textarea class="form-control mt-1 mb-3" id="<%= 'back' + indexCard %>" rows="3" value="" placeholder="<%= 'Back of card ' + indexCard %>"></textarea>
             </div>
         </div>
     </div>
@@ -62,4 +75,4 @@
     </div>
 </form>
 
-<%- include("../../partials/footer") -%>
+<%- include("../../../partials/footer") -%>
