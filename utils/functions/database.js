@@ -171,7 +171,7 @@ function clearQuestionQueue (req, subject) {
 
 // things to update when skipping question
 async function skipQuestionUpdates(Ques, req, subject, id) {
-    
+
     // deduct 8 rating for skipping
     var originalRating = getRating(subject, req);
     var deduction = originalRating > 8 ? originalRating-8 : 0;
@@ -213,11 +213,11 @@ async function generateLeaderboard (User, count) {
     });
 
     return { physics, chem, bio, rush, experience };
-    
+
 }
 
 async function getDailyQuestion(Daily, Ques) {
-    
+
     // attempt to get daily object
     const date = await new Date().toISOString().split('T')[0];
     let question = await Daily.findOne({ date }).exec();
@@ -226,22 +226,22 @@ async function getDailyQuestion(Daily, Ques) {
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
-      
+
         return content;
     } else {
 
         // if daily object does not exist, create a new one
         const questions = await Ques.find({ rating: { $gte: 2500, $lte: 4000 } }).exec();
         const selection = await questions[Math.floor(Math.random() * questions.length)];
-        
+
         // Manually set daily question date, maybe the defaults are weird?
         let question = await new Daily({
             question: selection._id,
             date: date
         })
-        
+
         await question.save();
-        
+
         return selection;
     }
 }
@@ -250,7 +250,7 @@ async function getSiteData(User, Ques, SiteData) {
 
     let userCount = await User.estimatedDocumentCount({});
     let questionCount = await Ques.estimatedDocumentCount({});
-    
+
     let tagCounter = () => {
         let { tags } = require('../constants/tags');
         let counter = 0;
@@ -292,10 +292,10 @@ async function getSiteData(User, Ques, SiteData) {
 
 // returns 10 most recent announcements
 async function getAnnouncements(SiteData, numberToFetch) {
-    
+
     let announcements = await SiteData.findOne({ tag: "ANNOUNCEMENTS" }).exec();
     let siteAnnouncements = announcements.data.site;
-    
+
     let recentAnnouncements = siteAnnouncements.reverse().slice(0, numberToFetch);
 
     return recentAnnouncements;
@@ -303,7 +303,7 @@ async function getAnnouncements(SiteData, numberToFetch) {
 
 // updates problem rush stats
 async function updateRushStats(user, score) {
-    
+
     if(!user.stats.rush) {
         user.stats.rush = {
             attempts: 0,
@@ -322,7 +322,7 @@ async function updateRushStats(user, score) {
     user.stats.rush.attempts += 1;
 
     if(user.stats.rush.highscore < score) {
-        
+
         user.stats.rush.highscore = score;
     }
 
@@ -330,7 +330,7 @@ async function updateRushStats(user, score) {
 }
 
 async function querySite(search, User, Ques, Flashcard) {
-    
+
     results = [];
 
     let possibleID = 0;
@@ -362,9 +362,17 @@ async function querySite(search, User, Ques, Flashcard) {
         ]
     }).sort({ rating: -1}).exec();
 
+    let flashcardMatches = await Flashcard.find({
+        $or: [
+            { _id: possibleID },
+            { tags: search.toUpperCase() },
+            { cards: { $regex: new RegExp(search), $options: 'ix' } }
+        ]
+    }).exec();
+
     // load matches into results
     questionMatches.forEach((question) => {
-        if(search.toUpperCase == question.question.toUpperCase() || question.tags.includes(search.toUpperCase()) || question._id.toString() == search.trim()) {
+        if(search.toUpperCase() == question.question.toUpperCase() || question.tags.includes(search.toUpperCase()) || question._id.toString() == search.trim()) {
             results.unshift({
                 exactMatch: true,
                 type: "QUESTION",
@@ -402,6 +410,26 @@ async function querySite(search, User, Ques, Flashcard) {
                 title: user.ign + (user.profile.name ? " (" + user.profile.name + ")" : ""),
                 preview: (user.profile.bio ? user.profile.bio + ", " : "") + "Experience: " + user.stats.experience + ", "
                     + user.stats.collectedTags.length + " tags collected"
+            });
+        }
+    });
+
+    flashcardMatches.forEach((flashcard) => {
+        if(search.toUpperCase() == flashcard.name.toUpperCase() || flashcard.tags.includes(search.toUpperCase()) || flashcard._id.toString() == search.trim()) {
+            results.unshift({
+                exactMatch: true,
+                type: "FLASHCARD SET",
+                id: flashcard._id,
+                title: flashcard.subject[0] + " (" + flashcard.rating + " Rated)",
+                preview: "ID: " + flashcard._id + ", Relevant Tags: " + flashcard.tags.join(" ")
+            });
+        } else {
+            results.push({
+                exactMatch: false,
+                type: "FLASHCARD SET",
+                id: flashcard._id,
+                title: flashcard.subject[0] + " (" + flashcard.rating + " Rated)",
+                preview: "ID: " + flashcard._id + ", Relevant Tags: " + flashcard.tags.join(" ")
             });
         }
     });
