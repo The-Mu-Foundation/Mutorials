@@ -876,9 +876,18 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.get('/study/flashcards/edit/:id', (req, res) => { // does not work rn
+        if (req.isAuthenticated()) {
+            res.render(VIEWS + 'private/study/flashcards/edit.ejs')
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
     app.post('/study/flashcards/edit', async (req, res) => {
         if(req.isAuthenticated()){
-            db.flashcards.findOne({'_id': req.body.flashcardID}).then(card => {
+            mongo.flashcards.findOne({'_id': req.body.flashcardID}).then(card => {
                 card.name = req.body.name;
                 card.tags = req.body.tags;
                 card.cards = req.body.cards;
@@ -886,7 +895,6 @@ module.exports = (app, mongo) => {
                 db.flashcards.update({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
 
             }, reason => {
-                console.log("There is an error"); //replace this with a flash
                 req.flash('errorFlash', 'We couldn\'t save that flashcard set... sorry about that.')
             });
             res.json({ status: "Success" });
@@ -895,7 +903,7 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/newFlashcard', async(req, res) => {
+    app.post('/study/flashcards/new', async(req, res) => {
         if(req.isAuthenticated()){
             const newFlashcard = new mongo.Flashcard({
                 name: "",
@@ -903,13 +911,14 @@ module.exports = (app, mongo) => {
                 views: 0,
                 tags: [],
                 cards: []
-            })
+            });
             newFlashcard.save();
+            console.log('newstuffs: ' + newFlashcard._id);
+            res.redirect('/study/flashcards/edit/' + newFlashcard._id);
         } else {
             res.redirect('/');
         }
     });
-        
 
     app.get('/study/flashcards/saved', (req, res) => {
         if (req.isAuthenticated()) {
