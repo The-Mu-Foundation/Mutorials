@@ -178,7 +178,9 @@ const tags = {
             "HAG": "Heredity and Genetics",
             "HUMAN": "Human Physiology",
             "MOBIO": "Molecular Biology",
-            "PAAP": "Plant and Animal Physiology"
+            "PAAP": "Plant and Animal Physiology",
+            "LAB": "Lab Skills"
+
         },
         "Concepts": {
             "CARB": "Carbon Cycle",
