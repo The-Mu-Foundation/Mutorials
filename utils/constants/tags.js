@@ -41,6 +41,7 @@ const tags = {
             "CMO": "Conservation of Momentum",
             "COL": "Collison Mechanics",
             "COM": "Component Resolution",
+            "COU": "Coulomb's Law",
             "DEN": "Density",
             "DISP": "Displacement",
             "ELE": "Electricity",
