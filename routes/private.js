@@ -384,7 +384,7 @@ module.exports = (app, mongo) => {
     app.post('/editFlashcard', async (req, res) => {
         if(req.isAuthenticated()){
             // req.body.
-            db.flashcards.findOne({'_id': req.body.flashcardID}).then(card => { 
+            db.flashcards.findOne({'_id': req.body.flashcardID}).then(card => {
                 card.name = req.body.name;
                 card.tags = req.body.tags;
                 card.cards = req.body.cards;
@@ -400,7 +400,7 @@ module.exports = (app, mongo) => {
         }
 
     });
-    
+
     app.get('/announcements', async (req, res) => {
         if (req.isAuthenticated()) {
             let announcements = await getAnnouncements(mongo.SiteData, 20);
