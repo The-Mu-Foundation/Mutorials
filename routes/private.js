@@ -896,17 +896,22 @@ module.exports = (app, mongo) => {
 
     app.post('/study/flashcards/edit', async (req, res) => {
         if(req.isAuthenticated()){
-            mongo.Flashcard.findOne({'_id': req.body.flashcardID}).then(card => {
-                card.name = req.body.name;
-                card.tags = req.body.tags;
-                card.cards = req.body.cards;
+            if(req.user._id == req.body.creator){
+                mongo.Flashcard.findOne({'_id': req.body.flashcardID}).then(card => {
+                    card.name = req.body.name;
+                    card.tags = req.body.tags;
+                    card.cards = req.body.cards;
 
-                mongo.Flashcard.updateOne({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
+                    db.flashcards.updateOne({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
 
-            }, reason => {
-                req.flash('errorFlash', 'We couldn\'t save that flashcard set... sorry about that.')
-            });
-            res.json({ status: "Success" });
+                }, reason => {
+                    console.log("There is an error"); //replace this with a flash
+                    req.flash('errorFlash', 'We couldn\'t save that flashcard set... sorry about that.')
+                });
+                res.json({ status: "Success" });
+            } else{
+                req.flash('errorFlash', 'You cannot edit a flashcard set that you did not create!');
+            }
         } else {
             res.redirect('/');
         }
