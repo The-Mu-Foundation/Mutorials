@@ -12,7 +12,6 @@
         if("<%= subject %>" == "Physics") {
             var toHide = ["Electric Forces and Fields",
                     "Electrical Energy and Capacitance",
-                    "Current and Resistance",
                     "DC Circuits",
                     "AC Circuits",
                     "Magnetism",
@@ -71,12 +70,12 @@
 
 <div class="jumbotron container mt-5">
     <%- include ("../../partials/flashes") -%>
-    <h1 class="display-2 text-center mb-5"><%= subject %></h1>
+    <h1 class="display-2 text-center"><%= subject %></h1>
 
     <div class="row">
-        <div class="col-1"></div>
+        <div class="col-lg-1"></div>
 
-        <div class="col-6">
+        <div class="col-12 col-lg-6 mt-5">
 
             <h3 class="mb-2">Select units to train in:</h3>
 
@@ -103,26 +102,26 @@
 
         </div>
 
-            <div class="col-4">
+        <div class="col-12 col-lg-4 mt-5">
 
-                <h3 class="mb-2">Quick Select</h3>
+            <h3 class="mb-2">Quick Select</h3>
 
-                <button type="button" class="btn btn-warning btn-block" id="select-all"><font color="white">Select All</font></button>
-                <button type="button" class="btn btn-warning btn-block" id="deselect-all"><font color="white">Deselect All</font></button>
+            <button type="button" class="btn btn-warning btn-block" id="select-all"><font color="white">Select All</font></button>
+            <button type="button" class="btn btn-warning btn-block" id="deselect-all"><font color="white">Deselect All</font></button>
 
-                <% if(Object.entries(unitPresets).length > 0) { %>
-                    <% Object.entries(unitPresets).forEach((preset) => { %>
-                        <button type="button" class="btn btn-info btn-block" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
-                    <% }); %>
-                <% } %>
+            <% if(Object.entries(unitPresets).length > 0) { %>
+                <% Object.entries(unitPresets).forEach((preset) => { %>
+                    <button type="button" class="btn btn-info btn-block" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
+                <% }); %>
+            <% } %>
 
-                <input type="hidden" id="stringifiedUnits" value="<%= JSON.stringify(unitPresets) %>">
+            <input type="hidden" id="stringifiedUnits" value="<%= JSON.stringify(unitPresets) %>">
 
-            </div>
+        </div>
 
     </div>
 
-    <div class="col-1"></div>
+    <div class="col-lg-1"></div>
 
 </div>
 
