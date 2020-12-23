@@ -63,6 +63,7 @@ const tags = {
             "NORM": "Normal Force",
             "PAR": "Elements in Parallel",
             "PE": "Potential Energy",
+            "PRES": "Pressure",
             "PUL": "Pulley",
             "PWR": "Power",
             "RKE": "Rotational Kinetic Energy",
