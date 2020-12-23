@@ -99,7 +99,7 @@
         <div class="form-group row">
             <div class="col-sm-10 my-2">
                 <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="hideProfile" name="hideProfile" <% if (locals.hideProfile) { %> checked <% } %>>
+                    <input type="checkbox" class="custom-control-input" id="hideProfile" name="hideProfile" <% if (user.preferences.hideProfile) { %> checked <% } %>>
                     <label for="hideProfile" class="col-sm-2 custom-control-label">Hide Public Profile</label>
                 </div>
             </div>
