@@ -40,16 +40,18 @@
 
 <h1 class="my-5 container">Settings</h1>
 
+<div class="container">
+    <%- include("../partials/flashes") -%>
+</div>
+
 <div class="container" id="unsaved-alert">
     <div class="alert alert-danger" role="alert">Careful! You have unsaved changes!</div>
 </div>
-
 
 <form action="/changeProfile" method="POST">
     <%# Public profile tweaks %>
     <div class="jumbotron container">
 
-        <%- include("../partials/flashes") -%>
         <h3 class="mb-4">Profile</h3>
 
         <div class="form-group row">

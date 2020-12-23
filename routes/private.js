@@ -150,6 +150,8 @@ module.exports = (app, mongo) => {
                     // check answer
                     if (antsy.answer[0].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
                         isRight = true;
+                    } else if(Number(antsy.answer[0].toLowerCase()) == Number(req.body.freeAnswer.trim())) {
+                        isRight = true;
                     }
 
                     // modify ratings
