@@ -869,7 +869,7 @@ module.exports = (app, mongo) => {
 
     app.get('/study', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/study/study.ejs')
+            res.render(VIEWS + 'private/study/study.ejs');
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
@@ -879,13 +879,7 @@ module.exports = (app, mongo) => {
     app.get('/study/flashcards/edit/:id', (req, res) => { // does not work rn
         if (req.isAuthenticated()) {
             mongo.Flashcard.findOne({ '_id': req.params.id }).populate('creator').then((set) => {
-                // if (req.user._id != set.creator) {
-                //     console.log("set creator: " + set.creator);
-                //     req.flash('errorFlash', 'You aren\'t allowed to edit that set.');
-                //     res.redirect('/study');
-                // } else {
-                //     res.render(VIEWS + 'private/study/flashcards/edit.ejs', { set: set });
-                // }
+                console.log("set creator: " + set.creator);
                 res.render(VIEWS + 'private/study/flashcards/edit.ejs', { set: set });
             })
         } else {
@@ -894,7 +888,6 @@ module.exports = (app, mongo) => {
         }
     });
 
-    
     app.post('/study/flashcards/edit', async (req, res) => {
         if(req.isAuthenticated()){
             if(req.user._id == req.body.creator){
@@ -906,7 +899,6 @@ module.exports = (app, mongo) => {
                     mongo.Flashcard.updateOne({'_id': req.body.flashcardID}, {$set: {name: card.name, tags: card.tags, cards: card.cards}});
 
                 }, reason => {
-                    console.log("There is an error"); //replace this with a flash
                     req.flash('errorFlash', 'We couldn\'t save that flashcard set... sorry about that.')
                 });
                 res.json({ status: "Success" });
@@ -944,7 +936,7 @@ module.exports = (app, mongo) => {
             res.redirect('/');
         }
     });
-    
+
     app.post('/study/flashcards/remove', (req, res) => { //unsave set
         if (req.isAuthenticated()){
             i = req.user.study.flashcards.favorites.indexOf(req.body.flashcardID);
@@ -954,7 +946,7 @@ module.exports = (app, mongo) => {
             mongo.users.updateOne({'_id': req.user._id}, {$set: {study : {flashcards: {favorites: req.user.study.flashcards.favorites}}}});
             if(i >= 0){
                 req.flash('successFlash', 'This set has been unsaved.');
-            } else{
+            } else {
                 req.flash('errorFlash', 'You cannot unsave a set you have not previously saved!');
             }
 
@@ -965,7 +957,7 @@ module.exports = (app, mongo) => {
 
     app.post('/study/flashcards/delete', (req, res) => { //delete a set you made
         if(req.isAuthenticated()){
-            if(req.user._id = req.body.creator){
+            if(req.user._id == req.body.creator){
                 mongo.Flashcard.deleteOne({'_id': req.body.flashcardID});
                 req.flash('successFlash', 'This set has been deleted.');
             } else {
