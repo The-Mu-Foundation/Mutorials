@@ -134,6 +134,11 @@
                 labels.push(i + " Ago");
             }
             labels.push("");
+
+            let color = (subject == "Physics") ? "rgba(100, 200, 230, 1)" :
+                        (subject == "Chemistry") ? "rgba(245, 170, 40, 1)" :
+                            "rgba(40, 240, 110, 1)";
+
             var myChart = new Chart(ctxTracker, {
                 type: "line",
                 data: {
@@ -141,8 +146,8 @@
                     datasets: [{
                         label: "Rating History",
                         data: tracker,
-                        backgroundColor: "rgba(100, 200, 230, 1)",
-                        borderColor: "rgba(100, 200, 230, 1)",
+                        backgroundColor: color,
+                        borderColor: color,
                         fill: false,
                         borderWidth: 5
                     }]
@@ -179,7 +184,7 @@
 
 </script>
 
-<h1 class="my-5 container display-3"><strong><a href="/profile/<%= user.ign %>" style="text-decoration: none;"><%= user.ign %></a></strong>'s Stats</h1>
+<h1 class="my-5 container display-3"><strong><a target="_blank" href="/profile/<%= user.ign %>" style="text-decoration: none;"><%= user.ign %></a></strong>'s Stats</h1>
 
 <div class="container jumbotron mt-5">
 

@@ -8,7 +8,6 @@
 
     window.onload = function () {
 
-        //var age = new Date().getFullYear - user.profile.yob;
         // render correct/wrong chart
 
         Chart.pluginService.register({
@@ -222,7 +221,7 @@
                         <div class="canvas-container-center text-center">
                             <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>
                         </div>
-                        <p class="text-center"><a href="/stats/<%= user.ign %>">See full stats</a></p>
+                        <p class="text-center"><a target="_blank" href="/stats/<%= user.ign %>">See full stats</a></p>
                         <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
                         <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
 					</div>
