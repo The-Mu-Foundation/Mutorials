@@ -14,7 +14,8 @@
 
         <div class="row">
             <div class="col-12 col-xl-4">
-                <a href="/study/flashcards/new" class="d-block container my-2 px-4 bg-white custom-rounded" style="text-decoration: none; color: #007BFF;">
+                <form id="new-target" method="post" action="/study/flashcards/new"></form>
+                <a onclick="document.getElementById('new-target').submit();" class="d-block container my-2 px-4 bg-white custom-rounded" style="text-decoration: none; color: #007BFF;">
                     <h2 class="display-4 text-center">
                         <i class="fas fa-plus"></i>
                         New
