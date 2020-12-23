@@ -279,8 +279,9 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
 
             req.user.preferences.dark_mode = !!req.body.darkMode;
+            req.user.preferences.hideProfile = !!req.body.hideProfile;
 
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode, hideProfile: req.user.preferences.hideProfile } } }, {upsert: true});
 
             console.log('Updated preferences');
 
@@ -470,13 +471,15 @@ module.exports = (app, mongo) => {
     app.get('/profile/:username', (req, res) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
-                if (obj) {
+                if (!obj.preferences.hideProfile) {
                     var thisAge = 0;
                     if(req.user.profile.yob && obj.profile.yob != 2020){
                         thisAge = new Date().getFullYear() - obj.profile.yob;
                     }
                     let experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
                     res.render(VIEWS + 'private/profile.ejs', { age: thisAge, user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
+                } else if(obj.profile.hideProfile) {
+                    req.flash('errorFlash', 'This user has made his or her profile private.');
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
                     res.redirect('/');
