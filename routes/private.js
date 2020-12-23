@@ -12,6 +12,10 @@ const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTrack
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter,
     getAnnouncements, updateRushStats, querySite, updateFields } = require('../utils/functions/database');
 
+// LIBRARY IMPORTS
+let pluralize = require('pluralize');
+
+
 
 const VIEWS = __dirname + '/../views/';
 
@@ -34,23 +38,12 @@ module.exports = (app, mongo) => {
     });
 
     app.post('/selQ', (req, res, next) => {
-        //select question
-        //var subj = null;
+
         var units = null;
-        /*
-        if (req.body.qNum == 0) {
-            subj = req.body.subj;
-            res.redirect('/train/' + req.body.subj + '/chooseUnits');
-        }
-        */
+
         if(req.isAuthenticated()){
             var units = null;
-            /*
-            if (req.body.qNum == 0) {
-                subj = req.body.subj;
-                res.redirect('/train/' + req.body.subj + '/chooseUnits');
-            }
-            */
+
             if (req.body.qNum == 1) {
                 units = req.body.unitChoice;
                 if (!units) {
@@ -58,11 +51,10 @@ module.exports = (app, mongo) => {
                     res.redirect('/train/' + req.body.subj + '/chooseUnits');
                 }
 
-                if (units) { //nothing happens if units is empty
+                if (units) {
                     res.redirect('/train/' + req.body.subj + '/displayQuestion?units=' + units.toString());
                 }
-                //app.set('questionz', questions);
-                //units cannot have commas
+
             }
         }
     });
@@ -151,6 +143,8 @@ module.exports = (app, mongo) => {
                     if (antsy.answer[0].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
                         isRight = true;
                     } else if(Number(antsy.answer[0].toLowerCase()) == Number(req.body.freeAnswer.trim())) {
+                        isRight = true;
+                    } else if(pluralize(antsy.answer[0].toLowerCase(), 1) == pluralize(req.body.freeAnswer.trim().toLowerCase(), 1)) {
                         isRight = true;
                     }
 

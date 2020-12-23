@@ -32,6 +32,7 @@
         "passport": "^0.4.1",
         "passport-local": "^1.0.0",
         "passport-local-mongoose": "^6.0.1",
-        "pg": "^7.18.2"
+        "pg": "^7.18.2",
+        "pluralize": "^8.0.0"
     }
 }
