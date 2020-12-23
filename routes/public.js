@@ -1,6 +1,5 @@
 // MODULE IMPORTS
 const passport = require('passport');
-const { verify } = require('hcaptcha');
 var Filter = require('bad-words');
 
 filter = new Filter();
@@ -12,10 +11,6 @@ const { getSiteData, getDailyQuestion } = require('../utils/functions/database')
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 
 const VIEWS = "../views/"
-
-// hCaptcha SETUP
-const hcaptchaSecret = process.env.HCAPTCHA_SECRET || '0x0000000000000000000000000000000000000000';
-const hcaptchaToken  = process.env.HCAPTCHA_TOKEN  || '10000000-ffff-ffff-ffff-000000000001';
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
@@ -47,7 +42,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signin', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(VIEWS + 'public/signin.ejs', { hcaptchaToken: hcaptchaToken, pageName: "Sign-in to Mutorials" });
+            res.render(VIEWS + 'public/signin.ejs', { pageName: "Sign-in to Mutorials" });
         }
         else {
             res.redirect('/homepage');
@@ -56,7 +51,7 @@ module.exports = (app, mongo) => {
 
     app.get('/signup', (req, res) => {
         if (!req.isAuthenticated()) {
-            res.render(VIEWS + 'public/signup.ejs', { hcaptchaToken: hcaptchaToken, pageName: "Sign-up to Mutorials" });
+            res.render(VIEWS + 'public/signup.ejs', { pageName: "Sign-up to Mutorials" });
         }
         else {
             res.redirect('/homepage');
@@ -91,14 +86,6 @@ module.exports = (app, mongo) => {
         req.body.ign = req.body.ign.toLowerCase();
         var registerInputProblems1 = false;
         
-
-        console.log('hcaptcha: ' + Boolean(req.body['h-captcha-response']));
-        verify(hcaptchaSecret, req.body['h-captcha-response']).then((data) => {
-            if (!Boolean(req.body['h-captcha-response'])) {
-                req.flash('errorFlash', 'Invalid captcha.');
-                registerInputProblems1 = true;
-            }
-        });
         if (req.body.ign.length > 30){
             req.flash('errorFlash', 'Your username is too long.');
             registerInputProblems1 = true;
@@ -219,7 +206,7 @@ module.exports = (app, mongo) => {
     app.post('/login', passport.authenticate('local', {
         failureRedirect: '/signin',
         successRedirect: '/homepage',
-        failureFlash: 'Invalid username or password (or invalid captcha).',
+        failureFlash: 'Invalid username or password.',
         successFlash: 'Welcome!'
     }),
         (req, res, next) => {
