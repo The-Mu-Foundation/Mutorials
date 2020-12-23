@@ -6,7 +6,7 @@ const { referenceSheet } = require('../utils/constants/referencesheet');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { adminList, contributorList } = require('../utils/constants/sitesettings');
 const { arraysEqual } = require('../utils/functions/general');
-const { genPassword } = require('../utils/functions/password');
+const { genPassword, validPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter,
@@ -347,21 +347,29 @@ module.exports = (app, mongo) => {
 
             console.log('log marker 1');
 
-            if(req.body.newpw) {
-
-                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw.length >= 7) {
-                    if (req.body.newpw == req.body.confirmnewpw) {
-                        const newPass = genPassword(req.body.newpw);
-                        req.user.hash = newPass.hash;
-                        req.user.salt = newPass.salt;
-                        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
-                    } else {
-                        req.flash('errorFlash', 'Passwords don\'t match.');
-                    }
-                } else {
-                    req.flash('errorFlash', 'Password does not meet requirments.');
-                }
-            }
+            if(req.body.newpw) {
+                if(req.body.plassword){
+                    const isValid = validPassword(req.body.plassword, req.user.hash, req.user.salt);
+                    if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw.length >= 7) {
+                        if (req.body.newpw == req.body.confirmnewpw) {
+                            if(isValid){
+                                const newPass = genPassword(req.body.newpw);
+                                req.user.hash = newPass.hash;
+                                req.user.salt = newPass.salt;
+                                mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+                            }else{
+                                req.flash('errorFlash', 'Your current password must match what you type into the field below for any changes to these settings!');
+                            }
+                        } else {
+                            req.flash('errorFlash', 'Passwords don\'t match.');
+                        }
+                    } else {
+                        req.flash('errorFlash', 'Password does not meet requirements.');
+                    }
+                } else {
+                    req.flash('errorFlash', 'To change your password you must enter your current password first!')
+                }
+            }
             //mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
             res.redirect('/settings');
