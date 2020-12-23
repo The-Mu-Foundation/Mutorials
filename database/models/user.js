@@ -42,7 +42,8 @@ const userSchema = new mongoose.Schema({
     },
     // first index is phys, then chem, then bio; fourth index is 1/0 for proficiency
     preferences: {
-        dark_mode: Boolean
+        dark_mode: Boolean,
+        hideProfile: Boolean
     }
 });
 
