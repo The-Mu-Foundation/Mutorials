@@ -139,8 +139,14 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.');
             registerInputProblems1 = true;
         }
+        /*
         if (!(/^(19|20)\d{2}$/.test(req.body.yob)) || req.body.yob != 4 || req.body.yob > new Date().getFullYear()) {
             req.flash('errorFlash', 'Please enter a valid year of birth!');
+            registerInputProblems1 = true;
+        }
+        */
+        if (!(/^\d+$/.test(new Date().getFullYear() - req.body.yob))) {
+            req.flash('errorFlash', 'Please enter a valid age!');
             registerInputProblems1 = true;
         }
         if (registerInputProblems1) {
