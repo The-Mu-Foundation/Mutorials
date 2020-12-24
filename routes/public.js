@@ -84,8 +84,11 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'public/termsOfService.ejs', { pageName: "Mutorials TOS" });
     });
 
-    // PUBLIC POST
+    app.get('/robots.txt', (req, res) => {
+        res.render(VIEWS + 'public/robots.ejs', { pageName: "robots.txt" });
+    });
 
+    // PUBLIC POST
     app.post('/register', (req, res, next) => {
         req.body.username = req.body.username.toLowerCase();
         req.body.ign = req.body.ign.toLowerCase();
