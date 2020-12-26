@@ -84,13 +84,15 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'public/termsOfService.ejs', { pageName: "Mutorials TOS" });
     });
 
-    // PUBLIC POST
+    app.get('/robots.txt', (req, res) => {
+        res.render(VIEWS + 'public/robots.ejs', { pageName: "robots.txt" });
+    });
 
+    // PUBLIC POST
     app.post('/register', (req, res, next) => {
         req.body.username = req.body.username.toLowerCase();
         req.body.ign = req.body.ign.toLowerCase();
         var registerInputProblems1 = false;
-        
 
         console.log('hcaptcha: ' + Boolean(req.body['h-captcha-response']));
         verify(hcaptchaSecret, req.body['h-captcha-response']).then((data) => {
@@ -137,6 +139,12 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.');
             registerInputProblems1 = true;
         }
+        /*
+        if (!(/^(19|20)\d{2}$/.test(req.body.yob)) || req.body.yob != 4 || req.body.yob > new Date().getFullYear()) {
+            req.flash('errorFlash', 'Please enter a valid year of birth!');
+            registerInputProblems1 = true;
+        }
+        */
         if (!(/^\d+$/.test(new Date().getFullYear() - req.body.yob))) {
             req.flash('errorFlash', 'Please enter a valid age!');
             registerInputProblems1 = true;
