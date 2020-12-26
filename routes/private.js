@@ -468,8 +468,9 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj.preferences.hideProfile) {
-                    res.redirect('/leaderboard');
                     req.flash('errorFlash', 'This user has made his or her profile private.');
+                    res.redirect('/leaderboard');
+                    
                 } else if (!obj.preferences.hideProfile) {
                     var thisAge = 0;
                     if(req.user.profile.yob && obj.profile.yob != 2020){
