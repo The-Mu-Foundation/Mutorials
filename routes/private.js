@@ -468,7 +468,7 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
-                    if (obj.preferences.hideProfile) {
+                    if (obj.preferences.hideProfile && req.user.ign != req.params.username) {
                         req.flash('errorFlash', 'This user has made their profile private.');
                         res.redirect('/homepage');
                     } else {
@@ -631,7 +631,7 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
-                    if (obj.preferences.hideProfile) {
+                    if (obj.preferences.hideProfile && req.user.ign != req.params.username) {
                         req.flash('errorFlash', 'This user has made their stats private.');
                         res.redirect('/homepage');
                     } else {
