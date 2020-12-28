@@ -275,8 +275,9 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
 
             req.user.preferences.dark_mode = !!req.body.darkMode;
+            req.user.preferences.hideProfile = !!req.body.hideProfile;
 
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode, hideProfile: req.user.preferences.hideProfile } } }, {upsert: true});
 
             console.log('Updated preferences');
 
@@ -428,7 +429,7 @@ module.exports = (app, mongo) => {
                 //console.log(x);
                 //need change field values
                 res.render(VIEWS + 'admin/adminHomepage.ejs');
-                
+
             } else {
                 let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
                 let experienceStats = await calculateLevel(req.user.stats.experience);
@@ -467,12 +468,17 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
-                    var thisAge = 0;
-                    if(req.user.profile.yob && obj.profile.yob != 2020){
-                        thisAge = new Date().getFullYear() - obj.profile.yob;
+                    if (obj.preferences.hideProfile && req.user.ign != req.params.username) {
+                        req.flash('errorFlash', 'This user has made their profile private.');
+                        res.redirect('/homepage');
+                    } else {
+                        var thisAge = 0;
+                        if(req.user.profile.yob && obj.profile.yob != 2020){
+                            thisAge = new Date().getFullYear() - obj.profile.yob;
+                        }
+                        let experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
+                        res.render(VIEWS + 'private/profile.ejs', { age: thisAge, user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
                     }
-                    let experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
-                    res.render(VIEWS + 'private/profile.ejs', { age: thisAge, user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
                     res.redirect('/');
@@ -587,11 +593,11 @@ module.exports = (app, mongo) => {
     app.get('/statsAdditional', async (req, res) => {
 
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let { physicsRating, chemistryRating, biologyRating, experience, rushHighscore } = req.query;
-                
+
                 let globalPhysicsRank = (await mongo.User.countDocuments({ "rating.physics": { $gt: physicsRating } })) + 1;
                 let globalChemistryRank = (await mongo.User.countDocuments({ "rating.chemistry": { $gt: chemistryRating } })) + 1;
                 let globalBiologyRank = (await mongo.User.countDocuments({ "rating.biology": { $gt: biologyRating } })) + 1;
@@ -608,7 +614,7 @@ module.exports = (app, mongo) => {
                         rush: globalRushRank
                     }
                 });
-                
+
             } catch(err) {
 
                 res.json({
@@ -625,11 +631,15 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
+                    if (obj.preferences.hideProfile && req.user.ign != req.params.username) {
+                        req.flash('errorFlash', 'This user has made their stats private.');
+                        res.redirect('/homepage');
+                    } else {
+                        let userLevel = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
+                        let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
 
-                    let userLevel = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
-                    let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
-
-                    res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, userLevel, analytics, pageName: obj.ign + "'s Stats" });
+                        res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, userLevel, analytics, pageName: obj.ign + "'s Stats" });
+                    }
                 } else {
                     req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');
                     res.redirect('/');
@@ -683,7 +693,7 @@ module.exports = (app, mongo) => {
 
     app.get('/train/rush/loadQuestion', async (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let score = parseInt(req.query.score);
@@ -726,7 +736,7 @@ module.exports = (app, mongo) => {
 
     app.get('/train/rush/checkAnswer', async (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let choice = req.query.index;
@@ -763,22 +773,22 @@ module.exports = (app, mongo) => {
 
     app.get('/train/rush/results', async (req, res) => {
         if (req.isAuthenticated()) {
-            
+
             try {
 
                 let score = req.query.score;
 
                 await updateRushStats(req.user, score);
-                
+
                 let user = await mongo.User.findOne({ _id: req.user._id }).exec();;
 
                 let highscore = user.stats.rush.highscore;
-                
+
                 res.json({
                     status: "Success",
                     highscore
                 });
-                
+
             } catch(err) {
 
                 res.json({
@@ -796,7 +806,7 @@ module.exports = (app, mongo) => {
         // called when rating isn't set for subject
         if (req.isAuthenticated()) {
             if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
-                
+
                 res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject, pageName: req.params.subject + " Proficiency" });
             }
             else {
