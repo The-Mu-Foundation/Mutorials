@@ -94,7 +94,7 @@ function analyze(unitData) {
         }
 
         if(data.correct + data.wrong >= 100) {
-            favorites[unit.split(' ')[0].toLowerCase()].push("" + units);
+            favorites[unit.split(' ')[0].toLowerCase()].push("" + unit);
         }
     }
 

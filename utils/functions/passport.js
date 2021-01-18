@@ -12,28 +12,22 @@ module.exports = (app, mongo) => {
     passport.use(new LocalStrategy({
             passReqToCallback: true
         }, (req, username, password, cb) => {
-            verify(hcaptchaSecret, req.body['h-captcha-response']).then((data) => { if (data['success']) {
-                username = username.toLowerCase();
-                mongo.User.find({ username: username })
-                    .then((user) => {
-                        if (!user[0]) { return cb(null, false); }
+            username = username.toLowerCase();
+            mongo.User.find({ username: username }).then((user) => {
+                if (!user[0]) { return cb(null, false); }
 
-                        const isValid = validPassword(password, user[0].hash, user[0].salt);
+                const isValid = validPassword(password, user[0].hash, user[0].salt);
 
-                        if (isValid) {
-                            return cb(null, user[0]);
-                        } else {
+                if (isValid) {
+                    return cb(null, user[0]);
+                } else {
 
-                            return cb(null, false);
-                        }
+                    return cb(null, false);
+                }
 
-                    })
-                    .catch((err) => {
-                        cb(err);
-                    });
-            } else {
-                return cb(null, false);
-            }}).catch(console.error);
+            }).catch((err) => {
+                cb(err);
+            });
         }
     ));
     passport.serializeUser(function (user, cb) {
