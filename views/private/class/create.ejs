@@ -1,0 +1,27 @@
+<%# Create class page %>
+<%# ARGUMENTS: user's name %>
+
+<%- include("../partials/header") -%>
+<%- include("../partials/navigationPrivate") -%>
+
+<div class="container mt-5 mb-1">
+    <div class="mb-2">
+        <%- include("../partials/flashes") -%>
+    </div>
+    <h1 class="text-center display-3">Create a class</h1>
+</div>
+
+<div class="jumbotron container">
+    <form method="post" action="/private/class/createClass">
+        <div class="row">
+            <div class="col-md-10"><input class="form-control form-control-lg my-2" type="text" name="school" placeholder="Enter your school name, e.g. Mutorials High School"></div>
+            <div class="col-md-10"><input class="form-control form-control-lg my-2" type="text" name="city" placeholder="Enter your city, e.g. Bellevue WA"></div>
+            <div class="col-md-10"><input class="form-control form-control-lg my-2" type="text" name="name" placeholder="Enter your class name, e.g. AP Physics 2"></div>
+            <div class="col-md-10"><input class="form-control form-control-lg my-2" type="text" style="disabled: true;" value="<%=name%>"></div>
+            <div class="col-md-2"><input class="btn btn-primary btn-lg btn-block my-2" type="submit" value="Create class"></div>
+        </div>
+    </form>
+ </div>
+
+<%- include("../partials/footer") -%>
+

@@ -1,0 +1,37 @@
+<%# Join class page %>
+<%# ARGUMENTS: if the user is receiving verification, then pass class:(name, teacher, school, city) and classCode %>
+
+<%- include("../partials/header") -%>
+<%- include("../partials/navigationPrivate") -%>
+
+<div class="container mt-5 mb-1">
+    <div class="mb-2">
+        <%- include("../partials/flashes") -%>
+    </div>
+    <h1 class="text-center display-3">Join a class</h1>
+</div>
+
+<div class="jumbotron container">
+    <form method="post" action="/private/class/verifyClassCode">
+        <div class="row">
+            <div class="col-md-10">
+                <input class="form-control form-control-lg my-2" type="text" placeholder="Enter your class code" name="classname" value="<%=classCode%>">
+            </div>
+            <div class="col-md-2">
+                <input class="btn btn-primary btn-lg btn-block my-2" value="Verify code" type="submit" id="submit">
+            </div>
+        </div>
+    </form>
+    <% if(class) { %>
+        <div class="d-block px-4 pt-2 pb-1 bg-light my-2 search-result">
+            <h4><span class="badge badge-secondary"><%= class.school %></span> <%= class.name %> - <%= class.teacher %></h4>
+            <p><%= class.city %></p>
+            <form method="post" action="/private/class/joinClass">
+                <input type="text" name="classCode" style="display: none;" value="<%= class.classCode %>">
+                <input class="btn btn-primary" type="submit" value="Join this class">
+            </form>
+        </div>
+ </div>
+
+<%- include("../partials/footer") -%>
+

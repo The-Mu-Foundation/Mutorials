@@ -44,7 +44,9 @@ const userSchema = new mongoose.Schema({
     preferences: {
         dark_mode: Boolean,
         hideProfile: Boolean
-    }
+    },
+    classes: [String],
+    teaching_classes: [String]
 });
 
 module.exports = { userSchema : userSchema };
