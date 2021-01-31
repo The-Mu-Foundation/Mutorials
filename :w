@@ -11,10 +11,15 @@ module.exports = (app, mongo) => {
                 req.flash('errorFlash', 'Please enter a code.');
                 res.redirect('/class/join');
             } else {
-                req.session.classCode = req.body.classCode;
-                mongo.db.collection('classes').findOne({ classCode: req.body.classCode }, async (err, obj) => {
+                res.locals.classCode = req.body.classCode;
+                mongo.db.collection('class').findOne({ classCode: req.body.classCode }, async (err, obj) => {
                     if (obj) {
-                        req.session.currentClass = obj;
+                        res.locals.currentClass = {
+                            name: obj.name,
+                            teacher: obj.teacher,
+                            school: obj.school,
+                            city: obj.city
+                        }
                     } else {
                         req.flash('errorFlash', 'There isn\'t a class with that code.');
                     }
@@ -58,10 +63,6 @@ module.exports = (app, mongo) => {
 
     app.get('/class/join', (req, res) => {
         if (req.isAuthenticated()) {
-            res.locals.classCode = req.session.classCode;
-            res.locals.currentClass = req.session.currentClass;
-            req.session.classCode = null;
-            req.session.currentClass = null;
             res.render(VIEWS + 'private/class/join.ejs');
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');

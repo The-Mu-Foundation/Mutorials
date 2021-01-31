@@ -57,6 +57,7 @@ app.use((req, res, next) => {
 require('./routes/public.js')(app, mongo);
 require('./routes/private.js')(app, mongo);
 require('./routes/admin.js')(app, mongo);
+require('./routes/class.js')(app, mongo);
 
 // WILDCARD FOR ALL OTHER ROUTES
 app.get('*', (req, res) => {

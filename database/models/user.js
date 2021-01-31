@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
         hideProfile: Boolean
     },
     classes: [String],
-    teaching_classes: [String]
+    teachingClasses: [String]
 });
 
 module.exports = { userSchema : userSchema };
