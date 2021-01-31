@@ -6,7 +6,6 @@ const VIEWS = __dirname + '/../views/';
 module.exports = (app, mongo) => {
     app.post('/class/verifyClassCode', (req, res, next) => {
         if (req.isAuthenticated()) {
-            console.log(req.body.classCode);
             if (!req.body.classCode != req.body.classCode == "") {
                 req.flash('errorFlash', 'Please enter a code.');
                 res.redirect('/class/join');
@@ -28,9 +27,11 @@ module.exports = (app, mongo) => {
     });
     app.post('/class/joinClass', (req, res, next) => {
         if (req.isAuthenticated()) {
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id  }, { $push: { classes: req.body._id } });
-            req.flash('successFlash', 'You\'ve successfully been added to ' + req.body.name + '.');
-            res.redirect('/');
+            mongo.db.collection('classes').findOne({ classCode: req.body.classCode }, async (err, obj) => {
+                mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id  }, { $push: { classes: obj._id } });
+                req.flash('successFlash', 'You\'ve successfully been added to ' + req.body.name + '.');
+                res.redirect('/');
+            });
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
@@ -56,6 +57,11 @@ module.exports = (app, mongo) => {
         }
     });
 
+    app.post('/class/getDetails', (req, res, next) => {
+        res.redirect('/');
+    });
+
+
     app.get('/class/join', (req, res) => {
         if (req.isAuthenticated()) {
             res.locals.classCode = req.session.classCode;
@@ -78,13 +84,22 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/class/manage', (req, res) => {
+    app.get('/class/dash', (req, res) => {
         if (req.isAuthenticated()) {
             console.log(req.user.teachingClasses);
-            mongo.User.findOne({ _id: req.user._id }).populate('teachingClasses').then(teacher => {
+            mongo.User.findOne({ _id: req.user._id }).populate('classes').then(teacher => {
                 console.log(teacher);
-                res.render(VIEWS + 'private/class/manage.ejs', { teachingClasses: teacher.teachingClasses });
+                res.render(VIEWS + 'private/class/dash.ejs', { teachingClasses: teacher.teachingClasses });
             });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.get('/class/details', (req, res) => {
+        if (req.isAuthenticated()) {
+            res.render(VIEWS + 'private/class/details.ejs');
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');

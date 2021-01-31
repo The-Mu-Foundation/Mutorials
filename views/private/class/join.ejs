@@ -27,7 +27,7 @@
             <h4><span class="badge badge-secondary"><%= currentClass.school %></span> <%= currentClass.name %> - <%= currentClass.teacher %></h4>
             <p><%= currentClass.city %></p>
             <form method="post" action="/class/joinClass">
-                <input type="text" name="name" style="display: none;" value="<%= currentClass.name %>"
+                <input type="text" name="name" style="display: none;" value="<%= currentClass.name %>">
                 <input type="text" name="classCode" style="display: none;" value="<%= currentClass.classCode %>">
                 <input class="btn btn-primary" type="submit" value="Join this class">
             </form>

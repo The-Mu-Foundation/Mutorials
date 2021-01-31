@@ -1,0 +1,25 @@
+<%# Join class page %>
+<%# ARGUMENTS: populated teachingClasses %>
+
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
+
+<div class="container mt-5 mb-1">
+    <div class="mb-2">
+        <%- include("../../partials/flashes") -%>
+    </div>
+    <h1 class="text-center display-3">Manage classes</h1>
+</div>
+
+<div class="jumbotron container">
+    <% teachingClasses.forEach((classI, classIndex) => { %>
+        <form method="post" action="/class/getDetails">
+            <input name="name" type="text" value="<%= classI.name %>" style="display: none;">
+            <input type="submit" class="btn btn-block" value="<%= classI.name %>">
+        </form>
+        <h4><%= classI.name %></h4>
+    <% }) %>
+</div>
+
+<%- include("../../partials/footer") -%>
+
