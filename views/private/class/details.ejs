@@ -9,6 +9,8 @@
         <%- include("../../partials/flashes") -%>
     </div>
     <h1 class="text-center display-3"><%= currentClass.name %></h1>
+    <h4 class="text-center">Class code: <%= currentClass.classCode %><h4>
+    <span class="text-center">Give this to your students and tell them to go to <a href="https://www.mutorials.org/class/join">https://www.mutorials.org/class/join</a> to join your class!</span>
 </div>
 
 <div class="jumbotron container">
@@ -21,7 +23,7 @@
 <div class="jumbotron container">
     <h1>Student Stats</h1>
     <% students.forEach((student, studentIndex) => { %>
-        <a href="/stats/<%= student.ign %>"><%= student.profile.name %>'s stats</a>
+        <a href="/stats/<%= student.ign %>"><%= student.profile.name %>'s stats</a><br>
     <% }) %>
 </div>
 

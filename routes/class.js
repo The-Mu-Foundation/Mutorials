@@ -29,7 +29,7 @@ module.exports = (app, mongo) => {
     app.post('/class/joinClass', (req, res, next) => {
         if (req.isAuthenticated()) {
             mongo.db.collection('classes').findOne({ classCode: req.body.classCode }, async (err, obj) => {
-                mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id  }, { $push: { classes: obj._id } });
+                mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id  }, { $addToSet: { classes: obj._id } });
                 req.flash('successFlash', 'You\'ve successfully been added to ' + req.body.name + '.');
                 res.redirect('/');
             });
@@ -41,17 +41,24 @@ module.exports = (app, mongo) => {
 
     app.post('/class/createClass', (req, res, next) => {
         if (req.isAuthenticated()) {
-            const newClass = new mongo.Class({
-                name: req.body.name,
-                school: req.body.school,
-                teacher: req.user.ign,
-                city: req.body.city,
-                classCode: nanoid(12)
+            mongo.Class.findOne({ $and: [{ name: req.body.name }, { teacher: req.user.ign }] }).then((currentClass) => {
+                if (currentClass) {
+                    req.flash('errorFlash', 'You already have a class with that name.');
+                    res.redirect('/');
+                } else {
+                    const newClass = new mongo.Class({
+                        name: req.body.name,
+                        school: req.body.school,
+                        teacher: req.user.ign,
+                        city: req.body.city,
+                        classCode: nanoid(12)
+                    });
+                    newClass.save();
+                    mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $push: { teachingClasses: newClass._id } });
+                    req.flash('successFlash', 'We successfully created class ' + req.body.name + '.');
+                    res.redirect('/');
+                }
             });
-            newClass.save();
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $push: { teachingClasses: newClass._id } });
-            req.flash('successFlash', 'We successfully created class ' + req.body.name + '.');
-            res.redirect('/')
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');

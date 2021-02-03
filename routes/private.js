@@ -632,8 +632,17 @@ module.exports = (app, mongo) => {
             mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
                 if (obj) {
                     if (obj.preferences.hideProfile && req.user.ign != req.params.username) {
-                        req.flash('errorFlash', 'This user has made their stats private.');
-                        res.redirect('/homepage');
+                        mongo.User.findOne({ $and: [{ teachingClasses: { $in: obj.classes } }, { ign: req.user.ign }] }).then(async (teacher) => {
+                            if (teacher) {
+                                let userLevel = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
+                                let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
+
+                                res.render(VIEWS + 'private/stats.ejs', { user: obj, totalTags: tags, userLevel, analytics, pageName: obj.ign + "'s Stats" });
+                            } else {
+                                req.flash('errorFlash', 'This user has made their stats private.');
+                                res.redirect('/homepage');
+                            }
+                        });
                     } else {
                         let userLevel = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
                         let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
