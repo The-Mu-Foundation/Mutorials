@@ -1,5 +1,5 @@
-<%# Join class page %>
-<%# ARGUMENTS: students %>
+<%# class details page %>
+<%# ARGUMENTS: currentClass, students, physicsAvg, chemistryAvg, biologyAvg %>
 
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
@@ -8,11 +8,21 @@
     <div class="mb-2">
         <%- include("../../partials/flashes") -%>
     </div>
-    <h1 class="text-center display-3">Manage classes</h1>
+    <h1 class="text-center display-3"><%= currentClass.name %></h1>
 </div>
 
 <div class="jumbotron container">
-    <h1>Details coming soon!</h1>
+    <h1>Analytics</h1>
+    <h2>Average Physics Rating: <%= physicsAvg %></h2>
+    <h2>Average Chemistry Rating: <%= chemistryAvg %></h2>
+    <h2>Average Biology Rating: <%= biologyAvg %></h2>
+</div>
+
+<div class="jumbotron container">
+    <h1>Student Stats</h1>
+    <% students.forEach((student, studentIndex) => { %>
+        <a href="/stats/<%= student.ign %>"><%= student.profile.name %>'s stats</a>
+    <% }) %>
 </div>
 
 <%- include("../../partials/footer") -%>

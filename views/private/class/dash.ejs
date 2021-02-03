@@ -1,4 +1,4 @@
-<%# Join class page %>
+<%# Main class navigation page %>
 <%# ARGUMENTS: populated teachingClasses %>
 
 <%- include("../../partials/header") -%>
@@ -13,11 +13,7 @@
 
 <div class="jumbotron container">
     <% teachingClasses.forEach((classI, classIndex) => { %>
-        <form method="post" action="/class/getDetails">
-            <input name="name" type="text" value="<%= classI.name %>" style="display: none;">
-            <input type="submit" class="btn btn-block" value="<%= classI.name %>">
-        </form>
-        <h4><%= classI.name %></h4>
+        <a class="btn btn-block btn-primary" href="/class/manage/<%= classI.classCode %>"><%= classI.name %></a>
     <% }) %>
 </div>
 

@@ -25,6 +25,7 @@ module.exports = (app, mongo) => {
             res.redirect('/');
         }
     });
+
     app.post('/class/joinClass', (req, res, next) => {
         if (req.isAuthenticated()) {
             mongo.db.collection('classes').findOne({ classCode: req.body.classCode }, async (err, obj) => {
@@ -57,11 +58,6 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/class/getDetails', (req, res, next) => {
-        res.redirect('/');
-    });
-
-
     app.get('/class/join', (req, res) => {
         if (req.isAuthenticated()) {
             res.locals.classCode = req.session.classCode;
@@ -87,8 +83,8 @@ module.exports = (app, mongo) => {
     app.get('/class/dash', (req, res) => {
         if (req.isAuthenticated()) {
             console.log(req.user.teachingClasses);
-            mongo.User.findOne({ _id: req.user._id }).populate('classes').then(teacher => {
-                console.log(teacher);
+            mongo.User.findOne({ _id: req.user._id }).populate('teachingClasses').then(teacher => {
+                console.log(teacher.teachingClasses);
                 res.render(VIEWS + 'private/class/dash.ejs', { teachingClasses: teacher.teachingClasses });
             });
         } else {
@@ -97,9 +93,49 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.get('/class/details', (req, res) => {
+    app.get('/class/manage/:classCode', (req, res) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/class/details.ejs');
+            if (req.params.classCode) {
+                mongo.db.collection('classes').findOne({ classCode: req.params.classCode }).then((currentClass) => {
+                    if (currentClass) {
+                        if (currentClass.teacher == req.user.ign) {
+                            mongo.User.find({ classes: currentClass._id }).then((students) => {
+                                let physicsAvg = 0, chemistryAvg = 0, biologyAvg = 0;
+                                if (!students) {
+                                    req.flash('errorFlash', 'There aren\'t any students in your class yet.');
+                                } else {
+                                    // calculate averages
+                                    // students is just a list of users
+                                    students.forEach((student, studentIndex) => {
+                                        physicsAvg += student.rating.physics;
+                                        chemistryAvg += student.rating.chemistry;
+                                        biologyAvg += student.rating.biology;
+                                    });
+                                    physicsAvg = physicsAvg / students.length;
+                                    chemistryAvg = chemistryAvg / students.length;
+                                    biologyAvg = biologyAvg / students.length;
+                                }
+                                res.render(VIEWS + 'private/class/details.ejs', {
+                                    currentClass: currentClass,
+                                    students: students,
+                                    physicsAvg: physicsAvg,
+                                    chemistryAvg: chemistryAvg,
+                                    biologyAvg: biologyAvg
+                                });
+                            });
+                        } else {
+                            req.flash('errorFlash', 'Error 404: Class not found.');
+                            res.redirect('/');
+                        }
+                    } else {
+                        req.flash('errorFlash', 'Error 404: Class not found');
+                        res.redirect('/');
+                    }
+                });
+            } else {
+                req.flash('errorFlash', 'That URL doesn\'t contain a class code.');
+                res.redirect('/');
+            }
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
