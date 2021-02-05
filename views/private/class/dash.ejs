@@ -8,14 +8,35 @@
     <div class="mb-2">
         <%- include("../../partials/flashes") -%>
     </div>
-    <h1 class="text-center display-3">Manage classes</h1>
+    <h1 class="text-center display-3">Your Classes</h1>
 </div>
+<% if (teachingClasses && teachingClasses.length != 0) { %>
+    <% console.log(teachingClasses) %>
+    <% console.log(classes) %>
+    <div class="jumbotron container">
+        <% teachingClasses.forEach((classI, classIndex) => { %>
+            <a class="btn btn-block btn-primary" href="/class/manage/<%= classI.classCode %>"><%= classI.name %></a><br>
+        <% }) %>
+    </div>
+<% } else { %>
+    <div class="container">
+        <h4 style="text-align: center;">You're not teaching any classes. If you'd like, you can <a href="/class/create">create</a> a class.</h4>
+    </div>
+<% } %>
 
-<div class="jumbotron container">
-    <% teachingClasses.forEach((classI, classIndex) => { %>
-        <a class="btn btn-block btn-primary" href="/class/manage/<%= classI.classCode %>"><%= classI.name %></a><br>
-    <% }) %>
-</div>
+<% if (classes && classes.length != 0) { %>
+    <div class="jumbotron container">
+        <% classes.forEach((classI, classIndex) => { %>
+            <form method="post" action="/class/leave">
+                <span style="float: left"><%= classI.name %></span>
+                <input type="submit" style="float-right" class="btn btn-danger" value="Leave this class">
+        <% }); %>
+    </div>
+<% } else { %>
+    <div class="container">
+        <h4 style="text-align: center;">You haven't joined any classes. If you'd like, you can <a href="/class/join">join</a> a class.</h4>
+    </div>
+<% } %>
 
 <%- include("../../partials/footer") -%>
 

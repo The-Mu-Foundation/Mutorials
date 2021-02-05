@@ -27,5 +27,46 @@
     <% }) %>
 </div>
 
+<div class="container">
+    <form method="post" action="/class/generateNewClassCode">
+        <input type="text" name="classId" value="<%= currentClass._id %>" style="display: none">
+        <input type="text" name="classCode" value="<%= currentClass.classCode %>" style="display: none">
+        <input type="submit" class="btn btn-secondary" value="Generate new class code">
+    </form>
+    <br>
+    <form method="post" id="delete-class-form" action="/class/delete">
+        <input type="text" name="classId" value="<%= currentClass._id %>" style="display: none">
+        <input type="text" name="className" value="<%= currentClass.name %>" style="display: none;">
+        <input type="button" class="btn btn-danger" value="Delete this class" data-toggle="modal" data-target="#confirm-delete-class">
+    </form>
+    <br>
+</div>
+
+<div class="modal fade" id="confirm-delete-class" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Confirm Delete Class
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this class? Your students will be removed from this class as well.
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a href="#" id="delete-class-confirm" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('#delete-class-confirm').click(function(){
+        /* when the submit button in the modal is clicked, submit the form */
+        $('#delete-class-form').submit();
+    });
+</script>
+
 <%- include("../../partials/footer") -%>
 

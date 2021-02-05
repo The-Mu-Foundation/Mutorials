@@ -1,4 +1,5 @@
 // LIBRARY IMPORTS
+const mongoose = require('mongoose');
 const { nanoid } = require('nanoid');
 
 const VIEWS = __dirname + '/../views/';
@@ -49,13 +50,72 @@ module.exports = (app, mongo) => {
                     const newClass = new mongo.Class({
                         name: req.body.name,
                         school: req.body.school,
-                        teacher: req.user.ign,
                         city: req.body.city,
                         classCode: nanoid(12)
                     });
                     newClass.save();
                     mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $push: { teachingClasses: newClass._id } });
                     req.flash('successFlash', 'We successfully created class ' + req.body.name + '.');
+                    res.redirect('/class/dash');
+                }
+            });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.post('/class/generateNewClassCode', (req, res, next) => {
+        if (req.isAuthenticated()) {
+            mongo.User.findOne({ $and: [{ _id: req.user._id }, { teachingClasses: req.body.classId }] }).then(async (teacher) => {
+                if (teacher) {
+                    let newClassCode = nanoid(12);
+                    console.log(newClassCode);
+                    reqClassId = mongoose.Types.ObjectId(req.body.classId);
+                    mongo.db.collection('classes').findOneAndUpdate({ _id: reqClassId }, { $set: { classCode: newClassCode } }, { new: true }).then((err, currentClass) => {
+                        req.flash('successFlash', 'New class code generated.');
+                        res.redirect('/class/manage/' + newClassCode);
+                    });
+                } else {
+                    req.flash('errorFlash', 'Error 404: Class not found.');
+                    res.redirect('/');
+                }
+            });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.post('/class/leave', (req, res, next) => {
+        if (req.isAuthenticated()) {
+            mongo.User.updateMany({}, { $pull: { classes: { $in: [reqClassId] } } }).then((err, students) => {
+                req.flash('successFlash', 'You\'ve left ' + req.body.className + '.');
+                res.redirect('/');
+            });
+        } else {
+            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
+            res.redirect('/');
+        }
+    });
+
+    app.post('/class/delete', (req, res, next) => {
+        if (req.isAuthenticated()) {
+            reqClassId = mongoose.Types.ObjectId(req.body.classId);
+            mongo.User.findOne({ $and: [{ _id: req.user._id }, { teachingClasses: reqClassId }] }).then(async (teacher) => {
+                if (teacher) {
+                    console.log(reqClassId);
+                    mongo.Class.deleteOne({ _id: reqClassId }).then((err, deletedClass) => {
+                        console.log(deletedClass);
+                        mongo.User.updateMany({}, { $pull: { classes: { $in: [reqClassId] } } }).then((err, students) => {
+                            mongo.User.updateMany({}, { $pull: { teachingClasses: { $in: [reqClassId] } } }).then((err, teachers) => {
+                                req.flash('successFlash', 'Class ' + req.body.className + ' has been deleted.');
+                                res.redirect('/');
+                            });
+                        });
+                    });
+                } else {
+                    req.flash('errorFlash', 'Error 404: Class not found.');
                     res.redirect('/');
                 }
             });
@@ -89,10 +149,8 @@ module.exports = (app, mongo) => {
 
     app.get('/class/dash', (req, res) => {
         if (req.isAuthenticated()) {
-            console.log(req.user.teachingClasses);
-            mongo.User.findOne({ _id: req.user._id }).populate('teachingClasses').then(teacher => {
-                console.log(teacher.teachingClasses);
-                res.render(VIEWS + 'private/class/dash.ejs', { teachingClasses: teacher.teachingClasses });
+            mongo.User.findOne({ _id: req.user._id }).populate('teachingClasses').populate('classes').then(user => {
+                res.render(VIEWS + 'private/class/dash.ejs', { classes: user.classes, teachingClasses: user.teachingClasses });
             });
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
@@ -105,37 +163,47 @@ module.exports = (app, mongo) => {
             if (req.params.classCode) {
                 mongo.db.collection('classes').findOne({ classCode: req.params.classCode }).then((currentClass) => {
                     if (currentClass) {
-                        if (currentClass.teacher == req.user.ign) {
-                            mongo.User.find({ classes: currentClass._id }).then((students) => {
-                                let physicsAvg = 0, chemistryAvg = 0, biologyAvg = 0;
-                                if (!students) {
-                                    req.flash('errorFlash', 'There aren\'t any students in your class yet.');
-                                } else {
-                                    // calculate averages
-                                    // students is just a list of users
-                                    students.forEach((student, studentIndex) => {
-                                        physicsAvg += student.rating.physics;
-                                        chemistryAvg += student.rating.chemistry;
-                                        biologyAvg += student.rating.biology;
+                        mongo.User.findOne({ teachingClasses: currentClass._id }).then((teacher) => {
+                            if (teacher.ign == req.user.ign) {
+                                mongo.User.find({ classes: currentClass._id }).then((students) => {
+                                    let physicsAvg = 0, chemistryAvg = 0, biologyAvg = 0;
+                                    if (!students || (students.length == 0)) {
+                                        req.flash('errorFlash', 'There aren\'t any students in your class yet.');
+                                    } else {
+                                        // calculate averages
+                                        // students is just a list of users
+                                        if (students.length != 0) {
+                                            students.forEach((student, studentIndex) => {
+                                                if (student.rating.physics != -1) {
+                                                    physicsAvg += student.rating.physics;
+                                                }
+                                                if (student.rating.chemistry != -1) {
+                                                    chemistryAvg += student.rating.chemistry;
+                                                }
+                                                if (student.rating.chemistry != -1) {
+                                                    biologyAvg += student.rating.biology + 1;
+                                                }
+                                            });
+                                            physicsAvg = physicsAvg / students.length;
+                                            chemistryAvg = chemistryAvg / students.length;
+                                            biologyAvg = biologyAvg / students.length;
+                                        }
+                                    }
+                                    res.render(VIEWS + 'private/class/details.ejs', {
+                                        currentClass: currentClass,
+                                        students: students,
+                                        physicsAvg: physicsAvg,
+                                        chemistryAvg: chemistryAvg,
+                                        biologyAvg: biologyAvg
                                     });
-                                    physicsAvg = physicsAvg / students.length;
-                                    chemistryAvg = chemistryAvg / students.length;
-                                    biologyAvg = biologyAvg / students.length;
-                                }
-                                res.render(VIEWS + 'private/class/details.ejs', {
-                                    currentClass: currentClass,
-                                    students: students,
-                                    physicsAvg: physicsAvg,
-                                    chemistryAvg: chemistryAvg,
-                                    biologyAvg: biologyAvg
                                 });
-                            });
-                        } else {
-                            req.flash('errorFlash', 'Error 404: Class not found.');
-                            res.redirect('/');
-                        }
+                            } else {
+                                req.flash('errorFlash', 'Error 404: Class not found.');
+                                res.redirect('/');
+                            }
+                        });
                     } else {
-                        req.flash('errorFlash', 'Error 404: Class not found');
+                        req.flash('errorFlash', 'Error 404: Class not found.');
                         res.redirect('/');
                     }
                 });
