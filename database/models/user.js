@@ -44,7 +44,15 @@ const userSchema = new mongoose.Schema({
     preferences: {
         dark_mode: Boolean,
         hideProfile: Boolean
-    }
+    },
+    classes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class'
+    }],
+    teachingClasses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class'
+    }]
 });
 
 module.exports = { userSchema : userSchema };
