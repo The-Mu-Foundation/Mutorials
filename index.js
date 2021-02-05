@@ -50,6 +50,7 @@ app.use((req, res, next) => {
     } else {
         app.locals.darkMode = false;
     }
+    res.locals.logUser = req.user;
     next();
 });
 
