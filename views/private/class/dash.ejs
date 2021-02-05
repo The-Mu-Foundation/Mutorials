@@ -28,8 +28,11 @@
     <div class="jumbotron container">
         <% classes.forEach((classI, classIndex) => { %>
             <form method="post" action="/class/leave">
-                <span style="float: left"><%= classI.name %></span>
-                <input type="submit" style="float-right" class="btn btn-danger" value="Leave this class">
+                <h4 style="float: left"><%= classI.name %></h4>
+                <input type="text" style="display: none" name="classId"value="<%= classI._id %>">
+                <input type="text" style="display: none" name="className" value="<%= classI.name %>">
+                <input type="submit" style="float: right" class="btn btn-danger" value="Leave this class">
+            </form>
         <% }); %>
     </div>
 <% } else { %>

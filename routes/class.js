@@ -89,6 +89,7 @@ module.exports = (app, mongo) => {
 
     app.post('/class/leave', (req, res, next) => {
         if (req.isAuthenticated()) {
+            reqClassId = mongoose.Types.ObjectId(req.body.classId);
             mongo.User.updateMany({}, { $pull: { classes: { $in: [reqClassId] } } }).then((err, students) => {
                 req.flash('successFlash', 'You\'ve left ' + req.body.className + '.');
                 res.redirect('/');
