@@ -51,7 +51,7 @@ module.exports = (app, mongo) => {
                         name: req.body.name,
                         school: req.body.school,
                         city: req.body.city,
-                        classCode: nanoid(12)
+                        classCode: nanoid(8)
                     });
                     newClass.save();
                     mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $push: { teachingClasses: newClass._id } });
@@ -69,7 +69,7 @@ module.exports = (app, mongo) => {
         if (req.isAuthenticated()) {
             mongo.User.findOne({ $and: [{ _id: req.user._id }, { teachingClasses: req.body.classId }] }).then(async (teacher) => {
                 if (teacher) {
-                    let newClassCode = nanoid(12);
+                    let newClassCode = nanoid(8);
                     console.log(newClassCode);
                     reqClassId = mongoose.Types.ObjectId(req.body.classId);
                     mongo.db.collection('classes').findOneAndUpdate({ _id: reqClassId }, { $set: { classCode: newClassCode } }, { new: true }).then((err, currentClass) => {
