@@ -66,19 +66,12 @@
 
         // render sample rating chart
         var ratingData = {
-            "Physics": [1794, 1808, 1830, 1821, 1829, 1842, 1853, 1845, 1860, 1875, 1900, 1892, 1902, 1920, 1934, 1924, 1920, 1909, 1927, 1944],
-            "Chemistry": [2103, 2119, 2130, 2139, 2150, 2143, 2154, 2137, 2122, 2135, 2111, 2098, 2082, 2076, 2085, 2074, 2061, 2048, 2059, 2050],
-            "Biology": [1945, 1956, 1970, 1986, 1999, 2013, 2001, 2016, 2019, 2033, 2049, 2061, 2074, 2068, 2078, 2091, 2104, 2108, 2097, 2109],
-            "Labels": []
+            "Physics": [Math.round(1600 + 200*Math.random())],
+            "Chemistry": [Math.round(1600 + 200*Math.random())],
+            "Biology": [Math.round(1600 + 200*Math.random())]
         }
-
-        const labelLength = Math.max(ratingData["Physics"].length, ratingData["Chemistry"].length, ratingData["Biology"].length);
-        var labels = ratingData["Labels"];
-        for(var i = labelLength; i > 0; i--) {
-            labels.push(i + " Ago");
-        }
-        labels.push("");
-        ratingData["Labels"] = labels;
+        var labels = ["1 Ago"];
+        var labelCounter = 1;
 
         var ctxTracker = document.getElementById("sampleTrackerChart");
 
@@ -89,7 +82,7 @@
         var myChart = new Chart(ctxTracker, {
             type: "line",
             data: {
-                labels: ratingData["Labels"],
+                labels,
                 datasets: [{
                     label: "Physics",
                     data: ratingData["Physics"],
@@ -141,6 +134,27 @@
             }
         });
 
+        // update rating charts in motion
+        setInterval(() => {
+
+            if(labelCounter < 30) {
+
+                labelCounter++;
+                myChart.data.labels.unshift(labelCounter+" Ago");
+
+                myChart.data.datasets.forEach((subject) => {
+                    subject.data.push(subject.data[subject.data.length - 1] + Math.round(10+30*Math.random())*(2*(Math.round(Math.random())-0.5)));
+                });
+
+                myChart.options.scales.yAxes[0].ticks = {
+                    min: Math.round((Math.min(Math.min.apply(null, myChart.data.datasets[0].data), Math.min.apply(null, myChart.data.datasets[1].data), Math.min.apply(null, myChart.data.datasets[2].data))-50)/50)*50,
+                    max: Math.round((Math.max(Math.max.apply(null, myChart.data.datasets[0].data), Math.max.apply(null, myChart.data.datasets[1].data), Math.max.apply(null, myChart.data.datasets[2].data))+50)/50)*50,
+                    stepSize: 50
+                }
+
+                myChart.update();
+            }
+        }, 500);
     };
 
     $(document).ready(function() {
