@@ -163,6 +163,7 @@ const tags = {
             "POL": "Polarity",
             "POLAR": "Polar Bond",
             "PQN": "Principle Quantum Number",
+            "PTABLE": "Periodic Table Facts",
             "RAOU": "Raoult's Law",
             "RATEL": "Rate Law",
             "REDOX": "Redox Reaction",
