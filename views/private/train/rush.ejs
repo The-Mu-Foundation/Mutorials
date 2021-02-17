@@ -84,7 +84,7 @@
 
             choices.forEach((choice) => {
 
-                $(selector).append('<button class="btn btn-lg btn-block btn-primary" id="' + index + '">' + choice + '</button>');
+                $(selector).append('<button class="btn btn-lg w-100 btn-primary" id="' + index + '">' + choice + '</button>');
 
                 index++;
             });
@@ -180,7 +180,7 @@
                     question.rating +'</td><td>' +
                     question.subject + '</td><td>' +
                     question.timeSpent + '</td><td>' + 
-                    '<span class="badge badge-secondary"><a href="/question/' + question.id + '" style="text-decoration: none;" target="_blank">' + question.id + '</a></span></td></tr>');
+                    '<span class="badge bg-secondary"><a href="/question/' + question.id + '" style="text-decoration: none;" target="_blank">' + question.id + '</a></span></td></tr>');
                 
             });
         }
@@ -252,7 +252,7 @@
         <li>The game ends when 5 minutes are up, or after you get 3 questions wrong</li>
     </ul>
 
-    <button class="btn btn-lg btn-block btn-primary mt-4" id="start-rush">Start Rush!</button>
+    <button class="btn btn-lg w-100 btn-primary mt-4" id="start-rush">Start Rush!</button>
 
 </div>
 
@@ -277,7 +277,7 @@
 
                 <h3 class="text-center mb-4" id="final-score">Final Score: XXX</h3>
 
-                <table class="table mb-4">
+                <table class="text-center table mb-4">
                     <thead>
                         <tr>
                             <th scope="col">Rating</th>
@@ -290,9 +290,9 @@
                     </tbody>
                 </table>
                 
-                <button class="btn btn-lg btn-block btn-primary" id="play-again">Play Again</button>
+                <button class="btn btn-lg w-100 btn-primary" id="play-again">Play Again</button>
 
-                <a class="btn btn-lg btn-block btn-secondary" href="/train">Exit</a>
+                <a class="btn btn-lg w-100 btn-secondary" href="/train">Exit</a>
             </div>
 
         </div>
@@ -305,13 +305,13 @@
 
             <div class="row">
                 <div class="col-4">
-                    <h1 class="display-1 text-center" id="strike-1"><span class="badge badge-danger">X</span></h1>
+                    <h1 class="display-1 text-center" id="strike-1"><span class="badge bg-danger">X</span></h1>
                 </div>
                 <div class="col-4">
-                    <h1 class="display-1 text-center" id="strike-2"><span class="badge badge-danger">X</span></h1>
+                    <h1 class="display-1 text-center" id="strike-2"><span class="badge bg-danger">X</span></h1>
                 </div>
                 <div class="col-4">
-                    <h1 class="display-1 text-center" id="strike-3"><span class="badge badge-danger">X</span></h1>
+                    <h1 class="display-1 text-center" id="strike-3"><span class="badge bg-danger">X</span></h1>
                 </div>
             </div>
         </div>

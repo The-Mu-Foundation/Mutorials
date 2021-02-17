@@ -15,7 +15,7 @@
     <% console.log(classes) %>
     <div class="jumbotron container">
         <% teachingClasses.forEach((classI, classIndex) => { %>
-            <a class="btn btn-block btn-primary" href="/class/manage/<%= classI.classCode %>"><%= classI.name %></a><br>
+            <a class="btn w-100 btn-primary" href="/class/manage/<%= classI.classCode %>"><%= classI.name %></a><br>
         <% }) %>
     </div>
 <% } else { %>
