@@ -18,13 +18,13 @@
                 <input class="form-control form-control-lg my-2" type="text" placeholder="Enter your class code" name="classCode" <% if (locals.classCode) { %> value="<%=classCode%>"<% } %>>
             </div>
             <div class="col-md-2">
-                <input class="btn btn-primary btn-lg btn-block my-2" value="Verify code" type="submit" id="submit">
+                <input class="btn btn-primary btn-lg w-100 my-2" value="Verify code" type="submit" id="submit">
             </div>
         </div>
     </form>
     <% if (locals.currentClass) { %>
         <div class="d-block px-4 pt-2 pb-1 bg-light my-2 search-result">
-            <h4><span class="badge badge-secondary"><%= currentClass.school %></span> <%= currentClass.name %> - <%= currentClass.teacher %></h4>
+            <h4><span class="badge bg-secondary"><%= currentClass.school %></span> <%= currentClass.name %> - <%= currentClass.teacher %></h4>
             <p><%= currentClass.city %></p>
             <form method="post" action="/class/joinClass">
                 <input type="text" name="name" style="display: none;" value="<%= currentClass.name %>">

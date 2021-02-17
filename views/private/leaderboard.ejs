@@ -12,7 +12,7 @@
 
         <div class="col-4 jumbotron">
             <h3 class="text-center">Physics</h3>
-            <table class="table">
+            <table class="text-center table">
                 <thead>
                     <tr>
                         <th scope="col">Rank</th>
@@ -37,7 +37,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankPhysics %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
                             <td><%= user.rating.physics %></td>
                         </tr>
                         <% rankPhysics++; %>
@@ -48,7 +48,7 @@
 
         <div class="col-4 jumbotron">
             <h3 class="text-center">Chemistry</h3>
-            <table class="table">
+            <table class="text-center table">
                 <thead>
                     <tr>
                         <th scope="col">Rank</th>
@@ -73,7 +73,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankChem %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
                             <td><%= user.rating.chemistry %></td>
                         </tr>
                         <% rankChem++; %>
@@ -84,7 +84,7 @@
 
         <div class="col-4 jumbotron">
             <h3 class="text-center">Biology</h3>
-            <table class="table">
+            <table class="text-center table">
                 <thead>
                     <tr>
                         <th scope="col">Rank</th>
@@ -109,7 +109,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankBio %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
                             <td><%= user.rating.biology %></td>
                         </tr>
                         <% rankBio++; %>
@@ -133,7 +133,7 @@
 
         <div class="col-8 jumbotron">
             <h3 class="text-center">Highest Rush Scores</h3>
-            <table class="table">
+            <table class="text-center table">
                 <thead>
                     <tr>
                         <th scope="col">Rank</th>
@@ -159,7 +159,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankRush %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 33 ? user.ign : user.ign.substring(0, 30)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 33 ? user.ign : user.ign.substring(0, 30)+"..." %></a></td>
                             <td><%= user.stats.rush.highscore %></td>
                             <td><%= user.stats.rush.attempts %></td>
                         </tr>
@@ -187,7 +187,7 @@
 
         <div class="col-8 jumbotron">
             <h3 class="text-center">Highest Level Mutorials Users</h3>
-            <table class="table">
+            <table class="text-center table">
                 <thead>
                     <tr>
                         <th scope="col">Rank</th>
@@ -213,7 +213,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankExperience %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank"><%= user.ign.length <= 33 ? user.ign : user.ign.substring(0, 30)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 33 ? user.ign : user.ign.substring(0, 30)+"..." %></a></td>
                             <td><%= user.level.level %></td>
                             <td><%= Math.round(user.experience) %></td>
                         </tr>

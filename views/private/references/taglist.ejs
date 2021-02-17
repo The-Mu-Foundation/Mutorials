@@ -9,7 +9,7 @@
 <div class="container jumbotron mt-5">
 
     <h3>What are tags?</h3>
-    <p>Mutorials uses tags to classify questions into further subtopics. A full list of tags can be found on this page. Tags in <span class="badge badge-primary">blue</span> are tags which represent a whole unit at Mutorials.</p>
+    <p>Mutorials uses tags to classify questions into further subtopics. A full list of tags can be found on this page. Tags in <span class="badge bg-primary">blue</span> are tags which represent a whole unit at Mutorials.</p>
 
 </div>
 
@@ -18,7 +18,7 @@
     <div class="container jumbotron mt-5">
 
         <h2 class="text-center mt-4 mb-3"><%= subject %> Tags</h2>
-        <table class="table">
+        <table class="text-center table">
             <thead>
                 <tr class="d-flex">
                     <th class="col-4"><h4>Tag Name</h4></th>
@@ -29,14 +29,14 @@
 
                 <% Object.keys(tags[subject]["Units"]).forEach((unitTag) => { %>
                     <tr class="d-flex">
-                        <td class="col-4"><h5><span class="badge badge-primary"><%= unitTag %></span></h5></td>
+                        <td class="col-4"><h5><span class="badge bg-primary"><%= unitTag %></span></h5></td>
                         <td class="col-8"><%= tags[subject]["Units"][unitTag] %></td>
                     </tr>
                 <% }); %>
 
                 <% Object.keys(tags[subject]["Concepts"]).forEach((conceptTag) => { %>
                     <tr class="d-flex">
-                        <td class="col-4"><h5><span class="badge badge-light"><%= conceptTag %></span></h5></td>
+                        <td class="col-4"><h5><span class="badge bg-light"><%= conceptTag %></span></h5></td>
                         <td class="col-8"><%= tags[subject]["Concepts"][conceptTag] %></td>
                     </tr>
                 <% }); %>

@@ -151,9 +151,9 @@
 
         <div class="col-12 col-lg-5">
 
-            <h1 class="display-5 text-center mt-4">Physics: <span class="badge badge-pill badge-primary"><%= Math.max(user.rating.physics, 0) %></span></h1>
-            <h1 class="display-5 text-center">Chemistry: <span class="badge badge-pill badge-primary"><%= Math.max(user.rating.chemistry, 0) %></span></h1>
-            <h1 class="display-5 text-center">Biology: <span class="badge badge-pill badge-primary"><%= Math.max(user.rating.biology, 0) %></span></h1>
+            <h1 class="display-5 text-center mt-4">Physics: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.physics, 0) %></span></h1>
+            <h1 class="display-5 text-center">Chemistry: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.chemistry, 0) %></span></h1>
+            <h1 class="display-5 text-center">Biology: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.biology, 0) %></span></h1>
 
             <div class="canvas-container-center text-center mt-3">
                 <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
@@ -191,7 +191,7 @@
                 </div>
             </div>
 
-            <a class="btn btn-primary btn-block btn-lg mt-5" href="/train">Train Now!</a>
+            <a class="btn btn-primary w-100 btn-lg mt-5" href="/train">Train Now!</a>
         </div>
 
     </div>
@@ -207,7 +207,7 @@
             <input class="form-control form-control-lg my-2" type="text" placeholder="Search Mutorials" id="query">
         </div>
         <div class="col-md-2">
-            <input class="btn btn-primary btn-lg btn-block my-2" value="Search" type="button" id="search">
+            <input class="btn btn-primary btn-lg w-100 my-2" value="Search" type="button" id="search">
         </div>
     </div>
 </div>
