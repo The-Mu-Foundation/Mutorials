@@ -5,55 +5,57 @@
     <div class="container">
 
         <a class="navbar-brand" href="/homepage">
-            <img src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_White.svg" width="32" height="32"
-                class="d-inline-block align-top" alt="">
-            Mutorials</a>
+            <img src="https://f000.backblazeb2.com/file/mutorials/icons/Icon_White.svg" width="32" height="32" class="d-inline-block align-top" alt="">
+            Mutorials
+        </a>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbar">
 
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item mr-3">
-                    <a class="nav-link" href="/train">
-                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Train.svg" width="25" height="25"
-                            class="d-inline-block align-top" alt="">
-                        Train</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="trainDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Train.svg" width="25" height="25" class="d-inline-block align-top" alt="">
+                        Train
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="trainDropdown">
+                        <a class="dropdown-item" href="/train/Physics/chooseUnits">Physics</a>
+                        <a class="dropdown-item" href="/train/Chemistry/chooseUnits">Chemistry</a>
+                        <a class="dropdown-item" href="/train/Biology/chooseUnits">Biology</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/train/rush">Problem Rush</a>
+                        <a class="dropdown-item" href="/train/daily">Daily Question</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/references">References</a>
+                    </div>
                 </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link" href="/leaderboard">
-                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Leaderboard.svg" width="25" height="25"
-                            class="d-inline-block align-top" alt="">
-                        Leaderboard</a>
-                </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link" href="/stats">
-                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Statistics.svg" width="25" height="25"
-                            class="d-inline-block align-top" alt="">
-                        Stats</a>
-                </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link" href="/references">
-                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_References.svg" width="25" height="25"
-                            class="d-inline-block align-top" alt="">
-                        References</a>
-                </li>
-                <li class="nav-item mr-3">
-                    <a class="nav-link" href="/settings">
-                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Settings.svg" width="25" height="25"
-                            class="d-inline-block align-top" alt="">
-                        Settings</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="statsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Statistics.svg" width="25" height="25" class="d-inline-block align-top" alt="">
+                        Stats
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="statsDropdown">
+                        <a class="dropdown-item" href="/stats">Stats</a>
+                        <a class="dropdown-item" href="/leaderboard">Leaderboard</a>
+                    </div>
                 </li>
             </ul>
-
-            <ul class="navbar-nav">
-                <li class="nav-item mr-3 float-right">
-                    <a class="nav-link" data-toggle="modal" data-target="#signoutModal">
-                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Logout.svg" width="25" height="25"
-                            class="d-inline-block align-top" alt="">
-                        Log Out</a>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-item dropdown float-end">
+                    <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="https://f000.backblazeb2.com/file/mutorials/icons/Navbar_Settings.svg" width="25" height="25" class="d-inline-block align-top" alt="">
+                        <%= logUser.ign %>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="accountDropdown">
+                        <a class="dropdown-item" href="/profile">Profile</a>
+                        <a class="dropdown-item" href="/class/dash">Classes</a>
+                        <a class="dropdown-item" href="/settings">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" id="logoutModal" data-bs-toggle="modal" data-bs-target="#signoutModal">Log Out</a>
+                    </div>
                 </li>
             </ul>
 
@@ -74,8 +76,8 @@
 				<p>Your data has been saved :)</p>
             </div>
             <div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                <a href="/logout"><button type="button" class="btn btn-primary" id="signoutConfirm">Yes</button></a>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <a href="/logout"><button type="button" class="btn btn-danger" id="signoutConfirm">Yes</button></a>
             </div>
         </div>
     </div>

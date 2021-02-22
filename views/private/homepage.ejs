@@ -1,5 +1,5 @@
 <%# Root page upon signin %>
-<%# ARGUMENTS: user- the user logged in right now %>
+<%# ARGUMENTS: user - the user logged in right now %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -18,28 +18,6 @@
             }
         });
 
-        $("#physics-card").hide(0);
-        $("#chem-card").hide(0);
-        $("#bio-card").hide(0);
-        $("#physics-icon").mouseenter(function() {
-            $("#default-card").hide(0);
-            $("#physics-card").show(0);
-            $("#chem-card").hide(0);
-            $("#bio-card").hide(0);
-        });
-        $("#chem-icon").mouseenter(function() {
-            $("#default-card").hide(0);
-            $("#physics-card").hide(0);
-            $("#chem-card").show(0);
-            $("#bio-card").hide(0);
-        });
-        $("#bio-icon").mouseenter(function() {
-            $("#default-card").hide(0);
-            $("#physics-card").hide(0);
-            $("#chem-card").hide(0);
-            $("#bio-card").show(0);
-        });
-
         // search button configure
         $("#search").click(function () {
 
@@ -47,6 +25,95 @@
             let search = $("#query").val();
 
             window.location.href = "/search?search=" + search;
+        });
+
+        // render rating tracker chart
+
+        let ratingData = {
+            "Physics": [],
+            "Chemistry": [],
+            "Biology": [],
+            "Labels": []
+        }
+        
+        // DO NOT DELETE - ratingData is not defined if this is deleted
+        console.log(ratingData);
+
+        ["Physics", "Chemistry", "Biology"].forEach((subject) => {
+            
+            let tracker = $("#ratingTrackerArray-" + subject).val().split('@');
+            if(tracker.length < 2) {
+                tracker.unshift(tracker[0]);
+            }
+            ratingData[subject] = tracker;
+        });
+
+        const labelLength = Math.max(ratingData["Physics"].length, ratingData["Chemistry"].length, ratingData["Biology"].length);
+        var labels = ratingData["Labels"];
+        for(var i = labelLength; i > 0; i--) {
+            labels.push(i + " Ago");
+        }
+        labels.push("");
+        ratingData["Labels"] = labels;
+
+        var ctxTracker = document.getElementById("ratingTrackerChart");
+
+        var style = ctxTracker.style;
+        style.marginLeft = "auto";
+        style.marginRight = "auto";
+
+        var myChart = new Chart(ctxTracker, {
+            type: "line",
+            data: {
+                labels: ratingData["Labels"],
+                datasets: [{
+                    label: "Physics",
+                    data: ratingData["Physics"],
+                    backgroundColor: "rgba(100, 200, 230, 1)",
+                    borderColor: "rgba(100, 200, 230, 1)",
+                    fill: false,
+                    borderWidth: 5
+                }, {
+                    label: "Chemistry",
+                    data: ratingData["Chemistry"],
+                    backgroundColor: "rgba(245, 170, 40, 1)",
+                    borderColor: "rgba(245, 170, 40, 1)",
+                    fill: false,
+                    borderWidth: 5
+                }, {
+                    label: "Biology",
+                    data: ratingData["Biology"],
+                    backgroundColor: "rgba(40, 240, 110, 1)",
+                    borderColor: "rgba(40, 240, 110, 1)",
+                    fill: false,
+                    borderWidth: 5
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: "Rating History"
+                },
+                legend: {
+                    display: true,
+                    position: "bottom"
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: Math.round((Math.min(Math.min.apply(null, ratingData["Physics"]), Math.min.apply(null, ratingData["Chemistry"]), Math.min.apply(null, ratingData["Biology"]))-50)/50)*50,
+                            max: Math.round((Math.max(Math.max.apply(null, ratingData["Physics"]), Math.max.apply(null, ratingData["Chemistry"]), Math.max.apply(null, ratingData["Biology"]))+50)/50)*50,
+                            stepSize: 50
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            display: false
+                        }
+                    }]
+                },
+                responsive: true
+            }
         });
 
     });
@@ -82,44 +149,52 @@
 
     <div class="row">
 
-        <div class="col-12 col-lg-4">
-            <a href="/train/Physics/chooseUnits"><img id="physics-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics icon"></a>
+        <div class="col-12 col-lg-5">
+
+            <h1 class="display-5 text-center mt-4">Physics: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.physics, 0) %></span></h1>
+            <h1 class="display-5 text-center">Chemistry: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.chemistry, 0) %></span></h1>
+            <h1 class="display-5 text-center">Biology: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.biology, 0) %></span></h1>
+
+            <div class="canvas-container-center text-center mt-3">
+                <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
+            </div>
+            <input type="hidden" id="ratingTrackerArray-Physics" value="<%= user.stats.ratingTracker.physics.join('@') %>">
+            <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
+            <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
         </div>
 
-        <div class="col-12 col-lg-4">
-            <a href="/train/Chemistry/chooseUnits"><img id="chem-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Chem icon"></a>
-        </div>
+        <div class="col-12 col-lg-7">
 
-        <div class="col-12 col-lg-4">
-            <a href="/train/Biology/chooseUnits"><img id="bio-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Bio icon"></a>
+            <h1 class="text-center">Game Modes</h1>
+            <div class="row">
+                <div class="col-4">
+                    <a href="/train/chooseSubject"><img id="classic-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Classic.svg" alt="Classic icon"></a>
+                </div>
+                <div class="col-4">
+                    <a href="/train/rush"><img id="rush-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Rush.svg" alt="Rush icon" width="100%"></a>
+                </div>
+                <div class="col-4">
+                    <a href="/train/daily"><img id="daily-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Daily.svg" alt="Daily icon"></a>
+                </div>
+            </div>
+
+            <h1 class="text-center mt-5">Classic Subjects</h1>
+            <div class="row">
+                <div class="col-4">
+                    <a href="/train/Physics/chooseUnits"><img id="physics-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics icon"></a>
+                </div>
+                <div class="col-4">
+                    <a href="/train/Chemistry/chooseUnits"><img id="chem-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Chem icon"></a>
+                </div>
+                <div class="col-4">
+                    <a href="/train/Biology/chooseUnits"><img id="bio-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Bio icon"></a>
+                </div>
+            </div>
+
+            <a class="btn btn-primary w-100 btn-lg mt-5" href="/train">Train Now!</a>
         </div>
 
     </div>
-
-    <div class="card text-center border-primary mt-4" id="description-card">
-
-        <div class="card-body" id="default-card">
-            <h5 class="card-title">Science with Mutorials</h5>
-            <p class="card-text">Mutorials offers questions in the sciences of physics, chemistry, and biology! Click on a button to commence training in that subject!</p>
-        </div>
-
-        <div class="card-body" id="physics-card">
-            <h5 class="card-title">Physics</h5>
-            <p class="card-text">Physics is a branch of science concerned with matter and energy. Mutorials offers a wide variety of physics topics, from mechanics such as kinematics and forces to fields such as quantum mechanics!</p>
-        </div>
-
-        <div class="card-body" id="chem-card">
-            <h5 class="card-title">Chemistry</h5>
-            <p class="card-text">Chemistry is a branch of science dealing with the structure of and interaction between matter. Here at Mutorials, chemistry topics range from stoichiometry to organic chemistry and more!</p>
-        </div>
-
-        <div class="card-body" id="bio-card">
-            <h5 class="card-title">Biology</h5>
-            <p class="card-text">Biology is a branch of science about life. Mutorials doesn't answer the question "why are we alive", but by training with us, you can gain deeper comprehension about how we (and other organisms) live!</p>
-        </div>
-
-    </div>
-
 </div>
 
 <div class="container">
@@ -132,7 +207,7 @@
             <input class="form-control form-control-lg my-2" type="text" placeholder="Search Mutorials" id="query">
         </div>
         <div class="col-md-2">
-            <input class="btn btn-primary btn-lg btn-block my-2" value="Search" type="button" id="search">
+            <input class="btn btn-primary btn-lg w-100 my-2" value="Search" type="button" id="search">
         </div>
     </div>
 </div>

@@ -83,9 +83,9 @@
 
                 <div id="checkboxes">
                     <% units.forEach((unit) => { %>
-                        <div class="custom-control custom-checkbox my-1 mr-sm-2" id="DIV <%= unit %>">
-                            <input type="checkbox" name="unitChoice" class="custom-control-input" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
-                            <label class="custom-control-label" for="<%= unit %>"><%= unit %></label>
+                        <div class="form-check my-1 me-sm-2" id="DIV <%= unit %>">
+                            <input type="checkbox" name="unitChoice" class="form-check-input" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
+                            <label class="form-check-label" for="<%= unit %>"><%= unit %></label>
                         </div>
                     <% }) %>
                 </div>
@@ -106,12 +106,12 @@
 
             <h3 class="mb-2">Quick Select</h3>
 
-            <button type="button" class="btn btn-warning btn-block" id="select-all"><font color="white">Select All</font></button>
-            <button type="button" class="btn btn-warning btn-block" id="deselect-all"><font color="white">Deselect All</font></button>
+            <button type="button" class="btn mt-1 btn-warning w-100" id="select-all"><font color="white">Select All</font></button>
+            <button type="button" class="btn mt-1 btn-warning w-100" id="deselect-all"><font color="white">Deselect All</font></button>
 
             <% if(Object.entries(unitPresets).length > 0) { %>
                 <% Object.entries(unitPresets).forEach((preset) => { %>
-                    <button type="button" class="btn btn-info btn-block" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
+                    <button type="button" class="btn mt-1 btn-info w-100" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
                 <% }); %>
             <% } %>
 

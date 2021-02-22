@@ -219,7 +219,7 @@
                 <h3 class="mt-3">Areas of Mastery:</h3>
                 <h3>
                     <% analytics.strengths.physics.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -228,7 +228,7 @@
                 <h3 class="mt-3">Currently Studying:</h3>
                 <h3>
                     <% analytics.studying.physics.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -237,7 +237,7 @@
                 <h3 class="mt-3">Recommended Training:</h3>
                 <h3>
                     <% analytics.weaknesses.physics.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -246,7 +246,7 @@
                 <h3 class="mt-3">Favorite Units:</h3>
                 <h3>
                     <% analytics.favorites.physics.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -298,7 +298,7 @@
                 <h3 class="mt-3">Areas of Mastery:</h3>
                 <h3>
                     <% analytics.strengths.chemistry.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -307,7 +307,7 @@
                 <h3 class="mt-3">Currently Studying:</h3>
                 <h3>
                     <% analytics.studying.chemistry.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -316,7 +316,7 @@
                 <h3 class="mt-3">Recommended Training:</h3>
                 <h3>
                     <% analytics.weaknesses.chemistry.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -325,7 +325,7 @@
                 <h3 class="mt-3">Favorite Units:</h3>
                 <h3>
                     <% analytics.favorites.chemistry.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -378,7 +378,7 @@
                 <h3 class="mt-3">Areas of Mastery:</h3>
                 <h3>
                     <% analytics.strengths.biology.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -387,7 +387,7 @@
                 <h3 class="mt-3">Currently Studying:</h3>
                 <h3>
                     <% analytics.studying.biology.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -396,7 +396,7 @@
                 <h3 class="mt-3">Recommended Training:</h3>
                 <h3>
                     <% analytics.weaknesses.biology.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -405,7 +405,7 @@
                 <h3 class="mt-3">Favorite Units:</h3>
                 <h3>
                     <% analytics.favorites.biology.forEach((unit) => { %>
-                        <span class="badge badge-pill badge-primary"><%= unit.split(' ')[2] %></span> 
+                        <span class="badge rounded-pill bg-primary"><%= unit.split(' ')[2] %></span> 
                     <% }); %>
                 </h3>
             <% } %>
@@ -452,8 +452,9 @@
             </div>
             <p id="experience-stats" class="text-center"><strong>Level <%= userLevel.level %></strong> (<%= userLevel.remainder %>/<%= userLevel.totalToNext %> XP to Level <%= userLevel.level+1 %>)</p>
 
+            <hr class="my-4">
 
-            <h1 class="text-center mt-5">Problem Rush</h1>
+            <h1 class="text-center">Problem Rush</h1>
 
             <h3 class="my-3 text-center" id="rush-global-rank">Global Rank: XXX</h3>
 
