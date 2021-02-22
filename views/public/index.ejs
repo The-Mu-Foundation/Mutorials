@@ -140,7 +140,7 @@
             if(labelCounter < 30) {
 
                 labelCounter++;
-                myChart.data.labels.unshift(labelCounter+ "Problems Ago");
+                myChart.data.labels.unshift(labelCounter+ " Problems Ago");
 
                 myChart.data.datasets.forEach((subject) => {
                     subject.data.push(subject.data[subject.data.length - 1] + Math.round(10+30*Math.random())*(2*(Math.round(Math.random())-0.5)));
