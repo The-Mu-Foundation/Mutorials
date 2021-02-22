@@ -4,48 +4,32 @@ const { referenceSheet } = require('../utils/constants/referencesheet');
 const VIEWS = __dirname + '/../views/';
 
 module.exports = (app, mongo) => {
-    app.get('/references', (req, res) => {
+    app.all(/^(\/references).*$/, (req, res, next) => {
         if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
+            next()
         } else {
             req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
             res.redirect('/');
         }
+    });
+
+    app.get('/references', (req, res) => {
+        res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
     });
 
     app.get('/references/equations', (req, res) => {
-        if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations, pageName: "Mutorials Equation Sheet" });
-        } else {
-            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
-            res.redirect('/');
-        }
+        res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations, pageName: "Mutorials Equation Sheet" });
     });
 
     app.get('/references/constants', (req, res) => {
-        if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants, pageName: "Mutorials Constant Sheet" });
-        } else {
-            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
-            res.redirect('/');
-        }
+        res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants, pageName: "Mutorials Constant Sheet" });
     });
 
     app.get('/references/taglist', (req, res) => {
-        if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags, pageName: "Mutorials Tags" });
-        } else {
-            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
-            res.redirect('/');
-        }
+        res.render(VIEWS + 'private/references/taglist.ejs', { tags: tags, pageName: "Mutorials Tags" });
     });
 
     app.get('/references/about', (req, res) => {
-        if (req.isAuthenticated()) {
-            res.render(VIEWS + 'private/references/about.ejs', { pageName: "About Mutorials" });
-        } else {
-            req.flash('errorFlash', 'Error 401: Unauthorized. You need to login to see this page.');
-            res.redirect('/');
-        }
+        res.render(VIEWS + 'private/references/about.ejs', { pageName: "About Mutorials" });
     });
 }

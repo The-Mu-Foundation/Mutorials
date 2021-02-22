@@ -14,7 +14,6 @@ const VIEWS = "../views/"
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
-
     // `username` is email
     // `ign` is username
     app.get('/', async (req, res) => {
@@ -61,15 +60,6 @@ module.exports = (app, mongo) => {
     app.get('/latexCompiler', (req, res) => {
         res.render(VIEWS + 'public/latexcompiler.ejs', { pageName: "LaTeX Compiler" });
     });
-
-    // app.get('/forgotPassword', (req, res) => {
-    //     if (req.isAuthenticated()) {
-    //         req.flash('errorFlash', 'You\'ll need to change your password here.');
-    //         res.redirect('/settings');
-    //     } else {
-    //         res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
-    //     }
-    // });
 
     app.get('/whoWeAre', (req, res)  => {
         res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials" });
@@ -132,12 +122,6 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Please enter a valid year of birth!');
             registerInputProblems1 = true;
         }
-        /*
-        if (!(/^\d+$/.test(new Date().getFullYear() - req.body.yob))) {
-            req.flash('errorFlash', 'Please enter a valid age!');
-            registerInputProblems1 = true;
-        }
-        */
         if (registerInputProblems1) {
             res.redirect('/signup');
             return; // to prevent ERRHTTPHEADERSSENT
@@ -221,9 +205,8 @@ module.exports = (app, mongo) => {
         successRedirect: '/homepage',
         failureFlash: 'Invalid username or password.',
         successFlash: 'Welcome!'
-    }),
-        (req, res, next) => {
-            console.log('Oh hi');
-            console.log('req.session');
-        });
+    }), (req, res, next) => {
+        console.log('Oh hi');
+        console.log('req.session');
+    });
 }
