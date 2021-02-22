@@ -1,5 +1,7 @@
 // FUNCTION IMPORTS
 const { calculateLevel, analyze } = require('../utils/functions/siteAlgorithms');
+const { tags } = require('../utils/constants/tags');
+const { generateLeaderboard } = require('../utils/functions/database');
 
 const VIEWS = __dirname + '/../views/';
 

@@ -1,5 +1,6 @@
 // FUNCTION IMPORTS
 const { referenceSheet } = require('../utils/constants/referencesheet');
+const { tags } = require('../utils/constants/tags');
 
 const VIEWS = __dirname + '/../views/';
 
