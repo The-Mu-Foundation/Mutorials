@@ -9,6 +9,7 @@ const emailValidation = require('../utils/functions/emailValidation');
 const { genPassword, validPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
+const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
 
 const VIEWS = "../views/"
 
@@ -209,4 +210,12 @@ module.exports = (app, mongo) => {
         console.log('Oh hi');
         console.log('req.session');
     });
+
+    app.post('/contact', (req, res) => {
+        console.log(req.body.comment);
+        sendDiscordWebhook(req.body.comment);
+        req.flash('success_flash', 'Message sent!');
+        res.redirect('/homepage');
+    });
+
 }
