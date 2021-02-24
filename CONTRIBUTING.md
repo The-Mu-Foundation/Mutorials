@@ -7,7 +7,7 @@ Necessary tools: [git](https://git-scm.com/downloads), [Node.js](https://nodejs.
 
 1. `git clone https://github.com/The-Mu-Foundation/Mutorials.git`
 2. `cd Mutorials`
-3. `npm install`
+3. `npm ci`
 
 To run the website on your computer, run `node index.js`.
 
