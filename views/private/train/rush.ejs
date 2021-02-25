@@ -84,7 +84,7 @@
 
             choices.forEach((choice) => {
 
-                $(selector).append('<button class="btn btn-lg w-100 btn-primary" id="' + index + '">' + choice + '</button>');
+                $(selector).append('<button class="btn btn-lg w-100 btn-primary my-1" id="' + index + '">' + choice + '</button>');
 
                 index++;
             });
@@ -176,11 +176,16 @@
                 
                 let style = (question.correct == 1) ? "background-color:#5cb85c" : ((question.correct == -1) ? "background-color:#d9534f" : "background-color:#808080");
 
+                let id = question.id;
+                if(window.innerWidth <= 500) {
+                    id = "[ID]";
+                }
+
                 $("#question-rows").append('<tr style=' + style +'><td>' +
                     question.rating +'</td><td>' +
                     question.subject + '</td><td>' +
                     question.timeSpent + '</td><td>' + 
-                    '<span class="badge bg-secondary"><a href="/question/' + question.id + '" style="text-decoration: none;" target="_blank">' + question.id + '</a></span></td></tr>');
+                    '<span class="badge bg-secondary"><a href="/question/' + question.id + '" style="text-decoration: none;" target="_blank">' + id + '</a></span></td></tr>');
                 
             });
         }
@@ -260,7 +265,7 @@
 
     <div class="row">
 
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-xl-8">
 
             <%# Empty containers to be interpolated by jQuery %>
             <h5 id="question-statement"></h5>
@@ -282,7 +287,7 @@
                         <tr>
                             <th scope="col">Rating</th>
                             <th scope="col">Subject</th>
-                            <th scope="col">Seconds Spent</th>
+                            <th scope="col">Seconds</th>
                             <th scope="col">ID</th>
                         </tr>
                     </thead>
@@ -290,14 +295,14 @@
                     </tbody>
                 </table>
                 
-                <button class="btn btn-lg w-100 btn-primary" id="play-again">Play Again</button>
+                <button class="btn btn-lg w-100 btn-primary my-1" id="play-again">Play Again</button>
 
-                <a class="btn btn-lg w-100 btn-secondary" href="/train">Exit</a>
+                <a class="btn btn-lg w-100 btn-secondary my-1" href="/train">Exit</a>
             </div>
 
         </div>
         
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-xl-4">
             
             <h2 class="display-2 text-center" id="timer">5:00</h1>
             
