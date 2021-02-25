@@ -106,12 +106,12 @@
 
             <h3 class="mb-2">Quick Select</h3>
 
-            <button type="button" class="btn mt-1 btn-warning w-100" id="select-all"><font color="white">Select All</font></button>
-            <button type="button" class="btn mt-1 btn-warning w-100" id="deselect-all"><font color="white">Deselect All</font></button>
+            <button type="button" class="btn my-1 btn-warning w-100" id="select-all"><font color="white">Select All</font></button>
+            <button type="button" class="btn my-1 btn-warning w-100" id="deselect-all"><font color="white">Deselect All</font></button>
 
             <% if(Object.entries(unitPresets).length > 0) { %>
                 <% Object.entries(unitPresets).forEach((preset) => { %>
-                    <button type="button" class="btn mt-1 btn-info w-100" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
+                    <button type="button" class="btn my-1 btn-info w-100" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
                 <% }); %>
             <% } %>
 

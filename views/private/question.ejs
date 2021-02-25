@@ -91,7 +91,7 @@
 
     <div class="row">
 
-        <div class="col-8">
+        <div class="col-12 col-lg-8">
 
             <%# Question and explanation %>
             <div class="mb-3">
@@ -135,7 +135,7 @@
         </div>
 
         <%# Question data %>
-        <div class="col-4">
+        <div class="col-12 col-lg-4">
 
             <div class="mb-4">
                 <h5>Question rating: <%= question.rating %></h5>
@@ -173,7 +173,7 @@
     </div>
 
     <%# Report question button %>
-    <div class="mt-5">
+    <div class="mt-5 pb-2">
         <div id="initial-report-container">
             <a href="mailto:mutorials@mutorials.org?subject=<%= question._id %> - Question Report&body=Please explain what is wrong with this question (ambiguity, inaccuracy, bad formatting, etc.). We try to respond quickly :)" class="btn btn-danger btn-sm float-end" id="report">Report Question</a>
         </div>
