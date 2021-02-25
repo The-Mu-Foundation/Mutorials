@@ -7,6 +7,10 @@
     "engines": {
         "node": "12.16.1"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/The-Mu-Foundation/Mutorials.git"
+    },
     "dependencies": {
         "bad-words": "^3.0.3",
         "bcryptjs": "^2.4.3",
