@@ -186,7 +186,7 @@
 
 	<div class="row">
 	
-		<div class="col-3 jumbotron">
+		<div class="col-12 col-md-3 jumbotron">
 			<div class="">
                 
 				<h4><%= user.profile.name ? (user.profile.name.length <= 18 ? user.profile.name : user.profile.name.substring(0, 15)+"...") : "Unnamed User" %></h4>
@@ -205,11 +205,11 @@
 			</div>
 		</div>
 		
-		<div class="col-9">
+		<div class="col-12 col-md-9">
 			<div class="jumbotron">
 			
 				<div class="row">
-					<div class="col-7">
+					<div class="col-12 col-lg-7">
                         <div class="canvas-container-center text-center">
                             <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
                         </div>
@@ -217,7 +217,7 @@
                         <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
                         <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
 					</div>
-					<div class="col-5">
+					<div class="col-12 col-lg-5">
                         <div class="canvas-container-center text-center">
                             <canvas id="correctWrongChart" width="400" height="400" class="my-4"></canvas>
                         </div>
@@ -236,7 +236,7 @@
                 <div>
                     <h3 class="mb-3 text-center">Collected Tags</h3>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-12 col-md-4">
                             <h5 class="mb-3 text-center">Physics</h5>
                             <% var counter = 0; %>
                             <% user.stats.collectedTags.forEach((tag) => { %>
@@ -256,7 +256,7 @@
                                 <p class="mt-3"><%= counter %>/<%= Object.keys(totalTags["Physics"]["Units"]).length + Object.keys(totalTags["Physics"]["Concepts"]).length %> tags in this subject have been collected</p>
                             <% } %>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12 col-md-4">
                             <h5 class="mb-3 text-center">Chemistry</h5>
                             <% var counter = 0; %>
                             <% user.stats.collectedTags.forEach((tag) => { %>
@@ -276,7 +276,7 @@
                                 <p class="mt-3"><%= counter %>/<%= Object.keys(totalTags["Chemistry"]["Units"]).length + Object.keys(totalTags["Chemistry"]["Concepts"]).length %> tags in this subject have been collected</p>
                             <% } %>                            
                         </div>
-                        <div class="col-4">
+                        <div class="col-12 col-md-4">
                             <h5 class="mb-3 text-center">Biology</h5>
                             <% var counter = 0; %>
                             <% user.stats.collectedTags.forEach((tag) => { %>
