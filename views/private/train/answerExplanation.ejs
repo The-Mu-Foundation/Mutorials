@@ -269,7 +269,8 @@
     <%# Report question button %>
     <div class="mt-5">
         <div id="initial-report-container">
-            <a href="mailto:mutorials@mutorials.org?subject=<%= newQues._id %> - Question Report&body=Please explain what is wrong with this question (ambiguity, inaccuracy, bad formatting, etc.). We try to respond quickly :)" class="btn btn-danger btn-sm float-end" id="report">Report Question</a>
+            <button type="button" class="btn btn-danger btn-small float-end" id="report" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
+            <%- include ("../../partials/contact"), { questionId: newQues._id } -%>
         </div>
     </div>
 

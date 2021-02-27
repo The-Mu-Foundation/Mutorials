@@ -1,12 +1,29 @@
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
 
 module.exports = {
-    sendDiscordWebhook: (comment) => {
-        console.log('hook: ' + comment);
+    sendDiscordWebhook: (comment, username, ign, questionId) => {
+        let value = "";
+        if (questionId) {
+            value = "Question ID: " + questionId + "\n" + comment;
+        } else {
+            value = comment;
+        }
+        console.log('hook: ' + value);
         var params = {
             username: "mutorials.org",
             avatar_url: "",
-            content: comment,
+            embeds: [
+                {
+                    "title": ign,
+                    "color": 3650267,
+                    "fields": [
+                        {
+                            "name": username,
+                            "value": value
+                        }
+                    ]
+                }
+            ]
         };
         fetch('https://discord.com/api/webhooks/809235980883066891/Te4OwCbAwoXUfKThSndr-TdUzfiONjnA83-6J2mVEGaLKNHIPLlYFYuawNAg9G7XEGZF', {
             method: "POST",

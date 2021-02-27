@@ -1,5 +1,3 @@
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
-
 <div class="modal fade" id="contact-modal" tabindex="-1" aria-labelledby="contact-modal-label" aria-hidden="true">
     <div class="modal-dialog">
         <form id="contact-form" class="modal-content" method="post" action="/contact">
@@ -9,6 +7,9 @@
             </div>
             <div class="modal-body">
                 <div class="form-floating">
+                    <% if (hasOwnProperty("questionId")) { %>
+                        <input name="questionId" value="<%= questionId %>" style="display: none">
+                    <% } %>
                     <textarea name="comment" class="form-control" placeholder="What do you want to tell us?" id="contactTextarea" style="height: 200px;"></textarea>
                     <label for="contactTextarea">What do you want to tell us?</label>
                 </div>

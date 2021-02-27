@@ -213,9 +213,7 @@ module.exports = (app, mongo) => {
 
     app.post('/contact', (req, res) => {
         console.log(req.body.comment);
-        sendDiscordWebhook(req.body.comment);
-        req.flash('success_flash', 'Message sent!');
-        res.redirect('/homepage');
+        sendDiscordWebhook(req.body.comment, req.user.username, req.user.ign, req.body.questionId);
     });
 
 }
