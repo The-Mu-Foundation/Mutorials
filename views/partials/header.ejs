@@ -68,42 +68,6 @@
     <%# Custom CSS for site %>
     <style>
 
-        <% if (locals.darkMode) { %>
-        
-            body {
-                background-color: #37393f;
-            }
-
-            .jumbotron {
-                background-color: #414449;
-            }
-
-            .card-body, .card-header {
-                background-color: #37393f;
-            }
-
-            .form-control {
-                background-color: #414449 !important;
-                color: #ffffff !important;
-            }
-
-            .modal-header, .modal-body, .modal-footer {
-                background-color: #37393f;
-            }
-            .dropdown-menu {
-                background-color: #222222;
-            }
-            .dropdown-item {
-                color: #ffffff;
-            }
-            .dropdown-item:hover {
-                background-color: #333333;
-                color: #ffffff;
-            }
-            * {
-                color: #ffffff;
-            }
-        <% } %>
 
         .jumbotron {
             padding: 2rem 2rem;
@@ -115,7 +79,7 @@
         .form-group {
             margin-bottom:1rem;
         }
-        
+
         .card {
             margin-top: 50px;
         }
@@ -189,7 +153,7 @@
             width: 286px;
             overflow: hidden;
         }
-        
+
         .mu-rounded {
             border-radius: 10%
         }
@@ -243,6 +207,42 @@
             max-width: 100%;
             overflow-x: hidden;
         }
+        <% if (locals.darkMode) { %>
+
+            body {
+                background-color: #37393f;
+            }
+
+            .jumbotron {
+                background-color: #414449;
+            }
+
+            .card-body, .card-header {
+                background-color: #37393f;
+            }
+
+            .form-control {
+                background-color: #414449 !important;
+                color: #ffffff !important;
+            }
+
+            .modal-header, .modal-body, .modal-footer {
+                background-color: #37393f;
+            }
+            .dropdown-menu {
+                background-color: #222222;
+            }
+            .dropdown-item {
+                color: #ffffff;
+            }
+            .dropdown-item:hover {
+                background-color: #333333;
+                color: #ffffff;
+            }
+            * {
+                color: #ffffff;
+            }
+        <% } %>
     </style>
     <% if (locals.darkMode) { %>
     <script>

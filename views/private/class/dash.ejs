@@ -18,6 +18,8 @@
             <a class="btn w-100 btn-primary" href="/class/manage/<%= classI.classCode %>"><%= classI.name %></a><br>
         <% }) %>
     </div>
+    <h4 style="text-align: center;">You can also <a href="/class/join">create</a> another class.</h4>
+    <br>
 <% } else { %>
     <div class="container">
         <h4 style="text-align: center;">You're not teaching any classes. If you'd like, you can <a href="/class/create">create</a> a class.</h4>
@@ -31,10 +33,13 @@
                 <h4 style="float: left"><%= classI.name %></h4>
                 <input type="text" style="display: none" name="classId"value="<%= classI._id %>">
                 <input type="text" style="display: none" name="className" value="<%= classI.name %>">
-                <input type="submit" style="float: right" class="btn btn-danger" value="Leave this class">
+                <input type="submit" style="float: right; margin-top: -5px;" class="btn btn-danger" value="Leave this class">
+                <br>
             </form>
         <% }); %>
     </div>
+    <h4 style="text-align: center;">Or you can <a href="/class/join">join</a> another class.</h4>
+    <br>
 <% } else { %>
     <div class="container">
         <h4 style="text-align: center;">You haven't joined any classes. If you'd like, you can <a href="/class/join">join</a> a class.</h4>
