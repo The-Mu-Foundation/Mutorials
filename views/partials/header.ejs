@@ -2,7 +2,7 @@
 
 <!doctype html>
 
-<html lang="en">
+<html lang="en" prefix="https://ogp.me/ns#">
 
 <head>
 
@@ -10,17 +10,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Mutorials is a free, adaptive, web-based science trainer powered by a passionate and experienced team of students, with various fun and competitive game modes to enrich your learning!">
+    <meta property="og:description" content="Mutorials is a free, adaptive, web-based science trainer powered by a passionate and experienced team of students, with various fun and competitive game modes to enrich your learning!"/>
     <% try { %>
         <%# EJS idiosyncrasies - the JS || operator and ternary operator both crash the page when pageName isn't defined %>
         <%# existenceTest will test whether pageName exists, and will then throw an error %>
         <%# A test is used because otherwise a stray <title> tag appears in the output %>
         <% let existenceTest = pageName; %>
         <title><%= pageName %></title>
+        <meta property="og:title" content="<%= pageName %>" />
     <% } catch(err) { %>
         <title>Mutorials</title>
+        <meta property="og:title" content="Mutorials" />
     <% } %>
-    <link rel="icon" href="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" sizes="any"
-        type="image/svg+xml">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mutorials" />
+    <link rel="icon" href="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" sizes="any" type="image/svg+xml">
+    <meta property="og:image" content="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" />
+    <meta property="og:image" content="Mutorials logo" />
 
     <%# JQuery import %>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
