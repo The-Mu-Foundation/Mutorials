@@ -9,9 +9,13 @@
 <div class="container jumbotron mt-5">
 
     <% Object.keys(constants).forEach((constant) => { %>
-        <div class="my-3">
-            <h5><%= constant %></h5>
-            <p><%= constants[constant] %></p>
+        <div class="my-4 row">
+            <div class="col-12 col-lg-6">
+                <h5><%= constant %></h5>
+            </div>
+            <div class="col-12 col-lg-6">
+                <p><%= constants[constant] %></p>
+            </div>
         </div>
     <% }); %>
 
