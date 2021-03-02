@@ -213,7 +213,9 @@ module.exports = (app, mongo) => {
 
     app.post('/contact', (req, res) => {
         console.log(req.body.comment);
+        console.log(req.body.questionId);
         sendDiscordWebhook(req.body.comment, req.user.username, req.user.ign, req.body.questionId);
+        res.json({ 'success': true });
     });
 
 }
