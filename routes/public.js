@@ -9,6 +9,7 @@ const emailValidation = require('../utils/functions/emailValidation');
 const { genPassword, validPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
+const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
 
 const VIEWS = "../views/"
 
@@ -209,4 +210,17 @@ module.exports = (app, mongo) => {
         console.log('Oh hi');
         console.log('req.session');
     });
+
+    app.post('/contact', (req, res) => {
+        console.log(req.body.comment);
+        console.log(req.body.questionId);
+        req.isAuthenticated() ? sendDiscordWebhook(req.body.comment, req.user.username, req.user.ign, req.body.questionId) : sendDiscordWebhook(req.body.comment, 'N/A', 'User not signed in.', req.body.questionId);
+        req.flash('successFlash', 'Thanks for your feedback!');
+        if (req.body.redirect) {
+            res.redirect(req.body.redirect);
+        } else {
+            res.redirect('/')
+        }
+    });
+
 }

@@ -35,12 +35,12 @@
             "Biology": [],
             "Labels": []
         }
-        
+
         // DO NOT DELETE - ratingData is not defined if this is deleted
         console.log(ratingData);
 
         ["Physics", "Chemistry", "Biology"].forEach((subject) => {
-            
+
             let tracker = $("#ratingTrackerArray-" + subject).val().split('@');
             if(tracker.length < 2) {
                 tracker.unshift(tracker[0]);
@@ -117,7 +117,7 @@
         });
 
     });
-    
+
     window.onload = () => {
 
         // init AOS
@@ -222,5 +222,8 @@
         </div>
     </div>
 </div>
+<footer class="text-center"><button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button></footer>
 
+<br><br>
+<%- include ("../partials/contact") -%>
 <%- include("../partials/footer") -%>
