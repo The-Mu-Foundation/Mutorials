@@ -31,12 +31,28 @@
             });
         }
 
+        // function to set cookie data
+        let saveSelectionAsCookie = () => {
+
+			units = [];
+			let unitInputs = document.getElementsByName("unitChoice");
+			for(let i = 0; i < unitInputs.length; i++) {
+				if(unitInputs[i].checked) {
+					units.push(unitInputs[i].id);
+				}
+			}
+
+            let cookieData = units.join('@');
+            document.cookie = cookieData;
+        }
+
         // make select and deselect all buttons work
         $("#select-all").click(function() {
             document.getElementsByName("unitChoice").forEach((checkbox) => {
                 if(checkbox.type == "checkbox") {
                     checkbox.checked = true;
                 }
+                saveSelectionAsCookie();
             });
         });
         $("#deselect-all").click(function() {
@@ -44,6 +60,7 @@
                 if(checkbox.type == "checkbox") {
                     checkbox.checked = false;
                 }
+                saveSelectionAsCookie();
             });
         });
 
@@ -61,8 +78,24 @@
                 unitPresets[preset].forEach((unit) => {
                     document.getElementById(unit).checked = true;
                 });
+
+                saveSelectionAsCookie();
             });
         });
+
+        // cookies to save current selection of units upon change and load last selection upon loading
+        $(".unit-checkbox").change(function() {
+            saveSelectionAsCookie();
+        });
+
+        let savedSelection = document.cookie.split(';')[0].split('@');
+        try {
+            savedSelection.forEach((unit) => {
+                document.getElementById(unit).checked = true;
+            });
+        } catch(error) {
+            console.log("Hit end of saved last selection");
+        }
 
     });
 
@@ -81,10 +114,10 @@
 
             <form action="/selQ" method="POST">
 
-                <div id="checkboxes">
+                <div id="units">
                     <% units.forEach((unit) => { %>
                         <div class="form-check my-1 me-sm-2" id="DIV <%= unit %>">
-                            <input type="checkbox" name="unitChoice" class="form-check-input" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
+                            <input type="checkbox" name="unitChoice" class="form-check-input unit-checkbox" id="<%= unit %>" value="<%= subject %> - <%= unit %>">
                             <label class="form-check-label" for="<%= unit %>"><%= unit %></label>
                         </div>
                     <% }) %>
@@ -106,12 +139,12 @@
 
             <h3 class="mb-2">Quick Select</h3>
 
-            <button type="button" class="btn mt-1 btn-warning w-100" id="select-all"><font color="white">Select All</font></button>
-            <button type="button" class="btn mt-1 btn-warning w-100" id="deselect-all"><font color="white">Deselect All</font></button>
+            <button type="button" class="btn my-1 btn-warning w-100" id="select-all"><font color="white">Select All</font></button>
+            <button type="button" class="btn my-1 btn-warning w-100" id="deselect-all"><font color="white">Deselect All</font></button>
 
             <% if(Object.entries(unitPresets).length > 0) { %>
                 <% Object.entries(unitPresets).forEach((preset) => { %>
-                    <button type="button" class="btn mt-1 btn-info w-100" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
+                    <button type="button" class="btn my-1 btn-info w-100" id="<%= preset[0].replace(/\s+/g, '') %>"><%= preset[0] %></button>
                 <% }); %>
             <% } %>
 

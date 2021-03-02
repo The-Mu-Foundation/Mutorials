@@ -36,7 +36,7 @@
 
                 <% Object.keys(tags[subject]["Concepts"]).forEach((conceptTag) => { %>
                     <tr class="d-flex">
-                        <td class="col-4"><h5><span class="badge bg-light"><%= conceptTag %></span></h5></td>
+                        <td class="col-4"><h5><span class="badge bg-secondary"><%= conceptTag %></span></h5></td>
                         <td class="col-8"><%= tags[subject]["Concepts"][conceptTag] %></td>
                     </tr>
                 <% }); %>
