@@ -266,19 +266,13 @@
 
     </div>
 
-    <%# Report question button %>
-    <div class="mt-5">
-        <div id="initial-report-container">
-            <button type="button" class="btn btn-danger btn-small float-end" id="report" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
-            <%- include ("../../partials/contact", { questionId: newQues._id }) -%>
-        </div>
-    </div>
-
 </div>
 
 <div class="container mb-5">
     <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
     <a href="/train/<%= subject %>/displayQuestion?units=<%=units%>"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
+    <button type="button" class="btn btn-danger btn-small float-end" id="report" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
+    <%- include ("../../partials/contact", { questionId: newQues._id, redirect: "/train/" + subject + "/displayQuestion?units=" + units }) -%>
 </div>
 
 <%- include("../../partials/footer") -%>

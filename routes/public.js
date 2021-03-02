@@ -214,8 +214,13 @@ module.exports = (app, mongo) => {
     app.post('/contact', (req, res) => {
         console.log(req.body.comment);
         console.log(req.body.questionId);
-        sendDiscordWebhook(req.body.comment, req.user.username, req.user.ign, req.body.questionId);
-        res.json({ 'success': true });
+        req.isAuthenticated() ? sendDiscordWebhook(req.body.comment, req.user.username, req.user.ign, req.body.questionId) : sendDiscordWebhook(req.body.comment, 'N/A', 'User not signed in.', req.body.questionId);
+        req.flash('successFlash', 'Thanks for your feedback!');
+        if (req.body.redirect) {
+            res.redirect(req.body.redirect);
+        } else {
+            res.redirect('/')
+        }
     });
 
 }
