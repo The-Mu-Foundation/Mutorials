@@ -6,7 +6,7 @@ filter = new Filter();
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
-const { genPassword, validPassword } = require('../utils/functions/password');
+const { genPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
@@ -118,7 +118,7 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.');
             registerInputProblems1 = true;
         }
-        
+
         if (!(/^(19|20)\d{2}$/.test(req.body.yob)) || req.body.yob.length != 4 || req.body.yob > new Date().getFullYear()) {
             req.flash('errorFlash', 'Please enter a valid year of birth!');
             registerInputProblems1 = true;
@@ -211,9 +211,57 @@ module.exports = (app, mongo) => {
         console.log('req.session');
     });
 
+    app.post('/forgotPassword', (req, res) => {
+        console.log(req.body.forgotEmail);
+        if (req.body.forgotEmail) {
+            mongo.db.collection('users').findOne({ username: req.body.forgotEmail }).then((user) => {
+                if (user) {
+                    require('crypto').randomBytes(6, function (ex, buf) {
+                        mongo.db.collection('users').findOneAndUpdate({ username: req.body.forgotEmail }, { $set: { email_confirm_code: buf.toString('hex') } }).then((success) => {
+                            emailValidation.emailCodeSend(req.body.forgotEmail, buf.toString('hex'));
+                            req.flash('successFlash', 'You\'ve been emailed a confirmation code.');
+                            res.locals.forgotPassUser = req.body.forgotEmail;
+                            res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                        });
+                    });
+                } else {
+                    req.flash('errorFlash', 'That email isn\'t registered with us.');
+                    res.redirect('/signin');
+                }
+            });
+        } else if (req.body.newpw) {
+            mongo.db.collection('users').findOne({ username: req.body.username, email_confirm_code: req.body.enteredCode }).then((user) => {
+                if (user) {
+                    if (req.body.newpw.length < 7 || !(/\d/.test(req.body.newpw)) || !(/[a-zA-Z]/.test(req.body.newpw))) {
+                        req.flash('errorFlash', 'The password you entered does not meet the requirements.');
+                        res.locals.forgotPassUser = req.body.username;
+                        res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                    } else if (req.body.newpw != req.body.confirmnewpw) {
+                        req.flash('errorFlash', 'The passwords don\'t match.');
+                        res.locals.forgotPassUser = req.body.username;
+                        res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                    } else {
+                        const saltHash = genPassword(req.body.newpw);
+                        const salt = saltHash.salt;
+                        const hash = saltHash.hash;
+                        mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: '', salt: salt, hash: hash } }).then((success) => {
+                            req.flash('successFlash', 'Your password has been changed.');
+                            res.redirect('/signin');
+                        });
+                    }
+                } else {
+                    req.flash('errorFlash', 'That isn\'t the right code.');
+                    res.locals.forgotPassUser = req.body.username;
+                    res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                }
+            })
+        } else {
+            res.flash('errorFlash', 'Error 404: Page not found.');
+            res.redirect('/');
+        }
+    });
+
     app.post('/contact', (req, res) => {
-        console.log(req.body.comment);
-        console.log(req.body.questionId);
         req.isAuthenticated() ? sendDiscordWebhook(req.body.comment, req.user.username, req.user.ign, req.body.questionId) : sendDiscordWebhook(req.body.comment, 'N/A', 'User not signed in.', req.body.questionId);
         req.flash('successFlash', 'Thanks for your feedback!');
         if (req.body.redirect) {

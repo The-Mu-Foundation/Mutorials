@@ -17,7 +17,7 @@ module.exports = {
         const mailOptions = {
             from: 'email_confirmation@noreply.mutorials.org',
             to: username,
-            subject: 'Mutorials Email Confirmation',
+            subject: 'Mutorials Confirmation Code',
             text: 'Here is your code: ' + code
         };
         transporter.sendMail(mailOptions, function(error, info) {
