@@ -330,11 +330,13 @@ async function updateRushStats(user, score) {
 }
 
 async function querySite(search, User, Ques, SiteData) {
+
     results = [];
+    search = search.trim();
 
     let possibleID = 0;
     try {
-        possibleID = mongoose.Types.ObjectId(search.trim());
+        possibleID = mongoose.Types.ObjectId(search);
     } catch(err) {
         possibleID = mongoose.Types.ObjectId('000000000000000000000000');
     }
@@ -344,26 +346,26 @@ async function querySite(search, User, Ques, SiteData) {
         $or: [
             { _id: possibleID },
             { ign: { $regex: new RegExp(search), $options: 'ix' }},
-            { "profile.name": { $regex: new RegExp(search), $options: 'ix' }}
+            { "profile.name": { $regex: new RegExp(search), $options: 'i' }}
         ]
     }).exec();
 
     let questionMatches = await Ques.find({
         $or: [
             { _id: possibleID },
-            { question: { $regex: new RegExp(search), $options: 'ix' }},
-            { choices: { $regex: new RegExp(search), $options: 'ix' }},
+            { question: { $regex: new RegExp(search), $options: 'i' }},
+            { choices: { $regex: new RegExp(search), $options: 'i' }},
             { tags: search.toUpperCase() },
-            { answer_ex: { $regex: new RegExp(search), $options: 'ix' }},
+            { answer_ex: { $regex: new RegExp(search), $options: 'i' }},
             { ext_source: search },
             { subject: { $regex: new RegExp(search), $options: 'ix' }},
-            { units: { $regex: new RegExp(search), $options: 'ix' }}
+            { units: { $regex: new RegExp(search), $options: 'i' }}
         ]
     }).sort({ rating: -1}).exec();
 
     // load matches into results
     questionMatches.forEach((question) => {
-        if(search.toUpperCase() == question.question.toUpperCase() || question.tags.includes(search.toUpperCase()) || question._id.toString() == search.trim()) {
+        if(search.toUpperCase() == question.question.toUpperCase() || question.tags.includes(search.toUpperCase()) || question._id.toString() == search) {
             results.unshift({
                 exactMatch: true,
                 type: "QUESTION",
@@ -383,7 +385,8 @@ async function querySite(search, User, Ques, SiteData) {
     });
 
     userMatches.forEach((user) => {
-        if(search.trim().toUpperCase() == user.ign.toUpperCase() || user._id.toString() == search.trim()) {
+
+        if(search.toUpperCase() == user.ign.toUpperCase() || user._id.toString() == search) {
             results.unshift({
                 exactMatch: true,
                 type: "USER",

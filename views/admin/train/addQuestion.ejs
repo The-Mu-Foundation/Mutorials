@@ -89,7 +89,7 @@
 
 <div class="jumbotron container" id="show-compiler-div">
 
-	<button type="button" class="btn btn-primary btn-block" id="show-compiler">Open LaTeX Compiler</button>
+	<button type="button" class="btn btn-primary w-100" id="show-compiler">Open LaTeX Compiler</button>
 
 </div>
 
@@ -141,17 +141,17 @@
     <hr>
     <form class="form-group" id="question-format">
 		<p>What is the format of this question?</p>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="mc" value="mc">
-			<label class="custom-control-label" for="mc">Multiple Choice</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="mc" value="mc">
+			<label class="form-check-label" for="mc">Multiple Choice</label>
 		</div>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="fr" value="fr">
-			<label class="custom-control-label" for="fr">Free Response</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="fr" value="fr">
+			<label class="form-check-label" for="fr">Free Response</label>
 		</div>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="sa" value="sa">
-			<label class="custom-control-label" for="sa">Select All</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="sa" value="sa">
+			<label class="form-check-label" for="sa">Select All</label>
 		</div>
     </form>
 </div>
@@ -178,9 +178,9 @@
 	<form class="form-group" id="subjects">
 		<p>What subject(s) does this question fall under?</p>
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
-            <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                <input type="checkbox" class="custom-control-input subject-choice-checkbox" id="<%= subject %>">
-                <label class="custom-control-label" for="<%= subject %>"><%= subject %></label>
+            <div class="form-check my-1 me-sm-2">
+                <input type="checkbox" class="form-check-input subject-choice-checkbox" id="<%= subject %>">
+                <label class="form-check-label" for="<%= subject %>"><%= subject %></label>
             </div>
         <% }) %>
     </form>
@@ -191,9 +191,9 @@
         <p>What units(s) does this question belong to? (Note: select subjects first)</p>
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
             <% subjectUnitDictionary[subject].forEach((unit) => { %>
-                <div class="custom-control custom-checkbox my-1 mr-sm-2 unit-choice-checkbox <%= subject %>-unit-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="<%= subject %> - <%= unit %>">
-                    <label class="custom-control-label" for="<%= subject %> - <%= unit %>"><%= subject.toUpperCase() %>: <%= unit %></label>
+                <div class="form-check my-1 me-sm-2 unit-choice-checkbox <%= subject %>-unit-checkbox">
+                    <input type="checkbox" class="form-check-input" id="<%= subject %> - <%= unit %>">
+                    <label class="form-check-label" for="<%= subject %> - <%= unit %>"><%= subject.toUpperCase() %>: <%= unit %></label>
                 </div>
             <% }) %>
         <% }) %>
@@ -210,25 +210,25 @@
     <hr>
 	<form class="form-group" id="external-source">
 		<p>Is this question from an external source?</p>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="original" value="original">
-			<label class="custom-control-label" for="original">Original - written by Mutorials</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="original" value="original">
+			<label class="form-check-label" for="original">Original - written by Mutorials</label>
 		</div>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="AP" value="AP">
-			<label class="custom-control-label" for="AP">AP (Advanced Placement)</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="AP" value="AP">
+			<label class="form-check-label" for="AP">AP (Advanced Placement)</label>
 		</div>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="IB" value="IB">
-			<label class="custom-control-label" for="IB">IB (International Baccalaureate)</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="IB" value="IB">
+			<label class="form-check-label" for="IB">IB (International Baccalaureate)</label>
 		</div>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="SAT2" value="SAT2">
-			<label class="custom-control-label" for="SAT2">SAT2 (Scholastic Aptitude Test 2)</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="SAT2" value="SAT2">
+			<label class="form-check-label" for="SAT2">SAT2 (Scholastic Aptitude Test 2)</label>
 		</div>
-		<div class="custom-control custom-radio">
-			<input class="custom-control-input" type="radio" name="answerChoice" id="Competition" value="Comp">
-			<label class="custom-control-label" for="Comp">Competition problem</label>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="answerChoice" id="Competition" value="Comp">
+			<label class="form-check-label" for="Comp">Competition problem</label>
 		</div>
 	</form>
 	<div class="form-group">
@@ -238,7 +238,7 @@
 </div>
 
 <div class = "container mt-4 mb-5">
-    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#confirmCancel" id="cancel">Cancel</button>
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
     <a href="/admin/addedSuccess"><button type="button" class="btn btn-primary" id="submit">Submit</button></a>
 </div>
 
@@ -253,7 +253,7 @@
 				<p>All your work is unsaved and will be discarded</p>
             </div>
             <div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                 <a href="/homepage"><button type="button" class="btn btn-primary" id="leaveConfirm">Yes</button></a>
             </div>
         </div>

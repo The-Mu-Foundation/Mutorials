@@ -7,6 +7,10 @@
     "engines": {
         "node": "12.16.1"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/The-Mu-Foundation/Mutorials.git"
+    },
     "dependencies": {
         "bad-words": "^3.0.3",
         "bcryptjs": "^2.4.3",
@@ -28,6 +32,8 @@
         "http-errors": "^1.6.3",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.9.18",
+        "nanoid": "^3.1.20",
+        "node-fetch": "^2.6.1",
         "nodemailer": "^6.4.10",
         "passport": "^0.4.1",
         "passport-local": "^1.0.0",

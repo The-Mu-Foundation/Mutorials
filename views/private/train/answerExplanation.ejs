@@ -163,18 +163,18 @@
                 <div class="mb-4">
                     <% var i = 1; %>
                     <% newQues.choices.forEach((choice) => { %>
-                        <div class="custom-control custom-radio">
+                        <div class="form-check">
                             <% if(userAnswer == i) { %>
-                                <input class="custom-control-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled checked>
+                                <input class="form-check-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled checked>
                             <% } else { %>
-                                <input class="custom-control-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled>
+                                <input class="form-check-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled>
                             <% } %>
                             <% if(newQues.answer[0] == i) { %>
-                                <label class="custom-control-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                                <label class="form-check-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
                             <% } else if(userAnswer == i) { %>
-                                <label class="custom-control-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                                <label class="form-check-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
                             <% } else { %>
-                                <label class="custom-control-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
+                                <label class="form-check-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
                             <% } %>
                             <% i++; %>
                         </div>
@@ -184,18 +184,18 @@
                 <div class="mb-4">
                     <% var i = 1; %>
                     <% newQues.choices.forEach((choice) => { %>
-                        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                        <div class="form-check my-1 me-sm-2">
                             <% if(userAnswer.includes(''+i)) { %>
-                                <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= i %>" value="<%= i %>" disabled checked>
+                                <input type="checkbox" name="saChoice" class="form-check-input" id="<%= i %>" value="<%= i %>" disabled checked>
                             <% } else { %>
-                                <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= i %>" value="<%= i %>" disabled>
+                                <input type="checkbox" name="saChoice" class="form-check-input" id="<%= i %>" value="<%= i %>" disabled>
                             <% } %>
                             <% if(newQues.answer.includes(i)) { %>
-                                <label class="custom-control-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                                <label class="form-check-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
                             <% } else if(userAnswer.includes(''+i)) { %>
-                                <label class="custom-control-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
+                                <label class="form-check-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
                             <% } else { %>
-                                <label class="custom-control-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
+                                <label class="form-check-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
                             <% } %>
                             <% i++; %>
                         </div>
@@ -266,18 +266,13 @@
 
     </div>
 
-    <%# Report question button %>
-    <div class="mt-5">
-        <div id="initial-report-container">
-            <a href="mailto:mutorials@mutorials.org?subject=<%= newQues._id %> - Question Report&body=Please explain what is wrong with this question (ambiguity, inaccuracy, bad formatting, etc.). We try to respond quickly :)" class="btn btn-danger btn-sm float-right" id="report">Report Question</a>
-        </div>
-    </div>
-
 </div>
 
 <div class="container mb-5">
     <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
     <a href="/train/<%= subject %>/displayQuestion?units=<%=units%>"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
+    <button type="button" class="btn btn-danger btn-small float-end" id="report" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
+    <%- include ("../../partials/contact", { questionId: newQues._id, redirect: "/train/" + subject + "/displayQuestion?units=" + units }) -%>
 </div>
 
 <%- include("../../partials/footer") -%>

@@ -66,19 +66,12 @@
 
         // render sample rating chart
         var ratingData = {
-            "Physics": [1794, 1808, 1830, 1821, 1829, 1842, 1853, 1845, 1860, 1875, 1900, 1892, 1902, 1920, 1934, 1924, 1920, 1909, 1927, 1944],
-            "Chemistry": [2103, 2119, 2130, 2139, 2150, 2143, 2154, 2137, 2122, 2135, 2111, 2098, 2082, 2076, 2085, 2074, 2061, 2048, 2059, 2050],
-            "Biology": [1945, 1956, 1970, 1986, 1999, 2013, 2001, 2016, 2019, 2033, 2049, 2061, 2074, 2068, 2078, 2091, 2104, 2108, 2097, 2109],
-            "Labels": []
+            "Physics": [Math.round(1600 + 200*Math.random())],
+            "Chemistry": [Math.round(1600 + 200*Math.random())],
+            "Biology": [Math.round(1600 + 200*Math.random())]
         }
-
-        const labelLength = Math.max(ratingData["Physics"].length, ratingData["Chemistry"].length, ratingData["Biology"].length);
-        var labels = ratingData["Labels"];
-        for(var i = labelLength; i > 0; i--) {
-            labels.push(i + " Ago");
-        }
-        labels.push("");
-        ratingData["Labels"] = labels;
+        var labels = ["1 Ago"];
+        var labelCounter = 1;
 
         var ctxTracker = document.getElementById("sampleTrackerChart");
 
@@ -89,7 +82,7 @@
         var myChart = new Chart(ctxTracker, {
             type: "line",
             data: {
-                labels: ratingData["Labels"],
+                labels,
                 datasets: [{
                     label: "Physics",
                     data: ratingData["Physics"],
@@ -141,6 +134,27 @@
             }
         });
 
+        // update rating charts in motion
+        setInterval(() => {
+
+            if(labelCounter < 30) {
+
+                labelCounter++;
+                myChart.data.labels.unshift(labelCounter+ " Problems Ago");
+
+                myChart.data.datasets.forEach((subject) => {
+                    subject.data.push(subject.data[subject.data.length - 1] + Math.round(10+30*Math.random())*(2*(Math.round(Math.random())-0.5)));
+                });
+
+                myChart.options.scales.yAxes[0].ticks = {
+                    min: Math.round((Math.min(Math.min.apply(null, myChart.data.datasets[0].data), Math.min.apply(null, myChart.data.datasets[1].data), Math.min.apply(null, myChart.data.datasets[2].data))-50)/50)*50,
+                    max: Math.round((Math.max(Math.max.apply(null, myChart.data.datasets[0].data), Math.max.apply(null, myChart.data.datasets[1].data), Math.max.apply(null, myChart.data.datasets[2].data))+50)/50)*50,
+                    stepSize: 50
+                }
+
+                myChart.update();
+            }
+        }, 500);
     };
 
     $(document).ready(function() {
@@ -181,7 +195,7 @@
     <%- include("../partials/flashes") -%>
 
     <h1 class="text-center display-4"><strong>Mutorials</strong> is <span id="typed-a">a</span> <br class="d-block d-lg-none"><em id="typed-span"></em><br class="d-block d-xl-none">science trainer.</h1>
-    <h3 class="text-center" data-aos="zoom-out" data-aos-duration="500" data-aos-delay="500">Stay motivated and engaged!</h3>
+    <h3 class="text-center" data-aos="zoom-out" data-aos-duration="500" data-aos-delay="500">Sign up today to practice hundreds of AP/IB problems, all with explanations!</h3>
 </div>
 
 <div class="container mt-5">
@@ -238,19 +252,19 @@
                     <div class="col-4" data-aos="flip-right" data-aos-duration="500" data-aos-delay="200">
                         <img id="physics-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Physics_Main.svg" alt="Physics icon">
                     </div>
-            
+
                     <div class="col-4" data-aos="flip-right" data-aos-duration="500" data-aos-delay="300">
                         <img id="chem-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Chem_Main.svg" alt="Chem icon">
                     </div>
-            
+
                     <div class="col-4" data-aos="flip-right" data-aos-duration="500" data-aos-delay="400">
                         <img id="bio-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Bio_Main.svg" alt="Bio icon">
                     </div>
-            
+
                 </div>
 
             </div>
-            
+
         </div>
 
     </div>
@@ -266,17 +280,17 @@
                     <div class="col-4" data-aos="flip-right" data-aos-duration="500" data-aos-delay="200">
                         <img id="classic-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Classic.svg" alt="Classic icon">
                     </div>
-            
+
                     <div class="col-4" data-aos="flip-right" data-aos-duration="500" data-aos-delay="300">
                         <img id="rush-icon" class="thumbnail mu-rounded" width="100%" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Rush.svg" alt="Rush icon">
                     </div>
-            
+
                     <div class="col-4" data-aos="flip-right" data-aos-duration="500" data-aos-delay="400">
                         <img id="daily-icon" class="thumbnail mu-rounded" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Daily.svg" alt="Daily icon">
                     </div>
-    
+
                 </div>
-                
+
             </div>
 
             <div class="col-lg-5">
@@ -301,8 +315,8 @@
     <div class="row">
 
         <div class="col-lg-5" data-aos="zoom-in" data-aos-duration="500" data-aos-delay="200">
-            
-            <table class="table mt-3">
+
+            <table class="text-center table mt-3">
                 <thead>
                     <tr>
                         <th scope="col">Rank</th>
@@ -340,14 +354,14 @@
 </div>
 
 <div class="container mt-5">
-    <a class="btn btn-lg btn-block btn-primary" href="/signup" data-aos="fade-up" data-aos-duration="500">Start Training!</a>
-    <a class="btn btn-lg btn-block btn-secondary mt-2" href="/whoWeAre#joinMutorials" data-aos="fade-up" data-aos-duration="600">Join the Mutorials Team!</a>
+    <a class="btn btn-lg w-100 btn-primary" href="/signup" data-aos="fade-up" data-aos-duration="500">Start Training!</a>
+    <a class="btn btn-lg w-100 btn-secondary mt-2" href="/whoWeAre#joinMutorials" data-aos="fade-up" data-aos-duration="800">Join the Mutorials Team!</a>
 </div>
 
 <div class="container my-5" data-aos="zoom-out" data-aos-duration="500">
 
-    <footer class="text-center"><br><hr><br>The Mu Foundation is a 501(c)(3) nonprofit organization.<br>Copyright © 2020 The Mu Foundation. All Rights Reserved.<br><a href='/termsOfService#terms-of-service'>Terms of Service</a> | <a href='/termsOfService#privacy-policy'>Privacy Policy</a></footer>
-
+    <footer class="text-center"><br><hr><br>The Mu Foundation is a 501(c)(3) nonprofit organization.<br>Copyright © 2020 The Mu Foundation. All Rights Reserved.<br><a href='/termsOfService#terms-of-service'>Terms of Service</a> | <a href='/termsOfService#privacy-policy'>Privacy Policy</a> | <button type="button" class="btn btn-link" style="padding: 0px; margin-top: -1px;" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button></footer>
 </div>
 
+<%- include ("../partials/contact") -%>
 <%- include("../partials/footer") -%>

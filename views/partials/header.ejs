@@ -2,7 +2,7 @@
 
 <!doctype html>
 
-<html lang="en">
+<html lang="en" prefix="https://ogp.me/ns#">
 
 <head>
 
@@ -16,26 +16,29 @@
     <meta property="og:url" content="https://www.mutorials.org/">
     <meta property="og:image" content="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg">
     <meta property="og:description" content="Mutorials is a free, adaptive, web-based science trainer powered by a passionate and experienced team of students, with various fun and competitive game modes to enrich your learning!">
-    
     <% try { %>
         <%# EJS idiosyncrasies - the JS || operator and ternary operator both crash the page when pageName isn't defined %>
         <%# existenceTest will test whether pageName exists, and will then throw an error %>
         <%# A test is used because otherwise a stray <title> tag appears in the output %>
         <% let existenceTest = pageName; %>
         <title><%= pageName %></title>
+        <meta property="og:title" content="<%= pageName %>" />
     <% } catch(err) { %>
         <title>Mutorials</title>
+        <meta property="og:title" content="Mutorials" />
     <% } %>
-    <link rel="icon" href="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" sizes="any"
-        type="image/svg+xml">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mutorials" />
+    <link rel="icon" href="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" sizes="any" type="image/svg+xml">
+    <meta property="og:image" content="https://f000.backblazeb2.com/file/mutorials/icons/Icon_Main.svg" />
+    <meta property="og:image" content="Mutorials logo" />
 
-    <%# JQuery and bootstrap imports %>
+    <%# JQuery import %>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
+
+    <%# Bootstrap import %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 
     <%# Fontawesome import %>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -75,34 +78,16 @@
 
     <%# Custom CSS for site %>
     <style>
+        .jumbotron {
+            padding: 2rem 2rem;
+            margin-bottom: 2rem;
+            background-color: #e9ecef;
+            border-radius: .5rem
+        }
 
-        <% if (locals.darkMode) { %>
-        
-            body {
-                background-color: #37393f;
-            }
-
-            .jumbotron {
-                background-color: #414449;
-            }
-
-            .card-body, .card-header {
-                background-color: #37393f;
-            }
-
-            .form-control {
-                background-color: #414449 !important;
-                color: #ffffff !important;
-            }
-
-            .modal-header, .modal-body, .modal-footer {
-                background-color: #37393f;
-            }
-
-            * {
-                color: #ffffff;
-            }
-        <% } %>
+        .form-group {
+            margin-bottom:1rem;
+        }
 
         .card {
             margin-top: 50px;
@@ -177,7 +162,7 @@
             width: 286px;
             overflow: hidden;
         }
-        
+
         .mu-rounded {
             border-radius: 10%
         }
@@ -231,6 +216,42 @@
             max-width: 100%;
             overflow-x: hidden;
         }
+        <% if (locals.darkMode) { %>
+
+            body {
+                background-color: #37393f;
+            }
+
+            .jumbotron {
+                background-color: #414449;
+            }
+
+            .card-body, .card-header {
+                background-color: #37393f;
+            }
+
+            .form-control {
+                background-color: #414449 !important;
+                color: #ffffff !important;
+            }
+
+            .modal-header, .modal-body, .modal-footer {
+                background-color: #37393f;
+            }
+            .dropdown-menu {
+                background-color: #222222;
+            }
+            .dropdown-item {
+                color: #ffffff;
+            }
+            .dropdown-item:hover {
+                background-color: #333333;
+                color: #ffffff;
+            }
+            * {
+                color: #ffffff;
+            }
+        <% } %>
     </style>
     <% if (locals.darkMode) { %>
     <script>

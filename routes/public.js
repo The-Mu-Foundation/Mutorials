@@ -6,15 +6,15 @@ filter = new Filter();
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
-const { genPassword, validPassword } = require('../utils/functions/password');
+const { genPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
+const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
 
 const VIEWS = "../views/"
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
-
     // `username` is email
     // `ign` is username
     app.get('/', async (req, res) => {
@@ -61,15 +61,6 @@ module.exports = (app, mongo) => {
     app.get('/latexCompiler', (req, res) => {
         res.render(VIEWS + 'public/latexcompiler.ejs', { pageName: "LaTeX Compiler" });
     });
-
-    // app.get('/forgotPassword', (req, res) => {
-    //     if (req.isAuthenticated()) {
-    //         req.flash('errorFlash', 'You\'ll need to change your password here.');
-    //         res.redirect('/settings');
-    //     } else {
-    //         res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
-    //     }
-    // });
 
     app.get('/whoWeAre', (req, res)  => {
         res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials" });
@@ -132,12 +123,6 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Please enter a valid year of birth!');
             registerInputProblems1 = true;
         }
-        /*
-        if (!(/^\d+$/.test(new Date().getFullYear() - req.body.yob))) {
-            req.flash('errorFlash', 'Please enter a valid age!');
-            registerInputProblems1 = true;
-        }
-        */
         if (registerInputProblems1) {
             res.redirect('/signup');
             return; // to prevent ERRHTTPHEADERSSENT
@@ -221,70 +206,69 @@ module.exports = (app, mongo) => {
         successRedirect: '/homepage',
         failureFlash: 'Invalid username or password.',
         successFlash: 'Welcome!'
-    }),
-        (req, res, next) => {
-            console.log('Oh hi');
-            console.log('req.session');
-        });
+    }), (req, res, next) => {
+        console.log('Oh hi');
+        console.log('req.session');
+    });
 
-    // app.post('/forgotPasswordCheck', (req, res, next) => {
-    //     if (req.isAuthenticated()) {
-    //         req.flash('errorFlash', 'You\'ll need to change your password here.');
-    //         res.redirect('/settings')
-    //     } else {
-    //         app.locals.forgotPassUser = req.body.username;
-    //         if (!req.body.enteredCode) {
-    //             mongo.User.countDocuments({ username: req.body.username }, (err, count) => {
-    //                 if (count > 0) {
-    //                     req.flash('successFlash', 'Check your email for the code.');
-    //                     var confirmCode;
-    //                     require('crypto').randomBytes(6, (ex, buf) => {
-    //                         confirmCode = buf.toString('hex');
-    //                         mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
-    //                         debugger;
-    //                         emailValidation.emailCodeSend(req.body.username, confirmCode);
-    //                     });
-    //                     res.redirect('/forgotPassword');
-    //                     return;
-    //                 } else {
-    //                     req.flash('errorFlash', 'That email isn\'t registered with us.');
-    //                     res.redirect('/signin');
-    //                 }
-    //             });
-    //         } else {
-    //             mongo.User.findOne({ username: req.body.username }).then((user) => {
-    //                 if (user) {
-    //                     if (user.emailConfirmCode != '0') {
-    //                         if (emailValidation.checkCode(user.username, req.body.enteredCode)) {
-    //                             if (req.body.newpw == req.body.confirmnewpw) {
-    //                                 if((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw))) {
-    //                                     const newPass = genPassword(req.body.newpw);
-    //                                     mongo.db.collection('users').findOneAndUpdate({ username: user.username }, { $set: { hash: newPass.hash, salt: newPass.salt } });
-    //                                     emailValidation.clearConfirmCode(user.username);
-    //                                     req.flash('successFlash', 'We successfully reset your password');
-    //                                     res.redirect('/signin');
-    //                                 } else {
-    //                                     req.flash('errorFlash', 'The password doesn\'t fit the requirements.');
-    //                                     res.redirect('/forgotPassword');
-    //                                 }
-    //                             } else {
-    //                                 req.flash('errorFlash', 'The passwords don\'t match. Please try again.');
-    //                                 res.redirect('/forgotPassword');
-    //                             }
-    //                         } else {
-    //                             req.flash('errorFlash', 'The code is wrong. Please try again.');
-    //                             res.redirect('/forgotPassword');
-    //                         }
-    //                     } else {
-    //                         req.flash('errorFlash', 'Please try resetting your password again.');
-    //                         res.redirect('/signin');
-    //                     }
-    //                 } else {
-    //                     req.flash('errorFlash', 'The email is incorrect, please try again.');
-    //                     res.redirect('/forgotPassword');
-    //                 }
-    //             });
-    //         }
-    //     }
-    // });
+    app.post('/forgotPassword', (req, res) => {
+        console.log(req.body.forgotEmail);
+        if (req.body.forgotEmail) {
+            mongo.db.collection('users').findOne({ username: req.body.forgotEmail }).then((user) => {
+                if (user) {
+                    require('crypto').randomBytes(6, function (ex, buf) {
+                        mongo.db.collection('users').findOneAndUpdate({ username: req.body.forgotEmail }, { $set: { email_confirm_code: buf.toString('hex') } }).then((success) => {
+                            emailValidation.emailCodeSend(req.body.forgotEmail, buf.toString('hex'));
+                            req.flash('successFlash', 'You\'ve been emailed a confirmation code.');
+                            res.locals.forgotPassUser = req.body.forgotEmail;
+                            res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                        });
+                    });
+                } else {
+                    req.flash('errorFlash', 'That email isn\'t registered with us.');
+                    res.redirect('/signin');
+                }
+            });
+        } else if (req.body.newpw) {
+            mongo.db.collection('users').findOne({ username: req.body.username, email_confirm_code: req.body.enteredCode }).then((user) => {
+                if (user) {
+                    if (req.body.newpw.length < 7 || !(/\d/.test(req.body.newpw)) || !(/[a-zA-Z]/.test(req.body.newpw))) {
+                        req.flash('errorFlash', 'The password you entered does not meet the requirements.');
+                        res.locals.forgotPassUser = req.body.username;
+                        res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                    } else if (req.body.newpw != req.body.confirmnewpw) {
+                        req.flash('errorFlash', 'The passwords don\'t match.');
+                        res.locals.forgotPassUser = req.body.username;
+                        res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                    } else {
+                        const saltHash = genPassword(req.body.newpw);
+                        const salt = saltHash.salt;
+                        const hash = saltHash.hash;
+                        mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { email_confirm_code: '', salt: salt, hash: hash } }).then((success) => {
+                            req.flash('successFlash', 'Your password has been changed.');
+                            res.redirect('/signin');
+                        });
+                    }
+                } else {
+                    req.flash('errorFlash', 'That isn\'t the right code.');
+                    res.locals.forgotPassUser = req.body.username;
+                    res.render(VIEWS + 'public/forgotPassword.ejs', { pageName: "Forgot Password" });
+                }
+            })
+        } else {
+            res.flash('errorFlash', 'Error 404: Page not found.');
+            res.redirect('/');
+        }
+    });
+
+    app.post('/contact', (req, res) => {
+        req.isAuthenticated() ? sendDiscordWebhook(req.body.comment, req.user.username, req.user.ign, req.body.questionId) : sendDiscordWebhook(req.body.comment, 'N/A', 'User not signed in.', req.body.questionId);
+        req.flash('successFlash', 'Thanks for your feedback!');
+        if (req.body.redirect) {
+            res.redirect(req.body.redirect);
+        } else {
+            res.redirect('/')
+        }
+    });
+
 }

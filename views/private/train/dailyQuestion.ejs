@@ -23,7 +23,7 @@
         }
 
         // decheck all checkboxes/radio buttons
-        $('.custom-control-input').prop('checked', false);
+        $('.form-check-input').prop('checked', false);
 
         // hide all flashes and answer explanation upon loading
         $("#correct").hide(0);
@@ -101,7 +101,7 @@
         <% } %>
 
         <h1 class="display-3 text-center">Daily Question</h1>
-        <table class="table mt-3">
+        <table class="text-center table mt-3">
             <thead>
                 <tr>
                     <th scope="col">Date</th>
@@ -144,9 +144,9 @@
                     <div class="mt-4" id="mc-choices">
                         <% var choiceIndex = 1; %>
                         <% question.choices.forEach((choice) => { %>
-                            <div class="custom-control custom-radio">
-                                <input class="custom-control-input" type="radio" name="answerChoice" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
-                                <label class="custom-control-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="answerChoice" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
+                                <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
                                 <% choiceIndex++; %>
                             </div>
                         <% }) %>
@@ -162,9 +162,9 @@
                     <div class="mt-4" id="sa-choices">
                         <% var choiceIndex = 1; %>
                         <% question.choices.forEach((choice) => { %>
-                            <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                                <input type="checkbox" name="saChoice" class="custom-control-input" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
-                                <label class="custom-control-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+                            <div class="form-check my-1 me-sm-2">
+                                <input type="checkbox" name="saChoice" class="form-check-input" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
+                                <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
                             </div>
                             <% choiceIndex++; %>
                         <% }) %>
@@ -188,7 +188,7 @@
                 <% } %>
 
                 <input class="btn btn-primary my-3" type="button" value="Check Answer" id="submit">
-                <input class="btn btn-link mb-3 float-right" type="button" value="Give up" id="give-up">
+                <input class="btn btn-link mb-3 float-end" type="button" value="Give up" id="give-up">
 
                 <input type="hidden" id="hiddenID" value="<%= question._id %>">
                 <input type="hidden" id="hiddenType" value="<%= question.type %>">
@@ -239,7 +239,7 @@
             <h3>Daily question unavailable.</h3>
             <p>Oops we don't know what happened... tell an admin that the daily question page is broken!</p>
 
-            <a href="/train" class="btn btn-primary btn-block btn-lg mt-4">Click me to go back</a>
+            <a href="/train" class="btn btn-primary w-100 btn-lg mt-4">Click me to go back</a>
         <% } %>
 
     <% } %>

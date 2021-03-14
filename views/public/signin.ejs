@@ -7,15 +7,15 @@
 
     $(document).ready(function () {
 
-		$("#forgot-password-form").hide(0);
-		$("#forgotPasswordTrigger").click(function() {
-			$("#forgot-password-form").show(1000);
-			$("#signin-form").hide(500);
-		});
+        $("#forgot-password-form").hide(0);
+        $("#forgotPasswordTrigger").click(function() {
+            $("#forgot-password-form").show(1000);
+            $("#signin-form").hide(500);
+        });
         $("#cancel-password").click(function() {
-			$("#forgot-password-form").hide(500);
-			$("#signin-form").show(1000);
-		});
+            $("#forgot-password-form").hide(500);
+            $("#signin-form").show(1000);
+        });
 
     });
 
@@ -40,17 +40,32 @@
             </div>
             <div class="row">
                 <div class="col-6">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="stayLoggedIn">
-                        <label class="custom-control-label" for="stayLoggedIn">Keep me signed in</label>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="stayLoggedIn">
+                        <label class="form-check-label" for="stayLoggedIn">Keep me signed in</label>
                     </div>
                 </div>
             </div>
-            <div class="mt-4 ml-1">
+            <div class="mt-4 ms-1">
                 <a class="btn btn-secondary" id="cancel" href="/">Cancel</a>
                 <input class="btn btn-primary" type="submit" value="Sign In">
+                <button type="button" class="btn btn-link float-end" onclick="$('#forgotpass').toggle()">Forgot Password?</button>
             </div>
         </form>
+        <div id="forgotpass" style="display: none">
+            <br><br>
+            <p class="container mb-3"><strong>Reset Password</strong></p>
+
+            <form action="/forgotPassword" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="forgotEmail" placeholder="Email Address" name="forgotEmail">
+                </div>
+                <div class="mt-4 ms-1">
+                    <a class="btn btn-secondary" id="cancel" href="/">Cancel</a>
+                    <input class="btn btn-primary" type="submit" value="Reset Password">
+                </div>
+            </form>
+        </div>
     </div>
 
 </div>

@@ -44,7 +44,7 @@
     <%- include("../partials/flashes") -%>
 </div>
 
-<div class="container" id="unsaved-alert">
+<div class="container" id="unsaved-alert" style="display: none">
     <div class="alert alert-danger" role="alert">Careful! You have unsaved changes!</div>
 </div>
 
@@ -84,7 +84,7 @@
     </div>
 </form>
 
-<form action="/changePreferences" method="POST"> 
+<form action="/changePreferences" method="POST">
     <%# Personal preferences tweaks %>
     <div class="jumbotron container">
 
@@ -93,16 +93,16 @@
         <div class="form-group">
             <div class="my-2">
                 <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="darkMode" name="darkMode" <% if (locals.darkMode) { %> checked <% } %>>
-                    <label for="darkMode" class="custom-control-label">Dark Mode</label>
+                    <input type="checkbox" class="form-check-input" id="darkMode" name="darkMode" <% if (locals.darkMode) { %> checked <% } %>>
+                    <label for="darkMode" class="form-check-label">Dark Mode</label>
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="my-2">
                 <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="hideProfile" name="hideProfile" <% if (user.preferences.hideProfile) { %> checked <% } %>>
-                    <label for="hideProfile" class="custom-control-label">Hide Public Profile and Stats</label>
+                    <input type="checkbox" class="form-check-input" id="hideProfile" name="hideProfile" <% if (user.preferences.hideProfile) { %> checked <% } %>>
+                    <label for="hideProfile" class="form-check-label">Hide Public Profile and Stats</label>
                 </div>
             </div>
         </div>
@@ -156,7 +156,7 @@
 
         <div class="form-group row">
             <div class="col-sm-10 my-2">
-                <input type="button" class="btn btn-danger" id="submitBtn" value="Delete Account" data-toggle="modal" data-target="#confirm-delete-acc" />
+                <input type="button" class="btn btn-danger" id="submitBtn" value="Delete Account" data-bs-toggle="modal" data-bs-target="#confirm-delete-acc" />
             </div>
         </div>
     </div>
@@ -175,7 +175,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
                 <a href="#" id="delete-account-confirm" class="btn btn-danger">Delete</a>
             </div>
         </div>
