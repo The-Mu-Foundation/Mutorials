@@ -141,6 +141,19 @@
         });
     }
 
+    $(document).ready(function() {
+        
+        // focus on next button if correct
+        if(<%= correct %>) {
+            setTimeout(() => {
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: $("#tryanother").offset().top
+                }, 1000);
+                $("#tryanother").focus();
+            }, 1000);
+        }
+    });
+
 </script>
 
 <div class="container mt-5">
