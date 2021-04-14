@@ -37,7 +37,7 @@ async function queryContributor(id, Ques, PendingQues) {
     let written = await Ques.find({ author: id }).exec();
     let pendingWritten = await PendingQues.find({ author: id }).exec();
 
-    if(!written || written.length < 1) {
+    if((!written || written.length < 1) && (!pendingWritten || pendingWritten.length < 1)) {
         return { status: "Error" };
     }
 
@@ -68,11 +68,7 @@ async function queryContributor(id, Ques, PendingQues) {
         ratingSum += question.rating;
 
         hourSum += calculateHours(question.subject[0], question.rating);
-        console.log(question.rating);
-        console.log(hourSum);
     });
-
-    hourSum = Math.round(100*hourSum)/100;
 
     let ratingAverage = Math.round(ratingSum/Math.max(1, written.length));
     let physicsRatingAverage = Math.round(physicsRatingSum/Math.max(1, physicsWritten));
@@ -99,6 +95,9 @@ async function queryContributor(id, Ques, PendingQues) {
             pendingHourSum += calculateHours(question.subject[0], biologyRatingAverage);
         }
     });
+
+    hourSum = Math.round(100*hourSum)/100;
+    pendingHourSum = Math.round(100*pendingHourSum)/100;
 
     return { status: "Success", data: {
         physics: {

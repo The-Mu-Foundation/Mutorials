@@ -26,10 +26,18 @@
                 } else {
                     
                     $("#hours").text(data.data.hourSum);
+                    $("#pending-hours").text(data.data.pendingHourSum);
                     $("#average-rating").text(data.data.ratingAverage);
-                    $("#physics-written").text(data.data.physicsWritten);
-                    $("#chemistry-written").text(data.data.chemistryWritten);
-                    $("#biology-written").text(data.data.biologyWritten);
+
+                    $("#physics-written").text(data.data.physics.physicsWritten);
+                    $("#chemistry-written").text(data.data.chemistry.chemistryWritten);
+                    $("#biology-written").text(data.data.biology.biologyWritten);
+                    $("#physics-avg-rating").text(data.data.physics.physicsRatingAverage);
+                    $("#chemistry-avg-rating").text(data.data.chemistry.chemistryRatingAverage);
+                    $("#biology-avg-rating").text(data.data.biology.biologyRatingAverage);
+                    $("#physics-pending").text(data.data.physics.pendingPhysicsWritten);
+                    $("#chemistry-pending").text(data.data.chemistry.pendingChemistryWritten);
+                    $("#biology-pending").text(data.data.biology.pendingBiologyWritten);
 
                     $("#success").text("Showing results for " + id);
                     

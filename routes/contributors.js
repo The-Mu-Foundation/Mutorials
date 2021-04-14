@@ -1,6 +1,7 @@
 const { tags } = require('../utils/constants/tags');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { parseDelimiter } = require('../utils/functions/general');
+const { queryContributor } = require('../utils/functions/admin');
 const mongoose = require("mongoose");
 var db = mongoose.connection;
 
@@ -70,5 +71,14 @@ module.exports = (app, mongo) => {
 
     app.get('/contributors/addQuestion', (req, res) => {
         res.render(VIEWS + 'contributors/contributorAddQuestion.ejs', { subjectUnitDictionary, pageName: "CONTRIBUTOR Add Question" });
+    });
+
+    app.get('/contributors/getContributorStats', async (req, res) => {
+        let contributor = await queryContributor(req.query.id, mongo.Ques, mongo.PendingQues);
+        res.json(contributor);
+    });
+
+    app.get('/contributors/stats', (req, res) => {
+        res.render(VIEWS + 'contributors/contributorStats.ejs', { contributorID: req.user.contributor, pageName: "CONTRIBUTOR Stats" });
     });
 }
