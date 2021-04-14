@@ -52,7 +52,8 @@ const userSchema = new mongoose.Schema({
     teachingClasses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Class'
-    }]
+    }],
+    contributor: Boolean
 });
 
 module.exports = { userSchema : userSchema };

@@ -91,6 +91,17 @@ module.exports = (app, mongo) => {
         newQ.save();
     });
 
+    app.post('/admin/addContributor', (req, res) => {
+        mongo.db.collection("user").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: true } }).then((error) => {
+            if (error) {
+                console.log(error);
+                req.flash('errorFlash', 'Unable to add contributor.');
+            } else {
+                req.flash('successFlash', 'Contributor successfully added');
+            }
+            res.redirect('/homepage');
+        });
+    })
 
     //ADMIN GET ROUTES
 
