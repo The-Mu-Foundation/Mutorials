@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // define question schema
-const qSchema = new mongoose.Schema({
+const pendingQSchema = new mongoose.Schema({
     question: String,
     choices: Array,
     tags: Array,
