@@ -126,9 +126,7 @@
         let subjectList = "<%= question.subject?.join('@') %>".split('@');
         let unitsList = "<%= question.units?.join('@') %>".split('@');
         ["<%= question.type %>", "<%= question.ext_source %>", ...subjectList, ...unitsList].forEach((id) => {
-			if(id) {
-				document.getElementById(id).checked = true;
-			}
+			document.getElementById(id).checked = true;
         });;
         subjectList.forEach((subject) => {
             $("." + subject + "-unit-checkbox").show(0);

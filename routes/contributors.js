@@ -54,7 +54,7 @@ module.exports = (app, mongo) => {
             answer_ex: req.body.answerExplanation,
             author: req.user.contributor,
             type: req.body.type,
-            ext_source: "orginal",
+            ext_source: "original",
             source_statement: "",
             subject: req.body.subject,
             units: req.body.units,
