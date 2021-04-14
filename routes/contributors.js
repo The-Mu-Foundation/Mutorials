@@ -7,28 +7,28 @@ var db = mongoose.connection;
 const VIEWS = __dirname + '/../views/';
 
 module.exports = (app, mongo) => {
+
     app.all(/^(\/contributor).*$/, (req, res, next) => {
-        if (req.isAuthenticated() && req.user.contributor != "") {
+        if (req.isAuthenticated() && req.user.contributor) {
             next()
         } else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
             res.redirect('/');
         }
     });
+
     // prefix all contributor routes with /contributor
-    app.post('/contributor/addquestion', (req, res, next) => {
+    app.post('/contributors/addQuestion', (req, res, next) => {
+
         if (req.body.question.length < 1
-            || parseDelimiter(req.body.tags).length < 1
-            || req.body.rating.length < 1
             || parseDelimiter(req.body.answer)[0].length < 1
             || req.body.answerExplanation.length < 1
-            || req.body.author.length < 1
             || req.body.type.length < 1
-            || req.body.externalSource.length < 1
-            || req.body.subject.length < 1
-            || req.body.units.length < 1) {
-            req.flash('errorFlash', 'You\'re forgetting a field.');
-            res.redirect('/admin/addedFailure');
+            || !req.body.subject
+            || !req.body.units) {
+            res.json({
+                success: false
+            });
             return;
         }
 
@@ -45,29 +45,30 @@ module.exports = (app, mongo) => {
             });
         });
 
-        const newQ = new mongo.Ques({
+        const newQ = new mongo.PendingQues({
             question: req.body.question,
             choices: parseDelimiter(req.body.choices),
             tags: parseDelimiter(req.body.tags),
-            rating: req.body.rating,
+            rating: 0,
             answer: parseDelimiter(req.body.answer),
             answer_ex: req.body.answerExplanation,
-            author: req.body.author,
+            author: req.user.contributor,
             type: req.body.type,
-            ext_source: req.body.externalSource,
-            source_statement: req.body.sourceStatement,
+            ext_source: "orginal",
+            source_statement: "",
             subject: req.body.subject,
             units: req.body.units,
-            stats: {
-                pass: 0,
-                fail: 0
-            }
+            reviewers: []
         })
-        //collection.insertOne({})
+
         newQ.save();
+
+        res.json({
+            success: true
+        });
     });
 
-    app.get('/contributor/addquestion', (req, res) => {
-        res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary, pageName: "ADMIN Add Question" });
+    app.get('/contributors/addQuestion', (req, res) => {
+        res.render(VIEWS + 'contributors/contributorAddQuestion.ejs', { subjectUnitDictionary, pageName: "CONTRIBUTOR Add Question" });
     });
 }

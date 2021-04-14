@@ -58,7 +58,9 @@ app.use((req, res, next) => {
 require('./routes/public.js')(app, mongo);
 require('./routes/private.js')(app, mongo);
 require('./routes/admin.js')(app, mongo);
+
 require('./routes/class.js')(app, mongo);
+require('./routes/contributors.js')(app, mongo);
 require('./routes/references.js')(app, mongo);
 require('./routes/settings.js')(app, mongo);
 require('./routes/stats.js')(app, mongo);
