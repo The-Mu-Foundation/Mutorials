@@ -186,7 +186,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/getContributorStats', async (req, res) => {
-        let contributor = await queryContributor(req.query.id, mongo.Ques);
+        let contributor = await queryContributor(req.query.id, mongo.Ques, mongo.PendingQues);
         res.json(contributor);
     });
 
