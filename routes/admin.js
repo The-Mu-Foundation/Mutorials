@@ -134,11 +134,19 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/editQuestion', async (req, res) => {
-        res.render(VIEWS + 'admin/train/editQuestion.ejs', { pageName: "ADMIN Edit Question" });
-    });
-
-    app.get('/admin/editQuestion', async (req, res) => {
-        res.render(VIEWS + 'admin/train/editQuestion.ejs', { pageName: "ADMIN Edit Question" });
+        mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.query.id) }).then((question) => {
+            if (question) {
+                console.log(question);
+                res.render(VIEWS + 'admin/train/editQuestion.ejs', {
+                    subjectUnitDictionary: subjectUnitDictionary,
+                    question: question,
+                    pageName: "ADMIN Edit Question"
+                });
+            } else {
+                req.flash('errorFlash', 'Question not found.');
+                res.redirect('/homepage')
+            }
+        })
     });
 
     app.get('/admin/reviewQuestion', async (req, res) => {
