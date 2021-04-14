@@ -210,8 +210,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/reviewQuestion', async (req, res) => {
-        mongo.db.collection('pendingQuestions').findOne({ question: /.*/ }).then((err, question) => {
-            console.log(err);
+        mongo.db.collection('pendingQuestions').findOne({ question: /.*/ }).then((question) => {
             console.log(question);
             res.render(VIEWS + 'admin/train/editQuestion.ejs', {
                 isReview: true,
