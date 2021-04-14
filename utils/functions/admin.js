@@ -74,21 +74,43 @@ async function queryContributor(id, Ques, PendingQues) {
 
     hourSum = Math.round(100*hourSum)/100;
 
-    let ratingAverage = Math.round(ratingSum/written.length);
-    let physicsRatingAverge = Math.round(physicsRatingSum/Math.max(1, physicsWritten));
+    let ratingAverage = Math.round(ratingSum/Math.max(1, written.length));
+    let physicsRatingAverage = Math.round(physicsRatingSum/Math.max(1, physicsWritten));
+    let chemistryRatingAverage = Math.round(chemistryRatingSum/Math.max(1, chemistryWritten));
+    let biologyRatingAverage = Math.round(biologyRatingSum/Math.max(1, biologyWritten));
+
+    let pendingPhysicsWritten = 0;
+    let pendingChemistryWritten = 0;
+    let pendingBiologyWritten = 0;
+    let pendingHourSum = 0;
+
+    pendingWritten.forEach((question) => {
+
+        if(question.subject.includes("Physics")) {
+            pendingPhysicsWritten++;
+        }
+        if(question.subject.includes("Chemistry")) {
+            pendingChemistryWritten++;
+        }
+        if(question.subject.includes("Biology")) {
+            pendingBiologyWritten++;
+        }
+// question.rating
+        pendingHourSum += calculateHours(question.subject[0], question.rating);
+    });
 
     return { status: "Success", data: {
         physics: {
             physicsWritten,
-            physicsRatingAverge
+            physicsRatingAverage
         },
         chemistry: {
             chemistryWritten,
-            chemistryRatingAverge: Math.round(physicsRatingSum/Math.max(1, physicsWritten))
+            chemistryRatingAverage
         },
         biology: {
             biologyWritten,
-            biologyRatingAverge: Math.round(physicsRatingSum/Math.max(1, physicsWritten))
+            biologyRatingAverage
         },
         ratingAverage,
         hourSum
