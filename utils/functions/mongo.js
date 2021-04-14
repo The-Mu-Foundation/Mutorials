@@ -12,7 +12,12 @@ InitiateMongoServer();
 var db = mongoose.connection;
 const PORT = process.env.PORT || 3000;
 const MongoStore = require('connect-mongo')(session);
+<<<<<<< HEAD
 const Ques = db.model('Ques', qSchema);
+=======
+const Ques = db.model('Ques', qSchema, 'questions');
+const PendingQues = db.model('PendingQues', pendingQSchema, 'pendingQuestions');
+>>>>>>> 9ad3f84ac93c3ea3b206fea7bbb8a8d30b62ba7f
 const User = db.model('User', userSchema);
 const Daily = db.model('Daily', dailySchema);
 const SiteData = db.model('SiteData', siteDataSchema);

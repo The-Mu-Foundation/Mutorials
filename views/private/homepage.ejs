@@ -145,6 +145,12 @@
 
 <%- include("../partials/components/iconBar") -%>
 
+<% if(user.contributor) { %>
+    <div class="jumbotron container mt-2">
+        <h1 class="display-3 text-center mt-4">CONTRIBUTORS: <font color="blue"><%= user.contributor %></font></h1>
+    </div>
+<% } %>
+
 <div class="jumbotron container mt-2">
 
     <div class="row">
