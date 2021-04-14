@@ -49,10 +49,11 @@ module.exports = (app, mongo) => {
             || req.body.author.length < 1
             || req.body.type.length < 1
             || req.body.externalSource.length < 1
-            || req.body.subject.length < 1
-            || req.body.units.length < 1) {
-            req.flash('errorFlash', 'You\'re forgetting a field.');
-            res.redirect('/admin/addedFailure');
+            || !req.body.subject
+            || !req.body.units) {
+            res.json({
+                success: false
+            });
             return;
         }
 
@@ -87,8 +88,12 @@ module.exports = (app, mongo) => {
                 fail: 0
             }
         })
-        //collection.insertOne({})
+
         newQ.save();
+
+        res.json({
+            success: true
+        });
     });
 
     app.post('/admin/addContributor', (req, res) => {
@@ -102,7 +107,7 @@ module.exports = (app, mongo) => {
     //ADMIN GET ROUTES
 
     app.get('/admin/addquestion', (req, res) => {
-        res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary: subjectUnitDictionary, pageName: "ADMIN Add Question" });
+        res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary, pageName: "ADMIN Add Question" });
     });
 
     app.get('/admin/addedSuccess', (req, res) => {

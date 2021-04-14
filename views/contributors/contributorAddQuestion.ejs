@@ -1,8 +1,8 @@
-<%# Admin page for adding new questions to the question bank %>
+<%# Contributor page for adding new questions to the question bank %>
 <%# ARGUMENTS: subjectUnitDictionary - a class with key subject name and value array of units %>
 
-<%- include("../../partials/header") -%>
-<%- include("../../partials/navigationPrivate") -%>
+<%- include("../partials/header") -%>
+<%- include("../partials/navigationPrivate") -%>
 
 <%# Send to backend %>
 <script>
@@ -15,19 +15,20 @@
 			$("#show-compiler-div").hide(1000);
 		});
 
+		// hide status flashes
+		$("#failure").hide(0);
+        $("#success").hide(0);
+
 		// set what happens when question is submitted
-		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement;
+		let type, question, choices, tags, subject, units, answer, answerExplanation;
 		$("#submit").click(function () {
 
 			// free response text values
 			question = $("#question").val();
 			choices = $("#answerchoices").val();
 			tags = $("#tags").val();
-			rating = $("#rating").val();
 			answer = $("#correctanswer").val();
 			answerExplanation = $("#answer-explanation").val();
-			author = $("#author").val();
-            sourceStatement = $("#source-statement").val();
 
 
 			// radio values
@@ -35,13 +36,6 @@
 			for(let i = 0; i < typeInputs.length; i++) {
 				if(typeInputs[i].checked) {
 					type = typeInputs[i].id;
-				}
-			}
-
-			let srcInputs = document.getElementById("external-source").elements;
-			for(let i = 0; i < srcInputs.length; i++) {
-				if(srcInputs[i].checked) {
-					externalSource = srcInputs[i].id;
 				}
 			}
 
@@ -63,11 +57,28 @@
 				}
 			}
 
-			$.post("/admin/addQuestion", { type: type, question: question, choices: choices, tags: tags,
-				externalSource: externalSource, rating: rating, subject: subject, units: units,
-				answer: answer, answerExplanation: answerExplanation, author: author, sourceStatement: sourceStatement }, function (data) {
-				
-				location.reload(true);
+			$.post("/contributors/addQuestion", { type, question, choices, tags, subject, units, answer, answerExplanation }, function (data) {
+
+				if(data.success) {
+
+                    $("#success").show(500);
+                    $("#failure").hide(100);
+					
+					// clear all values after success
+					$("#question").val("");
+					$("#answerchoices").val("");
+					$("#tags").val("");
+					$("#correctanswer").val("");
+					$("#answer-explanation").val("");
+					document.getElementsByName("checkableButton").forEach((checkbox) => {
+						if(checkbox.type == "checkbox" || checkbox.type == "radio") {
+							checkbox.checked = false;
+						}
+					});
+				} else {
+					$("#failure").show(500);
+                    $("#success").hide(100);
+				}
 			});
 
         });
@@ -85,7 +96,7 @@
 	});
 </script>
 
-<h1 class="my-5 container">ADMIN PAGE: Add Question</h1>
+<h1 class="my-5 container">CONTRIBUTORS: Add Question</h1>
 
 <div class="jumbotron container" id="show-compiler-div">
 
@@ -130,27 +141,20 @@
 		<input class="form-control" id="correctanswer" placeholder="Input the answer, with '@' characters as deliminators if there are multiple">
     </div>
 
-    <%# RATING %>
-    <hr>
-	<div class="form-group">
-		<p>What is the rating of this question?</p>
-		<input type="number" class="form-control" id="rating" placeholder="Enter an integer rating">
-    </div>
-
     <%# FORMAT %>
     <hr>
     <form class="form-group" id="question-format">
 		<p>What is the format of this question?</p>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="mc" value="mc">
+			<input class="form-check-input" type="radio" name="checkableButton" id="mc" value="mc">
 			<label class="form-check-label" for="mc">Multiple Choice</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="fr" value="fr">
+			<input class="form-check-input" type="radio" name="checkableButton" id="fr" value="fr">
 			<label class="form-check-label" for="fr">Free Response</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="sa" value="sa">
+			<input class="form-check-input" type="radio" name="checkableButton" id="sa" value="sa">
 			<label class="form-check-label" for="sa">Select All</label>
 		</div>
     </form>
@@ -179,7 +183,7 @@
 		<p>What subject(s) does this question fall under?</p>
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
             <div class="form-check my-1 me-sm-2">
-                <input type="checkbox" class="form-check-input subject-choice-checkbox" id="<%= subject %>">
+                <input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="<%= subject %>">
                 <label class="form-check-label" for="<%= subject %>"><%= subject %></label>
             </div>
         <% }) %>
@@ -192,54 +196,20 @@
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
             <% subjectUnitDictionary[subject].forEach((unit) => { %>
                 <div class="form-check my-1 me-sm-2 unit-choice-checkbox <%= subject %>-unit-checkbox">
-                    <input type="checkbox" class="form-check-input" id="<%= subject %> - <%= unit %>">
+                    <input type="checkbox" class="form-check-input" name="checkableButton" id="<%= subject %> - <%= unit %>">
                     <label class="form-check-label" for="<%= subject %> - <%= unit %>"><%= subject.toUpperCase() %>: <%= unit %></label>
                 </div>
             <% }) %>
         <% }) %>
     </form>
-
-    <%# AUTHOR %>
-    <hr>
-	<div class="form-group">
-		<p>INTERNAL USE ONLY: Who is the author of this question?</p>
-		<input type="text" class="form-control" id="author" placeholder="Enter a Mutorials ID (WITH CAPITALIZATION)">
-    </div>
-    
-    <%# EXTERNAL SOURCES %>
-    <hr>
-	<form class="form-group" id="external-source">
-		<p>Is this question from an external source?</p>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="original" value="original">
-			<label class="form-check-label" for="original">Original - written by Mutorials</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="AP" value="AP">
-			<label class="form-check-label" for="AP">AP (Advanced Placement)</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="IB" value="IB">
-			<label class="form-check-label" for="IB">IB (International Baccalaureate)</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="SAT2" value="SAT2">
-			<label class="form-check-label" for="SAT2">SAT2 (Scholastic Aptitude Test 2)</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="Competition" value="Comp">
-			<label class="form-check-label" for="Comp">Competition problem</label>
-		</div>
-	</form>
-	<div class="form-group">
-		<p>If the question is not original, please give a statement regarding the source:</p>
-		<textarea class="form-control" id="source-statement" placeholder="Enter the statement/title (with capitalization)"></textarea>
-	</div>
 </div>
+
+<div class="my-2 alert alert-success container" id="success">Success! Your question has been added and now pends review!</div>
+<div class="my-2 alert alert-danger container" id="failure">Your question was not added - check to make sure all fields were filled in</div>
 
 <div class = "container mt-4 mb-5">
     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
-    <a href="/admin/addedSuccess"><button type="button" class="btn btn-primary" id="submit">Submit</button></a>
+    <button type="button" class="btn btn-primary" id="submit">Submit</button>
 </div>
 
 <%# Cancel button code %>
@@ -260,4 +230,4 @@
     </div>
 </div>
 
-<%- include("../../partials/footer") -%>
+<%- include("../partials/footer") -%>

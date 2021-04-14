@@ -15,6 +15,10 @@
 			$("#show-compiler-div").hide(1000);
 		});
 
+		// hide status flashes
+		$("#failure").hide(0);
+        $("#success").hide(0);
+
 		// set what happens when question is submitted
 		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement;
 		$("#submit").click(function () {
@@ -63,11 +67,32 @@
 				}
 			}
 
-			$.post("/admin/addQuestion", { type: type, question: question, choices: choices, tags: tags,
-				externalSource: externalSource, rating: rating, subject: subject, units: units,
-				answer: answer, answerExplanation: answerExplanation, author: author, sourceStatement: sourceStatement }, function (data) {
+			$.post("/admin/addQuestion", { type, question, choices, tags, externalSource, rating, subject,
+				units, answer, answerExplanation, author, sourceStatement }, function (data) {
 				
-				location.reload(true);
+				if(data.success) {
+
+					$("#success").show(500);
+					$("#failure").hide(100);
+
+					// clear all values after success
+					$("#question").val("");
+					$("#answerchoices").val("");
+					$("#tags").val("");
+					$("#rating").val("");
+					$("#correctanswer").val("");
+					$("#answer-explanation").val("");
+					$("#author").val("");
+					$("#source-statement").val("");
+					document.getElementsByName("checkableButton").forEach((checkbox) => {
+						if(checkbox.type == "checkbox" || checkbox.type == "radio") {
+							checkbox.checked = false;
+						}
+					});
+					} else {
+					$("#failure").show(500);
+					$("#success").hide(100);
+				}
 			});
 
         });
@@ -142,15 +167,15 @@
     <form class="form-group" id="question-format">
 		<p>What is the format of this question?</p>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="mc" value="mc">
+			<input class="form-check-input" type="radio" name="checkableButton" id="mc" value="mc">
 			<label class="form-check-label" for="mc">Multiple Choice</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="fr" value="fr">
+			<input class="form-check-input" type="radio" name="checkableButton" id="fr" value="fr">
 			<label class="form-check-label" for="fr">Free Response</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="sa" value="sa">
+			<input class="form-check-input" type="radio" name="checkableButton" id="sa" value="sa">
 			<label class="form-check-label" for="sa">Select All</label>
 		</div>
     </form>
@@ -179,7 +204,7 @@
 		<p>What subject(s) does this question fall under?</p>
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
             <div class="form-check my-1 me-sm-2">
-                <input type="checkbox" class="form-check-input subject-choice-checkbox" id="<%= subject %>">
+                <input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="<%= subject %>">
                 <label class="form-check-label" for="<%= subject %>"><%= subject %></label>
             </div>
         <% }) %>
@@ -192,7 +217,7 @@
         <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
             <% subjectUnitDictionary[subject].forEach((unit) => { %>
                 <div class="form-check my-1 me-sm-2 unit-choice-checkbox <%= subject %>-unit-checkbox">
-                    <input type="checkbox" class="form-check-input" id="<%= subject %> - <%= unit %>">
+                    <input type="checkbox" class="form-check-input" name="checkableButton" id="<%= subject %> - <%= unit %>">
                     <label class="form-check-label" for="<%= subject %> - <%= unit %>"><%= subject.toUpperCase() %>: <%= unit %></label>
                 </div>
             <% }) %>
@@ -211,23 +236,23 @@
 	<form class="form-group" id="external-source">
 		<p>Is this question from an external source?</p>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="original" value="original">
+			<input class="form-check-input" type="radio" name="checkableButton" id="original" value="original">
 			<label class="form-check-label" for="original">Original - written by Mutorials</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="AP" value="AP">
+			<input class="form-check-input" type="radio" name="checkableButton" id="AP" value="AP">
 			<label class="form-check-label" for="AP">AP (Advanced Placement)</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="IB" value="IB">
+			<input class="form-check-input" type="radio" name="checkableButton" id="IB" value="IB">
 			<label class="form-check-label" for="IB">IB (International Baccalaureate)</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="SAT2" value="SAT2">
+			<input class="form-check-input" type="radio" name="checkableButton" id="SAT2" value="SAT2">
 			<label class="form-check-label" for="SAT2">SAT2 (Scholastic Aptitude Test 2)</label>
 		</div>
 		<div class="form-check">
-			<input class="form-check-input" type="radio" name="answerChoice" id="Competition" value="Comp">
+			<input class="form-check-input" type="radio" name="checkableButton" id="Competition" value="Comp">
 			<label class="form-check-label" for="Comp">Competition problem</label>
 		</div>
 	</form>
@@ -237,9 +262,12 @@
 	</div>
 </div>
 
+<div class="my-2 alert alert-success container" id="success">Success! Your question has been added!</div>
+<div class="my-2 alert alert-danger container" id="failure">Your question was not added - check to make sure all fields were filled in</div>
+
 <div class = "container mt-4 mb-5">
     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
-    <a href="/admin/addedSuccess"><button type="button" class="btn btn-primary" id="submit">Submit</button></a>
+    <button type="button" class="btn btn-primary" id="submit">Submit</button>
 </div>
 
 <%# Cancel button code %>
