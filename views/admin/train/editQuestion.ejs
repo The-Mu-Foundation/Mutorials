@@ -1,5 +1,6 @@
 <%# Admin page for editing questions in the question bank %>
-<%# ARGUMENTS: subjectUnitDictionary - a class with key subject name and value array of units, question - the current question object %>
+<%# ARGUMENTS: subjectUnitDictionary - a class with key subject name and value array of units, question - the current question object,
+    isReview - boolean of whether this is a question review %>
 
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
@@ -23,7 +24,7 @@
         $("#success").hide(0);
 
 		// set what happens when question is submitted
-		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement;
+		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement, reviewerID;
 		$("#submit").click(function () {
 
 			// free response text values
@@ -35,6 +36,7 @@
 			answerExplanation = $("#answer-explanation").val();
 			author = $("#author").val();
             sourceStatement = $("#source-statement").val();
+            reviewerID = $("#reviewerID").val();
 
 
 			// radio values
@@ -71,7 +73,7 @@
 			}
 
 			$.post("/admin/editQuestion", { questionID, type, question, choices, tags, externalSource, rating, subject,
-				units, answer, answerExplanation, author, sourceStatement }, function (data) {
+				units, answer, answerExplanation, author, sourceStatement, reviewerID }, function (data) {
 
 				if(data.success) {
 
@@ -132,7 +134,7 @@
 	});
 </script>
 
-<h1 class="my-5 container">ADMIN PAGE: Add Question</h1>
+<h1 class="my-5 container">ADMIN PAGE: Edit/Review Question</h1>
 
 <div class="jumbotron container" id="show-compiler-div">
 
@@ -283,6 +285,14 @@
 		<textarea class="form-control" id="source-statement" placeholder="Enter the statement/title (with capitalization)"></textarea>
 	</div>
 </div>
+
+<% if(isReview) { %>
+    <div class="jumbotron container">
+        <h3>Question Reviewing Data</h3>
+        <p>Has been reviewed by: <%= !(question.reviewers?.length >= 1) ? "Nobody" : question.reviewers.reduce((a, b) => a + ", " + b) %></p>
+        <input class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID">
+    </div>
+<% } %>
 
 <div class="my-2 alert alert-success container" id="success">Success! Your question has been added!</div>
 <div class="my-2 alert alert-danger container" id="failure">Your question was not added - check to make sure all fields were filled in</div>
