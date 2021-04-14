@@ -67,7 +67,6 @@ module.exports = (app, mongo) => {
                 req.user.profile.location != req.body.location)) {
             req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
         }
-        // mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { age: req.user.profile.yob, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }, preferences: { dark_mode: req.user.preferences.dark_mode } } }, {upsert: true});
         mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { yob: req.user.profile.yob, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }}}, {upsert: true});
         console.log(req.user);
 

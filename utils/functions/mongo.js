@@ -3,7 +3,6 @@ const session = require('express-session');
 const InitiateMongoServer = require('../../database/config/db');
 const { userSchema } = require('../../database/models/user');
 const { qSchema } = require('../../database/models/question');
-const { pendingQSchema } = require('../../database/models/pendingQuestion');
 const { dailySchema } = require('../../database/models/daily');
 const { siteDataSchema } = require('../../database/models/siteData');
 const { classSchema } = require('../../database/models/class')
@@ -13,8 +12,12 @@ InitiateMongoServer();
 var db = mongoose.connection;
 const PORT = process.env.PORT || 3000;
 const MongoStore = require('connect-mongo')(session);
+<<<<<<< HEAD
+const Ques = db.model('Ques', qSchema);
+=======
 const Ques = db.model('Ques', qSchema, 'questions');
 const PendingQues = db.model('PendingQues', pendingQSchema, 'pendingQuestions');
+>>>>>>> 9ad3f84ac93c3ea3b206fea7bbb8a8d30b62ba7f
 const User = db.model('User', userSchema);
 const Daily = db.model('Daily', dailySchema);
 const SiteData = db.model('SiteData', siteDataSchema);
@@ -28,7 +31,6 @@ module.exports = {
     PORT: PORT,
     MongoStore: MongoStore,
     Ques,
-    PendingQues,
     User,
     Daily,
     SiteData,
