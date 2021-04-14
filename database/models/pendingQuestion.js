@@ -20,4 +20,4 @@ const qSchema = new mongoose.Schema({
     }
 });
 
-module.exports = { qSchema };
+module.exports = { pendingQSchema };

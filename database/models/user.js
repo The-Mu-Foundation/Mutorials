@@ -53,7 +53,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Class'
     }],
-    contributor: Boolean
+    contributor: {
+        type: String,
+        default: ""
+    }
 });
 
-module.exports = { userSchema : userSchema };
+module.exports = { userSchema };
