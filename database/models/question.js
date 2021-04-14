@@ -17,6 +17,11 @@ const qSchema = new mongoose.Schema({
     stats: {
         pass: Number,
         fail: Number
+    },
+    reviewers: Array,
+    writtenDate: {
+        type: String,
+        default: new Date().toISOString().split('T')[0]
     }
 });
 
