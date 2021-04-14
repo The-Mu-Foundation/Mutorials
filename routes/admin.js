@@ -98,8 +98,8 @@ module.exports = (app, mongo) => {
 
     app.post('/admin/addContributor', (req, res) => {
         console.log(req.body.contributorUsername);
-        mongo.db.collection("users").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: req.body.contributorID } }, { upsert: true }).then((success) => {
-            req.flash('successFlash', 'Contributor successfully added!');
+        mongo.db.collection("users").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: req.body.contributorID } }, { upsert: true }).then((err, success) => {
+            err ? req.flash('errorFlash', 'Contributor not found.') : req.flash('successFlash', 'Contributor successfully added!');
             res.redirect('/homepage');
         });
     })
@@ -133,8 +133,8 @@ module.exports = (app, mongo) => {
                 }
             });
         });
-        mongo.db.collection('questions').findOneAndUpdate(
-            { _id: mongoose.Types.ObjectId(req.query.id) },
+        mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
+            { _id: mongoose.Types.ObjectId(req.body.id) },
             {
                 question: req.body.question,
                 choices: parseDelimiter(req.body.choices),
@@ -148,8 +148,12 @@ module.exports = (app, mongo) => {
                 source_statement: req.body.sourceStatement,
                 subject: req.body.subject,
                 units: req.body.units,
+                $push: { reviewers: req.body.reviewerID }
             }
         ).then((err, question) => {
+            if (question.reviewers.length == 2 && req.body.reviewerID) {
+                // 2 reviews complete, move to questions collection
+            }
             res.json({
                 success: err ? true : false
             });
@@ -191,9 +195,8 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/editQuestion', async (req, res) => {
-        mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.query.id) }).then((question) => {
-            if (question) {
-                console.log(question);
+        mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.query.id) }).then((err, question) => {
+            if (!err) {
                 res.render(VIEWS + 'admin/train/editQuestion.ejs', {
                     subjectUnitDictionary: subjectUnitDictionary,
                     question: question,
@@ -203,10 +206,22 @@ module.exports = (app, mongo) => {
                 req.flash('errorFlash', 'Question not found.');
                 res.redirect('/homepage')
             }
-        })
+        });
     });
 
     app.get('/admin/reviewQuestion', async (req, res) => {
-        res.render(VIEWS + 'admin/train/reviewQuestion.ejs', { pageName: "ADMIN Review Question" });
+        mongo.db.collection('pendingQuestions').aggregate([{ $sample: { size: 1 } }]).then((err, question) => {
+            if (!err) {
+                res.render(VIEWS + 'admin/train/editQuestion.ejs', {
+                    isReview: true,
+                    subjectUnitDictionary: subjectUnitDictionary,
+                    question: question,
+                    pageName: "ADMIN Review Question"
+                });
+            } else {
+                req.flash('errorFlash', 'Question not found.');
+                res.redirect('/homepage')
+            }
+        });
     });
 }
