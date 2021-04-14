@@ -210,14 +210,17 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/reviewQuestion', async (req, res) => {
-        question = await mongo.db.collection('pendingQuestions').aggregate([{ $sample: { size: 1 } }])
+        mongo.db.collection('pendingQuestions').findOne({ question: /.*/ }).then((err, question) => {
+            console.log(err);
+            console.log(question);
+            res.render(VIEWS + 'admin/train/editQuestion.ejs', {
+                isReview: true,
+                subjectUnitDictionary: subjectUnitDictionary,
+                question: question,
+                pageName: "ADMIN Review Question"
+            });
+        })
             // if (!err) {
-        res.render(VIEWS + 'admin/train/editQuestion.ejs', {
-            isReview: true,
-            subjectUnitDictionary: subjectUnitDictionary,
-            question: question,
-            pageName: "ADMIN Review Question"
-        });
             // } else {
             //     req.flash('errorFlash', 'Question not found.');
             //     res.redirect('/homepage')
