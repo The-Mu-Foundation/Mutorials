@@ -32,9 +32,10 @@ async function getAdminData(User, Ques, SiteData) {
 }
 
 // query the performance of a contributor
-async function queryContributor(id, Ques) {
+async function queryContributor(id, Ques, PendingQues) {
     
     let written = await Ques.find({ author: id }).exec();
+    let pendingWritten = await PendingQues.find({ author: id }).exec();
 
     if(!written || written.length < 1) {
         return { status: "Error" };
@@ -43,6 +44,9 @@ async function queryContributor(id, Ques) {
     let physicsWritten = 0;
     let chemistryWritten = 0;
     let biologyWritten = 0;
+    let physicsRatingSum = 0;
+    let chemistryRatingSum = 0;
+    let biologyRatingSum = 0;
     let ratingSum = 0;
     let hourSum = 0;
 
@@ -50,12 +54,15 @@ async function queryContributor(id, Ques) {
 
         if(question.subject.includes("Physics")) {
             physicsWritten++;
+            physicsRatingSum += question.rating;
         }
         if(question.subject.includes("Chemistry")) {
             chemistryWritten++;
+            chemistryRatingSum += question.rating;
         }
         if(question.subject.includes("Biology")) {
             biologyWritten++;
+            biologyRatingSum += question.rating;
         }
 
         ratingSum += question.rating;
@@ -68,11 +75,21 @@ async function queryContributor(id, Ques) {
     hourSum = Math.round(100*hourSum)/100;
 
     let ratingAverage = Math.round(ratingSum/written.length);
+    let physicsRatingAverge = Math.round(physicsRatingSum/Math.max(1, physicsWritten));
 
     return { status: "Success", data: {
-        physicsWritten,
-        chemistryWritten,
-        biologyWritten,
+        physics: {
+            physicsWritten,
+            physicsRatingAverge
+        },
+        chemistry: {
+            chemistryWritten,
+            chemistryRatingAverge: Math.round(physicsRatingSum/Math.max(1, physicsWritten))
+        },
+        biology: {
+            biologyWritten,
+            biologyRatingAverge: Math.round(physicsRatingSum/Math.max(1, physicsWritten))
+        },
         ratingAverage,
         hourSum
     } };

@@ -115,18 +115,20 @@
 
         // set default values of question
         $("#question").val("<%= question.question %>");
-		$("#answerchoices").val("<%= question.choices.join('@') %>");
-		$("#tags").val("<%= question.tags.join('@') %>");
+		$("#answerchoices").val("<%= question.choices?.join('@') %>");
+		$("#tags").val("<%= question.tags?.join('@') %>");
 		$("#rating").val("<%= question.rating %>");
-		$("#correctanswer").val("<%= question.answer.join('@') %>");
+		$("#correctanswer").val("<%= question.answer?.join('@') %>");
 		$("#answer-explanation").val("<%= question.answer_ex %>");
 		$("#author").val("<%= question.author %>");
 		$("#source-statement").val("<%= question.source_statement %>");
 
-        let subjectList = "<%= question.subject.join('@') %>".split('@');
-        let unitsList = "<%= question.units.join('@') %>".split('@');
+        let subjectList = "<%= question.subject?.join('@') %>".split('@');
+        let unitsList = "<%= question.units?.join('@') %>".split('@');
         ["<%= question.type %>", "<%= question.ext_source %>", ...subjectList, ...unitsList].forEach((id) => {
-            document.getElementById(id).checked = true;
+			if(id) {
+				document.getElementById(id).checked = true;
+			}
         });;
         subjectList.forEach((subject) => {
             $("." + subject + "-unit-checkbox").show(0);
