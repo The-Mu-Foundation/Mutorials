@@ -88,32 +88,37 @@ async function queryContributor(id, Ques, PendingQues) {
 
         if(question.subject.includes("Physics")) {
             pendingPhysicsWritten++;
+            pendingHourSum += calculateHours(question.subject[0], physicsRatingAverage);
         }
         if(question.subject.includes("Chemistry")) {
             pendingChemistryWritten++;
+            pendingHourSum += calculateHours(question.subject[0], chemistryRatingAverage);
         }
         if(question.subject.includes("Biology")) {
             pendingBiologyWritten++;
+            pendingHourSum += calculateHours(question.subject[0], biologyRatingAverage);
         }
-// question.rating
-        pendingHourSum += calculateHours(question.subject[0], question.rating);
     });
 
     return { status: "Success", data: {
         physics: {
             physicsWritten,
-            physicsRatingAverage
+            physicsRatingAverage,
+            pendingPhysicsWritten
         },
         chemistry: {
             chemistryWritten,
-            chemistryRatingAverage
+            chemistryRatingAverage,
+            pendingChemistryWritten
         },
         biology: {
             biologyWritten,
-            biologyRatingAverage
+            biologyRatingAverage,
+            pendingBiologyWritten
         },
         ratingAverage,
-        hourSum
+        hourSum,
+        pendingHourSum
     } };
 }
 
