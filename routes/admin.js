@@ -136,4 +136,12 @@ module.exports = (app, mongo) => {
     app.get('/admin/editQuestion', async (req, res) => {
         res.render(VIEWS + 'admin/train/editQuestion.ejs', { pageName: "ADMIN Edit Question" });
     });
+
+    app.get('/admin/editQuestion', async (req, res) => {
+        res.render(VIEWS + 'admin/train/editQuestion.ejs', { pageName: "ADMIN Edit Question" });
+    });
+
+    app.get('/admin/reviewQuestion', async (req, res) => {
+        res.render(VIEWS + 'admin/train/reviewQuestion.ejs', { pageName: "ADMIN Review Question" });
+    });
 }
