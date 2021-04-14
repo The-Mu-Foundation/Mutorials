@@ -92,13 +92,9 @@ module.exports = (app, mongo) => {
     });
 
     app.post('/admin/addContributor', (req, res) => {
-        mongo.db.collection("user").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: true } }).then((error) => {
-            if (error) {
-                console.log(error);
-                req.flash('errorFlash', 'Unable to add contributor.');
-            } else {
-                req.flash('successFlash', 'Contributor successfully added');
-            }
+        console.log(req.body.contributorUsername);
+        mongo.db.collection("users").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: req.body.contributorID } }, { upsert: true }).then((success) => {
+            req.flash('successFlash', 'Contributor successfully added!');
             res.redirect('/homepage');
         });
     })
