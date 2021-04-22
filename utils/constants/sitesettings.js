@@ -1,7 +1,4 @@
-const adminList = [
-    "mutorialsproject@gmail.com"
-    //"ethan.l.shen@gmail.com"
-];
+const adminList = process.env.adminemails.split(';') || [ 'mutorialsproject@gmail.com' ];
 const contributorList = [];
 
 module.exports = { adminList : adminList, contributorList: contributorList };
