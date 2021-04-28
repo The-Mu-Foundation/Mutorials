@@ -133,31 +133,54 @@ module.exports = (app, mongo) => {
                 }
             });
         });
-        mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
-            { _id: mongoose.Types.ObjectId(req.body.id) },
+
+      mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
+            { _id: mongoose.Types.ObjectId(req.body.questionID) },
             {
-                question: req.body.question,
-                choices: parseDelimiter(req.body.choices),
-                tags: parseDelimiter(req.body.tags),
-                rating: req.body.rating,
-                answer: parseDelimiter(req.body.answer),
-                answer_ex: req.body.answerExplanation,
-                author: req.body.author,
-                type: req.body.type,
-                ext_source: req.body.externalSource,
-                source_statement: req.body.sourceStatement,
-                subject: req.body.subject,
-                units: req.body.units,
-                $push: { reviewers: req.body.reviewerID }
-            }
+                $set: {
+                    question: req.body.question,
+                    choices: parseDelimiter(req.body.choices),
+                    tags: parseDelimiter(req.body.tags),
+                    rating: req.body.rating,
+                    answer: parseDelimiter(req.body.answer),
+                    answer_ex: req.body.answerExplanation,
+                    author: req.body.author,
+                    type: req.body.type,
+                    ext_source: req.body.externalSource,
+                    source_statement: req.body.sourceStatement,
+                    subject: req.body.subject,
+                    units: req.body.units,
+                },
+                $addToSet: {
+                    reviewers: req.body.reviewerID
+                }
+            },
+            { new: true }
         ).then((err, question) => {
-            if (question.reviewers.length == 2 && req.body.reviewerID) {
+            question = question ? question : err.value;
+            if (question && req.body.reviewerID && question.reviewers.length > 0 && question.rating) {
                 // 2 reviews complete, move to questions collection
+                mongo.db.collection("pendingQuestions").deleteOne({ id: question.id }, (err, result) => {
+                    console.log('switcheroo')
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        mongo.db.collection("questions").insertOne(question, (err, result) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                            res.json({
+                                success: true
+                            });
+                        });
+                    }
+                });
+            } else {
+                res.json({
+                    success: err ? true : false
+                });
             }
-            res.json({
-                success: err ? true : false
-            });
-        })
+        });
     });
 
     //ADMIN GET ROUTES
@@ -195,9 +218,10 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/editQuestion', async (req, res) => {
-        mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.query.id) }).then((err, question) => {
+        mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.query.id) }).then((question, err) => {
             if (!err) {
                 res.render(VIEWS + 'admin/train/editQuestion.ejs', {
+                    isReview: false,
                     subjectUnitDictionary: subjectUnitDictionary,
                     question: question,
                     pageName: "ADMIN Edit Question"
@@ -211,18 +235,17 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/reviewQuestion', async (req, res) => {
         mongo.db.collection('pendingQuestions').findOne({ question: /.*/ }).then((question) => {
-            console.log(question);
-            res.render(VIEWS + 'admin/train/editQuestion.ejs', {
-                isReview: true,
-                subjectUnitDictionary: subjectUnitDictionary,
-                question: question,
-                pageName: "ADMIN Review Question"
-            });
+            if (question) {
+                res.render(VIEWS + 'admin/train/editQuestion.ejs', {
+                    isReview: true,
+                    subjectUnitDictionary: subjectUnitDictionary,
+                    question: question,
+                    pageName: "ADMIN Review Question"
+                });
+            } else {
+                req.flash('errorFlash', 'No questions to review');
+                res.redirect('/homepage')
+            }
         })
-            // if (!err) {
-            // } else {
-            //     req.flash('errorFlash', 'Question not found.');
-            //     res.redirect('/homepage')
-            // }
     });
 }
