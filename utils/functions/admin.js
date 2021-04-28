@@ -32,17 +32,21 @@ async function getAdminData(User, Ques, SiteData) {
 }
 
 // query the performance of a contributor
-async function queryContributor(id, Ques) {
+async function queryContributor(id, Ques, PendingQues) {
     
     let written = await Ques.find({ author: id }).exec();
+    let pendingWritten = await PendingQues.find({ author: id }).exec();
 
-    if(!written || written.length < 1) {
+    if((!written || written.length < 1) && (!pendingWritten || pendingWritten.length < 1)) {
         return { status: "Error" };
     }
 
     let physicsWritten = 0;
     let chemistryWritten = 0;
     let biologyWritten = 0;
+    let physicsRatingSum = 0;
+    let chemistryRatingSum = 0;
+    let biologyRatingSum = 0;
     let ratingSum = 0;
     let hourSum = 0;
 
@@ -50,31 +54,70 @@ async function queryContributor(id, Ques) {
 
         if(question.subject.includes("Physics")) {
             physicsWritten++;
+            physicsRatingSum += question.rating;
         }
         if(question.subject.includes("Chemistry")) {
             chemistryWritten++;
+            chemistryRatingSum += question.rating;
         }
         if(question.subject.includes("Biology")) {
             biologyWritten++;
+            biologyRatingSum += question.rating;
         }
 
         ratingSum += question.rating;
 
         hourSum += calculateHours(question.subject[0], question.rating);
-        console.log(question.rating);
-        console.log(hourSum);
+    });
+
+    let ratingAverage = Math.round(ratingSum/Math.max(1, written.length));
+    let physicsRatingAverage = Math.round(physicsRatingSum/Math.max(1, physicsWritten));
+    let chemistryRatingAverage = Math.round(chemistryRatingSum/Math.max(1, chemistryWritten));
+    let biologyRatingAverage = Math.round(biologyRatingSum/Math.max(1, biologyWritten));
+
+    let pendingPhysicsWritten = 0;
+    let pendingChemistryWritten = 0;
+    let pendingBiologyWritten = 0;
+    let pendingHourSum = 0;
+
+    pendingWritten.forEach((question) => {
+
+        if(question.subject.includes("Physics")) {
+            pendingPhysicsWritten++;
+            pendingHourSum += calculateHours(question.subject[0], physicsRatingAverage);
+        }
+        if(question.subject.includes("Chemistry")) {
+            pendingChemistryWritten++;
+            pendingHourSum += calculateHours(question.subject[0], chemistryRatingAverage);
+        }
+        if(question.subject.includes("Biology")) {
+            pendingBiologyWritten++;
+            pendingHourSum += calculateHours(question.subject[0], biologyRatingAverage);
+        }
     });
 
     hourSum = Math.round(100*hourSum)/100;
-
-    let ratingAverage = Math.round(ratingSum/written.length);
+    pendingHourSum = Math.round(100*pendingHourSum)/100;
 
     return { status: "Success", data: {
-        physicsWritten,
-        chemistryWritten,
-        biologyWritten,
+        physics: {
+            physicsWritten,
+            physicsRatingAverage,
+            pendingPhysicsWritten
+        },
+        chemistry: {
+            chemistryWritten,
+            chemistryRatingAverage,
+            pendingChemistryWritten
+        },
+        biology: {
+            biologyWritten,
+            biologyRatingAverage,
+            pendingBiologyWritten
+        },
         ratingAverage,
-        hourSum
+        hourSum,
+        pendingHourSum
     } };
 }
 

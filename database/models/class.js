@@ -7,4 +7,4 @@ const classSchema = new mongoose.Schema({
     classCode: String
 });
 
-module.exports = { classSchema : classSchema };
+module.exports = { classSchema };

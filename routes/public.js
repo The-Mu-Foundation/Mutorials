@@ -162,6 +162,9 @@ module.exports = (app, mongo) => {
             },
             preferences: {
                 hideProfile: ((new Date().getFullYear() - thisYob)<13 ? true : false)
+            },
+            achievements: {
+                join_mutorials: true
             }
         });
 

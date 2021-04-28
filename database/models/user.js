@@ -52,7 +52,29 @@ const userSchema = new mongoose.Schema({
     teachingClasses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Class'
-    }]
+    }],
+    contributor: {
+        type: String,
+        default: ""
+    },
+    achievements: {
+        join_mutorials: Boolean,
+        rating_beginner: Boolean,
+        rating_intermediate: Boolean,
+        rating_advanced: Boolean,
+        rating_expert: Boolean,
+        first_physics: Boolean,
+        first_chemistry: Boolean,
+        first_biology: Boolean,
+        rush_10: Boolean,
+        rush_20: Boolean,
+        solves_300: Boolean,
+        solves_500: Boolean,
+        tags_20: Boolean,
+        tags_50: Boolean,
+        tags_100: Boolean,
+        tags_180: Boolean
+    }
 });
 
-module.exports = { userSchema : userSchema };
+module.exports = { userSchema };

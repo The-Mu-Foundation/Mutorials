@@ -1,8 +1,8 @@
-<%# Admin page for adding new questions to the question bank %>
+<%# Contributor page for adding new questions to the question bank %>
 <%# ARGUMENTS: subjectUnitDictionary - a class with key subject name and value array of units %>
 
-<%- include("../../partials/header") -%>
-<%- include("../../partials/navigationPrivate") -%>
+<%- include("../partials/header") -%>
+<%- include("../partials/navigationPrivate") -%>
 
 <%# Send to backend %>
 <script>
@@ -20,18 +20,15 @@
         $("#success").hide(0);
 
 		// set what happens when question is submitted
-		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement;
+		let type, question, choices, tags, subject, units, answer, answerExplanation;
 		$("#submit").click(function () {
 
 			// free response text values
 			question = $("#question").val();
 			choices = $("#answerchoices").val();
 			tags = $("#tags").val();
-			rating = $("#rating").val();
 			answer = $("#correctanswer").val();
 			answerExplanation = $("#answer-explanation").val();
-			author = $("#author").val();
-            sourceStatement = $("#source-statement").val();
 
 
 			// radio values
@@ -39,13 +36,6 @@
 			for(let i = 0; i < typeInputs.length; i++) {
 				if(typeInputs[i].checked) {
 					type = typeInputs[i].id;
-				}
-			}
-
-			let srcInputs = document.getElementById("external-source").elements;
-			for(let i = 0; i < srcInputs.length; i++) {
-				if(srcInputs[i].checked) {
-					externalSource = srcInputs[i].id;
 				}
 			}
 
@@ -67,23 +57,19 @@
 				}
 			}
 
-			$.post("/admin/addQuestion", { type, question, choices, tags, externalSource, rating, subject,
-				units, answer, answerExplanation, author, sourceStatement }, function (data) {
+			$.post("/contributors/addQuestion", { type, question, choices, tags, subject, units, answer, answerExplanation }, function (data) {
 
 				if(data.success) {
 
-					$("#success").show(500);
-					$("#failure").hide(100);
-
+                    $("#success").show(500);
+                    $("#failure").hide(100);
+					
 					// clear all values after success
 					$("#question").val("");
 					$("#answerchoices").val("");
 					$("#tags").val("");
-					$("#rating").val("");
 					$("#correctanswer").val("");
 					$("#answer-explanation").val("");
-					$("#author").val("");
-					$("#source-statement").val("");
 					document.getElementsByName("checkableButton").forEach((checkbox) => {
 						if(checkbox.type == "checkbox" || checkbox.type == "radio") {
 							checkbox.checked = false;
@@ -91,12 +77,12 @@
 					});
 				} else {
 					$("#failure").show(500);
-					$("#success").hide(100);
+                    $("#success").hide(100);
 				}
 			});
 
         });
-
+        
         // set unit checkbox toggling
         $(".unit-choice-checkbox").hide(0);
         $(".subject-choice-checkbox").change(function() {
@@ -110,7 +96,7 @@
 	});
 </script>
 
-<h1 class="my-5 container">ADMIN PAGE: Add Question</h1>
+<h1 class="my-5 container">CONTRIBUTORS: Add Question</h1>
 
 <div class="jumbotron container" id="show-compiler-div">
 
@@ -119,22 +105,22 @@
 </div>
 
 <div class="jumbotron container" id="latex-compiler">
-
+	
 	<div class="form-group">
 		<h3>LaTeX Compiler - NOT PART OF THE QUESTION</h3>
 		<textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click Render"></textarea>
     </div>
-
+	
 	<p id="rendersandbox">[Sample rendered LaTeX goes here - did you know $F = ma$ ?]</p>
-
+	
 	<button type="button" class="btn btn-primary" id="render" onclick="document.getElementById('rendersandbox').innerHTML = document.getElementById('latexcompiler').value; MathJax.typeset();">Render</button>
 
 </div>
 
 <div class="jumbotron container">
-
+    
     <h3>Question Display Data</h3>
-
+    
     <%# QUESTION STATEMENT %>
 	<div class="form-group mt-3">
 		<p>What is the question?</p>
@@ -147,19 +133,12 @@
 		<p>FOR MC AND SA ONLY: What are the answer choices?</p>
 		<textarea class="form-control" id="answerchoices" rows="6" placeholder="Type in answer choices, using '@' characters as deliminators"></textarea>
     </div>
-
+    
     <%# CORRRECT ANSWER %>
     <hr>
 	<div class="form-group">
 		<p>What is the correct answer?</p>
 		<input class="form-control" id="correctanswer" placeholder="Input the answer, with '@' characters as deliminators if there are multiple">
-    </div>
-
-    <%# RATING %>
-    <hr>
-	<div class="form-group">
-		<p>What is the rating of this question?</p>
-		<input type="number" class="form-control" id="rating" placeholder="Enter an integer rating">
     </div>
 
     <%# FORMAT %>
@@ -209,7 +188,7 @@
             </div>
         <% }) %>
     </form>
-
+    
     <%# UNITS %>
     <hr>
 	<form class="form-group" id="units">
@@ -223,46 +202,9 @@
             <% }) %>
         <% }) %>
     </form>
-
-    <%# AUTHOR %>
-    <hr>
-	<div class="form-group">
-		<p>INTERNAL USE ONLY: Who is the author of this question?</p>
-		<input type="text" class="form-control" id="author" placeholder="Enter a Mutorials ID (WITH CAPITALIZATION)">
-    </div>
-
-    <%# EXTERNAL SOURCES %>
-    <hr>
-	<form class="form-group" id="external-source">
-		<p>Is this question from an external source?</p>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="checkableButton" id="original" value="original">
-			<label class="form-check-label" for="original">Original - written by Mutorials</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="checkableButton" id="AP" value="AP">
-			<label class="form-check-label" for="AP">AP (Advanced Placement)</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="checkableButton" id="IB" value="IB">
-			<label class="form-check-label" for="IB">IB (International Baccalaureate)</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="checkableButton" id="SAT2" value="SAT2">
-			<label class="form-check-label" for="SAT2">SAT2 (Scholastic Aptitude Test 2)</label>
-		</div>
-		<div class="form-check">
-			<input class="form-check-input" type="radio" name="checkableButton" id="Competition" value="Comp">
-			<label class="form-check-label" for="Comp">Competition problem</label>
-		</div>
-	</form>
-	<div class="form-group">
-		<p>If the question is not original, please give a statement regarding the source:</p>
-		<textarea class="form-control" id="source-statement" placeholder="Enter the statement/title (with capitalization)"></textarea>
-	</div>
 </div>
 
-<div class="my-2 alert alert-success container" id="success">Success! Your question has been added!</div>
+<div class="my-2 alert alert-success container" id="success">Success! Your question has been added and now pends review!</div>
 <div class="my-2 alert alert-danger container" id="failure">Your question was not added - check to make sure all fields were filled in</div>
 
 <div class = "container mt-4 mb-5">
@@ -277,7 +219,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">Are you sure you want to leave this page?</h5>
             </div>
-			<div class="modal-body">
+			<div class="modal-body">    
 				<p>All your work is unsaved and will be discarded</p>
             </div>
             <div class="modal-footer">
@@ -288,4 +230,4 @@
     </div>
 </div>
 
-<%- include("../../partials/footer") -%>
+<%- include("../partials/footer") -%>

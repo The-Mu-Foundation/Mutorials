@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // define question schema
-const qSchema = new mongoose.Schema({
+const pendingQSchema = new mongoose.Schema({
     question: String,
     choices: Array,
     tags: Array,
@@ -14,10 +14,6 @@ const qSchema = new mongoose.Schema({
     source_statement: String,
     subject: Array,
     units: Array,
-    stats: {
-        pass: Number,
-        fail: Number
-    },
     reviewers: Array,
     writtenDate: {
         type: String,
@@ -25,4 +21,4 @@ const qSchema = new mongoose.Schema({
     }
 });
 
-module.exports = { qSchema };
+module.exports = { pendingQSchema };
