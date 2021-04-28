@@ -410,10 +410,78 @@ async function querySite(search, User, Ques, SiteData) {
     return results;
 }
 
+async function updateTrainAchievements(user, question, correct) {
+    
+    if(!user.achievements) {
+        user.achievements = {};
+    }
+    user.achievements["join_mutorials"] = true;
+
+    if(correct) {
+        user.achievements["first_" + question.subject[0].toLowerCase()] = true;
+    }
+
+    let solves = user.stats.correct;
+    if(solves >= 500) {
+        user.achievements["solves_500"] = true;
+    }
+    if(solves >= 300) {
+        user.achievements["solves_300"] = true;
+    }
+
+    let rating = user.rating[question.subject[0].toLowerCase()];
+    if(rating >= 3500) {
+        user.achievements["rating_expert"] = true;
+    }
+    if(rating >= 2750) {
+        user.achievements["rating_advanced"] = true;
+    }
+    if(rating >= 2000) {
+        user.achievements["rating_intermediate"] = true;
+    }
+    if(rating >= 1500) {
+        user.achievements["rating_beginner"] = true;
+    }
+
+    let tagsCollected = user.stats.collectedTags.length;
+    if(tagsCollected >= 180) {
+        user.achievements["tags_180"] = true;
+    }
+    if(tagsCollected >= 100) {
+        user.achievements["tags_100"] = true;
+    }
+    if(tagsCollected >= 50) {
+        user.achievements["tags_50"] = true;
+    }
+    if(tagsCollected >= 20) {
+        user.achievements["tags_20"] = true;
+    }
+
+    db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { achievements: user.achievements } });
+}
+
+async function updateRushAchievements(user, score) {
+    
+    if(!user.achievements) {
+        user.achievements = {};
+    }
+    user.achievements["join_mutorials"] = true;
+
+    if(score >= 20) {
+        user.achievements["rush_20"] = true;
+    }
+    if(score >= 10) {
+        user.achievements["rush_10"] = true;
+    }
+
+    db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { achievements: user.achievements } });
+}
+
 async function updateFields(){ //replace the parameters as needed for different purposes
     db.collection('users').updateMany({'age': {$exists: true}}, {$rename: {'age': 'yob'}});
 }
 
 module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
-    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats, querySite, updateFields };
+    clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats, querySite,
+    updateTrainAchievements, updateRushAchievements, updateFields };
 

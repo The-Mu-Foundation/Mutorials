@@ -270,6 +270,35 @@
 
         gtag('config', 'UA-187785187-1');
     </script>
+
+    <!-- Global site tag (gtag.js) - Google Ads: 454194095 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-454194095"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'AW-454194095');
+    </script>
+
+    <!-- Event snippet for Sign-up conversion page
+    In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+    <script>
+        function gtag_report_conversion(url) {
+        var callback = function () {
+            if (typeof(url) != 'undefined') {
+            window.location = url;
+            }
+        };
+        gtag('event', 'conversion', {
+            'send_to': 'AW-454194095/lj2QCNuiookCEK_nydgB',
+            'event_callback': callback
+        });
+        return false;
+        }
+    </script>
+    
+
 </head>
 
 <body>

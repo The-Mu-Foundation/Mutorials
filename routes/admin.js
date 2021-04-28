@@ -133,8 +133,8 @@ module.exports = (app, mongo) => {
                 }
             });
         });
-        console.log(req.body);
-        mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
+
+      mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(req.body.questionID) },
             {
                 $set: {

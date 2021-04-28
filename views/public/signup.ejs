@@ -26,6 +26,10 @@
                 $("#username-characters").hide(100);
             }, 1000);
         });
+
+        $("submitButton").click(function() {
+            gtag_report_conversion();
+        });
     });
 
 </script>
@@ -69,7 +73,7 @@
 
         <div class="mt-4 ms-1">
             <a class="btn btn-secondary" id="cancel" href="/">Cancel</a>
-            <input class="btn btn-primary" type="submit" value="Sign Up">
+            <input class="btn btn-primary" type="submit" id="submitButton" value="Sign Up">
         </div>
     </form>
 </div>
