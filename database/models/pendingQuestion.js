@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-// define question schema
+// define pending question schema
+// MUST be a strict subset of the question schema
 const pendingQSchema = new mongoose.Schema({
     question: String,
     choices: Array,
