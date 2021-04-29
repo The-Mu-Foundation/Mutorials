@@ -4,7 +4,9 @@ const { presetUnitOptions } = require('../utils/constants/presets');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { genPassword, validPassword } = require('../utils/functions/password');
 const { arraysEqual } = require('../utils/functions/general');
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue, addExperience, clearQuestionQueue, skipQuestionUpdates, getDailyQuestion, incrementSolveCounter, updateRushStats } = require('../utils/functions/database');
+const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue,
+    addExperience, clearQuestionQueue, skipQuestionUpdates, getDailyQuestion, incrementSolveCounter, updateRushStats,
+    updateTrainAchievements, updateRushAchievements } = require('../utils/functions/database');
 
 // LIBRARY IMPORTS
 let pluralize = require('pluralize');
@@ -77,6 +79,10 @@ module.exports = (app, mongo) => {
                     updateTracker(req, antsy);
                     addExperience(req, Math.ceil(antsy.rating/20));
                 }
+                
+                // update achievements
+                updateTrainAchievements(req.user, antsy, isRight);
+
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
@@ -111,6 +117,10 @@ module.exports = (app, mongo) => {
                     updateTracker(req, antsy);
                     addExperience(req, Math.ceil(antsy.rating/20));
                 }
+
+                // update achievements
+                updateTrainAchievements(req.user, antsy, isRight);
+
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
@@ -152,6 +162,10 @@ module.exports = (app, mongo) => {
                     updateTracker(req, antsy);
                     addExperience(req, Math.ceil(antsy.rating/20));
                 }
+                
+                // update achievements
+                updateTrainAchievements(req.user, antsy, isRight);
+
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
@@ -253,6 +267,7 @@ module.exports = (app, mongo) => {
         try {
             let score = req.query.score;
             await updateRushStats(req.user, score);
+            updateRushAchievements(req.user, score);
             let user = await mongo.User.findOne({ _id: req.user._id }).exec();;
             let highscore = user.stats.rush.highscore;
             res.json({

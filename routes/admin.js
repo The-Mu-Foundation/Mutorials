@@ -99,7 +99,6 @@ module.exports = (app, mongo) => {
     app.post('/admin/addContributor', (req, res) => {
         console.log(req.body.contributorUsername);
         mongo.db.collection("users").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: req.body.contributorID } }).then((result) => {
-            console.log(result);
             (!result.value) ? req.flash('errorFlash', 'Contributor not found.') : req.flash('successFlash', 'Contributor successfully added!');
             res.redirect('/homepage');
         });
@@ -134,7 +133,7 @@ module.exports = (app, mongo) => {
                 }
             });
         });
-        console.log(req.body);
+
         mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(req.body.questionID) },
             {
