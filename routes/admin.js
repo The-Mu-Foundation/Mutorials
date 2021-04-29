@@ -98,8 +98,9 @@ module.exports = (app, mongo) => {
 
     app.post('/admin/addContributor', (req, res) => {
         console.log(req.body.contributorUsername);
-        mongo.db.collection("users").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: req.body.contributorID } }, { upsert: true }).then((err, success) => {
-            err ? req.flash('errorFlash', 'Contributor not found.') : req.flash('successFlash', 'Contributor successfully added!');
+        mongo.db.collection("users").findOneAndUpdate({ ign: req.body.contributorUsername }, { $set: { contributor: req.body.contributorID } }).then((result) => {
+            console.log(result);
+            (!result.value) ? req.flash('errorFlash', 'Contributor not found.') : req.flash('successFlash', 'Contributor successfully added!');
             res.redirect('/homepage');
         });
     })
