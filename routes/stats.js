@@ -1,6 +1,7 @@
 // FUNCTION IMPORTS
 const { calculateLevel, analyze } = require('../utils/functions/siteAlgorithms');
 const { tags } = require('../utils/constants/tags');
+const { achievementDescriptions } = require('../utils/constants/achievements');
 const { generateLeaderboard } = require('../utils/functions/database');
 
 const VIEWS = __dirname + '/../views/';
@@ -36,7 +37,7 @@ module.exports = (app, mongo) => {
                         thisAge = new Date().getFullYear() - obj.profile.yob;
                     }
                     let experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
-                    res.render(VIEWS + 'private/profile.ejs', { age: thisAge, user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats });
+                    res.render(VIEWS + 'private/profile.ejs', { age: thisAge, user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats, allAchievements: achievementDescriptions });
                 }
             } else {
                 req.flash('errorFlash', 'Error 404: File Not Found. That username doesn\'t exist.');

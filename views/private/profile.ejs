@@ -1,5 +1,6 @@
 <%# Page for displaying profile %>
-<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site, age - current user age %>
+<%# ARGUMENTS: user - user object for which stats are being displayed, totalTags - list of all tags on site,
+    allAchievements - the possible achievements, age - current user age %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -202,6 +203,21 @@
                 <hr class="my-2">
 
                 <p><%= user.profile.bio ? user.profile.bio : "This is a very mysterious person who likes pink butterflies and blue cows. Mu!" %></p>
+
+                <hr class="my-2">
+
+                <h4 class="mt-2">Achievements:</h4>
+                <% var achievements = user.achievements; %>
+                <% var count = 0; %>
+                <% for(const achievement in allAchievements) { %>
+                    <% if(achievements[achievement]) { %>
+                        <p><%= allAchievements[achievement].name %></p>
+                        <% count++; %>
+                    <% } %>
+                <% } %>
+                <% if(count == 0) { %>
+                    <p>None (yet)</p>
+                <% } %>
 			</div>
 		</div>
 		
