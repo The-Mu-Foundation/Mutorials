@@ -134,6 +134,9 @@ module.exports = (app, mongo) => {
             });
         });
 
+        // remove duplicate tags
+        req.body.tags = [...new Set(req.body.tags.split('@'))].join('@');
+
         mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(req.body.questionID) },
             {
