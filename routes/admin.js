@@ -186,6 +186,14 @@ module.exports = (app, mongo) => {
         });
     });
 
+    app.post('/admin/skipQuestion', (req, res) => {
+        res.cookie(
+            'skippedQuestions',
+            res.cookies['skippedQuestions'] ? res.cookies['skippedQuestions'].append(req.body.question.id) : [req.body.question.id]
+        );
+        res.redirect('/admin/reviewQuestion');
+    });
+
     //ADMIN GET ROUTES
 
     app.get('/admin/addquestion', (req, res) => {
@@ -237,7 +245,9 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/reviewQuestion', async (req, res) => {
-        mongo.db.collection('pendingQuestions').findOne({ question: /.*/ }).then((question) => {
+        res.cookies['skippedQuestions'];
+        skippedQuestions = res.cookies['skippedQuestions'] ?? [];
+        mongo.db.collection('pendingQuestions').findOne({ $and: [{ reviewers: { $ne: req.user.contributor } }, { id: { $nin: skippedQuestions } }] }).then((question) => {
             if (question) {
                 res.render(VIEWS + 'admin/train/editQuestion.ejs', {
                     isReview: true,
