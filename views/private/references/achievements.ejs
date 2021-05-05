@@ -1,0 +1,36 @@
+<%# Reference subpage for achievements %>
+<%# ARGUMENTS: achievements - achievement list from backend %>
+
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
+
+<h1 class="my-5 container">Mutorials Achievements</strong></h1>
+
+<div class="container jumbotron mt-5">
+
+    <table class="text-center table">
+        <thead>
+            <tr class="d-flex">
+                <th class="col-4"><h4>Achievement Name</h4></th>
+                <th class="col-8"><h4>Achievement Description</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <% Object.keys(achievements).forEach((achievement) => { %>
+                <tr class="d-flex">
+                    <td class="col-4"><h5><%= achievements[achievement].name %></h5></td>
+                    <td class="col-8"><%= achievements[achievement].description %></td>
+                </tr>
+            <% }); %>
+
+        </tbody>
+    </table>
+
+</div>
+
+<div class="container">
+    <a class="mb-5 btn btn-secondary" href="/references">Return to references page</a>
+</div>
+
+<%- include("../../partials/footer") -%>
