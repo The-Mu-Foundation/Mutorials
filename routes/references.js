@@ -1,6 +1,7 @@
 // FUNCTION IMPORTS
 const { referenceSheet } = require('../utils/constants/referencesheet');
 const { tags } = require('../utils/constants/tags');
+const { achievementDescriptions } = require('../utils/constants/achievements');
 
 const VIEWS = __dirname + '/../views/';
 
@@ -16,6 +17,10 @@ module.exports = (app, mongo) => {
 
     app.get('/references', (req, res) => {
         res.render(VIEWS + 'private/references/home.ejs', { pageName: "Mutorials References" });
+    });
+
+    app.get('/references/achievements', (req, res) => {
+        res.render(VIEWS + 'private/references/achievements.ejs', { achievements: achievementDescriptions, pageName: "Mutorials Achievements" });
     });
 
     app.get('/references/equations', (req, res) => {
