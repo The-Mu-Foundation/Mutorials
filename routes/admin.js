@@ -1,7 +1,7 @@
 // FUNCTION IMPORTS
 const { tags } = require('../utils/constants/tags');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
-const { adminList, contributorList } = require('../utils/constants/sitesettings');
+const { adminList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
 const { getSiteData, getAnnouncements } = require('../utils/functions/database');
 const { getAdminData, queryContributor } = require('../utils/functions/admin');
@@ -20,7 +20,7 @@ module.exports = (app, mongo) => {
         }
     });
 
-    app.post('/admin/addAnnouncement', async (req, res, next) => {
+    app.post('/admin/addAnnouncement', async (req, res, _) => {
         try {
             let SiteData = mongo.SiteData;
             let announcements = await SiteData.findOne({ tag: "ANNOUNCEMENTS" }).exec();
@@ -40,7 +40,7 @@ module.exports = (app, mongo) => {
         res.json({ status: "Success" });
     });
 
-    app.post('/admin/addquestion', (req, res, next) => {
+    app.post('/admin/addquestion', (req, res, _) => {
         if (req.body.question.length < 1
             || parseDelimiter(req.body.tags).length < 1
             || req.body.rating.length < 1
@@ -163,12 +163,11 @@ module.exports = (app, mongo) => {
             question = question ? question : err.value;
             if (question && req.body.reviewerID && question.reviewers.length > 0 && question.rating) {
                 // 2 reviews complete, move to questions collection
-                mongo.db.collection("pendingQuestions").deleteOne({ id: question.id }, (err, result) => {
-                    console.log('switcheroo')
+                mongo.db.collection("pendingQuestions").deleteOne({ id: question.id }, (err, _) => {
                     if (err) {
                         console.log(err);
                     } else {
-                        mongo.db.collection("questions").insertOne(question, (err, result) => {
+                        mongo.db.collection("questions").insertOne(question, (err, _) => {
                             if (err) {
                                 console.log(err);
                             }
@@ -187,39 +186,38 @@ module.exports = (app, mongo) => {
     });
 
     app.post('/admin/skipQuestion', (req, res) => {
-        res.cookie(
-            'skippedQuestions',
-            res.cookies['skippedQuestions'] ? res.cookies['skippedQuestions'].append(req.body.question.id) : [req.body.question.id]
-        );
-        res.redirect('/admin/reviewQuestion');
+        console.log("post " + req.cookies['skipQuestions']);
+        c = req.cookies['skipQuestions'];
+        if (c) { c.push(req.body.questionID) } else { c = [req.body.questionID] }
+        res.cookie( 'skipQuestions', c ).json({ success: true });
     });
 
     //ADMIN GET ROUTES
 
-    app.get('/admin/addquestion', (req, res) => {
+    app.get('/admin/addquestion', (_, res) => {
         res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary, pageName: "ADMIN Add Question" });
     });
 
-    app.get('/admin/addedSuccess', (req, res) => {
+    app.get('/admin/addedSuccess', (_, res) => {
         res.render(VIEWS + 'admin/train/addQuestionSuccess.ejs', { pageName: "ADMIN AddQ Success" });
     });
 
-    app.get('/admin/addedFailure', (req, res) => {
+    app.get('/admin/addedFailure', (_, res) => {
         res.render(VIEWS + 'admin/train/addQuestionFailure.ejs', { pageName: "ADMIN AddQ Fail" });
     });
 
-    app.get('/admin/analytics', async (req, res) => {
+    app.get('/admin/analytics', async (_, res) => {
         let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
         let adminData = await getAdminData(mongo.User, mongo.Ques, mongo.SiteData);
         res.render(VIEWS + 'admin/analytics.ejs', { siteData, adminData, pageName: "ADMIN Analytics" });
     });
 
-    app.get('/admin/announcements', async (req, res) => {
+    app.get('/admin/announcements', async (_, res) => {
         let announcements = await getAnnouncements(mongo.SiteData, 10);
         res.render(VIEWS + 'admin/announcements.ejs', { announcements, pageName: "ADMIN Announcements" });
     });
 
-    app.get('/admin/contributorStats', async (req, res) => {
+    app.get('/admin/contributorStats', async (_, res) => {
         res.render(VIEWS + 'admin/contributorStats.ejs', { pageName: "ADMIN Contributor Stats" });
     });
 
@@ -245,9 +243,9 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/reviewQuestion', async (req, res) => {
-        res.cookies['skippedQuestions'];
-        skippedQuestions = res.cookies['skippedQuestions'] ?? [];
-        mongo.db.collection('pendingQuestions').findOne({ $and: [{ reviewers: { $ne: req.user.contributor } }, { id: { $nin: skippedQuestions } }] }).then((question) => {
+        c = req.cookies['skipQuestions'];
+        if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
+        mongo.db.collection('pendingQuestions').findOne({ $and: [{ reviewers: { $ne: req.user.contributor } }, { $id: { $nin: c } }] }).then((question) => {
             if (question) {
                 res.render(VIEWS + 'admin/train/editQuestion.ejs', {
                     isReview: true,
