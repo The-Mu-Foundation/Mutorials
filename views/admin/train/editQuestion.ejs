@@ -102,6 +102,14 @@
 
         });
 
+		// skip question button
+		$("#skipreview").click(function () {
+
+			$.post("/admin/skipQuestion", { questionID }, function (data) {
+                if (data.success) { window.location.reload(); }
+			});
+		});
+
         // set unit checkbox toggling
         $(".unit-choice-checkbox").hide(0);
         $(".subject-choice-checkbox").change(function() {
@@ -300,6 +308,7 @@
 <div class = "container mt-4 mb-5">
     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
     <button type="button" class="btn btn-primary" id="submit">Submit</button>
+	<button type="button" class="btn btn-info" id="skipreview" style="float: right;">Skip Question</button>
 </div>
 
 <%# Cancel button code %>

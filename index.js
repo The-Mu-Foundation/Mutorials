@@ -1,5 +1,6 @@
 // MODULE IMPORTS
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const express = require('express');
@@ -41,6 +42,7 @@ app.use(session({
 require('./utils/functions/passport.js')(app, mongo);
 
 app.use(flash()); // express-flash-messages config
+app.use(cookieParser());
 
 app.use((req, res, next) => {
     res.locals.successFlash = req.flash('successFlash');
