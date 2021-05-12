@@ -2,6 +2,7 @@
 const { calculateLevel, analyze } = require('../utils/functions/siteAlgorithms');
 const { adminList } = require('../utils/constants/sitesettings');
 const { generateLeaderboard, getDailyQuestion, getSiteData, getAnnouncements, querySite } = require('../utils/functions/database');
+const mongoose = require("mongoose");
 
 const VIEWS = __dirname + '/../views/';
 
@@ -22,7 +23,16 @@ module.exports = (app, mongo) => {
 
     app.get('/homepage', async (req, res) => {
         if (adminList.includes(req.user.username)) {
-            res.render(VIEWS + 'admin/adminHomepage.ejs');
+            c = req.cookies['skipQuestions'];
+            if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
+            mongo.db.collection('pendingQuestions').countDocuments({ $and: [{ reviewers: { $ne: req.user.contributor } }, { $id: { $nin: c } }] }).then((numUser, err) => {
+                if (err) { console.log(1, err); } else {
+                    mongo.db.collection('pendingQuestions').countDocuments({ question: /.*/ }, (err, numAll) => {
+                        if (err) { console.log(2, err); }
+                        res.render(VIEWS + 'admin/adminHomepage.ejs', { numUser: numUser, numAll: numAll });
+                    });
+                }
+            });
         } else {
             let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
             let experienceStats = await calculateLevel(req.user.stats.experience);

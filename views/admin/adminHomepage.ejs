@@ -1,4 +1,5 @@
 <%# Page admins see upon signing in %>
+<%# ARGUMENTS: numAll: number of questions pending review; numUser: number of questions pending review that the user has not already reviewed or skipped. %>
 
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
@@ -15,6 +16,7 @@
     <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/addQuestion">Add Question</a>
     <a class="btn btn-primary btn-lg w-100 my-2" href="#" data-bs-toggle="modal" data-bs-target="#editQuestionModal">Edit Question</a>
     <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/reviewQuestion">Review Question</a>
+    <div class="w-100 text-center" style="font-size: 1.4rem">(you have <%= numUser %> questions pending review, <%= numAll %> total)</div>
 </div>
 
 <div class="jumbotron container">
