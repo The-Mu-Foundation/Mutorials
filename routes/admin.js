@@ -245,7 +245,7 @@ module.exports = (app, mongo) => {
     app.get('/admin/reviewQuestion', async (req, res) => {
         c = req.cookies['skipQuestions'];
         if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
-        mongo.db.collection('pendingQuestions').findOne({ $and: [{ reviewers: { $ne: req.user.contributor } }, { $id: { $nin: c } }] }).then((question) => {
+        mongo.db.collection('pendingQuestions').findOne({ $and: [{ reviewers: { $ne: req.user.contributor } }, { _id: { $nin: c } }] }).then((question) => {
             if (question) {
                 res.render(VIEWS + 'admin/train/editQuestion.ejs', {
                     isReview: true,
