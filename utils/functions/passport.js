@@ -13,7 +13,7 @@ module.exports = (app, mongo) => {
             passReqToCallback: true
         }, (req, username, password, cb) => {
             username = username.toLowerCase();
-            mongo.User.find({ username: username }).then((user) => {
+            mongo.User.find({ $or: [ { ign: username }, { username: username } ]}).then((user) => {
                 if (!user[0]) { return cb(null, false); }
 
                 const isValid = validPassword(password, user[0].hash, user[0].salt);
