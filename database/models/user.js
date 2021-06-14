@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 // define user schema
 const userSchema = new mongoose.Schema({
-    username: String,
-    ign: String,
+    username: String, //email address
+    ign: String, //username
     hash: String,
     salt: String,
     profile: {
