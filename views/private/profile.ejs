@@ -190,7 +190,7 @@
 		<div class="col-12 col-md-3 jumbotron">
 			<div class="">
                 
-				<h4><%= user.profile.name ? (user.profile.name.length <= 18 ? user.profile.name : user.profile.name.substring(0, 15)+"...") : "Unnamed User" %></h4>
+				<h4><%= user.profile.name ? (user.profile.name.length <= 18 ? user.profile.name : user.profile.name.substring(0, 15)+"...") : (user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"...") %></h4>
                 
                 <hr class="my-3">
 

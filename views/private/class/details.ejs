@@ -23,7 +23,7 @@
 <div class="jumbotron container">
     <h1>Student Stats</h1>
     <% students.forEach((student, studentIndex) => { %>
-        <a href="/stats/<%= student.ign %>"><%= student.profile.name %>'s stats</a><br>
+        <a href="/stats/<%= student.ign %>"><%= student.profile.name || student.ign %>'s stats</a><br>
     <% }) %>
 </div>
 
