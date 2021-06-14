@@ -29,39 +29,45 @@ module.exports = (app, mongo) => {
         }
 
         if (age > 13) {
-            if (req.body.name == filter.clean(req.body.name)) {
-                if (req.body.name.length <= 50) {
-                    req.user.profile.name = req.body.name;
+            if (req.body.name) {
+                if (req.body.name == filter.clean(req.body.name)) {
+                    if (req.body.name.length <= 50) {
+                        req.user.profile.name = req.body.name;
+                    } else {
+                        req.flash('errorFlash', 'Please keep your name under 50 characters long.');
+                    }
                 } else {
-                    req.flash('errorFlash', 'Please keep your name under 50 characters long.');
+                    req.flash('errorFlash', 'Keep it appropriate.');
                 }
-            } else {
-                req.flash('errorFlash', 'Keep it appropriate.');
             }
-            if (req.body.bio == filter.clean(req.body.bio)) {
-                if (req.body.bio.length <= 150) {
-                    req.user.profile.bio = req.body.bio;
+            if (req.body.bio) {
+                if (req.body.bio == filter.clean(req.body.bio)) {
+                    if (req.body.bio.length <= 150) {
+                        req.user.profile.bio = req.body.bio;
+                    } else {
+                        req.flash('errorFlash', 'Please keep your bio under 150 characters long.');
+                    }
                 } else {
-                    req.flash('errorFlash', 'Please keep your bio under 150 characters long.');
+                    req.flash('errorFlash', 'Keep it appropriate.');
                 }
-            } else {
-                req.flash('errorFlash', 'Keep it appropriate.');
             }
-            if (req.body.location == filter.clean(req.body.location)) {
-                if (req.body.location.length <= 50) {
-                    req.user.profile.location = req.body.location;
+            if (req.body.location) {
+                if (req.body.location == filter.clean(req.body.location)) {
+                    if (req.body.location.length <= 50) {
+                        req.user.profile.location = req.body.location;
+                    } else {
+                        req.flash('errorFlash', 'Please keep your location under 50 characters long.');
+                    }
                 } else {
-                    req.flash('errorFlash', 'Please keep your location under 50 characters long.');
+                    req.flash('errorFlash', 'Keep it appropriate.');
                 }
-            } else {
-                req.flash('errorFlash', 'Keep it appropriate.');
             }
         } else {
             req.user.profile.name = "";
             req.user.profile.bio = "";
             req.user.profile.location = "Earth";
         }
-        if (req.user.profile.name < 13 &&
+        if (age < 13 &&
             ( req.user.profile.name != req.body.name ||
                 req.user.profile.bio != req.body.bio ||
                 req.user.profile.location != req.body.location)) {
