@@ -128,7 +128,6 @@ module.exports = (app, mongo) => {
             return; // to prevent ERRHTTPHEADERSSENT
         }
 
-
         const saltHash = genPassword(req.body.password);
 
         const salt = saltHash.salt;
@@ -143,7 +142,7 @@ module.exports = (app, mongo) => {
             hash: hash,
             salt: salt,
             profile: {
-                name: '',
+                name: req.body.ign,
                 location: 'Earth',
                 yob: thisYob,
                 bio: ''
