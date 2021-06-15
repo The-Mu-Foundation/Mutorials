@@ -20,10 +20,28 @@
     <h2>Average Biology Rating: <%= biologyAvg %></h2>
 </div>
 
+<script>
+function removeStudentConfirm(ign) {
+    $('#student-remove-' + ign).hide();
+    $('#student-remove-' + ign + '-confirm').show();
+}
+function removeStudent(ign) {
+    let classId = "<%= currentClass._id %>";
+    $.post("/class/removeStudent", { ign, classId }, function (data) {
+        if (data.status) {
+            $('#student-stats-'+ign).html("<b>" + ign + "</b> removed");
+        }
+    });
+}
+</script>
 <div class="jumbotron container">
     <h1>Student Stats</h1>
     <% students.forEach((student, studentIndex) => { %>
-        <a href="/stats/<%= student.ign %>"><%= student.profile.name || student.ign %>'s stats</a><br>
+        <div id="student-stats-<%= student.ign %>" class="student-stats">
+            <a class="btn btn-primary" href="/stats/<%= student.ign %>"><%= student.profile.name || student.ign %>'s stats</a>
+            <button id="student-remove-<%= student.ign %>" class="btn btn-danger float-end" onclick="removeStudentConfirm('<%= student.ign %>')">Remove <%= student.profile.name || student.ign %></button>
+            <button id="student-remove-<%= student.ign %>-confirm" class="btn btn-danger float-end" style="display: none" onclick="removeStudent('<%= student.ign %>')">Are you sure you want to remove <%= student.profile.name || student.ign %>?</button>
+        </div><br>
     <% }) %>
 </div>
 

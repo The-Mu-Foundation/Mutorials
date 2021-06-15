@@ -78,9 +78,17 @@ module.exports = (app, mongo) => {
 
     app.post('/class/leave', (req, res, next) => {
         reqClassId = mongoose.Types.ObjectId(req.body.classId);
-        mongo.User.updateMany({}, { $pull: { classes: { $in: [reqClassId] } } }).then((err, students) => {
+        mongo.User.findOneAndUpdate({ _id: req.user._id }, { $pull: { classes: { $in: [reqClassId] } } }).then((err, students) => {
             req.flash('successFlash', 'You\'ve left ' + req.body.className + '.');
             res.redirect('/');
+        });
+    });
+
+    app.post('/class/removeStudent', (req, res, next) => {
+        reqClassId = mongoose.Types.ObjectId(req.body.classId);
+        console.log(req.body.ign);
+        mongo.User.findOneAndUpdate({ ign: req.body.ign }, { $pull: { classes: { $in: [reqClassId] } } }).then((err, students) => {
+            res.json({ status: "Success" });
         });
     });
 
