@@ -16,8 +16,8 @@ module.exports = (app, mongo) => {
 
     // change profile settings
     app.post('/changeProfile', (req, res) => {
-        var date = new Date().getFullYear();
-        var age = date - req.body.yob;
+        const date = new Date().getFullYear();
+        const age = date - req.body.yob;
          if (!(/^\d+$/.test(age))) {
             req.flash('errorFlash', 'Please enter a valid year of birth!');
         }
@@ -127,7 +127,7 @@ module.exports = (app, mongo) => {
                         req.flash('errorFlash', 'We already have an account with that email. Try signing in with that one.');
                     } else {
                         console.log('email does not exist');
-                        var confirmCode;
+                        let confirmCode;
                         require('crypto').randomBytes(6, function (ex, buf) {
                             confirmCode = buf.toString('hex');
                             mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });

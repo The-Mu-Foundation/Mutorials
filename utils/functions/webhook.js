@@ -9,7 +9,7 @@ module.exports = {
             value = comment;
         }
         console.log('hook: ' + value);
-        var params = {
+        const params = {
             username: "mutorials.org",
             avatar_url: "",
             embeds: [

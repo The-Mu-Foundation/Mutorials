@@ -4,11 +4,11 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const express = require('express');
-var flash = require('express-flash-messages');
+const flash = require('express-flash-messages');
 const session = require('express-session');
 const http = require('http');
 const https = require('https');
-var enforce = require('express-sslify');
+const enforce = require('express-sslify');
 const emailValidation = require('./utils/functions/emailValidation');
 
 // START EXPRESS SERVER
@@ -30,7 +30,7 @@ if (PORT != 3000) {
     app.use(enforce.HTTPS({trustProtoHeader: true }));
 }
 
-var mongo = require('./utils/functions/mongo.js');
+const mongo = require('./utils/functions/mongo.js');
 
 app.use(session({
     secret: SESSION_SECRET,

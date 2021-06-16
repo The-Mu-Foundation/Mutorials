@@ -3,7 +3,7 @@ const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { parseDelimiter } = require('../utils/functions/general');
 const { queryContributor } = require('../utils/functions/admin');
 const mongoose = require("mongoose");
-var db = mongoose.connection;
+const db = mongoose.connection;
 
 const VIEWS = __dirname + '/../views/';
 

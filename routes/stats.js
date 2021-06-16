@@ -17,7 +17,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/leaderboard', async (req, res) => {
-        var leaderboard = await generateLeaderboard(mongo.User, 10);
+        const leaderboard = await generateLeaderboard(mongo.User, 10);
         res.render(VIEWS + 'private/leaderboard.ejs', { rankings: leaderboard, pageName: "Leaderboard" });
     });
 
@@ -32,11 +32,11 @@ module.exports = (app, mongo) => {
                     req.flash('errorFlash', 'This user has made their profile private.');
                     res.redirect('/homepage');
                 } else {
-                    var thisAge = 0;
+                    let thisAge = 0;
                     if(req.user.profile.yob && obj.profile.yob != 2020){
                         thisAge = new Date().getFullYear() - obj.profile.yob;
                     }
-                    let experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
+                    const experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
                     res.render(VIEWS + 'private/profile.ejs', { age: thisAge, user: obj, totalTags: tags, pageName: obj.ign + "'s Profile", experienceStats, allAchievements: achievementDescriptions });
                 }
             } else {

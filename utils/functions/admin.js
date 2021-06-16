@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { average } = require("./general");
-var db = mongoose.connection;
+const db = mongoose.connection;
 
 // get specific admin analytics about the database
 async function getAdminData(User, Ques, SiteData) {
