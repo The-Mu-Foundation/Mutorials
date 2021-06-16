@@ -7,4 +7,4 @@ parserOptions:
   ecmaVersion: 12
 
 rules:
-  no-var: warn  
+  no-var: error  
