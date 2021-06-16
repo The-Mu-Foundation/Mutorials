@@ -34,7 +34,7 @@ module.exports = (app, mongo) => {
     });
 
     app.post('/selQ', (req, res, next) => {
-        var units = null;
+        let units = null;
         if (req.body.qNum == 1) {
             units = req.body.unitChoice;
             if (!units) {
@@ -49,7 +49,7 @@ module.exports = (app, mongo) => {
 
     app.post('/train/checkAnswer', (req, res, next) => {
         if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
-            var isRight = false;
+            let isRight = false;
             const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                 // clear pending question
@@ -61,8 +61,8 @@ module.exports = (app, mongo) => {
                 }
 
                 // modify ratings
-                var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
-                var oldQRating = antsy.rating;
+                const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                const oldQRating = antsy.rating;
                 // update stats
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -89,7 +89,7 @@ module.exports = (app, mongo) => {
                     newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
             });
         } else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
-            var isRight = false;
+            let isRight = false;
             const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                 // clear pending question
@@ -99,8 +99,8 @@ module.exports = (app, mongo) => {
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
 
                 // modify ratings
-                var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
-                var oldQRating = antsy.rating;
+                const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                const oldQRating = antsy.rating;
                 // update stats
                 if(req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
@@ -127,7 +127,7 @@ module.exports = (app, mongo) => {
                     newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
             });
         } else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
-            var isRight = false;
+            let isRight = false;
             const antsy = getQuestion(mongo.Ques, req.body.id).then(async antsy => {
 
                 // clear pending question
@@ -143,8 +143,8 @@ module.exports = (app, mongo) => {
                 }
 
                 // modify ratings
-                var oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
-                var oldQRating = antsy.rating;
+                const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
+                const oldQRating = antsy.rating;
 
                 // update stats
                 if(req.user.stats.lastAnswered != antsy._id) {
@@ -301,14 +301,14 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/train/:subject/displayQuestion', async (req, res) => {
-        var curQ = null;
+        let curQ = null;
         // no cache
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
         // define units and attempt to get queued question
-        var units = req.query.units.split(',');
-        var q = "";
+        const units = req.query.units.split(',');
+        let q = "";
         if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
             q = await getQuestion(mongo.Ques, req.user.stats.toAnswer[req.params.subject.toLowerCase()]);
         }
@@ -323,9 +323,9 @@ module.exports = (app, mongo) => {
                 skipQuestionUpdates(mongo.Ques, req, req.params.subject.toLowerCase(), q._id);
             }
             // get parameters set up
-            var ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
-            var floor = ceilingFloor.floor;
-            var ceiling = ceilingFloor.ceiling;
+            let ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
+            const floor = ceilingFloor.floor;
+            const ceiling = ceilingFloor.ceiling;
             // get question
             getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => {
                 // select random question

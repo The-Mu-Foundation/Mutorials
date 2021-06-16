@@ -1,6 +1,6 @@
 // MODULE IMPORTS
 const passport = require('passport');
-var Filter = require('bad-words');
+const Filter = require('bad-words');
 
 filter = new Filter();
 
@@ -78,7 +78,7 @@ module.exports = (app, mongo) => {
     app.post('/register', (req, res, next) => {
         req.body.username = req.body.username.toLowerCase();
         req.body.ign = req.body.ign.toLowerCase();
-        var registerInputProblems1 = false;
+        let registerInputProblems1 = false;
 
         if (req.body.ign.length > 30){
             req.flash('errorFlash', 'Your username is too long.');
@@ -132,7 +132,7 @@ module.exports = (app, mongo) => {
 
         const salt = saltHash.salt;
         const hash = saltHash.hash;
-        var thisYob = req.body.yob;
+        let thisYob = req.body.yob;
         if(!thisYob){
             thisYob = 2020;
         }
@@ -171,7 +171,7 @@ module.exports = (app, mongo) => {
         mongo.db.collection('users').findOne({ $or:[ { ign: req.body.ign }, { username: req.body.username } ]}).then((user) => {
             if (user) {
                 console.log('used');
-                var registerInputProblems2 = false;
+                let registerInputProblems2 = false;
                 if (user.ign == req.body.ign) {
                     req.flash('errorFlash', 'This username is already taken.');
                     registerInputProblems2 = true;

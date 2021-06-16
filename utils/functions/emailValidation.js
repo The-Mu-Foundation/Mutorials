@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
-var db = mongoose.connection;
+const db = mongoose.connection;
 
 const transporter = nodemailer.createTransport({
     service: 'Mailgun',

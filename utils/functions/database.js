@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-var db = mongoose.connection;
+const db = mongoose.connection;
 
 const { calculateLevel } = require("./siteAlgorithms");
 
@@ -11,7 +11,7 @@ function getQuestion(Ques, id) {
 // input a rating range (as floor and ceiling values), returns a range of questions
 async function getQuestions (Ques, ratingFloor, ratingCeiling, subject, units) {
     const gotQ = Ques.find({subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
-    var tempQ = await gotQ.exec();
+    let tempQ = await gotQ.exec();
     for(i = 0; i < tempQ.length; i++){
         const found = units.some(r => tempQ[i].units.includes(r));
         if(!found){
@@ -115,7 +115,7 @@ function updateCounters (req, question, correct) {
 }
 function updateTracker (req, question) {
     // update rating tracker
-    var tracker;
+    let tracker;
     if(req.user.stats.ratingTracker === undefined) {
         req.user.stats.ratingTracker = {};
     }
@@ -173,8 +173,8 @@ function clearQuestionQueue (req, subject) {
 async function skipQuestionUpdates(Ques, req, subject, id) {
 
     // deduct 8 rating for skipping
-    var originalRating = getRating(subject, req);
-    var deduction = originalRating > 8 ? originalRating-8 : 0;
+    const originalRating = getRating(subject, req);
+    const deduction = originalRating > 8 ? originalRating-8 : 0;
     setRating(subject, deduction, req);
 
     // update rating tracker

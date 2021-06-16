@@ -10,7 +10,7 @@ const { classSchema } = require('../../database/models/class')
 
 // START MONGO SERVER
 InitiateMongoServer();
-var db = mongoose.connection;
+const db = mongoose.connection;
 const PORT = process.env.PORT || 3000;
 const MongoStore = require('connect-mongo')(session);
 const Ques = db.model('Ques', qSchema, 'questions');
