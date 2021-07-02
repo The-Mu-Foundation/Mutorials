@@ -64,7 +64,7 @@ module.exports = (app, mongo) => {
                 const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 const oldQRating = antsy.rating;
                 // update stats
-                if(req.user.stats.lastAnswered != antsy._id) {
+                if (req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
@@ -77,16 +77,18 @@ module.exports = (app, mongo) => {
 
                     // update tracker
                     updateTracker(req, antsy);
-                    addExperience(req, Math.ceil(antsy.rating/20));
+                    addExperience(req, Math.ceil(antsy.rating / 20));
                 }
-                
+
                 // update achievements
                 updateTrainAchievements(req.user, antsy, isRight);
 
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
-                res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
+                res.render(VIEWS + 'private/train/answerExplanation.ejs', {
+                    units: req.body.units, userAnswer: req.body.answerChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation"
+                });
             });
         } else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
             let isRight = false;
@@ -102,7 +104,7 @@ module.exports = (app, mongo) => {
                 const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 const oldQRating = antsy.rating;
                 // update stats
-                if(req.user.stats.lastAnswered != antsy._id) {
+                if (req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
@@ -115,7 +117,7 @@ module.exports = (app, mongo) => {
 
                     // update tracker
                     updateTracker(req, antsy);
-                    addExperience(req, Math.ceil(antsy.rating/20));
+                    addExperience(req, Math.ceil(antsy.rating / 20));
                 }
 
                 // update achievements
@@ -123,8 +125,10 @@ module.exports = (app, mongo) => {
 
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
-                res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
+                res.render(VIEWS + 'private/train/answerExplanation.ejs', {
+                    units: req.body.units, userAnswer: req.body.saChoice, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation"
+                });
             });
         } else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
             let isRight = false;
@@ -136,9 +140,9 @@ module.exports = (app, mongo) => {
                 // check answer
                 if (antsy.answer[0].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
                     isRight = true;
-                } else if(Number(antsy.answer[0].toLowerCase()) == Number(req.body.freeAnswer.trim())) {
+                } else if (Number(antsy.answer[0].toLowerCase()) == Number(req.body.freeAnswer.trim())) {
                     isRight = true;
-                } else if(pluralize(antsy.answer[0].toLowerCase(), 1) == pluralize(req.body.freeAnswer.trim().toLowerCase(), 1)) {
+                } else if (pluralize(antsy.answer[0].toLowerCase(), 1) == pluralize(req.body.freeAnswer.trim().toLowerCase(), 1)) {
                     isRight = true;
                 }
 
@@ -147,7 +151,7 @@ module.exports = (app, mongo) => {
                 const oldQRating = antsy.rating;
 
                 // update stats
-                if(req.user.stats.lastAnswered != antsy._id) {
+                if (req.user.stats.lastAnswered != antsy._id) {
                     setRating(antsy.subject[0], calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
@@ -160,16 +164,18 @@ module.exports = (app, mongo) => {
 
                     // update tracker
                     updateTracker(req, antsy);
-                    addExperience(req, Math.ceil(antsy.rating/20));
+                    addExperience(req, Math.ceil(antsy.rating / 20));
                 }
-                
+
                 // update achievements
                 updateTrainAchievements(req.user, antsy, isRight);
 
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
-                res.render(VIEWS + 'private/train/answerExplanation.ejs', { units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
-                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation" });
+                res.render(VIEWS + 'private/train/answerExplanation.ejs', {
+                    units: req.body.units, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.subject, req), subject: req.body.subject,
+                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "Answer Explanation"
+                });
             });
         } else {
             req.flash('errorFlash', 'Please choose an answer next time... We treated that as a skip (-8 rating).');
@@ -208,15 +214,15 @@ module.exports = (app, mongo) => {
     app.get('/train/rush/loadQuestion', async (req, res) => {
         try {
             let score = parseInt(req.query.score);
-            let lowerBound = 500+score*100;
-            let upperBound = 500+(score+1)*100-1;
-            if(score == 0) {
+            let lowerBound = 500 + score * 100;
+            let upperBound = 500 + (score + 1) * 100 - 1;
+            if (score == 0) {
                 lowerBound = 0;
             }
             let selection = undefined;
-            while(!selection) {
+            while (!selection) {
                 let questions = await mongo.Ques.find({ type: "mc", rating: { $gte: lowerBound, $lte: upperBound } }).exec();
-                selection = questions[Math.floor(questions.length*Math.random())];
+                selection = questions[Math.floor(questions.length * Math.random())];
                 lowerBound -= 50;
                 upperBound += 50;
             }
@@ -228,7 +234,7 @@ module.exports = (app, mongo) => {
                 statement: selection.question,
                 choices: selection.choices
             });
-        } catch(err) {
+        } catch (err) {
             res.json({
                 status: "Error"
             });
@@ -243,12 +249,12 @@ module.exports = (app, mongo) => {
             let question = await mongo.Ques.findOne({ _id: id }).exec();
 
             let correct = true;
-            if(question.answer[0] != choice) {
+            if (question.answer[0] != choice) {
                 correct = false;
             }
             // backend site data updates
             incrementSolveCounter(mongo.SiteData, question.subject[0].toLowerCase(), correct);
-            addExperience(req, correct ? (question.rating/2) : (question.rating/4));
+            addExperience(req, correct ? (question.rating / 2) : (question.rating / 4));
             updateCounters(req, question, correct);
             setQRating(question, correct ? Math.max(0, question.rating - 1) : question.rating + 1);
 
@@ -256,7 +262,7 @@ module.exports = (app, mongo) => {
                 status: "Success",
                 correct
             });
-        } catch(err) {
+        } catch (err) {
             res.json({
                 status: "Error"
             });
@@ -274,7 +280,7 @@ module.exports = (app, mongo) => {
                 status: "Success",
                 highscore
             });
-        } catch(err) {
+        } catch (err) {
             res.json({
                 status: "Error"
             });
