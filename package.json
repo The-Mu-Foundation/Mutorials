@@ -33,7 +33,7 @@
         "http-errors": "^1.8.0",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.13.10",
-        "nanoid": "^3.1.29",
+        "nanoid": "^3.1.31",
         "node-fetch": "^2.6.5",
         "nodemailer": "^6.6.5",
         "passport": "^0.4.1",
