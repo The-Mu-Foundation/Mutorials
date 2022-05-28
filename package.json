@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "scripts": {
         "start": "node index.js",
-        "dev-start": "nodemon index.js",
+        "dev": "nodemon index.js",
         "lint": "eslint . --ext .js"
     },
     "engines": {
