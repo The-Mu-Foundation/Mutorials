@@ -194,6 +194,19 @@ module.exports = (app, mongo) => {
 
     //ADMIN GET ROUTES
 
+    app.get('/admin/adminHomepage', (req, res) => {        
+        c = req.cookies['skipQuestions'];
+        if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
+        mongo.db.collection('pendingQuestions').countDocuments({ $and: [{ reviewers: { $ne: req.user.contributor } }, { $id: { $nin: c } }] }).then((numUser, err) => {
+            if (err) { console.log(1, err); } else {
+                mongo.db.collection('pendingQuestions').countDocuments({ question: /.*/ }, (err, numAll) => {
+                    if (err) { console.log(2, err); }
+                    res.render(VIEWS + 'admin/adminHomepage.ejs', { numUser: numUser, numAll: numAll });
+                });
+            }
+        });
+    })
+
     app.get('/admin/addquestion', (_, res) => {
         res.render(VIEWS + 'admin/train/addQuestion.ejs', { subjectUnitDictionary, pageName: "ADMIN Add Question" });
     });

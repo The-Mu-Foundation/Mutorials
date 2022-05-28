@@ -22,24 +22,11 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/homepage', async (req, res) => {
-        if (adminList.includes(req.user.username)) {
-            c = req.cookies['skipQuestions'];
-            if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
-            mongo.db.collection('pendingQuestions').countDocuments({ $and: [{ reviewers: { $ne: req.user.contributor } }, { $id: { $nin: c } }] }).then((numUser, err) => {
-                if (err) { console.log(1, err); } else {
-                    mongo.db.collection('pendingQuestions').countDocuments({ question: /.*/ }, (err, numAll) => {
-                        if (err) { console.log(2, err); }
-                        res.render(VIEWS + 'admin/adminHomepage.ejs', { numUser: numUser, numAll: numAll });
-                    });
-                }
-            });
-        } else {
-            let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
-            let experienceStats = await calculateLevel(req.user.stats.experience);
-            const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
-            let announcements = await getAnnouncements(mongo.SiteData, 3);
-            res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, experienceStats, question, announcements });
-        }
+        let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
+        let experienceStats = await calculateLevel(req.user.stats.experience);
+        const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+        let announcements = await getAnnouncements(mongo.SiteData, 3);
+        res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, admin: adminList.includes(req.user.username), experienceStats, question, announcements });
     });
 
     app.get('/question/:id', (req, res) => {
