@@ -5,12 +5,14 @@
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
 
+<div id="question-data" data="<%= JSON.stringify(question) %>"></div>
+
 <%# Send to backend %>
 <script>
   $(document).ready(function () {
 
-        // get question ID
-        let questionID = "<%= question._id %>";
+    // get question ID
+    let questionID = "<%= question._id %>";
 
     // hide LaTeX compiler
     $("#latex-compiler").hide(0);
@@ -21,7 +23,7 @@
 
     // hide status flashes
     $("#failure").hide(0);
-        $("#success").hide(0);
+    $("#success").hide(0);
 
     // set what happens when question is submitted
     let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement, reviewerID;
@@ -100,7 +102,7 @@
         }
       });
 
-        });
+    });
 
     // skip question button
     $("#skipreview").click(function () {
@@ -110,35 +112,37 @@
       });
     });
 
-        // set unit checkbox toggling
-        $(".unit-choice-checkbox").hide(0);
-        $(".subject-choice-checkbox").change(function() {
-            let subject = $(this).attr('id');
-            if(this.checked) {
-                $("." + subject + "-unit-checkbox").show(0);
-            } else {
-                $("." + subject + "-unit-checkbox").hide(0);
-            }
-        });
-
-        // set default values of question
-        $("#question").val("<%= question.question %>");
-        $("#answerchoices").val("<%= question.choices?.join('@') %>");
-        $("#tags").val("<%= question.tags?.join('@') %>");
-        $("#rating").val("<%= question.rating %>");
-        $("#correctanswer").val("<%= question.answer?.join('@') %>");
-        $("#answer-explanation").val("<%= question.answer_ex %>");
-        $("#author").val("<%= question.author %>");
-        $("#source-statement").val("<%= question.source_statement %>");
-
-        let subjectList = "<%= question.subject?.join('@') %>".split('@');
-        let unitsList = "<%= question.units?.join('@') %>".split('@');
-        ["<%= question.type %>", "<%= question.ext_source %>", ...subjectList, ...unitsList].forEach((id) => {
-      document.getElementById(id).checked = true;
-        });;
-        subjectList.forEach((subject) => {
+    // set unit checkbox toggling
+    $(".unit-choice-checkbox").hide(0);
+    $(".subject-choice-checkbox").change(function() {
+        let subject = $(this).attr('id');
+        if(this.checked) {
             $("." + subject + "-unit-checkbox").show(0);
-        });
+        } else {
+            $("." + subject + "-unit-checkbox").hide(0);
+        }
+    });
+
+    // set default values of question
+    let questionData = JSON.parse($("#question-data").attr("data"));
+
+    $("#question").val(questionData.question);
+    $("#answerchoices").val(questionData.choices?.join('@'));
+    $("#tags").val(questionData.tags?.join('@'));
+    $("#rating").val(questionData.rating);
+    $("#correctanswer").val(questionData.answer?.join('@'));
+    $("#answer-explanation").val(questionData.answer_ex);
+    $("#author").val(questionData.author);
+    $("#source-statement").val(questionData.source_statement);
+
+    let subjectList = questionData.subject?.join('@').split('@');
+    let unitsList = questionData.units?.join('@').split('@');
+    [questionData.type, questionData.ext_source, ...subjectList, ...unitsList].forEach((id) => {
+      document.getElementById(id).checked = true;
+    });
+    subjectList.forEach((subject) => {
+        $("." + subject + "-unit-checkbox").show(0);
+    });
   });
 </script>
 
