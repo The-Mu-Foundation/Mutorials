@@ -1,8 +1,8 @@
 // fill in preset units later
 const presetUnitOptions = {
     "Physics": {
-        "AP Physics 1": ["Kinematics", "Forces", "Rotational Motion", "Energy", "Momentum and Collisions", "Simple Harmonic Motion", "Electric Forces and Fields", "Current and Resistance", "DC Circuits", "Vibrations and Waves", "Electrostatics"],
-        "AP Physics 2": ["Solids and Fluids", "Thermodynamics", "Electric Forces and Fields", "Current and Resistance", "DC Circuits", "Magnetism", "Inductance", "Vibrations and Waves", "Reflection and Refraction", "Mirrors and Lenses", "Wave Optics", "Quantum Physics", "Nuclear Energy and Elementary Particles", "Electrostatics"],
+        "AP Physics 1": ["Kinematics", "Forces", "Rotational Motion", "Energy", "Momentum and Collisions", "Gravitation", "Simple Harmonic Motion"],
+        "AP Physics 2": ["Energy", "Solids and Fluids", "Thermodynamics", "Electric Forces and Fields", "Current and Resistance", "DC Circuits", "Magnetism", "Inductance", "Vibrations and Waves", "Geometric Optics", "Physical Optics", "Quantum Physics", "Nuclear Energy and Elementary Particles", "Electrostatics"],
         "AP Physics C Mechanics": ["Kinematics", "Forces", "Energy", "Momentum and Collisions", "Rotational Motion", "Simple Harmonic Motion"],
         "AP Physics C EM": ["Electrostatics", "Electrical Energy and Capacitance", "Current and Resistance", "DC Circuits", "Magnetism", "Inductance"],
         "IB Physics SL2": ["Kinematics", "Forces", "Energy", "Momentum and Collisions", "Thermodynamics", "Simple Harmonic Motion", "Vibrations and Waves", "Reflection and Refraction", "Wave Optics", "Electric Forces and Fields", "Current and Resistance", "DC Circuits", "AC Circuits", "Magnetism", "Rotational Motion", "Nuclear Energy and Elementary Particles", "Quantum Physics", "Relativity"],
