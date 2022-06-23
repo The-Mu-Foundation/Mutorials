@@ -10,21 +10,23 @@
 
         // TEMPORARY: hide unused units on frontend (physics only right now)
         if("<%= subject %>" == "Physics") {
-            var toHide = ["Electric Forces and Fields",
-                    "Electrical Energy and Capacitance",
-                    "DC Circuits",
-                    "AC Circuits",
-                    "Magnetism",
-                    "Inductance",
-                    "Electrostatics",
-                    "Thermodynamics",
-                    "Vibrations and Waves",
-                    "Reflection and Refraction",
-                    "Mirrors and Lenses",
-                    "Wave Optics",
-                    "Relativity",
-                    "Quantum Physics",
-                    "Nuclear Energy and Elementary Particles"];
+            var toHide = [
+              /* "Electric Forces and Fields",
+              "Electrical Energy and Capacitance",
+              "DC Circuits",
+              "AC Circuits",
+              "Magnetism",
+              "Inductance",
+              "Electrostatics",
+              "Thermodynamics",
+              "Vibrations and Waves",
+              "Reflection and Refraction",
+              "Mirrors and Lenses",
+              "Wave Optics",
+              "Relativity",
+              "Quantum Physics",
+              "Nuclear Energy and Elementary Particles" */
+            ];
             toHide.forEach((element) => {
                 console.log("Now hidden: " + element);
                 document.getElementById("DIV " + element).style.display = "none";
