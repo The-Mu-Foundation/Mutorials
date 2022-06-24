@@ -1,32 +1,6 @@
 // tags
 const tags = {
     "Physics": {
-        "Units": {
-            "ACC": "AC Circuits",
-            "CAR": "Current and Resistance",
-            "DCC": "DC Circuits",
-            "EEC": "Electrical Energy and Capacitance",
-            "EFF": "Electric Forces and Fields",
-            "ENE": "Energy",
-            "ES": "Electrostatics",
-            "FOR": "Forces",
-            "IND": "Inductance",
-            "KIN": "Kinematics",
-            "LAB": "Lab Skills",
-            "MAC": "Momentum and Collisions",
-            "MAG": "Magnetism",
-            "ML": "Mirrors and Lenses",
-            "NEEP": "Nuclear Energy and Elementary Particles",
-            "QP": "Quantum Physics",
-            "RAR": "Reflection and Refraction",
-            "REL": "Relativity",
-            "ROMO": "Rotational Motion",
-            "SAF": "Solids and Fluids",
-            "SHM": "Simple Harmonic Motion",
-            "THER": "Thermodynamics",
-            "VW": "Vibrations and Waves",
-            "WO": "Wave Optics"
-        },
         "Concepts": {
             "2D": "2D Motion",
             "ACCL": "Acceleration",
@@ -84,27 +58,6 @@ const tags = {
         }
     },
     "Chemistry": {
-        "Units": {
-            "AAB": "Acids and Bases",
-            "AMI": "Atoms, Molecules, and Ions",
-            "ATOM": "Atomic Structure",
-            "BCHEM": "Biochemistry",
-            "BOND": "Bonding",
-            "CHEQ": "Chemical Equilibrium",
-            "CHKI": "Chemical Kinetics",
-            "ECHEM": "Electrochemistry",
-            "GAS": "Gases",
-            "LAB": "Lab Skills",
-            "MCHEM": "Materials Chemistry",
-            "OCHEM": "Organic Chemistry",
-            "PCHEM": "Physical Chemistry",
-            "REACT": "Chemical Reactions",
-            "SEF": "Spontaneity, Entropy, and Free Energy",
-            "SOL": "Solubility",
-            "SOLU": "Solutions",
-            "STOICH": "Stoichiometry",
-            "TCHEM": "Thermochemistry"
-        },
         "Concepts": {
             "ACID": "Acids",
             "ADDI": "Addition Reaction",
@@ -176,17 +129,6 @@ const tags = {
         }
     },
     "Biology": {
-        "Units": {
-            "CELL": "Cell Biology",
-            "EAB": "Evolution and Biodiversity",
-            "ECO": "Ecology",
-            "HAG": "Heredity and Genetics",
-            "HUMAN": "Human Physiology",
-            "MOBIO": "Molecular Biology",
-            "PAAP": "Plant and Animal Physiology",
-            "LAB": "Lab Skills"
-
-        },
         "Concepts": {
             "CARB": "Carbon Cycle",
             "CELC": "Cell Communication",
