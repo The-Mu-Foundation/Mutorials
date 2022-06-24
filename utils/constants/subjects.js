@@ -19,7 +19,6 @@ const subjectUnitDictionary = {
         "Electrostatics",
         "Thermodynamics",
         "Vibrations and Waves",
-        "Reflection and Refraction",
         "Physical Optics",
         "Geometric Optics",
         "Relativity",
