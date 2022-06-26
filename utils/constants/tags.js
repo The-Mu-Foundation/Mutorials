@@ -25,6 +25,7 @@ const tags = {
             "HKL": "Hooke's Law",
             "HT": "Heat Transfer",
             "IMT": "Impulse Momentum Theorem",
+            "KEP": "Kepler's Laws",
             "KE": "Kinetic Energy",
             "LEN": "Lenses",
             "MIR": "Mirror Optics",
