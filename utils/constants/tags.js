@@ -84,6 +84,27 @@ const tags = {
         }
     },
     "Chemistry": {
+        "Units": {
+            "AAB": "Acids and Bases",
+            "AMI": "Atoms, Molecules, and Ions",
+            "ATOM": "Atomic Structure",
+            "BCHEM": "Biochemistry",
+            "BOND": "Bonding",
+            "CHEQ": "Chemical Equilibrium",
+            "CHKI": "Chemical Kinetics",
+            "ECHEM": "Electrochemistry",
+            "GAS": "Gases",
+            "LAB": "Lab Skills",
+            "MCHEM": "Materials Chemistry",
+            "OCHEM": "Organic Chemistry",
+            "PCHEM": "Physical Chemistry",
+            "REACT": "Chemical Reactions",
+            "SEF": "Spontaneity, Entropy, and Free Energy",
+            "SOL": "Solubility",
+            "SOLU": "Solutions",
+            "STOICH": "Stoichiometry",
+            "TCHEM": "Thermochemistry"
+        },
         "Concepts": {
             "ACID": "Acids",
             "ADDI": "Addition Reaction",
@@ -155,6 +176,17 @@ const tags = {
         }
     },
     "Biology": {
+        "Units": {
+            "CELL": "Cell Biology",
+            "EAB": "Evolution and Biodiversity",
+            "ECO": "Ecology",
+            "HAG": "Heredity and Genetics",
+            "HUMAN": "Human Physiology",
+            "MOBIO": "Molecular Biology",
+            "PAAP": "Plant and Animal Physiology",
+            "LAB": "Lab Skills"
+
+        },
         "Concepts": {
             "CARB": "Carbon Cycle",
             "CELC": "Cell Communication",
