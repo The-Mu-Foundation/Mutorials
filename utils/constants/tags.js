@@ -1,6 +1,32 @@
 // tags
 const tags = {
     "Physics": {
+        "Units": {
+            "ACC": "AC Circuits",
+            "CAR": "Current and Resistance",
+            "DCC": "DC Circuits",
+            "EEC": "Electrical Energy and Capacitance",
+            "EFF": "Electric Forces and Fields",
+            "ENE": "Energy",
+            "ES": "Electrostatics",
+            "FOR": "Forces",
+            "IND": "Inductance",
+            "KIN": "Kinematics",
+            "LAB": "Lab Skills",
+            "MAC": "Momentum and Collisions",
+            "MAG": "Magnetism",
+            "ML": "Mirrors and Lenses",
+            "NEEP": "Nuclear Energy and Elementary Particles",
+            "QP": "Quantum Physics",
+            "RAR": "Reflection and Refraction",
+            "REL": "Relativity",
+            "ROMO": "Rotational Motion",
+            "SAF": "Solids and Fluids",
+            "SHM": "Simple Harmonic Motion",
+            "THER": "Thermodynamics",
+            "VW": "Vibrations and Waves",
+            "WO": "Wave Optics"
+        },
         "Concepts": {
             "2D": "2D Motion",
             "ACCL": "Acceleration",
