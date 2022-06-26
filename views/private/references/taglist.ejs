@@ -27,13 +27,6 @@
             </thead>
             <tbody>
 
-                <% Object.keys(tags[subject]["Units"]).forEach((unitTag) => { %>
-                    <tr class="d-flex">
-                        <td class="col-4"><h5><span class="badge bg-primary"><%= unitTag %></span></h5></td>
-                        <td class="col-8"><%= tags[subject]["Units"][unitTag] %></td>
-                    </tr>
-                <% }); %>
-
                 <% Object.keys(tags[subject]["Concepts"]).forEach((conceptTag) => { %>
                     <tr class="d-flex">
                         <td class="col-4"><h5><span class="badge bg-secondary"><%= conceptTag %></span></h5></td>
