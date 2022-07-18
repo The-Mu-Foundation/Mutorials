@@ -143,7 +143,7 @@ module.exports = (app, mongo) => {
         }
 
         if (req.body.newpw) {
-            if (req.body.password) {
+            if (req.body.plassword) {
                 const isValid = validPassword(req.body.plassword, req.user.hash, req.user.salt);
                 if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw.length >= 7) {
                     if (req.body.newpw == req.body.confirmnewpw) {
