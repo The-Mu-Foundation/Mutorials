@@ -10,6 +10,7 @@ const { genPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
+const { request } = require('http');
 
 const VIEWS = "../views/"
 
@@ -97,9 +98,13 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'Keep it appropriate.');
             registerInputProblems1 = true;
         }
-        if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
-            req.flash('errorFlash', 'The password you entered does not meet the requirements.');
-            registerInputProblems1 = true;
+        console.log(req.body.password);
+        if (req.body.password != "") {
+            console.log("bruh");
+            if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
+                req.flash('errorFlash', 'The password you entered does not meet the requirements.');
+                registerInputProblems1 = true;
+            }
         }
         if (req.body.password!=req.body.confirmPassword) {
             req.flash('errorFlash', 'The passwords did not match. Please try again.');
@@ -128,19 +133,29 @@ module.exports = (app, mongo) => {
             return; // to prevent ERRHTTPHEADERSSENT
         }
 
-        const saltHash = genPassword(req.body.password);
+        if (req.body.password != "") {
+            const saltHash = genPassword(req.body.password);
+            var salt = saltHash.salt;
+            var hash = saltHash.hash;
+            ext_acc_val = false
+        }
+        else {
+            var salt = ""
+            var hash = ""
+            ext_acc_val = true;
+        }
 
-        const salt = saltHash.salt;
-        const hash = saltHash.hash;
         let thisYob = req.body.yob;
         if(!thisYob){
             thisYob = 2020;
         }
+
         const newUser = new mongo.User({
             username: req.body.username,
             ign: req.body.ign,
             hash: hash,
             salt: salt,
+            external_acc: ext_acc_val,
             profile: {
                 name: req.body.ign,
                 location: 'Earth',

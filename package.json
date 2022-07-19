@@ -28,6 +28,7 @@
         "express-session": "^1.17.2",
         "express-sslify": "^1.2.0",
         "express-validator": "^6.12.2",
+        "googleapis": "^105.0.0",
         "hcaptcha": "0.0.2",
         "heroku-ssl-redirect": "^0.1.1",
         "html": "^1.0.0",

@@ -54,7 +54,7 @@
         data-type="standard"
         data-shape="rectangular"
         data-theme="outline"
-        data-text="signup_with"
+        data-text="continue_with"
         data-size="large"
         data-logo_alignment="left">
     </div>
@@ -110,17 +110,22 @@
         return JSON.parse(window.atob(base64));
     }
 
+    // async function getBday (id) {
+    //     const responsee = await fetch(`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost.com%2Foauthplayground&prompt=consent&response_type=code&client_id=427524045188-3dvvchf9eibk948gbfa76o7brr63rn0m.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read&access_type=offline`);
+    //     const responser = await responsee.json();
+    //     return responser;
+    // }
+
     function handleCredentialResponse(response) {
-        // decodeJwtResponse() is a custom function defined by you
-        // to decode the credential response.
         const responsePayload = decodeJwtResponse(response.credential);
         console.log(responsePayload);
-        // console.log("ID: " + responsePayload.sub);
-        // console.log('Full Name: ' + responsePayload.name);
-        // console.log('Given Name: ' + responsePayload.given_name);
-        // console.log('Family Name: ' + responsePayload.family_name);
-        // console.log("Image URL: " + responsePayload.picture);
-        // console.log("Email: " + responsePayload.email);
+        // console.log(getBday(responsePayload.sub));
+        document.getElementById("signupEmail").value = responsePayload.email;
+        document.getElementById("signupPassword").value = null;
+        document.getElementById("signupConfirmPassword").value = null;
+        document.getElementById("signupPassword").hidden = true;
+        document.getElementById("signupConfirmPassword").hidden = true;
+        document.getElementById("ign").value = responsePayload.name.replace(" ", "").toLowerCase();
     }
 </script>
 
