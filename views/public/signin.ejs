@@ -102,7 +102,7 @@
         const responsePayload = decodeJwtResponse(response.credential);
         console.log(responsePayload);
         document.getElementById("loginPassword").value = responsePayload.sub;
-        // console.log(document.getElementById("loginPassword").value);
+        console.log(document.getElementById("loginPassword").value);
         document.getElementById("loginPassword").hidden = true;
         document.getElementById("loginEmail").value = responsePayload.email;
         document.getElementById("loginEmail").hidden = true;

@@ -171,6 +171,8 @@ module.exports = (app, mongo) => {
     });
 
     app.post('/deleteAccount', async (req,res) => {
+        console.log(req.body.delassword);
+        console.log(req.user.external_id);
         const isValid = validPassword(req.body.delassword, req.user.hash, req.user.salt);
         if (isValid) {
             mongo.db.collection('users').deleteOne({ _id: req.user._id });
@@ -180,8 +182,17 @@ module.exports = (app, mongo) => {
             res.redirect('/');
         }
         else {
-            req.flash('errorFlash', 'Your current password does not match!')
-            res.redirect('/settings');
+            if (req.body.delassword == req.user.external_id) {
+                mongo.db.collection('users').deleteOne({ _id: req.user._id });
+                req.logout();
+                console.log('Deleted Account');
+                req.flash('successFlash','Goodbye.');
+                res.redirect('/');
+            }
+            else {
+                req.flash('errorFlash', 'Your current password does not match!')
+                res.redirect('/settings');
+            }
         }   
     });
 

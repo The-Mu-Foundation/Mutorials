@@ -129,21 +129,30 @@
                 <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" placeholder="Change your linked email">
             </div>
         </div>
-        <div class="form-group row">
-            <label for="Password" class="col-sm-2 col-form-label">Change Password</label>
-            <div class="col-sm-10">
-                <input type="password" name="plassword" class="form-control" id="plassword" placeholder="Current password">
+        <% if(user.external_id == ""){ %>
+            <div class="form-group row">
+                <label for="Password" class="col-sm-2 col-form-label">Change Password</label>
+                <div class="col-sm-10">
+                    <input type="password" name="plassword" class="form-control" id="plassword" placeholder="Current password">
+                </div>
+                <label for="NewPW" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10 mt-1">
+                    <input type="password" class="form-control" name="newpw" id="newpw" placeholder="New password">
+                </div>
+                <label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10 mt-1">
+                    <input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
+                    <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
+                </div>
             </div>
-            <label for="NewPW" class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10 mt-1">
-                <input type="password" class="form-control" name="newpw" id="newpw" placeholder="New password">
+        <% } else{ %>  
+            <div class="form-group row">
+                <label for="Password" class="col-sm-2 col-form-label">Change Password</label>
+                <div class="col-sm-10">
+                    <p>N/A - Authenticated with Google</p>
+                </div>
             </div>
-            <label for="ConfirmPW" class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-10 mt-1">
-                <input type="password" class="form-control" name="confirmnewpw" id="password" name="password" placeholder="Confirm new password">
-                <p class="container mb-4 mt-2" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
-            </div>
-        </div>
+        <% } %>
 
         <input class="btn btn-primary" type="submit" value="Update Account">
     </div>
@@ -151,12 +160,17 @@
 
 <form id="delete-account-form" action="/deleteAccount" method="POST">
     <div class="jumbotron container">
-
         <h3 class="mb-4">Delete Account</h3>
         <div class="form-group row">
-            <label for="AccDel" class="col-sm-2 col-form-label">Password</label>
+            <label for="AccDel" class="col-sm-2 col-form-label">Password Confirmation</label>
             <div class="col-sm-10">
+        <% if(user.external_id == ""){ %>
                 <input type="password" name="delassword" class="form-control" id="delassword" placeholder="Current password">
+                
+        <% } else{ %>
+            <p>Not required - Authenticated with Google</p>
+            <input type="password" name="delassword" class="form-control" id="delassword" value="<%= user.external_id %>" hidden="true">
+        <% } %>
             </div>
         </div>
         <div class="form-group row">
