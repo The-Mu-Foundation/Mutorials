@@ -30,15 +30,8 @@
         $("submitButton").click(function() {
             gtag_report_conversion();
         });
-    });
 
-    function onSignIn(googleUser) {
-        var profile = googleUser.getBasicProfile();
-        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        console.log('Name: ' + profile.getName());
-        console.log('Image URL: ' + profile.getImageUrl());
-        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-    }
+    });
 
 </script>
 
@@ -49,7 +42,24 @@
 
     <p class="container mb-3">Already have an account? <a href="/signin">Sign in</a></p>
 
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <div id="g_id_onload"
+        data-client_id="427524045188-3dvvchf9eibk948gbfa76o7brr63rn0m.apps.googleusercontent.com"
+        data-context="signup"
+        data-ux_mode="popup"
+        data-callback="handleCredentialResponse"
+        data-auto_select="true">
+    </div>
+
+    <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="signup_with"
+        data-size="large"
+        data-logo_alignment="left">
+    </div>
+
+    <br>
 
     <form action="/register" method="post">
 
@@ -87,6 +97,32 @@
         </div>
     </form>
 </div>
+
+<div id="g_id_onload"
+     data-client_id="427524045188-3dvvchf9eibk948gbfa76o7brr63rn0m.apps.googleusercontent.com"
+     data-callback="handleCredentialResponse">
+</div>
+
+<script>
+    function decodeJwtResponse (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse(window.atob(base64));
+    }
+
+    function handleCredentialResponse(response) {
+        // decodeJwtResponse() is a custom function defined by you
+        // to decode the credential response.
+        const responsePayload = decodeJwtResponse(response.credential);
+        console.log(responsePayload);
+        // console.log("ID: " + responsePayload.sub);
+        // console.log('Full Name: ' + responsePayload.name);
+        // console.log('Given Name: ' + responsePayload.given_name);
+        // console.log('Family Name: ' + responsePayload.family_name);
+        // console.log("Image URL: " + responsePayload.picture);
+        // console.log("Email: " + responsePayload.email);
+    }
+</script>
 
 
 <%- include("../partials/footer") -%>

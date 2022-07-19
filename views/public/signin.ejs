@@ -31,6 +31,24 @@
 
         <p class="container mb-3">Don't have an account? <a href="/signup">Sign up</a></p>
 
+        <div id="g_id_onload"
+            data-client_id="427524045188-3dvvchf9eibk948gbfa76o7brr63rn0m.apps.googleusercontent.com"
+            data-context="signin"
+            data-ux_mode="popup"
+            data-callback="handleCredentialResponse"
+        </div>
+
+        <div class="g_id_signin"
+            data-type="standard"
+            data-shape="rectangular"
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="large"
+            data-logo_alignment="left">
+        </div>
+
+        <br>
+
         <form action="/login" method="post">
             <div class="form-group">
                 <input type="text" class="form-control" id="loginEmail" placeholder="Username / Email Address" name="username">
@@ -69,5 +87,26 @@
     </div>
 
 </div>
+
+<script>
+    function decodeJwtResponse (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse(window.atob(base64));
+    }
+
+    function handleCredentialResponse(response) {
+        // decodeJwtResponse() is a custom function defined by you
+        // to decode the credential response.
+        const responsePayload = decodeJwtResponse(response.credential);
+        console.log(responsePayload);
+        // console.log("ID: " + responsePayload.sub);
+        // console.log('Full Name: ' + responsePayload.name);
+        // console.log('Given Name: ' + responsePayload.given_name);
+        // console.log('Family Name: ' + responsePayload.family_name);
+        // console.log("Image URL: " + responsePayload.picture);
+        // console.log("Email: " + responsePayload.email);
+    }
+</script>
 
 <%- include("../partials/footer") -%>
