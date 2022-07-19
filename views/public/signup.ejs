@@ -121,8 +121,8 @@
         console.log(responsePayload);
         // console.log(getBday(responsePayload.sub));
         document.getElementById("signupEmail").value = responsePayload.email;
-        document.getElementById("signupPassword").value = null;
-        document.getElementById("signupConfirmPassword").value = null;
+        document.getElementById("signupPassword").value = "";
+        document.getElementById("signupConfirmPassword").value = "";
         document.getElementById("signupPassword").hidden = true;
         document.getElementById("signupConfirmPassword").hidden = true;
         document.getElementById("ign").value = responsePayload.name.replace(" ", "").toLowerCase();

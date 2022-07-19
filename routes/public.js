@@ -100,7 +100,6 @@ module.exports = (app, mongo) => {
         }
         console.log(req.body.password);
         if (req.body.password != "") {
-            console.log("bruh");
             if (req.body.password.length < 7 || !(/\d/.test(req.body.password)) || !(/[a-zA-Z]/.test(req.body.password))) {
                 req.flash('errorFlash', 'The password you entered does not meet the requirements.');
                 registerInputProblems1 = true;
@@ -134,17 +133,15 @@ module.exports = (app, mongo) => {
         }
 
         if (req.body.password != "") {
-            const saltHash = genPassword(req.body.password);
-            var salt = saltHash.salt;
-            var hash = saltHash.hash;
             ext_acc_val = false
         }
         else {
-            var salt = ""
-            var hash = ""
             ext_acc_val = true;
         }
 
+        const saltHash = genPassword(req.body.password);
+        const salt = saltHash.salt;
+        const hash = saltHash.hash;
         let thisYob = req.body.yob;
         if(!thisYob){
             thisYob = 2020;

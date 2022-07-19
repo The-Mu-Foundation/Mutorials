@@ -98,7 +98,7 @@
     function handleCredentialResponse(response) {
         const responsePayload = decodeJwtResponse(response.credential);
         console.log(responsePayload);
-        document.getElementById("loginPassword").value = null;
+        document.getElementById("loginPassword").value = "";
         document.getElementById("loginPassword").hidden = true;
         document.getElementById("loginEmail").value = responsePayload.email;
         document.getElementById("loginEmail").hidden = true;
