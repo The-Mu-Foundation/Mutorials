@@ -32,6 +32,14 @@
         });
     });
 
+    function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Name: ' + profile.getName());
+        console.log('Image URL: ' + profile.getImageUrl());
+        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    }
+
 </script>
 
 <h1 class="my-5 container">Sign up for Mutorials!</h1>
@@ -40,6 +48,8 @@
     <%- include("../partials/flashes") -%>
 
     <p class="container mb-3">Already have an account? <a href="/signin">Sign in</a></p>
+
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
 
     <form action="/register" method="post">
 
