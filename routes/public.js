@@ -153,6 +153,7 @@ module.exports = (app, mongo) => {
             hash: hash,
             salt: salt,
             external_acc: ext_acc_val,
+            external_id: req.body.externalId,
             profile: {
                 name: req.body.ign,
                 location: 'Earth',

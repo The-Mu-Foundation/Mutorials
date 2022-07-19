@@ -81,6 +81,9 @@
             <input type="number" class="form-control" id="yob" name="yob" placeholder="Year of Birth">
         </div>
         <div class="form-group">
+            <input type="number" class="form-control" id="externalId" name="externalId" hidden="true">
+        </div>
+        <div class="form-group">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="agreeTOS" name="agreeTOS" value="agreeAge">
                 <label class="form-check-label" for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a> and <a href='/termsOfService#privacy-policy'>Privacy Policy</a>.</label><br>
@@ -121,8 +124,9 @@
         console.log(responsePayload);
         // console.log(getBday(responsePayload.sub));
         document.getElementById("signupEmail").value = responsePayload.email;
-        document.getElementById("signupPassword").value = "";
-        document.getElementById("signupConfirmPassword").value = "";
+        document.getElementById("externalId").value = responsePayload.sub;
+        document.getElementById("signupPassword").value = null;
+        document.getElementById("signupConfirmPassword").value = null;
         document.getElementById("signupPassword").hidden = true;
         document.getElementById("signupConfirmPassword").hidden = true;
         document.getElementById("ign").value = responsePayload.name.replace(" ", "").toLowerCase();

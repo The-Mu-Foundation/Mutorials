@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     hash: String,
     salt: String,
     external_acc: Boolean,
+    external_id: Number,
     profile: {
         name: String,
         location: String,

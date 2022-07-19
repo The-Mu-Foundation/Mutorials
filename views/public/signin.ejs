@@ -56,6 +56,9 @@
             <div class="form-group">
                 <input type="password" class="form-control" id="loginPassword" placeholder="Password" name="password">
             </div>
+            <div class="form-group">
+                <input type="number" class="form-control" id="externalIdLogin" name="externalIdLogin" hidden="true" >
+            </div>
             <div class="row">
                 <div class="col-6">
                     <div class="form-check">
@@ -98,10 +101,12 @@
     function handleCredentialResponse(response) {
         const responsePayload = decodeJwtResponse(response.credential);
         console.log(responsePayload);
-        document.getElementById("loginPassword").value = "";
+        document.getElementById("loginPassword").value = responsePayload.sub;
+        // console.log(document.getElementById("loginPassword").value);
         document.getElementById("loginPassword").hidden = true;
         document.getElementById("loginEmail").value = responsePayload.email;
         document.getElementById("loginEmail").hidden = true;
+        document.getElementById("externalIdLogin").value = responsePayload.sub;
     }
 </script>
 
