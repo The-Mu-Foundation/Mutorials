@@ -44,7 +44,7 @@
 
     <div id="g_id_onload"
         data-client_id="427524045188-3dvvchf9eibk948gbfa76o7brr63rn0m.apps.googleusercontent.com"
-        data-context="signup"
+        data-context="signin"
         data-ux_mode="popup"
         data-callback="handleCredentialResponse"
         data-auto_select="true">
@@ -54,7 +54,7 @@
         data-type="standard"
         data-shape="rectangular"
         data-theme="outline"
-        data-text="continue_with"
+        data-text="signin_with"
         data-size="large"
         data-logo_alignment="left">
     </div>
@@ -113,16 +113,8 @@
         return JSON.parse(window.atob(base64));
     }
 
-    // async function getBday (id) {
-    //     const responsee = await fetch(`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost.com%2Foauthplayground&prompt=consent&response_type=code&client_id=427524045188-3dvvchf9eibk948gbfa76o7brr63rn0m.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read&access_type=offline`);
-    //     const responser = await responsee.json();
-    //     return responser;
-    // }
-
     function handleCredentialResponse(response) {
         const responsePayload = decodeJwtResponse(response.credential);
-        console.log(responsePayload);
-        // console.log(getBday(responsePayload.sub));
         document.getElementById("signupEmail").value = responsePayload.email;
         document.getElementById("externalId").value = responsePayload.sub;
         document.getElementById("signupPassword").value = null;
