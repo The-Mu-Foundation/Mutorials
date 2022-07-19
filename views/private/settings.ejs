@@ -129,7 +129,7 @@
                 <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" placeholder="Change your linked email">
             </div>
         </div>
-        <% if(user.external_id == ""){ %>
+        <% if(user.external_acc == false){ %>
             <div class="form-group row">
                 <label for="Password" class="col-sm-2 col-form-label">Change Password</label>
                 <div class="col-sm-10">
@@ -164,7 +164,7 @@
         <div class="form-group row">
             <label for="AccDel" class="col-sm-2 col-form-label">Password Confirmation</label>
             <div class="col-sm-10">
-        <% if(user.external_id == ""){ %>
+        <% if(user.external_acc == false){ %>
                 <input type="password" name="delassword" class="form-control" id="delassword" placeholder="Current password">
                 
         <% } else{ %>
