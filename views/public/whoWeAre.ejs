@@ -1,7 +1,12 @@
 <%# About Mutorials page %>
 
 <%- include("../partials/header") -%>
-<%- include("../partials/navigationPublic") -%>
+
+<% if (authenticated) { %>
+    <%- include("../partials/navigationPrivate") -%>
+<% } else { %>
+    <%- include("../partials/navigationPublic") -%>
+<% } %>
 
 <%- include("../partials/components/aboutMutorials") -%>
 
