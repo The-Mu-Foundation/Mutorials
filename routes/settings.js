@@ -170,6 +170,7 @@ module.exports = (app, mongo) => {
             req.user.hash = newPass.hash;
             req.user.salt = newPass.salt;
             mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, external_acc: true, external_id: req.body.externalId} });
+            req.flash('successFlash', 'Your Mutorials account has been linked to Google and you no longer need a password to sign in.');
         }
         res.redirect('/settings');
     });
