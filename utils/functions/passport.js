@@ -21,11 +21,9 @@ module.exports = (app, mongo) => {
                 if (isValid) {
                     return cb(null, user[0]);
                 } else {
-                    
-                    if (password == user[0].external_id) {
+                    if (req.body.externalIdLogin == user[0].external_id) {
                         return cb(null, user[0]);
                     }
-
                     return cb(null, false);
                 }
 

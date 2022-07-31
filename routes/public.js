@@ -133,10 +133,10 @@ module.exports = (app, mongo) => {
         }
 
         if (req.body.password != "") {
-            ext_acc_val = false
+            isExternalAcc = false
         }
         else {
-            ext_acc_val = true;
+            isExternalAcc = true;
         }
 
         const saltHash = genPassword(req.body.password);
@@ -152,7 +152,7 @@ module.exports = (app, mongo) => {
             ign: req.body.ign,
             hash: hash,
             salt: salt,
-            external_acc: ext_acc_val,
+            external_acc: isExternalAcc,
             external_id: req.body.externalId,
             profile: {
                 name: req.body.ign,

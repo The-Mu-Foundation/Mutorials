@@ -104,7 +104,7 @@
 
     function handleCredentialResponse(response) {
         const responsePayload = decodeJwtResponse(response.credential);
-        document.getElementById("loginPassword").value = responsePayload.sub;
+        document.getElementById("loginPassword").value = "googlesignin";
         document.getElementById("loginPassword").hidden = true;
         document.getElementById("loginEmail").value = responsePayload.email;
         document.getElementById("loginEmail").hidden = true;
