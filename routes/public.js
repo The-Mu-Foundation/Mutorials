@@ -64,7 +64,12 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/whoWeAre', (req, res)  => {
-        res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials" });
+        if (req.isAuthenticated()) {
+            res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials", authenticated: true });
+        }
+        else {
+            res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials", authenticated: false });
+        }
     });
 
     app.get('/termsOfService', (req, res) => {
