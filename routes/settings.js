@@ -40,15 +40,20 @@ module.exports = (app, mongo) => {
                     req.flash('errorFlash', 'Keep it appropriate.');
                 }
             }
-            if (req.body.bio) {
-                if (req.body.bio == filter.clean(req.body.bio)) {
-                    if (req.body.bio.length <= 150) {
-                        req.user.profile.bio = req.body.bio;
+            if (req.body.bio || req.body.bio == "") {
+                if (!req.body.bio == "") {
+                    if (req.body.bio == filter.clean(req.body.bio)) {
+                        if (req.body.bio.length <= 150) {
+                            req.user.profile.bio = req.body.bio;
+                        } else {
+                            req.flash('errorFlash', 'Please keep your bio under 150 characters long.');
+                        }
                     } else {
-                        req.flash('errorFlash', 'Please keep your bio under 150 characters long.');
+                        req.flash('errorFlash', 'Keep it appropriate.');
                     }
-                } else {
-                    req.flash('errorFlash', 'Keep it appropriate.');
+                }
+                else {
+                    req.user.profile.bio = req.body.bio;
                 }
             }
             if (req.body.location) {
