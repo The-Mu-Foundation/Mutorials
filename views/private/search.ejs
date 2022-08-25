@@ -11,11 +11,11 @@
 	$(document).ready(function () {
 
 		$("#submit").click(function () {
-
-			// free response text values
-			let search = $("#query").val();
-
-            window.location.href = "/search?search=" + search;
+      // Now we have plaintext query, units, and tags
+			let text = $("#text-query").val();
+      let units = $('#units-query').val();
+      let tags = $('#tags-query').val();
+      window.location.href = `/search?text=${text}&units=${units}&tags=${tags}`;
 		});
 	});
 </script>
@@ -24,28 +24,35 @@
 
     <div class="row">
         <div class="col-md-10">
-            <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="query" value="<%= query %>">
+            <label class="d-none" for="text-query">Text query</label>
+            <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="text-query" value="<%= query.text %>">
+
+            <label class="d-none" for="units-query">Units (optional)</label>
+            <input class="form-control form-control-md my-2" type="text" placeholder="Units (optional)" id="units-query" value="<%= query.units %>">
+
+            <label class="d-none" for="tags-query">Tags (optional)</label>
+            <input class="form-control form-control-md my-2" type="text" placeholder="Tags (optional)" id="tags-query" value="<%= query.tags %>">
         </div>
         <div class="col-md-2">
             <input class="btn btn-primary btn-lg w-100 my-2" value="Search" type="button" id="submit">
         </div>
+        <p>Enter units and tags as comma-separated lists.</p>
     </div>
-        
-    <% if(results.length > 0) { %>
-        
+    
+    <% if (results.length > 0) { %>
+        <h3 class="mb-0 mt-4"><%= results.length %> results</h3>
         <% results.forEach((result) => { %>
-
             <a href="
                 <%= result.type == 'QUESTION' ? '/question/'+result.id : (result.type == 'USER' ? '/profile/'+result.id : '#') %>
             " target="_blank" style="text-decoration: none;">
-                <div class="d-block px-4 pt-2 pb-1 bg-light my-2 search-result">
+                <div class="d-block px-4 py-3 bg-light my-2 search-result">
                     <h4><span class="badge bg-secondary"><%= result.type %></span> <%= result.title %></h4>
-                    <p><%= result.preview %></p>
+                    <p class="mb-0"><%= result.preview %></p>
                 </div>
             </a>
         <% }); %>
-    <% } else if(query != "") { %>
 
+    <% } else if(query != "") { %>
         <div class="my-2 alert alert-danger">No results found for <em><%= query %></em></div>
     <% } %>
     
