@@ -41,12 +41,13 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/search', async (req, res) => {
-        let { search } = req.query;
-        if(search) {
-            let results = await querySite(search, mongo.User, mongo.Ques, mongo.siteData);
-            res.render(VIEWS + 'private/search.ejs', { results, query: search, pageName: "Search: " + search });
+        let query = req.query;
+
+        if (query) {
+            let results = await querySite(query, mongo.User, mongo.Ques, mongo.siteData);
+            res.render(VIEWS + 'private/search.ejs', { results, query, pageName: `Search: ${query}` });
         } else {
-            res.render(VIEWS + 'private/search.ejs', { results: [], query: "", pageName: "Search" });
+            res.render(VIEWS + 'private/search.ejs', { results: [], query, pageName: "Search" });
         }
     });
 

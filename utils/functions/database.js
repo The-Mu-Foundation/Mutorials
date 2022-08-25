@@ -329,15 +329,17 @@ async function updateRushStats(user, score) {
     db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { stats: user.stats } });
 }
 
-async function querySite(search, User, Ques, SiteData) {
-
+async function querySite(query, User, Ques, SiteData) {
     results = [];
-    search = search.trim();
+    let { text, units, tags } = query;
+    text = text.trim();
+    units = units ? units.trim().split(",").map(unit => unit.trim()) : [];
+    tags = tags ? tags.trim().split(",").map(tag => tag.trim()) : [];
 
-    let possibleID = 0;
+    let possibleID;
     try {
-        possibleID = mongoose.Types.ObjectId(search);
-    } catch(err) {
+        possibleID = mongoose.Types.ObjectId(text);
+    } catch (err) {
         possibleID = mongoose.Types.ObjectId('000000000000000000000000');
     }
 
@@ -345,27 +347,39 @@ async function querySite(search, User, Ques, SiteData) {
     let userMatches = await User.find({
         $or: [
             { _id: possibleID },
-            { ign: { $regex: new RegExp(search), $options: 'ix' }},
-            { "profile.name": { $regex: new RegExp(search), $options: 'i' }}
+            { ign: { $regex: new RegExp(text), $options: 'ix' }},
+            { "profile.name": { $regex: new RegExp(text), $options: 'i' }}
         ]
     }).exec();
 
+    // Put units and tags in an and query
+    let andQuery = [];
+    if (units.length > 0) {
+        andQuery.push({ units: { $all: units } });
+    }
+    if (tags.length > 0) {
+        andQuery.push({ tags: { $all: tags } });
+    }
+
     let questionMatches = await Ques.find({
-        $or: [
-            { _id: possibleID },
-            { question: { $regex: new RegExp(search), $options: 'i' }},
-            { choices: { $regex: new RegExp(search), $options: 'i' }},
-            { tags: search.toUpperCase() },
-            { answer_ex: { $regex: new RegExp(search), $options: 'i' }},
-            { ext_source: search },
-            { subject: { $regex: new RegExp(search), $options: 'ix' }},
-            { units: { $regex: new RegExp(search), $options: 'i' }}
+        $and: [
+            {
+                $or: [
+                    { _id: possibleID },
+                    { question: { $regex: new RegExp(text), $options: 'i' }},
+                    { choices: { $regex: new RegExp(text), $options: 'i' }},
+                    { answer_ex: { $regex: new RegExp(text), $options: 'i' }},
+                    { ext_source: text },
+                    { subject: { $regex: new RegExp(text), $options: 'ix' }},
+                ]
+            },
+            ...andQuery
         ]
-    }).sort({ rating: -1}).exec();
+    }).sort({ rating: -1 }).exec();
 
     // load matches into results
     questionMatches.forEach((question) => {
-        if(search.toUpperCase() == question.question.toUpperCase() || question.tags.includes(search.toUpperCase()) || question._id.toString() == search) {
+        if (text.toUpperCase() == question.question.toUpperCase() || question.tags.includes(text.toUpperCase()) || question._id.toString() == text) {
             results.unshift({
                 exactMatch: true,
                 type: "QUESTION",
@@ -385,8 +399,7 @@ async function querySite(search, User, Ques, SiteData) {
     });
 
     userMatches.forEach((user) => {
-
-        if(search.toUpperCase() == user.ign.toUpperCase() || user._id.toString() == search) {
+        if (text.toUpperCase() == user.ign.toUpperCase() || user._id.toString() == text) {
             results.unshift({
                 exactMatch: true,
                 type: "USER",
