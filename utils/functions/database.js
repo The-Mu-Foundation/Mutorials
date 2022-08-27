@@ -332,7 +332,7 @@ async function updateRushStats(user, score) {
 async function querySite(query, User, Ques, SiteData) {
     results = [];
     let { text, units, tags } = query;
-    text = text.trim();
+    text = text ? text.trim() : '';
     units = units ? units.trim().split(",").map(unit => unit.trim()) : [];
     tags = tags ? tags.trim().split(",").map(tag => tag.trim()) : [];
 
