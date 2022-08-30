@@ -46,13 +46,14 @@ const subjectUnitDictionary = {
         "Lab Skills",
         "Physical Chemistry"                  
     ],
-    "Biology": ["Cell Biology",
-        "Molecular Biology",
-        "Heredity and Genetics",
+    "Biology": ["Molecular Biology",
+        "Cell Biology",
+        "Metabolism",
+        "Hereditary and Genetics",
+        "Evolution","Biosystematics",
         "Ecology",
-        "Evolution and Biodiversity",
-        "Human Physiology",
-        "Plant and Animal Physiology",
+        "Human Anatomy and Physiology",
+        "Plant Anatomy and Physiology",
         "Lab Skills"
     ]
 };

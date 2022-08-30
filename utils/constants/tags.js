@@ -177,15 +177,16 @@ const tags = {
     },
     "Biology": {
         "Units": {
-            "CELL": "Cell Biology",
-            "EAB": "Evolution and Biodiversity",
-            "ECO": "Ecology",
-            "HAG": "Heredity and Genetics",
-            "HUMAN": "Human Physiology",
-            "MOBIO": "Molecular Biology",
-            "PAAP": "Plant and Animal Physiology",
-            "LAB": "Lab Skills"
-
+            "01B":"Molecular Biology",
+            "02B":"Cell Biology",
+            "03B":"Metabolism",
+            "04B":"Hereditary and Genetics",
+            "05B":"Evolution",
+            "06B":"Biosystematics",
+            "07B":"Ecology",
+            "08B":"Human Anatomy and Physiology",
+            "09B":"Plant Anatomy and Physiology",
+            "10B":"Lab Skills"
         },
         "Concepts": {
             "CARB": "Carbon Cycle",
