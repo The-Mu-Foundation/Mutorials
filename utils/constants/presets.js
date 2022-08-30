@@ -14,9 +14,9 @@ const presetUnitOptions = {
         "IB Chemistry HL1": ["Atomic Structure", "Bonding", "Gases", "Solubility", "Stoichiometry", "Acids and Bases", "Chemical Kinetics", "Thermochemistry", "Chemical Equilibrium", "Electrochemistry", "Spontaneity, Entropy, and Free Energy", "Chemical Reactions", "Organic Chemistry", "Materials Chemistry", "Biochemistry"]
     },
     "Biology": {
-        "High School Biology": [],
         "AP Biology": [],
-        "IB Biology SL": []
+        "IB Biology SL": [],
+        "IB Biology HL": []
     }
 };
 
