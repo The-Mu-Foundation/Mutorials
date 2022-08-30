@@ -14,9 +14,9 @@ const presetUnitOptions = {
         "IB Chemistry HL1": ["Atomic Structure", "Bonding", "Gases", "Solubility", "Stoichiometry", "Acids and Bases", "Chemical Kinetics", "Thermochemistry", "Chemical Equilibrium", "Electrochemistry", "Spontaneity, Entropy, and Free Energy", "Chemical Reactions", "Organic Chemistry", "Materials Chemistry", "Biochemistry"]
     },
     "Biology": {
-        "AP Biology": [],
-        "IB Biology SL": [],
-        "IB Biology HL": []
+        "AP Biology": ["Molecular Biology","Cell Biology","Metabolism","Heredity and Genetics","Evolution","Ecology"],
+        "IB Biology SL": ["Molecular Biology","Cell Biology","Heredity and Genetics","Ecology","Evolution","Biosystematics","Animal Anatomy and Physiology"],
+        "IB Biology HL": ["Molecular Biology","Cell Biology","Heredity and Genetics","Ecology","Evolution","Biosystematics","Animal Anatomy and Physiology","Plant Anatomy and Physiology"]
     }
 };
 

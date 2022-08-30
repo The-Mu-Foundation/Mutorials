@@ -180,7 +180,7 @@ const tags = {
             "01B":"Molecular Biology",
             "02B":"Cell Biology",
             "03B":"Metabolism",
-            "04B":"Hereditary and Genetics",
+            "04B":"Heredity and Genetics",
             "05B":"Evolution",
             "06B":"Biosystematics",
             "07B":"Ecology",
