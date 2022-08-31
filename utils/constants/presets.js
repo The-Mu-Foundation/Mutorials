@@ -5,10 +5,10 @@ const presetUnitOptions = {
         "AP Physics 2": ["Measurement","Forces","Energy Basics","Fluids","Wave Motion","Ray Optics","Wave Optics","Thermodynamics","Modern Physics","Nuclear Physics","Electric Fields and Forces","Electrical Properties of Materials","Capacitors","DC Circuits","Magnetic Forces","Induction"],
         "AP Physics C: Mechanics": ["Calculus-Based","Measurement","Kinematics","Newton's Laws","Forces","Linear Momentum","Rotation","Energy Basics","Gravitation","Oscillations","Simple Machines"],
         "AP Physics C: Electricity & Magnetism": ["Calculus-Based","Measurement","Electric Fields and Forces","Electric Properties of Materials","Capacitors","DC Circuits","AC Circuits","Magnetic Fields","Magnetic Forces","Induction","Magnetic Properties of Materials","Electromagnetic Waves - Advanced"],
-        "IB Physics SL1": ["Measurement","Kinematiccs","Newton's Laws","Forces","Linear Momentum","Energy Basics","Gravitation","Wave Motion","Sound","Thermodynamics","Nuclear Physics","Electric Fields and Forces","DC Circuits"],
-        "IB Physics SL2": ["Measurement","Kinematiccs","Newton's Laws","Forces","Linear Momentum","Energy Basics","Gravitation","Wave Motion","Sound","Thermodynamics","Nuclear Physics","Electric Fields and Forces","DC Circuits","Rotation","Fluids","Ray Optics","Modern Physics","Astrophysics"],
-        "IB Physics HL2": [""],
-        "F=ma Exam": []
+        "IB Physics SL1": ["Measurement","Kinematics","Newton's Laws","Forces","Linear Momentum","Energy Basics","Gravitation","Wave Motion","Sound","Thermodynamics","Nuclear Physics","Electric Fields and Forces","DC Circuits"],
+        "IB Physics SL2": ["Measurement","Kinematics","Newton's Laws","Forces","Linear Momentum","Energy Basics","Gravitation","Wave Motion","Sound","Thermodynamics","Nuclear Physics","Electric Fields and Forces","DC Circuits","Rotation","Fluids","Ray Optics","Modern Physics","Astrophysics"],
+        "IB Physics HL2": ["Measurement","Kinematics","Newton's Laws","Forces","Linear Momentum","Energy Basics","Gravitation","Wave Motion","Sound","Thermodynamics","Nuclear Physics","Electric Fields and Forces","DC Circuits","Rotation","Fluids","Ray Optics","Modern Physics","Astrophysics","Oscillations","Wave Optics","Electric Properties of Materials","Capacitors","Magnetic Fields","Magnetic Forces","Induction"],
+        "F=ma Exam": ["Simple Machines","Measurement","Kinematrics","Newton's Laws","Forces","Linear Momentum","Rotation","Energy Basics","Gravitation","Fluids"]
     },
     "Chemistry": {
         "AP Chemistry": ["Atomic Structure", "Bonding", "Gases", "Solubility", "Stoichiometry", "Acids and Bases", "Chemical Kinetics", "Thermochemistry", "Chemical Equilibrium", "Electrochemistry", "Spontaneity, Entropy, and Free Energy", "Chemical Reactions"],
