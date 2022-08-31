@@ -1,12 +1,13 @@
 // fill in preset units later
 const presetUnitOptions = {
     "Physics": {
-        "AP Physics 1": [],
-        "AP Physics 2": [],
-        "AP Physics C Mechanics": [],
-        "AP Physics C EM": [],
-        "IB Physics SL1": [],
-        "IB Physics SL2/HL2": [],
+        "AP Physics 1": ["Measurement","Kinematics","Newton's Laws","Forces","Linear Momentum","Rotation","Energy Basics","Gravitation","Oscillations","Sound","Simple Machines"],
+        "AP Physics 2": ["Measurement","Forces","Energy Basics","Fluids","Wave Motion","Ray Optics","Wave Optics","Thermodynamics","Modern Physics","Nuclear Physics","Electric Fields and Forces","Electrical Properties of Materials","Capacitors","DC Circuits","Magnetic Forces","Induction"],
+        "AP Physics C: Mechanics": ["Calculus-Based","Measurement","Kinematics","Newton's Laws","Forces","Linear Momentum","Rotation","Energy Basics","Gravitation","Oscillations","Simple Machines"],
+        "AP Physics C: Electricity & Magnetism": ["Calculus-Based","Measurement","Electric Fields and Forces","Electric Properties of Materials","Capacitors","DC Circuits","AC Circuits","Magnetic Fields","Magnetic Forces","Induction","Magnetic Properties of Materials","Electromagnetic Waves - Advanced"],
+        "IB Physics SL1": ["Measurement","Kinematiccs","Newton's Laws","Forces","Linear Momentum","Energy Basics","Gravitation","Wave Motion","Sound","Thermodynamics","Nuclear Physics","Electric Fields and Forces","DC Circuits"],
+        "IB Physics SL2": ["Measurement","Kinematiccs","Newton's Laws","Forces","Linear Momentum","Energy Basics","Gravitation","Wave Motion","Sound","Thermodynamics","Nuclear Physics","Electric Fields and Forces","DC Circuits","Rotation","Fluids","Ray Optics","Modern Physics","Astrophysics"],
+        "IB Physics HL2": [""],
         "F=ma Exam": []
     },
     "Chemistry": {
