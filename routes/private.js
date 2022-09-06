@@ -45,7 +45,7 @@ module.exports = (app, mongo) => {
 
         if (query) {
             let results = await querySite(query, mongo.User, mongo.Ques, mongo.siteData);
-            res.render(VIEWS + 'private/search.ejs', { results, query, pageName: `Search: ${query}` });
+            res.render(VIEWS + 'private/search.ejs', { results, query, pageName: "Search" });
         } else {
             res.render(VIEWS + 'private/search.ejs', { results: [], query, pageName: "Search" });
         }
