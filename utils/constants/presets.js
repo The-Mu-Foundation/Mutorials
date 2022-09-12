@@ -16,7 +16,7 @@ const presetUnitOptions = {
     },
     "Biology": {
         "AP Biology": ["Molecular Biology","Cell Biology","Metabolism","Heredity and Genetics","Evolution","Ecology"],
-        "IB Biology SL": ["Molecular Biology","Cell Biology","Heredity and Genetics","Ecology","Evolution","Biosystematics","Animal Anatomy and Physiology"],
+        "IB Biology SL1": ["Molecular Biology","Cell Biology","Heredity and Genetics","Ecology","Evolution","Biosystematics","Animal Anatomy and Physiology"],
         "IB Biology HL": ["Molecular Biology","Cell Biology","Heredity and Genetics","Ecology","Evolution","Biosystematics","Animal Anatomy and Physiology","Plant Anatomy and Physiology"]
     }
 };
