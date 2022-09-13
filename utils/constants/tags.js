@@ -222,7 +222,128 @@ const tags = {
             "21C":"Lab Skills"
         },
         "Concepts": {
+            "DIMEN":"Dimensional Analysis",
+            "SIGFG":"Significant Figures in Calculations",
             
+            "ASPEC":"Atomic Spectrums",
+            "BOHRM":"The Bohr Model",
+            "DALTT":"Dalton's Atomic Theory",
+            "QMMOA":"The Quantum Mechanical Model of the Atom",
+            "ORBTL":"Orbital Shapes, Energies, and Principles",
+            
+            "COVCO":"Covalent Compounds",
+            "IONCO":"Ionic Compounds",
+            "ACICO":"Acids",
+            
+            "TMOLE":"The Mole",
+            "MSPEC":"Mass Spectrometry",
+            "ATOMM":"Atomic and Molar Mass",
+            "PERCC":"Percent Composition",
+            "BALEQ":"Balancing Equations",
+            "LIMRE":"Limiting Reactant",
+            "GSSTI":"Gas and Solution Stoichiometry",
+            
+            "SOLUB":"Solubility",
+            "ELECT":"Electrolytes",
+            "MOLAR":"Molarity",
+            "ENESF":"Energies of Solution Formation",
+            "COLGP":"Colligative Properties of Solution",
+            "KAYSP":"Solubility Product",
+            "QUALI":"Qualitative Analysis of Precipitation",
+            
+            "PRECI":"Precipitation Reactions",
+            "PHREA":"Acid-Base Reactions",
+            "REDOX":"Oxidation-Reduction Reactions",
+            "COMBS":"Combustion Reactions",
+            
+            "PRESU":"Pressure",
+            "BGLAL":"The Gas Laws of Boyle, Charles, and Avogadro",
+            "IDEAL":"The Ideal Gas Law",
+            "DLOPP":"Dalton's Law of Partial Pressures",
+            "KMTOG":"Kinetic Molecular Theory of Gases",
+            "EFADF":"Effusion and Diffusion",
+            "REALG":"Real Gases",
+            
+            "ENTHP":"Enthalpy",
+            "CALOR":"Calorimetry",
+            "HESSL":"Hess' Law",
+            
+            "PTABL":"The Periodic Table",
+            "AUFBW":"The Aufbau Principle",
+            "PTRND":"Periodic Trends",
+            "REPEL":"The Representative Elements",
+            
+            "BTYPE":"Bond Types",
+            "DPOLE":"Dipole Moment",
+            "BONDE":"Bond Energies",
+            "IOCHA":"Ionic Character of Bonds",
+            "LEWIS":"Lewis Structures",
+            "RESON":"Resonance Structures",
+            "VSEPR":"The VSEPR Model",
+            "HYBRD":"Hybridization",
+            
+            "INTMF":"Intermolecular Forces",
+            "METAL":"Metallic Solids",
+            "NETSO":"Network Solids",
+            "MOLSO":"Molecular Solids",
+            "IONSO":"Ionic Solids",
+            "VAPPS":"Vapor Pressure",
+            "PHASC":"Phase Changes and Diagrams",
+            
+            "RATEL":"Rate Laws",
+            "RMECH":"Reaction Mechanisms",
+            "CATAL":"Catalysts",
+            "INTEG":"Integrated Rate Laws",
+            "KINMD":"The Collision Model for Kinetics",
+            
+            "EQLCS":"The Equilibrium Constant",
+            "REQUO":"Reaction Quotients",
+            "KAYPE":"Equilibrium Involving Pressure",
+            "LECHA":"Le Chatellier's Principle",
+            
+            "STREN":"Acid and Base Strength",
+            "PHVAL":"The pH Scale",
+            "CALCK":"Calculating equilibrium constants and pH for Acids and Bases",
+            "POLYP":"Polyprotic Acids",
+            "SALTS":"Acid-Base Properties of Salts",
+            "ABMOD":"Acid-Base Models",
+            "BUFFR":"Buffers",
+            "ABTIT":"Titrations and pH Curves",
+            "ABIND":"Acid-Base Indicators",
+            
+            "ENTRP":"Entropy",
+            "GIBBS":"Gibbs Free Energy",
+            "GEQUI":"Free Energy and Equilibrium",
+            
+            "BALRD":"Balancing Oxidation-Reduction Reactions",
+            "GALVN":"Galvanic Cells",
+            "SRPOC":"Standard Reduction Potentials",
+            "GENFE":"Cell Potential and Free Energy",
+            "NERNS":"Cell Potential and Concentration",
+            "BATCO":"Batteries and Corrosion",
+            "ELTRS":"Electrolysis",
+            
+            "RDDEC":"Types of Radioactive Decay",
+            "HALFL":"Half Lives",
+            "RDKIN":"Radioactive Decay Kinetics",
+            "MDABE":"Mass Defect and Binding Energy",
+            "FISFU":"Nuclear Fission and Fusion",
+            
+            "TRNSM":"Transition Metals and Their Properties",
+            "COORC":"Coordination Compounds and Complex Ions",
+            
+            "ALKAN":"Alkanes and Cycloalkanes",
+            "ISOMR":"Isomerism and Stereoisomerism",
+            "ALKYL":"Alkyl Halide Reactions",
+            "ALKEN":"Addition Reactinos and Alkenes",
+            "ALKYN":"Alkynes",
+            "HCDRV":"Hydrocarbon Derivatives",
+            "PLYMR":"Synthetic and Natural Polymers",
+            
+            "BIOMO":"Biomolecules",
+            "METAB":"Metabolismic Processes",
+            
+            "LABSK":"Lab Skills"
         }
     },
     "Biology": {
