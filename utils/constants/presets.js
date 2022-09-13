@@ -11,8 +11,8 @@ const presetUnitOptions = {
         "F=ma Exam": ["Simple Machines","Measurement","Kinematrics","Newton's Laws","Forces","Linear Momentum","Rotation","Energy Basics","Gravitation","Fluids"]
     },
     "Chemistry": {
-        "AP Chemistry": ["Atomic Structure", "Bonding", "Gases", "Solubility", "Stoichiometry", "Acids and Bases", "Chemical Kinetics", "Thermochemistry", "Chemical Equilibrium", "Electrochemistry", "Spontaneity, Entropy, and Free Energy", "Chemical Reactions"],
-        "IB Chemistry SL2": ["Atomic Structure", "Bonding", "Gases", "Solubility", "Stoichiometry", "Acids and Bases", "Chemical Kinetics", "Thermochemistry", "Chemical Equilibrium", "Electrochemistry", "Spontaneity, Entropy, and Free Energy", "Chemical Reactions", "Organic Chemistry", "Materials Chemistry", "Biochemistry"],
+        "AP Chemistry": ["Measurement","Atomic Structure","Compound Nomenclature","Stoichiometry","Solutions","Types of Reactions","Gases","Thermochemistry","Atomic Periodicity","Atomic Bonding","Liquids and Solids","Kinetics","Chemical Equilibria","Acids and Bases","Physical Chemistry","Electrochemistry","Nuclear Chemistry","Lab Skills"],
+        "IB Chemistry SL2": ["Measurement","Atomic Structure","Compound Nomenclature","Stoichiometry","Solutions","Types of Reactions","Gases","Thermochemistry","Atomic Periodicity","Atomic Bonding","Liquids and Solids","Kinetics","Chemical Equilibria","Acids and Bases","Physical Chemistry","Electrochemistry","Organic Chemistry","Coordination Chemistry","Lab Skills"]
     },
     "Biology": {
         "AP Biology": ["Molecular Biology","Cell Biology","Metabolism","Heredity and Genetics","Evolution","Ecology"],
