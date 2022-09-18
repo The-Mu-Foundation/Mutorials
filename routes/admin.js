@@ -12,7 +12,7 @@ const VIEWS = "../views/"
 
 module.exports = (app, mongo) => {
     app.all(/^(\/admin).*$/, (req, res, next) => {
-        if(req.isAuthenticated() && (adminList.includes(req.user.username))) {
+        if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
             next()
         } else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
@@ -34,7 +34,7 @@ module.exports = (app, mongo) => {
             }];
             announcements.data.site = siteAnnouncements;
             db.collection("sitedatas").findOneAndUpdate({ tag: "ANNOUNCEMENTS" }, { $set: { data: announcements.data } });
-        } catch(err) {
+        } catch (err) {
             res.json({ status: "Error" });
         }
         res.json({ status: "Success" });
@@ -61,7 +61,7 @@ module.exports = (app, mongo) => {
         req.body.subject.forEach((subject) => {
             Object.keys(tags[subject]['Units']).forEach((unitTag) => {
                 if (req.body.units.includes(subject + ' - ' + tags[subject]['Units'][unitTag])) {
-                    if(req.body.tags.length >= 1) {
+                    if (req.body.tags.length >= 1) {
                         req.body.tags = unitTag + '@' + req.body.tags;
                     } else {
                         req.body.tags = unitTag;
@@ -125,7 +125,7 @@ module.exports = (app, mongo) => {
         req.body.subject.forEach((subject) => {
             Object.keys(tags[subject]['Units']).forEach((unitTag) => {
                 if (req.body.units.includes(subject + ' - ' + tags[subject]['Units'][unitTag])) {
-                    if(req.body.tags.length >= 1) {
+                    if (req.body.tags.length >= 1) {
                         req.body.tags = unitTag + '@' + req.body.tags;
                     } else {
                         req.body.tags = unitTag;
@@ -137,7 +137,7 @@ module.exports = (app, mongo) => {
         // remove duplicate tags
         req.body.tags = [...new Set(req.body.tags.split('@'))].join('@');
 
-        mongo.db.collection( req.body.reviewerID ? "pendingQuestions" : "questions" ).findOneAndUpdate(
+        mongo.db.collection(req.body.reviewerID ? "pendingQuestions" : "questions").findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(req.body.questionID) },
             {
                 $set: {
@@ -189,12 +189,12 @@ module.exports = (app, mongo) => {
         console.log("post " + req.cookies['skipQuestions']);
         c = req.cookies['skipQuestions'];
         if (c) { c.push(req.body.questionID) } else { c = [req.body.questionID] }
-        res.cookie( 'skipQuestions', c ).json({ success: true });
+        res.cookie('skipQuestions', c).json({ success: true });
     });
 
     //ADMIN GET ROUTES
 
-    app.get('/admin/adminHomepage', (req, res) => {        
+    app.get('/admin/adminHomepage', (req, res) => {
         c = req.cookies['skipQuestions'];
         if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
         mongo.db.collection('pendingQuestions').countDocuments({ $and: [{ reviewers: { $ne: req.user.contributor } }, { $id: { $nin: c } }] }).then((numUser, err) => {
