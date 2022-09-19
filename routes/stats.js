@@ -33,7 +33,7 @@ module.exports = (app, mongo) => {
                     res.redirect('/homepage');
                 } else {
                     let thisAge = 0;
-                    if(req.user.profile.yob && obj.profile.yob != 2020){
+                    if (req.user.profile.yob && obj.profile.yob != 2020) {
                         thisAge = new Date().getFullYear() - obj.profile.yob;
                     }
                     const experienceStats = await calculateLevel(obj.stats.experience ? obj.stats.experience : 0);
@@ -70,7 +70,7 @@ module.exports = (app, mongo) => {
                     rush: globalRushRank
                 }
             });
-        } catch(err) {
+        } catch (err) {
             res.json({
                 status: "Error"
             });

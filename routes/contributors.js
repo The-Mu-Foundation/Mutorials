@@ -37,7 +37,7 @@ module.exports = (app, mongo) => {
         req.body.subject.forEach((subject) => {
             Object.keys(tags[subject]['Units']).forEach((unitTag) => {
                 if (req.body.units.includes(subject + ' - ' + tags[subject]['Units'][unitTag])) {
-                    if(req.body.tags.length >= 1) {
+                    if (req.body.tags.length >= 1) {
                         req.body.tags = unitTag + '@' + req.body.tags;
                     } else {
                         req.body.tags = unitTag;

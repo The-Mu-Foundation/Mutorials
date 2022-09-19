@@ -10,25 +10,25 @@ const hcaptchaSecret = process.env.HCAPTCHA_SECRET || '0x00000000000000000000000
 
 module.exports = (app, mongo) => {
     passport.use(new LocalStrategy({
-            passReqToCallback: true
-        }, (req, username, password, cb) => {
-            username = username.toLowerCase();
-            mongo.User.find({ $or: [ { ign: username }, { username: username } ]}).then((user) => {
-                if (!user[0]) { return cb(null, false); }
+        passReqToCallback: true
+    }, (req, username, password, cb) => {
+        username = username.toLowerCase();
+        mongo.User.find({ $or: [{ ign: username }, { username: username }] }).then((user) => {
+            if (!user[0]) { return cb(null, false); }
 
-                const isValid = validPassword(password, user[0].hash, user[0].salt);
+            const isValid = validPassword(password, user[0].hash, user[0].salt);
 
-                if (isValid) {
-                    return cb(null, user[0]);
-                } else {
+            if (isValid) {
+                return cb(null, user[0]);
+            } else {
 
-                    return cb(null, false);
-                }
+                return cb(null, false);
+            }
 
-            }).catch((err) => {
-                cb(err);
-            });
-        }
+        }).catch((err) => {
+            cb(err);
+        });
+    }
     ));
     passport.serializeUser(function (user, cb) {
         cb(null, user.id);

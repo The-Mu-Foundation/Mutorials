@@ -24,7 +24,7 @@ function average(nums) {
     nums.forEach((num) => {
         sum += num;
     })
-    return sum/nums.length;
+    return sum / nums.length;
 }
 
-module.exports = { arraysEqual , parseDelimiter, average };
+module.exports = { arraysEqual, parseDelimiter, average };

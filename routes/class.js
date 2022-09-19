@@ -33,7 +33,7 @@ module.exports = (app, mongo) => {
 
     app.post('/class/joinClass', (req, res, next) => {
         mongo.db.collection('classes').findOne({ classCode: req.body.classCode }, async (err, obj) => {
-            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id  }, { $addToSet: { classes: obj._id } });
+            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $addToSet: { classes: obj._id } });
             req.flash('successFlash', 'You\'ve successfully been added to ' + req.body.name + '.');
             res.redirect('/');
         });
