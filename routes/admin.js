@@ -189,7 +189,7 @@ module.exports = (app, mongo) => {
         console.log("post " + req.cookies['skipQuestions']);
         c = req.cookies['skipQuestions'];
         if (c) { c.push(req.body.questionID) } else { c = [req.body.questionID] }
-        res.cookie( 'skipQuestions', c ).json({ success: true });
+        res.cookie('skipQuestions', c).json({ success: true });
     });
 
     //ADMIN GET ROUTES
@@ -237,6 +237,14 @@ module.exports = (app, mongo) => {
     app.get('/admin/getContributorStats', async (req, res) => {
         let contributor = await queryContributor(req.query.id, mongo.Ques, mongo.PendingQues);
         res.json(contributor);
+    });
+
+    // Master list of questions
+    app.get('/admin/allQuestions', async (req, res) => {
+        const allQuestions = await mongo.db.collection('questions').find().toArray();
+        res.render(VIEWS + 'admin/train/allQuestions.ejs', {
+            questions: allQuestions
+        });
     });
 
     app.get('/admin/editQuestion', async (req, res) => {
