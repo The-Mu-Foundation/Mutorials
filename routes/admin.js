@@ -239,6 +239,14 @@ module.exports = (app, mongo) => {
         res.json(contributor);
     });
 
+    // Master list of questions
+    app.get('/admin/allQuestions', async (req, res) => {
+        const allQuestions = await mongo.db.collection('questions').find().toArray();
+        res.render(VIEWS + 'admin/train/allQuestions.ejs', {
+            questions: allQuestions
+        });
+    });
+
     app.get('/admin/editQuestion', async (req, res) => {
         mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.query.id) }).then((question, err) => {
             if (!err) {

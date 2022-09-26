@@ -1,26 +1,43 @@
+<!-- Search widget that can be inserted anywhere -->
+<!-- Arguments: query - the last search -->
+
 <script>
     $(document).ready(function () {
-        $("#search-submit").click(function () {
+        const doSearch = () => {
             // Now we have plaintext query, units, and tags
-            let text = $("#text-query").val();
+            let text = $("#text-query").val();            
+            let subjects = $('#subjects-query').val();
             let units = $('#units-query').val();
             let tags = $('#tags-query').val();
-            window.location.href = `/search?text=${text}&units=${units}&tags=${tags}`;
+            window.location.href = `/search?text=${text}&subjects=${subjects}&units=${units}&tags=${tags}`;
+        };
+        
+        $('#text-query').focus().select();
+        $("#search-submit").click(doSearch);
+        $("#search-form input").on("keyup", (e) => {
+            if (e.key === "Enter" || e.keyCode === 13) {
+                doSearch();
+            }
         });
     });
 </script>
 
-<div class="col-md-10">
-    <label class="d-none" for="text-query">Text query</label>
-    <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="text-query" value="<%= query.text %>">
+<form class="row" id="search-form">
+    <div class="col-md-10">
+        <label class="d-none" for="text-query">Text query</label>
+        <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="text-query" value="<%= query.text %>">
+        
+        <label class="d-none" for="subjects-query">Subjects (optional)</label>
+        <input class="form-control form-control-md my-2" type="text" placeholder="Subjects (optional)" id="subjects-query" value="<%= query.subjects %>">
 
-    <label class="d-none" for="units-query">Units (optional)</label>
-    <input class="form-control form-control-md my-2" type="text" placeholder="Units (optional)" id="units-query" value="<%= query.units %>">
+        <label class="d-none" for="units-query">Units (optional)</label>
+        <input class="form-control form-control-md my-2" type="text" placeholder="Units (optional)" id="units-query" value="<%= query.units %>">
 
-    <label class="d-none" for="tags-query">Tags (optional)</label>
-    <input class="form-control form-control-md my-2" type="text" placeholder="Tags (optional)" id="tags-query" value="<%= query.tags %>">
-</div>
-<div class="col-md-2">
-    <input class="btn btn-primary btn-lg w-100 my-2" value="Search" type="button" id="search-submit">
-</div>
-<p>Enter units and tags as comma-separated lists.</p>
+        <label class="d-none" for="tags-query">Tags (optional)</label>
+        <input class="form-control form-control-md my-2" type="text" placeholder="Tags (optional)" id="tags-query" value="<%= query.tags %>">
+    </div>
+    <div class="col-md-2">
+        <input class="btn btn-primary btn-lg w-100 my-2" value="Search" type="button" id="search-submit">
+    </div>
+    <p>Enter subjects, units, and tags as comma-separated lists.</p>
+</form>

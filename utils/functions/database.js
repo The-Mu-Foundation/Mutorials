@@ -104,7 +104,7 @@ function updateCounters(req, question, correct) {
             tempUnit.pastResults.shift();
         }
 
-        tempUnit.lastTouched = new Date().toISOString().split('T')[0];
+        tempUnit.lastTouched = new Date().toISOString().split("T")[0];
 
         req.user.stats.units["" + unit] = tempUnit;
 
@@ -126,8 +126,8 @@ function updateTracker(req, question) {
         while (tracker.length > 20) {
             tracker.shift();
         }
-    } catch (err) {
-        // tracker doesn't exist (yet), so create one!
+    } catch(err) {
+        // tracker doesn"t exist (yet), so create one!
         tracker = [req.user.rating[question.subject[0].toLowerCase()]];
         req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
     }
@@ -219,7 +219,7 @@ async function generateLeaderboard(User, count) {
 async function getDailyQuestion(Daily, Ques) {
 
     // attempt to get daily object
-    const date = await new Date().toISOString().split('T')[0];
+    const date = await new Date().toISOString().split("T")[0];
     let question = await Daily.findOne({ date }).exec();
 
     if (question) {
@@ -252,7 +252,7 @@ async function getSiteData(User, Ques, SiteData) {
     let questionCount = await Ques.estimatedDocumentCount({});
 
     let tagCounter = () => {
-        let { tags } = require('../constants/tags');
+        let { tags } = require("../constants/tags");
         let counter = 0;
         Object.entries(tags).forEach((subjEntry) => {
             Object.entries(subjEntry[1]).forEach((typeEntry) => {
@@ -268,9 +268,9 @@ async function getSiteData(User, Ques, SiteData) {
     let proficientCount = await User.countDocuments({
         // any users with at least 1 rating above 2500
         $or: [
-            { 'rating.physics': { $gte: 2500 } },
-            { 'rating.chemistry': { $gte: 2500 } },
-            { 'rating.biology': { $gte: 2500 } }
+            { "rating.physics": { $gte: 2500 } },
+            { "rating.chemistry": { $gte: 2500 } },
+            { "rating.biology": { $gte: 2500 } }
         ]
     });
 
@@ -331,24 +331,25 @@ async function updateRushStats(user, score) {
 
 async function querySite(query, User, Ques, SiteData) {
     results = [];
-    let { text, units, tags } = query;
-    text = text ? text.trim() : '';
+    let { text, units, tags, subjects } = query;
+    text = text ? text.trim() : "";
     units = units ? units.trim().split(",").map(unit => unit.trim()) : [];
     tags = tags ? tags.trim().split(",").map(tag => tag.trim()) : [];
+    subjects = subjects ? subjects.trim().split(",").map(subject => subject.trim().toProperCase()) : [];
 
     let possibleID;
     try {
         possibleID = mongoose.Types.ObjectId(text);
     } catch (err) {
-        possibleID = mongoose.Types.ObjectId('000000000000000000000000');
+        possibleID = mongoose.Types.ObjectId("000000000000000000000000");
     }
 
     // find matches
     let userMatches = await User.find({
         $or: [
             { _id: possibleID },
-            { ign: { $regex: new RegExp(text), $options: 'ix' } },
-            { "profile.name": { $regex: new RegExp(text), $options: 'i' } }
+            { ign: { $regex: new RegExp(text), $options: "ix" }},
+            { "profile.name": { $regex: new RegExp(text), $options: "i" }}
         ]
     }).exec();
 
@@ -360,17 +361,19 @@ async function querySite(query, User, Ques, SiteData) {
     if (tags.length > 0) {
         andQuery.push({ tags: { $all: tags } });
     }
+    if (subjects.length > 0) {
+        andQuery.push({ subject: { $all: subjects } });
+    }
 
     let questionMatches = await Ques.find({
         $and: [
             {
                 $or: [
                     { _id: possibleID },
-                    { question: { $regex: new RegExp(text), $options: 'i' } },
-                    { choices: { $regex: new RegExp(text), $options: 'i' } },
-                    { answer_ex: { $regex: new RegExp(text), $options: 'i' } },
+                    { question: { $regex: new RegExp(text), $options: "i" }},
+                    { choices: { $regex: new RegExp(text), $options: "i" }},
+                    { answer_ex: { $regex: new RegExp(text), $options: "i" }},
                     { ext_source: text },
-                    { subject: { $regex: new RegExp(text), $options: 'ix' } },
                 ]
             },
             ...andQuery
@@ -490,8 +493,9 @@ async function updateRushAchievements(user, score) {
     db.collection("users").findOneAndUpdate({ username: user.username }, { $set: { achievements: user.achievements } });
 }
 
-async function updateFields() { //replace the parameters as needed for different purposes
-    db.collection('users').updateMany({ 'age': { $exists: true } }, { $rename: { 'age': 'yob' } });
+async function updateFields(){ //replace the parameters as needed for different purposes
+    db.collection("users").updateMany({"age": {$exists: true}}, {$rename: {"age": "yob"}});
+
 }
 
 module.exports = {

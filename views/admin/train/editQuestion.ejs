@@ -1,6 +1,9 @@
 <%# Admin page for editing questions in the question bank %>
-<%# ARGUMENTS: subjectUnitDictionary - a class with key subject name and value array of units, question - the current question object,
-    isReview - boolean of whether this is a question review %>
+<%# ARGUMENTS:
+    subjectUnitDictionary - a class with key subject name and value array of units
+    question - the current question object
+    isReview - boolean of whether this is a question review
+%>
 
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
@@ -10,7 +13,6 @@
 <%# Send to backend %>
 <script>
   $(document).ready(function () {
-
     // get question ID
     let questionID = "<%= question._id %>";
 

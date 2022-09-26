@@ -5,7 +5,6 @@
 <%- include("../partials/navigationPrivate") -%>
 
 <script>
-
     window.onload = function () {
 
         // render pass/fail chart
@@ -87,12 +86,9 @@
 
 </script>
 
-<div class="jumbotron container mt-3">
-
+<div class="jumbotron container mt-3 pb-5">
     <div class="row">
-
         <div class="col-12 col-lg-8">
-
             <%# Question and explanation %>
             <div class="mb-3">
                 <h3>Question Statement:</h3>
@@ -131,12 +127,10 @@
                 <hr>
                 <p class="text-center"><%= question.source_statement %></p>
             <% } %>
-
         </div>
 
         <%# Question data %>
         <div class="col-12 col-lg-4">
-
             <div class="mb-4">
                 <h5>Question rating: <%= question.rating %></h5>
             </div>
@@ -167,9 +161,7 @@
             </div>
             <input type="hidden" id="passcount" value="<%= question.stats.pass %>">
             <input type="hidden" id="failcount" value="<%= question.stats.fail %>">
-
         </div>
-
     </div>
 
     <%# Report question button %>
