@@ -9,12 +9,12 @@ function getQuestion(Ques, id) {
 }
 
 // input a rating range (as floor and ceiling values), returns a range of questions
-async function getQuestions (Ques, ratingFloor, ratingCeiling, subject, units) {
-    const gotQ = Ques.find({subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
+async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, units) {
+    const gotQ = Ques.find({ subject: [subject], rating: { $gte: ratingFloor, $lte: ratingCeiling } });
     let tempQ = await gotQ.exec();
-    for(i = 0; i < tempQ.length; i++){
+    for (i = 0; i < tempQ.length; i++) {
         const found = units.some(r => tempQ[i].units.includes(r));
-        if(!found){
+        if (!found) {
             tempQ.splice(i, 1);
             i--;
         }
@@ -23,25 +23,25 @@ async function getQuestions (Ques, ratingFloor, ratingCeiling, subject, units) {
 }
 
 // return rating of the user logged in right now
-function getRating (subject, req) {
+function getRating(subject, req) {
     return req.user.rating[subject.toLowerCase()];
 }
 
 // set the rating of the user logged in right now
-function setRating (subject, newRating, req) {
+function setRating(subject, newRating, req) {
     req.user.rating[subject.toLowerCase()] = newRating;
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
 }
 
 // modify the correct/wrong counter for users, and the pass/fail counter for questions, as well as tag collector tags
 
-function updateAll (req, question, correct) {
+function updateAll(req, question, correct) {
     updateCounters(req, question, correct);
     updateTracker(req, question);
     updateLastAnswered(req, question);
-    addExperience(req, correct ? question.rating : Math.ceil(question.rating/2));
+    addExperience(req, correct ? question.rating : Math.ceil(question.rating / 2));
 }
-function updateCounters (req, question, correct) {
+function updateCounters(req, question, correct) {
 
     // configure general counters
     if (correct) {
@@ -50,7 +50,7 @@ function updateCounters (req, question, correct) {
         question.stats.pass++;
         // update tag collector
         question.tags.forEach((tag) => {
-            if(!req.user.stats.collectedTags.includes(tag)) {
+            if (!req.user.stats.collectedTags.includes(tag)) {
                 req.user.stats.collectedTags.push(tag);
             }
         });
@@ -60,12 +60,12 @@ function updateCounters (req, question, correct) {
     }
 
     // unit-specific counters
-    if(!req.user.stats.units) {
+    if (!req.user.stats.units) {
         req.user.stats.units = {};
     }
     question.units.forEach((unit) => {
 
-        if(!req.user.stats.units["" + unit]) {
+        if (!req.user.stats.units["" + unit]) {
             req.user.stats.units["" + unit] = {
                 correct: 0,
                 wrong: 0,
@@ -80,14 +80,14 @@ function updateCounters (req, question, correct) {
         // temporary tracker
         let tempUnit = req.user.stats.units["" + unit];
 
-        if(question.rating > tempUnit.highestQRating) {
+        if (question.rating > tempUnit.highestQRating) {
             tempUnit.highestQRating = question.rating;
         }
 
-        if(correct) {
+        if (correct) {
             tempUnit.correct++;
             tempUnit.pastResults.push(1);
-            if(question.rating > tempUnit.highestQCorrectRating) {
+            if (question.rating > tempUnit.highestQCorrectRating) {
                 tempUnit.highestQCorrectRating = question.rating;
             }
         } else {
@@ -97,10 +97,10 @@ function updateCounters (req, question, correct) {
 
         tempUnit.pastRatings.push(question.rating);
 
-        while(tempUnit.pastRatings.length > 15) {
+        while (tempUnit.pastRatings.length > 15) {
             tempUnit.pastRatings.shift();
         }
-        while(tempUnit.pastResults.length > 15) {
+        while (tempUnit.pastResults.length > 15) {
             tempUnit.pastResults.shift();
         }
 
@@ -113,17 +113,17 @@ function updateCounters (req, question, correct) {
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
     db.collection("questions").findOneAndUpdate({ _id: question._id }, { $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } } });
 }
-function updateTracker (req, question) {
+function updateTracker(req, question) {
     // update rating tracker
     let tracker;
-    if(req.user.stats.ratingTracker === undefined) {
+    if (req.user.stats.ratingTracker === undefined) {
         req.user.stats.ratingTracker = {};
     }
     try {
         // try to update the tracker
         tracker = req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
         tracker.push(req.user.rating[question.subject[0].toLowerCase()]);
-        while(tracker.length > 20) {
+        while (tracker.length > 20) {
             tracker.shift();
         }
     } catch(err) {
@@ -134,14 +134,14 @@ function updateTracker (req, question) {
     req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
-function updateLastAnswered (req, question) {
+function updateLastAnswered(req, question) {
     // updated "last answered" field with question ID
     req.user.stats.lastAnswered = question._id;
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
 function addExperience(req, amount) {
     // add experience points to user
-    if(req.user.stats.experience) {
+    if (req.user.stats.experience) {
         req.user.stats.experience += amount;
     } else {
         req.user.stats.experience = amount;
@@ -153,18 +153,18 @@ async function incrementSolveCounter(SiteData, subject, correct) {
     let data = await SiteData.findOne({ tag: "QUESTIONS" }).exec();
     let counts = data.data;
     counts.attempts[subject] += 1;
-    if(correct) {
+    if (correct) {
         counts.solves[subject] += 1;
     }
     db.collection("sitedatas").findOneAndUpdate({ tag: "QUESTIONS" }, { $set: { data: counts } });
 }
 
 // update "to answer" queue field in user db
-function updateQuestionQueue (req, subject, id) {
+function updateQuestionQueue(req, subject, id) {
     req.user.stats.toAnswer[subject.toLowerCase()] = id;
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
-function clearQuestionQueue (req, subject) {
+function clearQuestionQueue(req, subject) {
     req.user.stats.toAnswer[subject.toLowerCase()] = "";
     db.collection("users").findOneAndUpdate({ username: req.user.username }, { $set: { stats: req.user.stats } });
 }
@@ -174,7 +174,7 @@ async function skipQuestionUpdates(Ques, req, subject, id) {
 
     // deduct 8 rating for skipping
     const originalRating = getRating(subject, req);
-    const deduction = originalRating > 8 ? originalRating-8 : 0;
+    const deduction = originalRating > 8 ? originalRating - 8 : 0;
     setRating(subject, deduction, req);
 
     // update rating tracker
@@ -188,13 +188,13 @@ async function skipQuestionUpdates(Ques, req, subject, id) {
 }
 
 // set question rating
-function setQRating (antsy, newQRate) {
+function setQRating(antsy, newQRate) {
     antsy.rating = newQRate;
-    db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: {rating: antsy.rating} });
+    db.collection("questions").findOneAndUpdate({ _id: antsy._id }, { $set: { rating: antsy.rating } });
 }
 
 // generate a leaderboard for a certain subject; count is the number of people on board
-async function generateLeaderboard (User, count) {
+async function generateLeaderboard(User, count) {
 
     // NOTE: change the $gte to a higher number once we get more users
     let physics = await User.find({ "rating.physics": { $gte: 1000 } }).sort({ "rating.physics": -1 }).limit(count).exec();
@@ -222,7 +222,7 @@ async function getDailyQuestion(Daily, Ques) {
     const date = await new Date().toISOString().split("T")[0];
     let question = await Daily.findOne({ date }).exec();
 
-    if(question) {
+    if (question) {
 
         // if daily object exists
         let content = await Ques.findById(question.question).exec();
@@ -304,24 +304,24 @@ async function getAnnouncements(SiteData, numberToFetch) {
 // updates problem rush stats
 async function updateRushStats(user, score) {
 
-    if(!user.stats.rush) {
+    if (!user.stats.rush) {
         user.stats.rush = {
             attempts: 0,
             highscore: 0
         }
     }
 
-    if(!user.stats.rush.highscore) {
+    if (!user.stats.rush.highscore) {
         user.stats.rush.highscore = 0;
     }
 
-    if(!user.stats.rush.attempts) {
+    if (!user.stats.rush.attempts) {
         user.stats.rush.attempts = 0;
     }
 
     user.stats.rush.attempts += 1;
 
-    if(user.stats.rush.highscore < score) {
+    if (user.stats.rush.highscore < score) {
 
         user.stats.rush.highscore = score;
     }
@@ -427,49 +427,49 @@ async function querySite(query, User, Ques, SiteData) {
 }
 
 async function updateTrainAchievements(user, question, correct) {
-    
-    if(!user.achievements) {
+
+    if (!user.achievements) {
         user.achievements = {};
     }
     user.achievements["join_mutorials"] = true;
 
-    if(correct) {
+    if (correct) {
         user.achievements["first_" + question.subject[0].toLowerCase()] = true;
     }
 
     let solves = user.stats.correct;
-    if(solves >= 500) {
+    if (solves >= 500) {
         user.achievements["solves_500"] = true;
     }
-    if(solves >= 300) {
+    if (solves >= 300) {
         user.achievements["solves_300"] = true;
     }
 
     let rating = user.rating[question.subject[0].toLowerCase()];
-    if(rating >= 3500) {
+    if (rating >= 3500) {
         user.achievements["rating_expert"] = true;
     }
-    if(rating >= 2750) {
+    if (rating >= 2750) {
         user.achievements["rating_advanced"] = true;
     }
-    if(rating >= 2000) {
+    if (rating >= 2000) {
         user.achievements["rating_intermediate"] = true;
     }
-    if(rating >= 1500) {
+    if (rating >= 1500) {
         user.achievements["rating_beginner"] = true;
     }
 
     let tagsCollected = user.stats.collectedTags.length;
-    if(tagsCollected >= 180) {
+    if (tagsCollected >= 180) {
         user.achievements["tags_180"] = true;
     }
-    if(tagsCollected >= 100) {
+    if (tagsCollected >= 100) {
         user.achievements["tags_100"] = true;
     }
-    if(tagsCollected >= 50) {
+    if (tagsCollected >= 50) {
         user.achievements["tags_50"] = true;
     }
-    if(tagsCollected >= 20) {
+    if (tagsCollected >= 20) {
         user.achievements["tags_20"] = true;
     }
 
@@ -477,16 +477,16 @@ async function updateTrainAchievements(user, question, correct) {
 }
 
 async function updateRushAchievements(user, score) {
-    
-    if(!user.achievements) {
+
+    if (!user.achievements) {
         user.achievements = {};
     }
     user.achievements["join_mutorials"] = true;
 
-    if(score >= 20) {
+    if (score >= 20) {
         user.achievements["rush_20"] = true;
     }
-    if(score >= 10) {
+    if (score >= 10) {
         user.achievements["rush_10"] = true;
     }
 
@@ -495,9 +495,12 @@ async function updateRushAchievements(user, score) {
 
 async function updateFields(){ //replace the parameters as needed for different purposes
     db.collection("users").updateMany({"age": {$exists: true}}, {$rename: {"age": "yob"}});
+
 }
 
-module.exports = { getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
+module.exports = {
+    getQuestion, getQuestions, getRating, setRating, setQRating, updateCounters, updateTracker, updateLastAnswered, updateAll, updateQuestionQueue, addExperience,
     clearQuestionQueue, skipQuestionUpdates, generateLeaderboard, getDailyQuestion, getSiteData, incrementSolveCounter, getAnnouncements, updateRushStats, querySite,
-    updateTrainAchievements, updateRushAchievements, updateFields };
+    updateTrainAchievements, updateRushAchievements, updateFields
+};
 

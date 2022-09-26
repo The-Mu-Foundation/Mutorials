@@ -13,14 +13,14 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = {
-    emailCodeSend: function(username, code) {
+    emailCodeSend: function (username, code) {
         const mailOptions = {
             from: 'email_confirmation@noreply.mutorials.org',
             to: username,
             subject: 'Mutorials Confirmation Code',
             text: 'Here is your code: ' + code
         };
-        transporter.sendMail(mailOptions, function(error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
                 console.log(error);
             } else {
@@ -29,17 +29,17 @@ module.exports = {
         });
 
     },
-    checkCode: function(username, entered_code) {
+    checkCode: function (username, entered_code) {
         return db.collection('users').findOne({ username: username }).then((user) => {
             return user.email_confirm_code === entered_code;
         });
     },
 
-    clearConfirmCode: function(username) {
+    clearConfirmCode: function (username) {
         db.collection('users').findOneAndUpdate({ username: username }, { $set: { email_confirm_code: "0" } });
     },
 
-    regexCheck: function(username) {
+    regexCheck: function (username) {
         // returns true if the email conforms to RFC 5322
         // see https://stackoverflow.com/questions/201323
 

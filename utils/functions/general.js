@@ -24,7 +24,7 @@ function average(nums) {
     nums.forEach((num) => {
         sum += num;
     })
-    return sum/nums.length;
+    return sum / nums.length;
 }
 
 // https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
