@@ -17,7 +17,7 @@
 
 		// hide status flashes
 		$("#failure").hide(0);
-        $("#success").hide(0);
+        	$("#success").hide(0);
 
 		// set what happens when question is submitted
 		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement;
@@ -31,7 +31,7 @@
 			answer = $("#correctanswer").val();
 			answerExplanation = $("#answer-explanation").val();
 			author = $("#author").val();
-            sourceStatement = $("#source-statement").val();
+            		sourceStatement = $("#source-statement").val();
 
 
 			// radio values
@@ -42,6 +42,8 @@
 				}
 			}
 
+			
+			// checkbox values - returns ARRAY
 			let srcInputs = document.getElementById("external-source").elements;
 			for(let i = 0; i < srcInputs.length; i++) {
 				if(srcInputs[i].checked) {
