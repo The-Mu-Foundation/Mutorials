@@ -20,15 +20,17 @@
         $("#success").hide(0);
 
 		// set what happens when question is submitted
-		let type, question, choices, tags, subject, units, answer, answerExplanation;
+		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, sourceStatement;
 		$("#submit").click(function () {
 
 			// free response text values
 			question = $("#question").val();
 			choices = $("#answerchoices").val();
 			tags = $("#tags").val();
+			rating = $("#rating").val();
 			answer = $("#correctanswer").val();
 			answerExplanation = $("#answer-explanation").val();
+			sourceStatement = $("#source-statement").val();
 
 
 			// radio values
@@ -40,6 +42,15 @@
 			}
 
 
+			// checkbox values - returns ARRAY
+			let srcInputs = document.getElementById("external-source").elements;
+			for(let i = 0; i < srcInputs.length; i++) {
+				if(srcInputs[i].checked) {
+					externalSource = srcInputs[i].id;
+				}
+			}
+			
+			
 			// checkbox values - returns ARRAY
 			subject = [];
 			let subjInputs = document.getElementById("subjects").elements;
@@ -57,12 +68,13 @@
 				}
 			}
 
-			$.post("/contributors/addQuestion", { type, question, choices, tags, subject, units, answer, answerExplanation }, function (data) {
+			$.post("/contributors/addQuestion", { type, question, choices, tags, externalSource, rating, 
+				subject, units, answer, answerExplanation, sourceStatement}, function (data) {
 
 				if(data.success) {
 
-                    $("#success").show(500);
-                    $("#failure").hide(100);
+                    			$("#success").show(500);
+                    			$("#failure").hide(100);
 					
 					// clear all values after success
 					$("#question").val("");
