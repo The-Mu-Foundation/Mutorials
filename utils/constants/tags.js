@@ -362,7 +362,6 @@ const tags = {
         "Concepts": {
             "MACM": "Macromolecules",
             "ENZY": "Enzymes",
-            "BLOT": "Blotting",
             "SOLU": "Solutions",
             "WATE": "Properties of Water",
 
@@ -374,7 +373,7 @@ const tags = {
 
             "CELR": "Cellular Respiration",
             "PHOT": "Photosynthesis",
-            "ANER": "Anaerobic Cellular Respiration",
+            "FERM": "Fermentation",
 
             "DNAR": "DNA Replication",
             "MUTA": "Mutations",
@@ -388,11 +387,12 @@ const tags = {
             "GEXP": "Gene Expression",
             "ELEC": "Electrophrosis and PCR",
             "EDIT": "Gene Editing",
-            "KARY": "Karyotype Analysis",
 
             "NATS": "Natural Selection",
-            "POPG": "Population Genetics",
-            "SPEC": "Species Diffrentiation",
+            "DIFF": "Diffrentiation",
+            "SPEC": "Species Diversity",
+            "ADAP": "Adaptation",
+            "POPD": "Population Dynamics",
 
             "TAXO": "Taxonomy",
             "PHYL": "Phylogeny",
@@ -401,6 +401,7 @@ const tags = {
             "FNGI": "Fungi",
             "PROK": "Prokaryotes",
             "PROT": "Protists",
+            "NHAP": "Non-Human Animal Physiology",
 
             "ECOS": "Ecosystems",
             "CLIM": "Climate Change",
@@ -419,10 +420,7 @@ const tags = {
             "NERV": "Nervous System",
             "DEVT": "Animal Development",
             "SPCO": "Special Organs in Animals",
-            "VIRS": "Viruses",
-            "PHAG": "Phages",
-            "EPID": "Epidemiology",
-            "PATH": "Pathophysiology",
+            "PATH": "Pathology",
             "ETHO": "Ethology",
 
             "PSTR": "Plant Structure",
