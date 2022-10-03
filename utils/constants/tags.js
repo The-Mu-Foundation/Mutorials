@@ -339,7 +339,7 @@ const tags = {
             "ALKYN": "Alkynes",
             "SUBEL": "Substitution and Elimination Reactions",
             "PLYMR": "Synthetic and Natural Polymers",
-            "SPECC": "Spectroscopy",
+            "SPECS": "Spectroscopy",
             "AROSB": "Aromatic Substitutions",
             "AMINE": "Amines",
             "FRDCL": "Free Radical Reactions",
