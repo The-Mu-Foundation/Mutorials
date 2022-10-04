@@ -5,15 +5,15 @@ const achievementDescriptions = {
     },
     "rating_beginner": {
         name: "Eager Learner",
-        description: "Hit 2000 rating in any subject!"
+        description: "Hit 1500 rating in any subject!"
     },
     "rating_intermediate": {
         name: "Scientific Scholar",
-        description: "Hit 2500 rating in any subject!"
+        description: "Hit 2000 rating in any subject!"
     },
     "rating_advanced": {
         name: "Academic Expert",
-        description: "Hit 3000 rating in any subject! Impressive!"
+        description: "Hit 2750 rating in any subject! Impressive!"
     },
     "rating_expert": {
         name: "Conceptual Master",
@@ -39,33 +39,29 @@ const achievementDescriptions = {
         name: "Rush 20",
         description: "Got a score of 20 or above in problem rush"
     },
-    "rush_30": {
-        name: "Rush 30",
-        description: "Got a score of 30 or above in problem rush"
-    },
-    "solves_250": {
+    "solves_300": {
         name: "Question Solver",
-        description: "Solved 250 problems"
+        description: "Solved 300 problems"
     },
-    "solves_750": {
+    "solves_500": {
         name: "The Great Grinder",
-        description: "Solved 750 problems - this is dedication 🙂"
+        description: "Solved 500 problems - this is dedication 🙂"
     },
-    "tags_25": {
+    "tags_20": {
         name: "Tag Scavenger",
-        description: "Collected 25 unique tags"
+        description: "Collected 20 unique tags"
     },
-    "tags_75": {
+    "tags_50": {
         name: "Tag Collector",
-        description: "Collected 75 unique tags"
+        description: "Collected 50 unique tags"
     },
-    "tags_150": {
+    "tags_100": {
         name: "Tag Cultivator",
-        description: "Collected 150 unique tags"
+        description: "Collected 100 unique tags"
     },
-    "tags_300": {
+    "tags_180": {
         name: "The Mad Tagger",
-        description: "Collected 300 unique tags"
+        description: "Collected 180 unique tags"
     }
 };
 
