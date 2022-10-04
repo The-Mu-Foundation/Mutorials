@@ -393,7 +393,7 @@ const tags = {
             "TRSC": "Transcription",
             "TRSL": "Translation",
             "GEXP": "Gene Expression",
-            "ELEC": "Electrophrosis and PCR",
+            "ELEC": "Electrophoresis and PCR",
             "EDIT": "Gene Editing",
 
             "NATS": "Natural Selection",
