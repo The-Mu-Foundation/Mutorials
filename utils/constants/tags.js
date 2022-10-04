@@ -257,7 +257,7 @@ const tags = {
             "COMBS": "Combustion Reactions",
 
             "PRESU": "Pressure",
-            "BGLAL": "The Gas Laws of Boyle, Charles, and Avogadro",
+            "BGLAL": "The Gas Laws of Boyle, Charles, Gay-Lussac, and Avogadro",
             "IDEAL": "The Ideal Gas Law",
             "DLOPP": "Dalton's Law of Partial Pressures",
             "KMTOG": "Kinetic Molecular Theory of Gases",
@@ -347,6 +347,8 @@ const tags = {
             "ORGMT": "Organometallics",
             "ORGCF": "Organic Chemistry Foundations",
             "AETEP": "Alcohols, Ethers, and Epoxides",
+            "CBNXE": "Carbonyls, Carboxyls, and Enols",
+            "DIENE": "Dienes and their Reactions",
 
             "BIOMO": "Biomolecules",
             "METAB": "Metabolismic Processes",
