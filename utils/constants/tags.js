@@ -281,6 +281,7 @@ const tags = {
             "RESON": "Resonance Structures",
             "VSEPR": "The VSEPR Model",
             "HYBRD": "Hybridization",
+            "MOGEO": "Molecular Geometry",
 
             "INTMF": "Intermolecular Forces",
             "METAL": "Metallic Solids",
