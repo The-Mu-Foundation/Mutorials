@@ -71,6 +71,7 @@ const tags = {
             "ULG": "Universal Law of Gravitation",
             "GPE": "Gravitational Potential Energy",
             "GRF": "Gravitational Field",
+            "GFC": "Gravitational Force",
             "KEP": "Kepler's Laws of Planetary Motion",
 
             "DEN": "Density",
