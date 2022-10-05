@@ -20,7 +20,7 @@ const tags = {
             "16P": "Simple Machines",
             "17P": "Modern Physics",
             "18P": "Nuclear Physics",
-            "19P": "Electric Fields and Forces",
+            "19P": "Electrostatics",
             "20P": "Electrical Properties of Materials",
             "21P": "Capacitors",
             "22P": "DC Circuits",
