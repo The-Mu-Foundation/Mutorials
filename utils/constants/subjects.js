@@ -19,7 +19,7 @@ const subjectUnitDictionary = {
         "Simple Machines",
         "Modern Physics",
         "Nuclear Physics",
-        "Electric Fields and Forces",
+        "Electrostatics",
         "Electrical Properties of Materials",
         "Capacitors",
         "DC Circuits",
