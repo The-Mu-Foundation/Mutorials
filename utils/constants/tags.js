@@ -264,6 +264,7 @@ const tags = {
             "KMTOG": "Kinetic Molecular Theory of Gases",
             "EFADF": "Effusion and Diffusion",
             "REALG": "Real Gases",
+            "AVGKE": "Average Kinetic Energy and Temperature",
 
             "ENTHP": "Enthalpy",
             "CALOR": "Calorimetry",
