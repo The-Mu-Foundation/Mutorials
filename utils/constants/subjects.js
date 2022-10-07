@@ -60,7 +60,7 @@ const subjectUnitDictionary = {
         "Metabolism",
         "Heredity and Genetics",
         "Evolution",
-        "Biosystematics",
+        "Biosystematics and Biodiversity",
         "Ecology",
         "Human Anatomy and Physiology",
         "Plant Anatomy and Physiology",
