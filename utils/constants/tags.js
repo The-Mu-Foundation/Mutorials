@@ -365,7 +365,7 @@ const tags = {
             "03B": "Metabolism",
             "04B": "Heredity and Genetics",
             "05B": "Evolution",
-            "06B": "Biosystematics",
+            "06B": "Biosystematics and Biodiversity",
             "07B": "Ecology",
             "08B": "Human Anatomy and Physiology",
             "09B": "Plant Anatomy and Physiology",
