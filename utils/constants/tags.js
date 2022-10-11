@@ -40,6 +40,7 @@ const tags = {
 
             "ONE": "1D Motion",
             "PRO": "Projectile Motion",
+            "DIS": "Distance and Displacement",
             "REM": "Relative Motion",
             "CIR": "Circular Motion",
 
