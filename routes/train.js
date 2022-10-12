@@ -207,6 +207,9 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'private/train/dailyQuestion.ejs', { question, pageName: date + " Challenge" });
     });
 
+    //this stores data about the user
+    var userProblemRushData = new Map();
+    
     app.get('/train/rush', async (req, res) => {
         res.render(VIEWS + 'private/train/rush.ejs', { pageName: "Problem Rush" });
     });
@@ -214,11 +217,18 @@ module.exports = (app, mongo) => {
     app.get('/train/rush/loadQuestion', async (req, res) => {
         try {
             let score = parseInt(req.query.score);
+
+            //if the score is -1 (as a flag)
+            if (score == -1) {
+                userProblemRushData.set(req.user._id.toString(), { start: Date.now(), score: 0, wrong: 0 });
+                score++;
+            }
             let lowerBound = 500 + score * 100;
             let upperBound = 500 + (score + 1) * 100 - 1;
             if (score == 0) {
                 lowerBound = 0;
             }
+            
             let selection = undefined;
             while (!selection) {
                 let questions = await mongo.Ques.find({ type: "mc", rating: { $gte: lowerBound, $lte: upperBound } }).exec();
@@ -226,6 +236,7 @@ module.exports = (app, mongo) => {
                 lowerBound -= 50;
                 upperBound += 50;
             }
+            userProblemRushData.get(req.user._id.toString()).questionID = selection._id;
             res.json({
                 status: "Success",
                 id: selection._id,
@@ -245,33 +256,46 @@ module.exports = (app, mongo) => {
         try {
             let choice = req.query.index;
             let id = req.query.id;
+            
+            //if user has: not clicked "start"/(300000 ms) 5 minutes is over/trying a different question than the one they got/3 or more wrong, stop them from getting a response
+            if (userProblemRushData.has(req.user._id.toString()) && Date.now() - userProblemRushData.get(req.user._id.toString()).start < 300000 && userProblemRushData.get(req.user._id.toString()).questionID == id && userProblemRushData.get(req.user._id.toString()).wrong < 3) {
+                let question = await mongo.Ques.findOne({ _id: id }).exec();
 
-            let question = await mongo.Ques.findOne({ _id: id }).exec();
+                let correct = (question.answer[0] == choice);
 
-            let correct = true;
-            if (question.answer[0] != choice) {
-                correct = false;
+                //increase score if it is correct
+                if (correct) {
+                    userProblemRushData.get(req.user._id.toString()).score++;
+                }
+                else {
+                    userProblemRushData.get(req.user._id.toString()).wrong++;
+                }
+                // backend site data updates
+                incrementSolveCounter(mongo.SiteData, question.subject[0].toLowerCase(), correct);
+                addExperience(req, correct ? (question.rating / 2) : (question.rating / 4));
+                updateCounters(req, question, correct);
+                setQRating(question, correct ? Math.max(0, question.rating - 1) : question.rating + 1);
+
+                res.json({
+                    status: "Success",
+                    correct
+                });
             }
-            // backend site data updates
-            incrementSolveCounter(mongo.SiteData, question.subject[0].toLowerCase(), correct);
-            addExperience(req, correct ? (question.rating / 2) : (question.rating / 4));
-            updateCounters(req, question, correct);
-            setQRating(question, correct ? Math.max(0, question.rating - 1) : question.rating + 1);
-
-            res.json({
-                status: "Success",
-                correct
-            });
+            else {
+                res.status(403).send({ error: "forbidden" });
+            }
         } catch (err) {
             res.json({
                 status: "Error"
             });
         }
     });
-
+    
     app.get('/train/rush/results', async (req, res) => {
         try {
-            let score = req.query.score;
+            //use the server side data to get the score
+            let score = userProblemRushData.get(req.user._id.toString()).score;
+            //let score = req.query.score;
             await updateRushStats(req.user, score);
             updateRushAchievements(req.user, score);
             let user = await mongo.User.findOne({ _id: req.user._id }).exec();;
