@@ -415,6 +415,7 @@ const tags = {
             "PROK": "Prokaryotes",
             "PROT": "Protists",
             "NHAP": "Non-Human Animal Physiology",
+            "DEVT": "Animal Development",
 
             "ECOS": "Ecosystems",
             "CLIM": "Climate Change",
@@ -431,8 +432,6 @@ const tags = {
             "ENCR": "Endocrine System",
             "REPR": "Reproductive System",
             "NERV": "Nervous System",
-            "DEVT": "Animal Development",
-            "SPCO": "Special Organs in Animals",
             "PATH": "Pathology",
             "ETHO": "Ethology",
 
