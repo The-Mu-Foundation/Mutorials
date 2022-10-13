@@ -208,7 +208,7 @@ module.exports = (app, mongo) => {
     });
 
     //this stores data about the user
-    var userProblemRushData = new Map();
+    let userProblemRushData = new Map();
     
     app.get('/train/rush', async (req, res) => {
         res.render(VIEWS + 'private/train/rush.ejs', { pageName: "Problem Rush" });
