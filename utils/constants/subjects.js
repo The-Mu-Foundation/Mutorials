@@ -14,7 +14,7 @@ const subjectUnitDictionary = {
         "Wave Motion",
         "Sound",
         "Ray Optics",
-        "Wave Opticcs",
+        "Wave Optics",
         "Thermodynamics",
         "Simple Machines",
         "Modern Physics",
