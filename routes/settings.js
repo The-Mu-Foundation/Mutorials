@@ -18,7 +18,7 @@ module.exports = (app, mongo) => {
     app.post('/changeProfile', (req, res) => {
         const date = new Date().getFullYear();
         const age = date - req.body.yob;
-         if (!(/^\d+$/.test(age))) {
+        if (!(/^\d+$/.test(age))) {
             req.flash('errorFlash', 'Please enter a valid year of birth!');
         }
 
@@ -40,15 +40,20 @@ module.exports = (app, mongo) => {
                     req.flash('errorFlash', 'Keep it appropriate.');
                 }
             }
-            if (req.body.bio) {
-                if (req.body.bio == filter.clean(req.body.bio)) {
-                    if (req.body.bio.length <= 150) {
-                        req.user.profile.bio = req.body.bio;
+            if (req.body.bio || req.body.bio == "") {
+                if (!req.body.bio == "") {
+                    if (req.body.bio == filter.clean(req.body.bio)) {
+                        if (req.body.bio.length <= 150) {
+                            req.user.profile.bio = req.body.bio;
+                        } else {
+                            req.flash('errorFlash', 'Please keep your bio under 150 characters long.');
+                        }
                     } else {
-                        req.flash('errorFlash', 'Please keep your bio under 150 characters long.');
+                        req.flash('errorFlash', 'Keep it appropriate.');
                     }
-                } else {
-                    req.flash('errorFlash', 'Keep it appropriate.');
+                }
+                else {
+                    req.user.profile.bio = req.body.bio;
                 }
             }
             if (req.body.location) {
@@ -68,12 +73,12 @@ module.exports = (app, mongo) => {
             req.user.profile.location = "Earth";
         }
         if (age < 13 &&
-            ( req.user.profile.name != req.body.name ||
+            (req.user.profile.name != req.body.name ||
                 req.user.profile.bio != req.body.bio ||
                 req.user.profile.location != req.body.location)) {
             req.flash('errorFlash', 'You have to be over 13 to give us your name or location or to have a bio.');
         }
-        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { yob: req.user.profile.yob, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio }}}, {upsert: true});
+        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { profile: { yob: req.user.profile.yob, location: req.user.profile.location, name: req.user.profile.name, bio: req.user.profile.bio } } }, { upsert: true });
         console.log(req.user);
 
         res.redirect('/settings');
@@ -85,7 +90,7 @@ module.exports = (app, mongo) => {
         req.user.preferences.dark_mode = !!req.body.darkMode;
         req.user.preferences.hideProfile = !!req.body.hideProfile;
 
-        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode, hideProfile: req.user.preferences.hideProfile } } }, {upsert: true});
+        mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { preferences: { dark_mode: req.user.preferences.dark_mode, hideProfile: req.user.preferences.hideProfile } } }, { upsert: true });
 
         console.log('Updated preferences');
 
@@ -117,7 +122,7 @@ module.exports = (app, mongo) => {
             console.log('Empty username or no change');
         }
 
-        if(req.body.username && req.body.username != req.user.username) {
+        if (req.body.username && req.body.username != req.user.username) {
             if (!emailValidation.regexCheck(req.body.username)) {
                 req.flash('errorFlash', 'The email you entered is not valid.');
             } else {
@@ -142,27 +147,27 @@ module.exports = (app, mongo) => {
             console.log('Empty email or no change');
         }
 
-        if (req.body.newpw) {
+        if (req.body.newpw) {
             if (req.body.plassword) {
-                const isValid = validPassword(req.body.plassword, req.user.hash, req.user.salt);
-                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw.length >= 7) {
-                    if (req.body.newpw == req.body.confirmnewpw) {
+                const isValid = validPassword(req.body.plassword, req.user.hash, req.user.salt);
+                if ((/\d/.test(req.body.newpw)) && (/[a-zA-Z]/.test(req.body.newpw)) && req.body.newpw.length >= 7) {
+                    if (req.body.newpw == req.body.confirmnewpw) {
                         if (isValid) {
-                            const newPass = genPassword(req.body.newpw);
-                            req.user.hash = newPass.hash;
-                            req.user.salt = newPass.salt;
-                            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt } });
+                            const newPass = genPassword(req.body.newpw);
+                            req.user.hash = newPass.hash;
+                            req.user.salt = newPass.salt;
+                            mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: { hash: req.user.hash, salt: req.user.salt } });
                         } else {
-                            req.flash('errorFlash', 'Your current password must match what you type into the field below for any changes to these settings!');
+                            req.flash('errorFlash', 'Your current password must match what you type into the field below for any changes to these settings!');
                         }
-                    } else {
-                        req.flash('errorFlash', 'Passwords don\'t match.');
+                    } else {
+                        req.flash('errorFlash', 'Passwords don\'t match.');
                     }
-                } else {
-                    req.flash('errorFlash', 'Password does not meet requirements.');
+                } else {
+                    req.flash('errorFlash', 'Password does not meet requirements.');
                 }
-            } else {
-                req.flash('errorFlash', 'To change your password you must enter your current password first!')
+            } else {
+                req.flash('errorFlash', 'To change your password you must enter your current password first!')
             }
         }
         //mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
@@ -170,23 +175,23 @@ module.exports = (app, mongo) => {
         res.redirect('/settings');
     });
 
-    app.post('/deleteAccount', async (req,res) => {
+    app.post('/deleteAccount', async (req, res) => {
         const isValid = validPassword(req.body.delassword, req.user.hash, req.user.salt);
         if (isValid) {
             mongo.db.collection('users').deleteOne({ _id: req.user._id });
             req.logout();
             console.log('Deleted Account');
-            req.flash('successFlash','Goodbye.');
+            req.flash('successFlash', 'Goodbye.');
             res.redirect('/');
         }
         else {
             req.flash('errorFlash', 'Your current password does not match!')
             res.redirect('/settings');
-        }   
+        }
     });
 
     app.get('/settings', (req, res) => {
-        res.render(VIEWS + 'private/settings.ejs', {user: req.user, pageName: "Settings" });
+        res.render(VIEWS + 'private/settings.ejs', { user: req.user, pageName: "Settings" });
     });
 }
 

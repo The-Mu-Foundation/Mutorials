@@ -50,7 +50,7 @@ const referenceSheet = {
         "Vacuum permeability": "$\\mu_0 = 4\\pi\\times10^{-7}\\:\\mathrm{(T\\cdot m)/A}$",
         "Magnetic constant": "$k' = \\frac{\\mu_0}{4\\pi} = 1\\times 10^{-7}\\:\\mathrm{(T\\cdot m)/A}$",
         "1 atmosphere pressure": "$1\\:\\mathrm{atm} = 1.0\\times10^5\\:\\mathrm{N/m^2} = 1.0\\times 10^5\\:\\mathrm{Pa}$"
-        
+
     }
 };
 

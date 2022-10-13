@@ -16,4 +16,4 @@ function validPassword(password, hash, salt) {
     return hash === hashVerify;
 }
 
-module.exports = { genPassword : genPassword, validPassword : validPassword };
+module.exports = { genPassword: genPassword, validPassword: validPassword };

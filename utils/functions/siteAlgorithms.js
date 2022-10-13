@@ -24,36 +24,36 @@ function calculateRatings(userRating, questionRating, correct) {
 // input user rating, gives range of ratings for next question's selection
 function ratingCeilingFloor(userRating) {
 
-    let spread = Math.round((Math.random()+2)*(Math.random()+2)*100);
-    spread += Math.round(userRating/10);
+    let spread = Math.round((Math.random() + 2) * (Math.random() + 2) * 100);
+    spread += Math.round(userRating / 10);
 
-    let floor = userRating-spread;
-    let ceiling = userRating+spread;
-    if(floor < 0) {
+    let floor = userRating - spread;
+    let ceiling = userRating + spread;
+    if (floor < 0) {
         floor = 0;
     }
 
-    return { floor : floor, ceiling : ceiling };
+    return { floor: floor, ceiling: ceiling };
 }
 
 function calculateLevel(experience) {
 
     // if experience doesn't exist
-    if(!experience) {
+    if (!experience) {
         experience = 0;
     }
-    
+
     let total = experience;
     let level = 1;
-    let decrement = 1000*Math.pow(level, 1.2);
+    let decrement = 1000 * Math.pow(level, 1.2);
 
-    while(total-decrement >= 0) {
-        
+    while (total - decrement >= 0) {
+
         total -= decrement;
         level += 1;
-        decrement = 1000*Math.pow(level, 1.2);
+        decrement = 1000 * Math.pow(level, 1.2);
     }
-    
+
     return { level, remainder: Math.round(total), totalToNext: Math.round(decrement) };
 }
 
@@ -81,19 +81,19 @@ function analyze(unitData) {
     };
 
     for (const [unit, data] of Object.entries(unitData)) {
-        
+
         let performance = data.pastResults.reduce((a, b) => a + b, 0);
-        let averageRating = data.pastRatings.reduce((a, b) => a + b, 0)/data.pastRatings.length;
-        
-        if(performance >= 7 || (performance >= 5 && averageRating >= 1500) || (performance >= 3 && averageRating >= 2100)) {
+        let averageRating = data.pastRatings.reduce((a, b) => a + b, 0) / data.pastRatings.length;
+
+        if (performance >= 7 || (performance >= 5 && averageRating >= 1500) || (performance >= 3 && averageRating >= 2100)) {
             strengths[unit.split(' ')[0].toLowerCase()].push("" + unit);
-        } else if(performance <= -5 || (performance <= -3 && averageRating <= 1800) || (performance <= -1 && averageRating <= 1000)) {
+        } else if (performance <= -5 || (performance <= -3 && averageRating <= 1800) || (performance <= -1 && averageRating <= 1000)) {
             weaknesses[unit.split(' ')[0].toLowerCase()].push("" + unit);
         } else {
             studying[unit.split(' ')[0].toLowerCase()].push("" + unit);
         }
 
-        if(data.correct + data.wrong >= 100) {
+        if (data.correct + data.wrong >= 100) {
             favorites[unit.split(' ')[0].toLowerCase()].push("" + unit);
         }
     }
@@ -101,4 +101,4 @@ function analyze(unitData) {
     return { strengths, weaknesses, studying, favorites }
 }
 
-module.exports = { calculateRatings , ratingCeilingFloor, calculateLevel, analyze };
+module.exports = { calculateRatings, ratingCeilingFloor, calculateLevel, analyze };

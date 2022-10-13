@@ -27,7 +27,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(httpsConfig, app);
 
 if (PORT != 3000) {
-    app.use(enforce.HTTPS({trustProtoHeader: true }));
+    app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 
 const mongo = require('./utils/functions/mongo.js');
@@ -86,7 +86,7 @@ app.use((err, req, res, next) => {
 });
 
 // START http AND https SERVERS
-http.createServer(app).listen(PORT, function() {
+http.createServer(app).listen(PORT, function () {
     console.log('Express server listening on port ' + PORT);
 });
 
