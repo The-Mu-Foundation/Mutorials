@@ -415,7 +415,6 @@ const tags = {
             "PROK": "Prokaryotes",
             "PROT": "Protists",
             "NHAP": "Non-Human Animal Physiology",
-            "DEVT": "Animal Development",
 
             "ECOS": "Ecosystems",
             "CLIM": "Climate Change",
@@ -424,7 +423,7 @@ const tags = {
             "DIGT": "Digestive System",
             "RESP": "Respiratory System",
             "CARD": "Cardiovascular System",
-            "INTG": "Intergumentary System",
+            "INTG": "Integumentary System",
             "MUSK": "Musculoskeletal System",
             "IMMU": "Immune System",
             "LYMP": "Lymphatic System",
