@@ -402,7 +402,7 @@ const tags = {
             "EDIT": "Gene Editing",
 
             "NATS": "Natural Selection",
-            "DIFF": "Diffrentiation",
+            "DIFF": "Differentiation",
             "SPEC": "Species Diversity",
             "ADAP": "Adaptation",
             "POPD": "Population Dynamics",
