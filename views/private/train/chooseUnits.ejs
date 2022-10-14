@@ -30,6 +30,9 @@
 			}
 
             let cookieData = units.join('@');
+            if(cookieData == "") {
+                cookieData = "none";
+            }
             document.cookie = cookieData;
         }
 
@@ -54,7 +57,7 @@
         // make unit clustering buttons work
         var unitPresets = JSON.parse($("#stringifiedUnits").val());
         Object.keys(unitPresets).forEach((preset) => {
-            $("#"+preset.replace(/\s+/g, '')).click(function() {
+            $(document.getElementById(preset.replace(/\s+/g, ''))).click(function() {
 
                 document.getElementsByName("unitChoice").forEach((checkbox) => {
                     if(checkbox.type == "checkbox") {
