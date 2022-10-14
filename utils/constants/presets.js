@@ -8,7 +8,7 @@ const presetUnitOptions = {
         "IB Physics SL1": ["Measurement", "Kinematics", "Newton's Laws", "Forces", "Linear Momentum", "Energy Basics", "Gravitation", "Wave Motion", "Sound", "Thermodynamics", "Nuclear Physics", "Electrostatics", "DC Circuits"],
         "IB Physics SL2": ["Measurement", "Kinematics", "Newton's Laws", "Forces", "Linear Momentum", "Energy Basics", "Gravitation", "Wave Motion", "Sound", "Thermodynamics", "Nuclear Physics", "Electrostatics", "DC Circuits", "Rotation", "Fluids", "Ray Optics", "Modern Physics", "Astrophysics"],
         "IB Physics HL2": ["Measurement", "Kinematics", "Newton's Laws", "Forces", "Linear Momentum", "Energy Basics", "Gravitation", "Wave Motion", "Sound", "Thermodynamics", "Nuclear Physics", "Electrostatics", "DC Circuits", "Rotation", "Fluids", "Ray Optics", "Modern Physics", "Astrophysics", "Oscillations", "Wave Optics", "Electrical Properties of Materials", "Capacitors", "Magnetic Fields", "Magnetic Forces", "Induction"],
-        "F=ma Exam": ["Simple Machines", "Measurement", "Kinematics", "Newton's Laws", "Forces", "Linear Momentum", "Rotation", "Energy Basics", "Gravitation", "Fluids"]
+        "F=ma Exam": ["Simple Machines", "Measurement", "Kinematics", "Newton's Laws", "Forces", "Linear Momentum", "Rotation", "Energy Basics", "Gravitation", "Oscillations", "Fluids"]
     },
     "Chemistry": {
         "AP Chemistry": ["Measurement", "Atomic Structure", "Compound Nomenclature", "Stoichiometry", "Solutions", "Types of Reactions", "Gases", "Thermochemistry", "Atomic Periodicity", "Atomic Bonding", "Liquids and Solids", "Kinetics", "Chemical Equilibria", "Acids and Bases", "Physical Chemistry", "Electrochemistry", "Nuclear Chemistry", "Lab Skills"],
