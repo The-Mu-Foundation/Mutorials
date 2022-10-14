@@ -128,9 +128,9 @@ function calculateHours(subject, rating) {
 
     // heuristic functions are subject to change
     if (subject == "Physics") {
-        return 0.06 * Math.pow(Math.E, 0.0009 * rating);
-    } else if (subject == "Chemistry") {
         return 0.05 * Math.pow(Math.E, 0.0009 * rating);
+    } else if (subject == "Chemistry") {
+        return 0.03 * Math.pow(Math.E, 0.001 * rating);
     } else if (subject == "Biology") {
         return 0.15 * Math.pow(Math.E, 0.0005 * rating);
     }

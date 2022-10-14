@@ -20,7 +20,7 @@ const tags = {
             "16P": "Simple Machines",
             "17P": "Modern Physics",
             "18P": "Nuclear Physics",
-            "19P": "Electric Fields and Forces",
+            "19P": "Electrostatics",
             "20P": "Electrical Properties of Materials",
             "21P": "Capacitors",
             "22P": "DC Circuits",
@@ -40,6 +40,7 @@ const tags = {
 
             "ONE": "1D Motion",
             "PRO": "Projectile Motion",
+            "DIS": "Distance and Displacement",
             "REM": "Relative Motion",
             "CIR": "Circular Motion",
 
@@ -71,6 +72,7 @@ const tags = {
             "ULG": "Universal Law of Gravitation",
             "GPE": "Gravitational Potential Energy",
             "GRF": "Gravitational Field",
+            "GFC": "Gravitational Force",
             "KEP": "Kepler's Laws of Planetary Motion",
 
             "DEN": "Density",
@@ -257,12 +259,13 @@ const tags = {
             "COMBS": "Combustion Reactions",
 
             "PRESU": "Pressure",
-            "BGLAL": "The Gas Laws of Boyle, Charles, and Avogadro",
+            "BGLAL": "The Gas Laws of Boyle, Charles, Gay-Lussac, and Avogadro",
             "IDEAL": "The Ideal Gas Law",
             "DLOPP": "Dalton's Law of Partial Pressures",
             "KMTOG": "Kinetic Molecular Theory of Gases",
             "EFADF": "Effusion and Diffusion",
             "REALG": "Real Gases",
+            "AVGKE": "Average Kinetic Energy and Temperature",
 
             "ENTHP": "Enthalpy",
             "CALOR": "Calorimetry",
@@ -281,6 +284,7 @@ const tags = {
             "RESON": "Resonance Structures",
             "VSEPR": "The VSEPR Model",
             "HYBRD": "Hybridization",
+            "MOGEO": "Molecular Geometry",
 
             "INTMF": "Intermolecular Forces",
             "METAL": "Metallic Solids",
@@ -346,6 +350,8 @@ const tags = {
             "ORGMT": "Organometallics",
             "ORGCF": "Organic Chemistry Foundations",
             "AETEP": "Alcohols, Ethers, and Epoxides",
+            "CBNXE": "Carbonyls, Carboxyls, and Enols",
+            "DIENE": "Dienes and their Reactions",
 
             "BIOMO": "Biomolecules",
             "METAB": "Metabolismic Processes",
@@ -360,7 +366,7 @@ const tags = {
             "03B": "Metabolism",
             "04B": "Heredity and Genetics",
             "05B": "Evolution",
-            "06B": "Biosystematics",
+            "06B": "Biosystematics and Biodiversity",
             "07B": "Ecology",
             "08B": "Human Anatomy and Physiology",
             "09B": "Plant Anatomy and Physiology",
@@ -392,11 +398,11 @@ const tags = {
             "TRSC": "Transcription",
             "TRSL": "Translation",
             "GEXP": "Gene Expression",
-            "ELEC": "Electrophrosis and PCR",
+            "ELEC": "Electrophoresis and PCR",
             "EDIT": "Gene Editing",
 
             "NATS": "Natural Selection",
-            "DIFF": "Diffrentiation",
+            "DIFF": "Differentiation",
             "SPEC": "Species Diversity",
             "ADAP": "Adaptation",
             "POPD": "Population Dynamics",
@@ -417,7 +423,7 @@ const tags = {
             "DIGT": "Digestive System",
             "RESP": "Respiratory System",
             "CARD": "Cardiovascular System",
-            "INTG": "Intergumentary System",
+            "INTG": "Integumentary System",
             "MUSK": "Musculoskeletal System",
             "IMMU": "Immune System",
             "LYMP": "Lymphatic System",
@@ -425,8 +431,6 @@ const tags = {
             "ENCR": "Endocrine System",
             "REPR": "Reproductive System",
             "NERV": "Nervous System",
-            "DEVT": "Animal Development",
-            "SPCO": "Special Organs in Animals",
             "PATH": "Pathology",
             "ETHO": "Ethology",
 
