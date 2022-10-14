@@ -10,7 +10,10 @@ nationality, personal appearance, race, religion, or sexual identity
 and orientation.
 
 We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy community.
+diverse, inclusive, and healthy community. Under these ideals we commit to a set of *Mu Ideals*:
+- To create a free, adaptive science trainer
+- To gather a community of passionate, science-loving problem solvers and writers
+- To build a sustainable, self-perpetuating non-profit organization
 
 ## Our Standards
 
