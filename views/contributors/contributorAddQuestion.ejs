@@ -20,15 +20,17 @@
         $("#success").hide(0);
 
 		// set what happens when question is submitted
-		let type, question, choices, tags, subject, units, answer, answerExplanation;
+		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, sourceStatement;
 		$("#submit").click(function () {
 
 			// free response text values
 			question = $("#question").val();
 			choices = $("#answerchoices").val();
 			tags = $("#tags").val();
+			rating = $("#rating").val();
 			answer = $("#correctanswer").val();
 			answerExplanation = $("#answer-explanation").val();
+			sourceStatement = $("#source-statement").val();
 
 
 			// radio values
@@ -40,6 +42,15 @@
 			}
 
 
+			// checkbox values - returns ARRAY
+			let srcInputs = document.getElementById("external-source").elements;
+			for(let i = 0; i < srcInputs.length; i++) {
+				if(srcInputs[i].checked) {
+					externalSource = srcInputs[i].id;
+				}
+			}
+			
+			
 			// checkbox values - returns ARRAY
 			subject = [];
 			let subjInputs = document.getElementById("subjects").elements;
@@ -57,19 +68,22 @@
 				}
 			}
 
-			$.post("/contributors/addQuestion", { type, question, choices, tags, subject, units, answer, answerExplanation }, function (data) {
+			$.post("/contributors/addQuestion", { type, question, choices, tags, externalSource, rating, subject,
+				units, answer, answerExplanation, sourceStatement}, function (data) {
 
 				if(data.success) {
 
-                    $("#success").show(500);
-                    $("#failure").hide(100);
+                    			$("#success").show(500);
+                    			$("#failure").hide(100);
 					
 					// clear all values after success
 					$("#question").val("");
 					$("#answerchoices").val("");
 					$("#tags").val("");
+					$("#rating").val("");
 					$("#correctanswer").val("");
 					$("#answer-explanation").val("");
+					$("#source-statement").val("");
 					document.getElementsByName("checkableButton").forEach((checkbox) => {
 						if(checkbox.type == "checkbox" || checkbox.type == "radio") {
 							checkbox.checked = false;
@@ -77,7 +91,7 @@
 					});
 				} else {
 					$("#failure").show(500);
-                    $("#success").hide(100);
+                    			$("#success").hide(100);
 				}
 			});
 
@@ -108,7 +122,7 @@
 	
 	<div class="form-group">
 		<h3>LaTeX Compiler - NOT PART OF THE QUESTION</h3>
-		<textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click Render"></textarea>
+		<textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click the Render button to view sample renders"></textarea>
     </div>
 	
 	<p id="rendersandbox">[Sample rendered LaTeX goes here - did you know $F = ma$ ?]</p>
@@ -134,13 +148,20 @@
 		<textarea class="form-control" id="answerchoices" rows="6" placeholder="Type in answer choices, using '@' characters as deliminators"></textarea>
     </div>
     
-    <%# CORRRECT ANSWER %>
+    <%# CORRECT ANSWER %>
     <hr>
 	<div class="form-group">
 		<p>What is the correct answer?</p>
 		<input class="form-control" id="correctanswer" placeholder="Input the answer, with '@' characters as deliminators if there are multiple">
     </div>
 
+    <%# RATING %>
+    <hr>
+	<div class="form-group">
+		<p>What is the rating of this question?</p>
+		<input type="number" class="form-control" id="rating" placeholder="Enter an integer rating">
+    </div>
+    
     <%# FORMAT %>
     <hr>
     <form class="form-group" id="question-format">
@@ -202,6 +223,36 @@
             <% }) %>
         <% }) %>
     </form>
+    
+    <%# EXTERNAL SOURCES %>
+    <hr>
+	<form class="form-group" id="external-source">
+		<p>Is this question from an external source?</p>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="original" value="original">
+			<label class="form-check-label" for="original">Original - written by Mutorials</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="AP" value="AP">
+			<label class="form-check-label" for="AP">AP (Advanced Placement)</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="IB" value="IB">
+			<label class="form-check-label" for="IB">IB (International Baccalaureate)</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="SAT2" value="SAT2">
+			<label class="form-check-label" for="SAT2">SAT2 (Scholastic Aptitude Test 2)</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="Competition" value="Comp">
+			<label class="form-check-label" for="Comp">Competition problem</label>
+		</div>
+	</form>
+	<div class="form-group">
+		<p>If the question is not original, please give a statement regarding the source:</p>
+		<textarea class="form-control" id="source-statement" placeholder="Enter the statement/title (with capitalization)"></textarea>
+	</div>
 </div>
 
 <div class="my-2 alert alert-success container" id="success">Success! Your question has been added and now pends review!</div>

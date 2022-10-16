@@ -17,7 +17,7 @@
 
 		// hide status flashes
 		$("#failure").hide(0);
-        $("#success").hide(0);
+        	$("#success").hide(0);
 
 		// set what happens when question is submitted
 		let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement;
@@ -31,7 +31,7 @@
 			answer = $("#correctanswer").val();
 			answerExplanation = $("#answer-explanation").val();
 			author = $("#author").val();
-            sourceStatement = $("#source-statement").val();
+            		sourceStatement = $("#source-statement").val();
 
 
 			// radio values
@@ -42,6 +42,8 @@
 				}
 			}
 
+			
+			// checkbox values - returns ARRAY
 			let srcInputs = document.getElementById("external-source").elements;
 			for(let i = 0; i < srcInputs.length; i++) {
 				if(srcInputs[i].checked) {
@@ -110,7 +112,7 @@
 	});
 </script>
 
-<h1 class="my-5 container">ADMIN PAGE: Add Question</h1>
+<h1 class="my-5 container">ADMINS: Add Question</h1>
 
 <div class="jumbotron container" id="show-compiler-div">
 
@@ -122,7 +124,7 @@
 
 	<div class="form-group">
 		<h3>LaTeX Compiler - NOT PART OF THE QUESTION</h3>
-		<textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click Render"></textarea>
+		<textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click the Render button to view sample renders"></textarea>
     </div>
 
 	<p id="rendersandbox">[Sample rendered LaTeX goes here - did you know $F = ma$ ?]</p>
@@ -278,7 +280,7 @@
                 <h5 class="modal-title">Are you sure you want to leave this page?</h5>
             </div>
 			<div class="modal-body">
-				<p>All your work is unsaved and will be discarded</p>
+				<p>All your work is unsaved and will be discarded.</p>
             </div>
             <div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
