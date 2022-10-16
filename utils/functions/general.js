@@ -24,7 +24,12 @@ function average(nums) {
     nums.forEach((num) => {
         sum += num;
     })
-    return sum/nums.length;
+    return sum / nums.length;
 }
+
+// https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
+String.prototype.toProperCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();});
+};
 
 module.exports = { arraysEqual , parseDelimiter, average };

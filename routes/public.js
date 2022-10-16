@@ -62,7 +62,7 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'public/latexcompiler.ejs', { pageName: "LaTeX Compiler" });
     });
 
-    app.get('/whoWeAre', (req, res)  => {
+    app.get('/whoWeAre', (req, res) => {
         if (req.isAuthenticated()) {
             res.render(VIEWS + 'public/whoWeAre.ejs', { pageName: "About Mutorials", authenticated: true });
         }
@@ -85,7 +85,7 @@ module.exports = (app, mongo) => {
         req.body.ign = req.body.ign.toLowerCase();
         let registerInputProblems1 = false;
 
-        if (req.body.ign.length > 30){
+        if (req.body.ign.length > 30) {
             req.flash('errorFlash', 'Your username is too long.');
             registerInputProblems1 = true;
         }
@@ -106,7 +106,7 @@ module.exports = (app, mongo) => {
             req.flash('errorFlash', 'The password you entered does not meet the requirements.');
             registerInputProblems1 = true;
         }
-        if (req.body.password!=req.body.confirmPassword) {
+        if (req.body.password != req.body.confirmPassword) {
             req.flash('errorFlash', 'The passwords did not match. Please try again.');
             registerInputProblems1 = true;
         }
@@ -138,7 +138,7 @@ module.exports = (app, mongo) => {
         const salt = saltHash.salt;
         const hash = saltHash.hash;
         let thisYob = req.body.yob;
-        if(!thisYob){
+        if (!thisYob) {
             thisYob = 2020;
         }
         const newUser = new mongo.User({
@@ -165,7 +165,7 @@ module.exports = (app, mongo) => {
                 biology: -1
             },
             preferences: {
-                hideProfile: ((new Date().getFullYear() - thisYob)<13 ? true : false)
+                hideProfile: ((new Date().getFullYear() - thisYob) < 13 ? true : false)
             },
             achievements: {
                 join_mutorials: true
@@ -173,7 +173,7 @@ module.exports = (app, mongo) => {
         });
 
         // check for duplicate username AND email
-        mongo.db.collection('users').findOne({ $or:[ { ign: req.body.ign }, { username: req.body.username } ]}).then((user) => {
+        mongo.db.collection('users').findOne({ $or: [{ ign: req.body.ign }, { username: req.body.username }] }).then((user) => {
             if (user) {
                 console.log('used');
                 let registerInputProblems2 = false;

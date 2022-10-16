@@ -11,21 +11,6 @@
         // TEMPORARY: hide unused units on frontend (physics only right now)
         if("<%= subject %>" == "Physics") {
             var toHide = [
-              /* "Electric Forces and Fields",
-              "Electrical Energy and Capacitance",
-              "DC Circuits",
-              "AC Circuits",
-              "Magnetism",
-              "Inductance",
-              "Electrostatics",
-              "Thermodynamics",
-              "Vibrations and Waves",
-              "Reflection and Refraction",
-              "Mirrors and Lenses",
-              "Wave Optics",
-              "Relativity",
-              "Quantum Physics",
-              "Nuclear Energy and Elementary Particles" */
             ];
             toHide.forEach((element) => {
                 console.log("Now hidden: " + element);
@@ -45,6 +30,9 @@
 			}
 
             let cookieData = units.join('@');
+            if(cookieData == "") {
+                cookieData = "none";
+            }
             document.cookie = cookieData;
         }
 
@@ -69,7 +57,7 @@
         // make unit clustering buttons work
         var unitPresets = JSON.parse($("#stringifiedUnits").val());
         Object.keys(unitPresets).forEach((preset) => {
-            $("#"+preset.replace(/\s+/g, '')).click(function() {
+            $(document.getElementById(preset.replace(/\s+/g, ''))).click(function() {
 
                 document.getElementsByName("unitChoice").forEach((checkbox) => {
                     if(checkbox.type == "checkbox") {
