@@ -220,8 +220,11 @@ module.exports = (app, mongo) => {
 
             //if the score is -1 (as a flag)
             if (score == -1) {
-                userProblemRushData.set(req.user._id.toString(), { start: Date.now(), score: 0, wrong: 0 });
+                userProblemRushData.set(req.user._id.toString(), { start: Date.now(), score: 0, wrong: 0, submitted: false });
                 score++;
+            }
+            else {
+                score = userProblemRushData.get(req.user._id.toString()).score;
             }
             let lowerBound = 500 + score * 100;
             let upperBound = 500 + (score + 1) * 100 - 1;
@@ -237,6 +240,7 @@ module.exports = (app, mongo) => {
                 upperBound += 50;
             }
             userProblemRushData.get(req.user._id.toString()).questionID = selection._id;
+            userProblemRushData.get(req.user._id.toString()).freshQuestion = true;
             res.json({
                 status: "Success",
                 id: selection._id,
@@ -257,12 +261,15 @@ module.exports = (app, mongo) => {
             let choice = req.query.index;
             let id = req.query.id;
             
-            //if user has: not clicked "start"/(300000 ms) 5 minutes is over/trying a different question than the one they got/3 or more wrong, stop them from getting a response
-            if (userProblemRushData.has(req.user._id.toString()) && Date.now() - userProblemRushData.get(req.user._id.toString()).start < 300000 && userProblemRushData.get(req.user._id.toString()).questionID == id && userProblemRushData.get(req.user._id.toString()).wrong < 3) {
+            //if user has: not clicked "start"/(300000 ms) 5 minutes is over/trying a different question than the one they got/3 or more wrong/already answered the question, stop them from getting a response
+            if (userProblemRushData.has(req.user._id.toString()) && Date.now() - userProblemRushData.get(req.user._id.toString()).start < 300000 && userProblemRushData.get(req.user._id.toString()).questionID == id && userProblemRushData.get(req.user._id.toString()).wrong < 3 && userProblemRushData.get(req.user._id.toString()).freshQuestion) {
                 let question = await mongo.Ques.findOne({ _id: id }).exec();
 
                 let correct = (question.answer[0] == choice);
 
+                //prevent them from getting credit from the same question 2 times
+                userProblemRushData.get(req.user._id.toString()).freshQuestion = false;
+                
                 //increase score if it is correct
                 if (correct) {
                     userProblemRushData.get(req.user._id.toString()).score++;
@@ -282,7 +289,9 @@ module.exports = (app, mongo) => {
                 });
             }
             else {
-                res.status(403).send({ error: "forbidden" });
+                res.status(403).json({
+                    status: "Forbidden"
+                });
             }
         } catch (err) {
             res.json({
@@ -293,17 +302,25 @@ module.exports = (app, mongo) => {
     
     app.get('/train/rush/results', async (req, res) => {
         try {
-            //use the server side data to get the score
-            let score = userProblemRushData.get(req.user._id.toString()).score;
-            //let score = req.query.score;
-            await updateRushStats(req.user, score);
-            updateRushAchievements(req.user, score);
-            let user = await mongo.User.findOne({ _id: req.user._id }).exec();;
-            let highscore = user.stats.rush.highscore;
-            res.json({
-                status: "Success",
-                highscore
-            });
+            //if they already submited then return
+            if (!userProblemRushData.get(req.user._id.toString()).submitted) {
+                userProblemRushData.get(req.user._id.toString()).submitted = true
+                //use the server side data to get the score
+                let score = userProblemRushData.get(req.user._id.toString()).score;
+                await updateRushStats(req.user, score);
+                updateRushAchievements(req.user, score);
+                let user = await mongo.User.findOne({ _id: req.user._id }).exec();;
+                let highscore = user.stats.rush.highscore;
+                res.json({
+                    status: "Success",
+                    highscore
+                });
+            }
+            else {
+                res.status(403).json({
+                    status: "Forbidden"
+                });
+            }
         } catch (err) {
             res.json({
                 status: "Error"
