@@ -192,8 +192,8 @@
 
         // actual rush starts!
         let startRush = async () => {
-
-            loadQuestion(score);
+            //first request (starting the game) must submit -1
+            loadQuestion(score - 1);
         }
         
         // define when rush ends
