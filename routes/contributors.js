@@ -23,8 +23,10 @@ module.exports = (app, mongo) => {
 
         if (req.body.question.length < 1
             || parseDelimiter(req.body.answer)[0].length < 1
+            || req.body.rating.length < 1
             || req.body.answerExplanation.length < 1
             || req.body.type.length < 1
+            || req.body.externalSource.length < 1
             || !req.body.subject
             || !req.body.units) {
             res.json({
@@ -50,13 +52,13 @@ module.exports = (app, mongo) => {
             question: req.body.question,
             choices: parseDelimiter(req.body.choices),
             tags: parseDelimiter(req.body.tags),
-            rating: 0,
+            rating: req.body.rating,
             answer: parseDelimiter(req.body.answer),
             answer_ex: req.body.answerExplanation,
             author: req.user.contributor,
             type: req.body.type,
-            ext_source: "original",
-            source_statement: "",
+            ext_source: req.body.externalSource,
+            source_statement: req.body.sourceStatement,
             subject: req.body.subject,
             units: req.body.units,
             reviewers: []

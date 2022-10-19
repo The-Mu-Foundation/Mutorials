@@ -40,6 +40,7 @@ const tags = {
 
             "ONE": "1D Motion",
             "PRO": "Projectile Motion",
+            "DIS": "Distance and Displacement",
             "REM": "Relative Motion",
             "CIR": "Circular Motion",
 
@@ -401,7 +402,7 @@ const tags = {
             "EDIT": "Gene Editing",
 
             "NATS": "Natural Selection",
-            "DIFF": "Diffrentiation",
+            "DIFF": "Differentiation",
             "SPEC": "Species Diversity",
             "ADAP": "Adaptation",
             "POPD": "Population Dynamics",
@@ -422,7 +423,7 @@ const tags = {
             "DIGT": "Digestive System",
             "RESP": "Respiratory System",
             "CARD": "Cardiovascular System",
-            "INTG": "Intergumentary System",
+            "INTG": "Integumentary System",
             "MUSK": "Musculoskeletal System",
             "IMMU": "Immune System",
             "LYMP": "Lymphatic System",
@@ -430,8 +431,6 @@ const tags = {
             "ENCR": "Endocrine System",
             "REPR": "Reproductive System",
             "NERV": "Nervous System",
-            "DEVT": "Animal Development",
-            "SPCO": "Special Organs in Animals",
             "PATH": "Pathology",
             "ETHO": "Ethology",
 
