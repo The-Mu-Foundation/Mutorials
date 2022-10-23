@@ -75,6 +75,9 @@
             } else {
                 $("#wrong").show(500);
                 $("#correct").hide(0);
+                if (type == "fr") {
+                    setTimeout(() => $("#fr-answer").focus(), 0)
+                }
             }
         });
 
@@ -84,8 +87,14 @@
             $("#correct").hide(0);
             $("#answer").show(500);
         });
-    });
 
+        $("#fr-answer").keypress((e) => {
+            if ((e.keyCode || 0) === 13) {
+                $("#submit").click();
+                return false
+            }
+        })
+    });
 </script>
 
 <div class="jumbotron container mt-5">
