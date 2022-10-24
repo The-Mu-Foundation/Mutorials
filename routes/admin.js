@@ -136,7 +136,7 @@ module.exports = (app, mongo) => {
 
         // remove duplicate tags
         req.body.tags = [...new Set(req.body.tags.split('@'))].join('@');
-
+        
         mongo.db.collection(req.body.reviewerID ? "pendingQuestions" : "questions").findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(req.body.questionID) },
             {
@@ -163,11 +163,24 @@ module.exports = (app, mongo) => {
             question = question ? question : err.value;
             if (question && req.body.reviewerID && question.reviewers.length > 0 && question.rating) {
                 // 2 reviews complete, move to questions collection
-                mongo.db.collection("pendingQuestions").deleteOne({ id: question.id }, (err, _) => {
+                mongo.db.collection("pendingQuestions").deleteOne({ _id: question._id }, (err, _) => {
                     if (err) {
                         console.log(err);
                     } else {
-                        mongo.db.collection("questions").insertOne(question, (err, _) => {
+                        mongo.db.collection("questions").insertOne({
+                            question: req.body.question,
+                            choices: parseDelimiter(req.body.choices),
+                            tags: parseDelimiter(req.body.tags),
+                            rating: req.body.rating,
+                            answer: parseDelimiter(req.body.answer),
+                            answer_ex: req.body.answerExplanation,
+                            author: req.body.author,
+                            type: req.body.type,
+                            ext_source: req.body.externalSource,
+                            source_statement: req.body.sourceStatement,
+                            subject: req.body.subject,
+                            units: req.body.units,
+                        }, (err, _) => {
                             if (err) {
                                 console.log(err);
                             }
