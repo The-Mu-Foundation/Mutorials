@@ -114,7 +114,8 @@ module.exports = (app, mongo) => {
             || req.body.type.length < 1
             || req.body.externalSource.length < 1
             || !req.body.subject
-            || !req.body.units) {
+            || !req.body.units
+            || (req.user.contributor != req.body.reviewerID) == ('isEdit' != req.body.reviewerID)) {
             res.json({
                 success: false
             });
