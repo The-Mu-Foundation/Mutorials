@@ -114,7 +114,8 @@ module.exports = (app, mongo) => {
             || req.body.type.length < 1
             || req.body.externalSource.length < 1
             || !req.body.subject
-            || !req.body.units) {
+            || !req.body.units
+            || (req.user.contributor != req.body.reviewerID) == ('isEdit' != req.body.reviewerID)) {
             res.json({
                 success: false
             });
@@ -137,7 +138,7 @@ module.exports = (app, mongo) => {
         // remove duplicate tags
         req.body.tags = [...new Set(req.body.tags.split('@'))].join('@');
         
-        mongo.db.collection(req.body.reviewerID ? "pendingQuestions" : "questions").findOneAndUpdate(
+        mongo.db.collection(req.body.reviewerID != "isEdit" ? "pendingQuestions" : "questions").findOneAndUpdate(
             { _id: mongoose.Types.ObjectId(req.body.questionID) },
             {
                 $set: {
@@ -161,7 +162,7 @@ module.exports = (app, mongo) => {
             { new: true }
         ).then((err, question) => {
             question = question ? question : err.value;
-            if (question && req.body.reviewerID && question.reviewers.length > 0 && question.rating) {
+            if (question && question.reviewers.length > 0) {
                 // 2 reviews complete, move to questions collection
                 mongo.db.collection("pendingQuestions").deleteOne({ _id: question._id }, (err, _) => {
                     if (err) {

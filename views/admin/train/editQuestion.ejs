@@ -306,6 +306,8 @@
         <p>Has been reviewed by: <%= !(question.reviewers?.length >= 1) ? "Nobody" : question.reviewers.reduce((a, b) => a + ", " + b) %></p>
         <input class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID">
     </div>
+<% } else { %>
+        <input type="hidden" class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID" value="isEdit">
 <% } %>
 
 <div class="my-2 alert alert-success container" id="success">Success! This question has been updated/reviewed!</div>
