@@ -139,7 +139,7 @@ module.exports = (app, mongo) => {
         const hash = saltHash.hash;
         let thisYob = req.body.yob;
         if (!thisYob) {
-            thisYob = 2020;
+            thisYob = 2022;
         }
         const newUser = new mongo.User({
             username: req.body.username,
