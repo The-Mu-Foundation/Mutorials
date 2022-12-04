@@ -14,6 +14,9 @@ module.exports = (app, mongo) => {
     app.all(/^(\/admin).*$/, (req, res, next) => {
         if (req.isAuthenticated() && (adminList.includes(req.user.username))) {
             next()
+        } else if (req.isAuthenticated() && !(adminList.includes(req.user.username))) {
+            req.flash('errorFlash', 'Error 403: You don\'t have permission to access this resource.');
+            res.redirect('/');
         } else {
             req.flash('errorFlash', 'Error 404: File Not Found. That page doesn\'t exist.');
             res.redirect('/');
