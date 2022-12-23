@@ -297,4 +297,45 @@ module.exports = (app, mongo) => {
             }
         })
     });
+
+    app.get('/admin/physicsQuestions', async (req, res) => {
+        const allQuestions = await mongo.db.collection('questions').find().toArray();
+        res.render(VIEWS + 'admin/train/physicsQuestions.ejs', {
+            questions: allQuestions
+        });
+    });
+
+    app.get('/admin/chemQuestions', async (req, res) => {
+        const allQuestions = await mongo.db.collection('questions').find().toArray();
+        res.render(VIEWS + 'admin/train/chemQuestions.ejs', {
+            questions: allQuestions
+        });
+    });
+
+    app.get('/admin/bioQuestions', async (req, res) => {
+        const allQuestions = await mongo.db.collection('questions').find().toArray();
+        res.render(VIEWS + 'admin/train/bioQuestions.ejs', {
+            questions: allQuestions
+        });
+    });
+
+    app.get('/admin/pendingQuestions', async (req, res) => {
+        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
+        res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions });
+    });
+
+    app.get('/admin/pendingBioQuestions', async (req, res) => {
+        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
+        res.render(VIEWS + 'admin/train/reviewBio.ejs', { questions: pendingQuestions });
+    });
+
+    app.get('/admin/pendingChemQuestions', async (req, res) => {
+        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
+        res.render(VIEWS + 'admin/train/reviewChem.ejs', { questions: pendingQuestions });
+    });
+
+    app.get('/admin/pendingPhysicsQuestions', async (req, res) => {
+        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
+        res.render(VIEWS + 'admin/train/reviewPhysics.ejs', { questions: pendingQuestions });
+    });
 }
