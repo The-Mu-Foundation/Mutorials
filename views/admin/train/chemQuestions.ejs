@@ -1,0 +1,50 @@
+<%# Admin page for listing chemistry questions %> 
+<%# ARGUMENTS:
+    questions - array containing questions
+%>
+
+<%- include("../../partials/header") -%>
+<%- include("../../partials/navigationPrivate") -%>
+
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        box-sizing: border-box;
+    }
+</style>
+
+<h1 class="my-5 container">ADMIN PAGE: Chemistry Questions</h1>
+
+<div class="jumbotron container">
+    <div class="grid">
+        <% for (let question of questions) { %>
+            <% if (question.subject.includes("Chemistry")) { %>
+            <div class="card g-col-4 p-3 m-0 bg-light">
+                <h4>
+                    <a class="text-decoration-none" href="/admin/editQuestion?id=<%= question['_id'] %>">
+                    <%= question['subject'] %> (<%= question['rating'] %> rated)
+                    </a>
+                </h4>
+                <span class="mb-2">ID: <code><%= question['_id']%></code></span>
+                <div class="mb-2">
+                    <% for (let tag of question['tags']) { %>
+                        <div class="badge bg-secondary"><%= tag %></div>
+                    <% } %>
+                    <% for (let unit of question['units']) { %>
+                        <div class="badge bg-primary"><%= unit %></div>
+                    <% } %>
+                </div>
+                
+                <!-- Question content -->
+                <div>
+                    <span><%= question['question'] %></span>
+                </div>
+            </div>
+            <% } %>
+        <% } %>
+    </div>
+</div>
+
+<%- include("../../partials/footer") -%>
