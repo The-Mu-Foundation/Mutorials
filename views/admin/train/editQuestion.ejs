@@ -98,6 +98,7 @@
               checkbox.checked = false;
             }
           });
+          history.back();
         } else {
           $("#failure").show(500);
           $("#success").hide(100);
@@ -110,7 +111,7 @@
     $("#skipreview").click(function () {
 
       $.post("/admin/skipQuestion", { questionID }, function (data) {
-                if (data.success) { window.location.reload(); }
+                if (data.success) { history.back(); }
       });
     });
 
