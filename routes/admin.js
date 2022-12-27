@@ -322,7 +322,7 @@ module.exports = (app, mongo) => {
         });
     });
 
-    app.get('/admin/pendingQuestions', async (req, res) => {
+    app.get('/admin/reviewQuestions', async (req, res) => {
         const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions });
     });
