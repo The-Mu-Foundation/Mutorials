@@ -6,7 +6,10 @@ const { parseDelimiter } = require('../utils/functions/general');
 const { getSiteData, getAnnouncements } = require('../utils/functions/database');
 const { getAdminData, queryContributor } = require('../utils/functions/admin');
 const mongoose = require("mongoose");
+const { userSchema } = require('../database/models/user');
 const db = mongoose.connection;
+//const user = require('../database/models/user');
+//const userInfo = mongoose.model('userInfo', user);
 
 const VIEWS = "../views/"
 

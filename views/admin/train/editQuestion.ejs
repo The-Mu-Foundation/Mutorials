@@ -98,7 +98,7 @@
               checkbox.checked = false;
             }
           });
-          history.back();
+          window.location.href = document.referrer;
         } else {
           $("#failure").show(500);
           $("#success").hide(100);
