@@ -168,7 +168,7 @@ module.exports = (app, mongo) => {
             { new: true }
         ).then((err, question) => {
             question = question ? question : err.value;
-            if (question && question.reviewers.length > 0) {
+            if (req.isReview && question && question.reviewers.length > 0) {
                 // 2 reviews complete, move to questions collection
                 mongo.db.collection("pendingQuestions").deleteOne({ _id: question._id }, (err, _) => {
                     if (err) {
