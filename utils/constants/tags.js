@@ -141,7 +141,7 @@ const tags = {
             "TFF": "The Fundamental Forces",
             "DEF": "Mass Defect and Binding Energy",
 
-            "COU": "Coulumb's Law",
+            "COU": "Coulomb's Law",
             "ELF": "Electric Fields",
             "GAU": "Gauss' Law",
             "EPS": "Equipotential Surfaces",
