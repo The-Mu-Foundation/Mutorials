@@ -138,14 +138,18 @@ module.exports = (app, mongo) => {
                 clearQuestionQueue(req, antsy.subject[0]);
 
                 // check answer
-                if (antsy.answer[0].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
-                    isRight = true;
-                } else if (Number(antsy.answer[0].toLowerCase()) == Number(req.body.freeAnswer.trim())) {
-                    isRight = true;
-                } else if (pluralize(antsy.answer[0].toLowerCase(), 1) == pluralize(req.body.freeAnswer.trim().toLowerCase(), 1)) {
-                    isRight = true;
+                for (let j = 0; j < antsy.answer.length; j++){
+                    if (antsy.answer[j].toLowerCase() == req.body.freeAnswer.trim().toLowerCase()) {
+                        isRight = true;
+                        break;
+                    } else if (Number(antsy.answer[j].toLowerCase()) == Number(req.body.freeAnswer.trim())) {
+                        isRight = true;
+                        break;
+                    } else if (pluralize(antsy.answer[j].toLowerCase(), 1) == pluralize(req.body.freeAnswer.trim().toLowerCase(), 1)) {
+                        isRight = true;
+                        break;
+                    }
                 }
-
                 // modify ratings
                 const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 const oldQRating = antsy.rating;
