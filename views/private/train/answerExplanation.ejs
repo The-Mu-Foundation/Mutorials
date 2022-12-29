@@ -144,7 +144,7 @@
     $(document).ready(function() {
         
         // focus on next button if correct
-        if(<%= correct %>) {
+        if( correct ) {
             setTimeout(() => {
                 $([document.documentElement, document.body]).animate({
                     scrollTop: $("#tryanother").offset().top
@@ -217,7 +217,7 @@
             <% } else if(newQues.type == "fr") { %>
                 <div class="mb-4">
                     <h5>You answered: <%= userAnswer %></h5>
-                    <h5>The correct answer is: <%= newQues.answer[0] %></h5>
+                    <h5>The correct answer is: <%= newQues.answer %></h5>
                 </div>
             <% } %>
 
