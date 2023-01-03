@@ -324,6 +324,27 @@ module.exports = (app, mongo) => {
 
     app.get('/admin/reviewQuestions', async (req, res) => {
         const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
+        for (let question of pendingQuestions){
+            if (question.reviewers.length > 0){
+                mongo.db.collection('pendingQuestions').deleteOne({ _id: question._id }, () => {
+                    mongo.db.collection('questions').insertOne({
+                        question: question.question,
+                        choices: question.choices,
+                        tags: question.tags,
+                        rating: question.rating,
+                        answer: question.answer,
+                        answer_ex: question.answer_ex,
+                        author: question.author,
+                        type: question.type,
+                        ext_source: question.ext_source,
+                        source_statement: question.source_statement,
+                        subject: question.subject,
+                        units: question.units,
+                        reviewers: question.reviewers
+                    })
+                })
+            }
+        }
         res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions });
     });
 
