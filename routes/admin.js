@@ -345,6 +345,7 @@ module.exports = (app, mongo) => {
                 })
             }
         }
+        pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions });
     });
 
