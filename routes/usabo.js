@@ -51,7 +51,7 @@ module.exports = (app, mongo) => {
             return;
         }
         let newQ = 0;
-        if (!(adminList.includes(req.user.username))){
+        //if (!(adminList.includes(req.user.username))){
             newQ = new mongo.USABOPendingQues({
                 question: req.body.question,
                 choices: parseDelimiter(req.body.choices),
@@ -65,7 +65,7 @@ module.exports = (app, mongo) => {
                 round: req.body.round,
                 categories: req.body.categories,
                 reviewers: []
-            })
+            /*})
         } else {
             newQ = new mongo.USABOQues({
                 question: req.body.question,
@@ -81,7 +81,7 @@ module.exports = (app, mongo) => {
                 categories: req.body.categories,
                 reviewers: []
             })
-        }
+        }*/
 
         newQ.save();
 
