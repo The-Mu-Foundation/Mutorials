@@ -323,7 +323,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/reviewQuestions', async (req, res) => {
-        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
+        let pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         for (let question of pendingQuestions){
             if (question.reviewers.length > 1){
                 mongo.db.collection('pendingQuestions').deleteOne({ _id: question._id }, () => {
