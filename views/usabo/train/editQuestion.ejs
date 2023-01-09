@@ -1,0 +1,301 @@
+<%# Admin page for editing questions in the question bank %>
+<%# ARGUMENTS:
+    subjectUnitDictionary - a class with key subject name and value array of units
+    question - the current question object
+    isReview - boolean of whether this is a question review
+%>
+
+<%- include("../../partials/header") -%>
+<%- include("../partials/usaboNav") -%>
+
+<div id="question-data" data="<%= JSON.stringify(question) %>"></div>
+<% let x = isReview %>
+<%# Send to backend %>
+<script>
+  $(document).ready(function () {
+    // get question ID
+    let questionID = "<%= question._id %>";
+
+    // hide LaTeX compiler
+    $("#latex-compiler").hide(0);
+    $("#show-compiler").click(function() {
+      $("#latex-compiler").show(1000);
+      $("#show-compiler-div").hide(1000);
+    });
+
+    // hide status flashes
+    $("#failure").hide(0);
+    $("#success").hide(0);
+
+    // set what happens when question is submitted
+    let type, question, choices, year, problemNumber, rating, round, categories, answer, answerExplanation, author, reviewerID;
+    $("#submit").click(function () {
+
+      // free response text values
+      question = $("#question").val();
+      choices = $("#answerchoices").val();
+      year = $("#year").val();
+      rating = $("#rating").val();
+      answer = $("#correctanswer").val();
+      answerExplanation = $("#answer-explanation").val();
+      problemNumber = $("#problem-number").val();
+      author = $("#author").val();
+            reviewerID = $("#reviewerID").val();
+
+
+      // radio values
+      let typeInputs = document.getElementById("question-format").elements;
+      for(let i = 0; i < typeInputs.length; i++) {
+        if(typeInputs[i].checked) {
+          type = typeInputs[i].id;
+        }
+      }
+
+
+
+      // checkbox values - returns ARRAY
+      round = [];
+      let subjInputs = document.getElementById("round").elements;
+      for(let i = 0; i < subjInputs.length; i++) {
+        if(subjInputs[i].checked) {
+          round.push(subjInputs[i].id);
+        }
+      }
+
+      categories = [];
+      let unitInputs = document.getElementById("categories").elements;
+      for(let i = 0; i < unitInputs.length; i++) {
+        if(unitInputs[i].checked) {
+          categories.push(unitInputs[i].id);
+        }
+      }
+
+      $.post("/admin/editUSABOQuestion", { questionID, type, question, choices, year, problemNumber, rating, round,
+        categories, answer, answerExplanation, author, reviewerID}, function (data) {
+
+        if(data.success) {
+
+          $("#success").show(500);
+          $("#failure").hide(100);
+
+          // clear all values after success
+          $("#question").val("");
+          $("#answerchoices").val("");
+          $("#year").val("");
+          $("#rating").val("");
+          $("#correctanswer").val("");
+          $("#answer-explanation").val("");
+          $("#author").val("");
+          $("#problem-number").val("");
+          document.getElementsByName("checkableButton").forEach((checkbox) => {
+            if(checkbox.type == "checkbox" || checkbox.type == "radio") {
+              checkbox.checked = false;
+            }
+          });
+          window.location.href = document.referrer;
+        } else {
+          $("#failure").show(500);
+          $("#success").hide(100);
+        }
+      });
+
+    });
+
+    // skip question button
+    $("#skipreview").click(function () {
+
+      $.post("/admin/skipQuestion", { questionID }, function (data) {
+                if (data.success) { history.back(); }
+      });
+    });
+
+
+    // set default values of question
+    let questionData = JSON.parse($("#question-data").attr("data"));
+
+    $("#question").val(questionData.question);
+    $("#answerchoices").val(questionData.choices?.join('@'));
+    $("#year").val(questionData.year);
+    $("#rating").val(questionData.rating);
+    $("#correctanswer").val(questionData.answer?.join('@'));
+    $("#answer-explanation").val(questionData.answer_ex);
+    $("#author").val(questionData.author);
+    $("#problem-number").val(questionData.problemNumber);
+
+    let roundList = questionData.round?.join('@').split('@');
+    let categoriesList = questionData.categories?.join('@').split('@');
+    [questionData.type, ...roundList, ...categoriesList].forEach((id) => {
+      document.getElementById(id).checked = true;
+    });
+    roundList.forEach((round) => {
+        $("." + round + "-unit-checkbox").show(0);
+    });
+  });
+</script>
+
+<h1 class="my-5 container">ADMIN PAGE: Edit/Review USABO Question</h1>
+
+<div class="jumbotron container" id="show-compiler-div">
+
+  <button type="button" class="btn btn-primary w-100" id="show-compiler">Open LaTeX Compiler</button>
+
+</div>
+
+<div class="jumbotron container" id="latex-compiler">
+
+  <div class="form-group">
+    <h3>LaTeX Compiler - NOT PART OF THE QUESTION</h3>
+    <textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click Render"></textarea>
+    </div>
+
+  <p id="rendersandbox">[Sample rendered LaTeX goes here - did you know $F = ma$ ?]</p>
+
+  <button type="button" class="btn btn-primary" id="render" onclick="document.getElementById('rendersandbox').innerHTML = document.getElementById('latexcompiler').value; MathJax.typeset();">Render</button>
+
+</div>
+
+<div class="jumbotron container">
+    
+    <h3>Question Display Data</h3>
+    
+    <%# QUESTION STATEMENT %>
+	<div class="form-group mt-3">
+		<p>What is the question?</p>
+		<textarea class="form-control" id="question" rows="3" placeholder="Type in a whole question"></textarea>
+    </div>
+
+    <%# ANSWER CHOICES %>
+    <hr>
+	<div class="form-group">
+		<p>FOR MC AND SA ONLY: What are the answer choices?</p>
+		<textarea class="form-control" id="answerchoices" rows="6" placeholder="Type in answer choices, using '@' characters as deliminators"></textarea>
+    </div>
+    
+    <%# CORRECT ANSWER %>
+    <hr>
+	<div class="form-group">
+		<p>What is the correct answer?</p>
+		<input class="form-control" id="correctanswer" placeholder="Input the answer, with '@' characters as deliminators if there are multiple">
+    </div>
+
+    <%# RATING %>
+    <hr>
+	<div class="form-group">
+		<p>What is the rating of this question?</p>
+		<input type="number" class="form-control" id="rating" placeholder="Enter an integer rating">
+    </div>
+    
+    <%# FORMAT %>
+    <hr>
+    <form class="form-group" id="question-format">
+		<p>What is the format of this question?</p>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="mc" value="mc">
+			<label class="form-check-label" for="mc">Multiple Choice</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="fr" value="fr">
+			<label class="form-check-label" for="fr">Free Response</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="radio" name="checkableButton" id="sa" value="sa">
+			<label class="form-check-label" for="sa">Select All</label>
+		</div>
+    </form>
+</div>
+
+<div class="jumbotron container">
+
+    <h3>Question Background Data</h3>
+
+    <%# ANSWER EXPLANATION %>
+	<div class="form-group mt-3">
+		<p>What is the answer explanation?</p>
+		<textarea class="form-control" id="answer-explanation" rows="3" placeholder="Enter a detailed answer explanation"></textarea>
+    </div>
+
+    <%# YEAR %>
+    <hr>
+	<div class="form-group">
+		<p>What is the year of this question?</p>
+		<input type="number" class="form-control" id="year" placeholder="Enter a valid year">
+    </div>
+
+    <%# ROUND %>
+    <hr>
+	<form class="form-group" id="round">
+		<p>What round is this question from?</p>
+        <div class="form-check my-1 me-sm-2">
+            <input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="semis">
+            <label class="form-check-label" for="semis">Semis</label>
+        </div>
+        <div class="form-check my-1 me-sm-2">
+            <input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="open">
+            <label class="form-check-label" for="open">Open</label>
+        </div>
+    </form>
+    
+    <%# CATEGORIES %>
+    <hr>
+	<form class="form-group" id="categories">
+        <p>What category(s) does this question belong to?</p>
+        <% const categories = ["Animal Anatomy and Physiology", "Plant Anatomy and Physiology", "Cell Biology", "Genetics and Evolution", "Ecology", "Ethology", "Biosystematics"]; %>
+        <% for (let category of categories) { %>
+            <div class="form-check my-1 me-sm-2 category-choice-checkbox <%= category %>-checkbox">
+                <input type="checkbox" class="form-check-input" name="checkableButton" id="<%= category %>">
+                <label class="form-check-label" for="<%= category %>"><%= category %></label>
+            </div>
+        <% } %>
+    </form>
+
+    <%# PROBLEM NUMBER %>
+    <hr>
+	<div class="form-group">
+		<p>What is the problem number?</p>
+		<input type="number" class="form-control" id="problem-number" placeholder="Enter a valid problem number">
+    </div>
+
+    <%# AUTHOR %>
+    <hr>
+  <div class="form-group">
+    <p>INTERNAL USE ONLY: Who is the author of this question?</p>
+    <input type="text" class="form-control" id="author" placeholder="Enter a Mutorials ID (WITH CAPITALIZATION)">
+    </div>
+
+    <% if(isReview) { %>
+        <div class="jumbotron container">
+            <h3>Question Reviewing Data</h3>
+            <p>Has been reviewed by: <%= !(question.reviewers?.length >= 1) ? "Nobody" : question.reviewers.reduce((a, b) => a + ", " + b) %></p>
+            <input class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID">
+        </div>
+    <% } else { %>
+            <input type="hidden" class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID" value="isEdit">
+    <% } %>
+
+<div class="my-2 alert alert-success container" id="success">Success! Your question has been added and now pends review!</div>
+<div class="my-2 alert alert-danger container" id="failure">Your question was not added - check to make sure all fields were filled in</div>
+
+<div class = "container mt-4 mb-5">
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
+    <button type="button" class="btn btn-primary" id="submit">Submit</button>
+</div>
+
+<%# Cancel button code %>
+<div class="modal fade" id="confirmCancel" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Are you sure you want to leave this page?</h5>
+            </div>
+			<div class="modal-body">    
+				<p>All your work is unsaved and will be discarded</p>
+            </div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <a href="/homepage"><button type="button" class="btn btn-primary" id="leaveConfirm">Yes</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include("../../partials/footer") -%>
