@@ -1,0 +1,126 @@
+<%# Page to select units for training %>
+<%# ARGUMENTS: units - list of units to train on, subject - the subject, unitPresets - object of unit presets, qNum - weird ID number %>
+
+<%- include("../../partials/header") -%>
+<%- include("../partials/usaboNav") -%>
+
+<script>
+
+    $(document).ready(function () {
+
+        // TEMPORARY: hide unused units on frontend (physics only right now)
+
+        // function to set cookie data
+        let saveSelectionAsCookie = () => {
+
+			categories = [];
+			let categoryInputs = document.getElementsByName("categoryChoice");
+			for(let i = 0; i < categoryInputs.length; i++) {
+				if(categoryInputs[i].checked) {
+					categories.push(categoryInputs[i].id);
+				}
+			}
+
+            let cookieData = units.join('@');
+            if(cookieData == "") {
+                cookieData = "none";
+            }
+            document.cookie = cookieData;
+        }
+
+        // make select and deselect all buttons work
+        $("#select-all").click(function() {
+            document.getElementsByName("categoryChoice").forEach((checkbox) => {
+                if(checkbox.type == "checkbox") {
+                    checkbox.checked = true;
+                }
+                saveSelectionAsCookie();
+            });
+        });
+        $("#deselect-all").click(function() {
+            document.getElementsByName("categoryChoice").forEach((checkbox) => {
+                if(checkbox.type == "checkbox") {
+                    checkbox.checked = false;
+                }
+                saveSelectionAsCookie();
+            });
+        });
+
+        // make unit clustering buttons work
+        var unitPresets = JSON.parse($("#stringifiedUnits").val());
+        Object.keys(unitPresets).forEach((preset) => {
+            $(document.getElementById(preset.replace(/\s+/g, ''))).click(function() {
+
+                document.getElementsByName("categoryChoice").forEach((checkbox) => {
+                    if(checkbox.type == "checkbox") {
+                        checkbox.checked = false;
+                    }
+                });
+
+                unitPresets[preset].forEach((categories) => {
+                    document.getElementById(categories).checked = true;
+                });
+
+                saveSelectionAsCookie();
+            });
+        });
+
+        // cookies to save current selection of units upon change and load last selection upon loading
+        $(".category-checkbox").change(function() {
+            saveSelectionAsCookie();
+        });
+
+        let savedSelection = document.cookie.split(';')[0].split('@');
+        try {
+            savedSelection.forEach((categories) => {
+                document.getElementById(categories).checked = true;
+            });
+        } catch(error) {
+            console.log("Hit end of saved last selection");
+        }
+
+    });
+
+</script>
+
+<div class="jumbotron container mt-5">
+    <%- include ("../../partials/flashes") -%>
+    <h1 class="display-2 text-center"><%= round %></h1>
+
+    <div class="row">
+        <div class="col-lg-1"></div>
+
+        <div class="col-12 col-lg-6 mt-5">
+
+            <h3 class="mb-2">Select units to train in:</h3>
+
+            <form action="/selQ" method="POST">
+
+                <div id="units">
+                    <% categories.forEach((category) => { %>
+                        <div class="form-check my-1 me-sm-2" id="DIV <%= category %>">
+                            <input type="checkbox" name="categoryChoice" class="form-check-input category-checkbox" id="<%= category %>" value="<%= category %>">
+                            <label class="form-check-label" for="<%= category %>"><%= category %></label>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <div class="mt-4">
+                    <a href="/trainUSABO"><button type="button" class="btn btn-secondary" id="previous">Previous</button></a>
+                    <input type="submit" class="btn btn-primary" id="next" value="Next">
+                </div>
+
+                <input type="hidden" name="qNum" value="<%= qNum %>">
+                <input type="hidden" name="round" value="<%= round %>">
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-1"></div>
+
+</div>
+
+<%- include("../../partials/footer") -%>
