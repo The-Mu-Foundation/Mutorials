@@ -20,8 +20,7 @@ If you've found a bug or would like to propose a feature request, first look at 
 Please include the following information in each issue:
 - Date of bug
 - Your operating system
-- Your browser
-- A list of browser extensions (including, but not limited to, any adblockers)
+- Your browser (and a list of extensions if possible)
 - Reproducible steps that cause the issue (First I did this, then that...)
 - A screenshot or screen recording of the issue
 - If you can: open the developer console and paste any issues that pop up there.
