@@ -65,8 +65,8 @@ module.exports = (app, mongo) => {
                 round: req.body.round,
                 categories: req.body.categories,
                 reviewers: []
-            /*})
-        } else {
+            })
+        /*} else {
             newQ = new mongo.USABOQues({
                 question: req.body.question,
                 choices: parseDelimiter(req.body.choices),
