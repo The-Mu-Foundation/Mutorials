@@ -323,6 +323,25 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/usaboQuestions', async (req, res) => {
+        let questionArray = await mongo.db.collection('usaboQuestions').find().toArray();
+        for (question of questionArray){
+            mongo.db.collection("questions").insertOne({
+                question: question.question,
+                choices: question.choices,
+                tags: [question.year, "Problem: " + question.problemNumber, question.round[0]],
+                rating: question.rating,
+                answer: question.answer,
+                answer_ex: question.answer_ex,
+                author: question.author,
+                type: question.type,
+                ext_source: 'Competition',
+                source_statement: 'USABO',
+                subject: ['USABO'],
+                units: question.categories,
+                reviewers: question.reviewers
+            });
+            mongo.db.collection("usaboQuestions").deleteOne({ _id: question._id });
+        }
         const allQuestions = await mongo.db.collection('questions').find().toArray();
         res.render(VIEWS + 'admin/train/usaboQuestions.ejs', {
             questions: allQuestions
@@ -372,6 +391,25 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/pendingUSABOQuestions', async (req, res) => {
+        let questionArray = await mongo.db.collection('usaboPendingQuestions').find().toArray();
+        for (question of questionArray){
+            mongo.db.collection("pendingQuestions").insertOne({
+                question: question.question,
+                choices: question.choices,
+                tags: [question.year, "Problem: " + question.problemNumber, question.round[0]],
+                rating: question.rating,
+                answer: question.answer,
+                answer_ex: question.answer_ex,
+                author: question.author,
+                type: question.type,
+                ext_source: 'Competition',
+                source_statement: 'USABO',
+                subject: ['USABO'],
+                units: question.categories,
+                reviewers: question.reviewers
+            });
+            mongo.db.collection("usaboPendingQuestions").deleteOne({ _id: question._id });
+        }
         const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         res.render(VIEWS + 'admin/train/reviewUSABO.ejs', { questions: pendingQuestions });
     });
