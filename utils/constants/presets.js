@@ -18,6 +18,9 @@ const presetUnitOptions = {
         "AP Biology": ["Molecular Biology", "Cell Biology", "Metabolism", "Heredity and Genetics", "Evolution", "Ecology"],
         "IB Biology SL1": ["Molecular Biology", "Cell Biology", "Heredity and Genetics", "Ecology", "Evolution", "Biosystematics and Biodiversity", "Human Anatomy and Physiology"],
         "IB Biology HL": ["Molecular Biology", "Cell Biology", "Heredity and Genetics", "Ecology", "Evolution", "Biosystematics and Biodiversity", "Human Anatomy and Physiology", "Plant Anatomy and Physiology"]
+    },
+    "USABO": {
+        "All": ["Animal Anatomy and Physiology", "Plant Anatomy and Physiology", "Cell Biology", "Genetics and Evolution", "Ecology", "Ethology", "Biosystematics"]
     }
 };
 

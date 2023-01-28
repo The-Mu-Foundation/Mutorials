@@ -441,6 +441,17 @@ const tags = {
 
             "LABS": "Lab Skills"
         }
+    },
+    "USABO": {
+        "Units": {
+            "AAP": "Animal Anatomy and Physiology",
+            "PAP": "Plant Anatomy and Physiology",
+            "CB": "Cell Biology",
+            "GE": "Genetics and Evolution",
+            "ECO": "Ecology",
+            "ETH": "Ethology",
+            "BIOSYS": "Biosystematics"
+        }
     }
 };
 
