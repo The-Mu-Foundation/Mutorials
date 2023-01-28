@@ -1,15 +1,10 @@
-<%# Admin page for listing questions that need review%> 
+<%# Admin page for listing bio questions %> 
 <%# ARGUMENTS:
     questions - array containing questions
 %>
 
-
 <%- include("../../partials/header") -%>
 <%- include("../../partials/navigationPrivate") -%>
-<% let pendingCount = 0 %>
-<% for (let question of questions) { %>
-    <% pendingCount++; %>
-<% } %>
 
 <style>
     .grid {
@@ -20,27 +15,19 @@
     }
 </style>
 
-<h1 class="my-5 container">ADMIN PAGE: Question Review Homepage</h1>
-<div class="jumbotron container">
-    <h3 class="mb-4"><%= `There are ${pendingCount} questions left to review.` %></h3>
-</div>
-<div class="jumbotron container">
+<h1 class="my-5 container">ADMIN PAGE: USABO Questions</h1>
 
-    <h3 class="mb-4">Review By Subject:</h3>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/pendingBioQuestions">Review Biology Questions</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/pendingChemQuestions">Review Chemistry Questions</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/pendingPhysicsQuestions">Review Physics Questions</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/pendingUSABOQuestions">Review USABO Questions</a>
+<div class="jumbotron container">
+    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/allQuestions">Back To All Questions</a>
 </div>
 
 <div class="jumbotron container">
-    <h3 class="mb-4">Pending Questions:</h3>
     <div class="grid">
         <% for (let question of questions) { %>
-            <% if (!question.reviewers.includes(logUser.contributor)) { %>
+            <% if (question.subject.includes("USABO")) { %>
             <div class="card g-col-4 p-3 m-0 bg-light">
                 <h4>
-                    <a class="text-decoration-none" href="/admin/reviewQuestion?id=<%= question['_id'] %>">
+                    <a class="text-decoration-none" href="/admin/editQuestion?id=<%= question['_id'] %>">
                     <%= question['subject'] %> (<%= question['rating'] %> rated)
                     </a>
                 </h4>
@@ -53,7 +40,7 @@
                         <div class="badge bg-primary"><%= unit %></div>
                     <% } %>
                 </div>
-                    
+                
                 <!-- Question content -->
                 <div>
                     <span><%= question['question'] %></span>

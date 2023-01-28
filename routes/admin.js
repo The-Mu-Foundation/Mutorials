@@ -322,6 +322,13 @@ module.exports = (app, mongo) => {
         });
     });
 
+    app.get('/admin/usaboQuestions', async (req, res) => {
+        const allQuestions = await mongo.db.collection('questions').find().toArray();
+        res.render(VIEWS + 'admin/train/usaboQuestions.ejs', {
+            questions: allQuestions
+        });
+    });
+
     app.get('/admin/reviewQuestions', async (req, res) => {
         let pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         for (let question of pendingQuestions){
@@ -362,5 +369,10 @@ module.exports = (app, mongo) => {
     app.get('/admin/pendingPhysicsQuestions', async (req, res) => {
         const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         res.render(VIEWS + 'admin/train/reviewPhysics.ejs', { questions: pendingQuestions });
+    });
+
+    app.get('/admin/pendingUSABOQuestions', async (req, res) => {
+        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
+        res.render(VIEWS + 'admin/train/reviewUSABO.ejs', { questions: pendingQuestions });
     });
 }
