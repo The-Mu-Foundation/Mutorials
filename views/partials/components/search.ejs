@@ -1,6 +1,6 @@
 <!-- Search widget that can be inserted anywhere -->
 <!-- Arguments: query - the last search -->
-<script src="https://cdn.jsdelivr.net/gh/nobleclem/jQuery-MultiSelect/jquery.multiselect.js"></script>
+<script src="http://cdn.jsdelivr.net/gh/nobleclem/jQuery-MultiSelect/jquery.multiselect.js"></script>
 
 <input type="hidden" id="tagsAndNames" value="<%= JSON.stringify(subjectTags) %>">
 <script>
@@ -68,18 +68,25 @@
     <div class="col-md-10">
         <label class="d-none" for="text-query">Text query</label>
         <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="text-query" value="<%= query.text %>">
-        
-        <label class="d-none" for="subjects-query">Subjects (optional)</label>
-        <input class="form-control form-control-md my-2" type="text" placeholder="Subjects (optional)" id="subjects-query" value="<%= query.subjects %>">
-
-        <label class="d-none" for="units-query">Units (optional)</label>
-        <input class="form-control form-control-md my-2" type="text" placeholder="Units (optional)" id="units-query" value="<%= query.units %>">
-
-        <label class="d-none" for="tags-query">Tags (optional)</label>
-        <input class="form-control form-control-md my-2" type="text" placeholder="Tags (optional)" id="tags-query" value="<%= query.tags %>">
+        <select class="form-control form-control-lg my-2" id="subjects-query" multiple="multiple">
+            <option value="Physics"<%if(query.subjects != undefined && query.subjects.includes("Physics")) {%>
+                selected
+                <%}%>>Physics
+            </option>
+            <option value="Chemistry"<%if(query.subjects != undefined && query.subjects.includes("Chemistry")) {%>
+                selected
+                <%}%>>Chemistry
+            </option>
+            <option value="Biology"<%if(query.subjects != undefined && query.subjects.includes("Biology")) {%>
+                selected
+                <%}%>>Biology
+            </option>
+        </select>
+        <select class="form-control form-control-lg my-2" id="tags-query" multiple="multiple">
+        </select>		
     </div>
     <div class="col-md-2">
         <input class="btn btn-primary btn-lg w-100 my-2" value="Search" type="button" id="search-submit">
     </div>
-    <p>Selecting subjects automatically disables searching for anything other than questions.</p>
+    <p>Enter subjects, units, and tags as comma-separated lists.</p>
 </form>
