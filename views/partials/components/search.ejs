@@ -30,14 +30,12 @@
         <label class="d-none" for="subjects-query">Subjects (optional)</label>
         <input class="form-control form-control-md my-2" type="text" placeholder="Subjects (optional)" id="subjects-query" value="<%= query.subjects %>">
 
-        <label class="d-none" for="units-query">Units (optional)</label>
+        <label class="d-none" for="units-query">Units (optional, select units to show)</label>
         <input class="form-control form-control-md my-2" type="text" placeholder="Units (optional)" id="units-query" value="<%= query.units %>">
 
-        <label class="d-none" for="tags-query">Tags (optional)</label>
-        <input class="form-control form-control-md my-2" type="text" placeholder="Tags (optional)" id="tags-query" value="<%= query.tags %>">
     </div>
     <div class="col-md-2">
         <input class="btn btn-primary btn-lg w-100 my-2" value="Search" type="button" id="search-submit">
     </div>
-    <p>Enter subjects, units, and tags as comma-separated lists.</p>
+    <p>Selecting subjects automatically disables searching for anything other than questions.</p>
 </form>
