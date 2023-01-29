@@ -2,6 +2,7 @@
 const { calculateLevel, analyze } = require('../utils/functions/siteAlgorithms');
 const { adminList } = require('../utils/constants/sitesettings');
 const { generateLeaderboard, getDailyQuestion, getSiteData, getAnnouncements, querySite } = require('../utils/functions/database');
+const { tags } = require('../utils/constants/tags.js');
 const mongoose = require("mongoose");
 
 const VIEWS = __dirname + '/../views/';
@@ -26,7 +27,7 @@ module.exports = (app, mongo) => {
         let experienceStats = await calculateLevel(req.user.stats.experience);
         const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
         let announcements = await getAnnouncements(mongo.SiteData, 3);
-        res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, admin: adminList.includes(req.user.username), experienceStats, question, announcements });
+        res.render(VIEWS + 'private/homepage.ejs', { user: req.user, siteStats: siteData, admin: adminList.includes(req.user.username), experienceStats, question, announcements, subjectTags: tags });
     });
 
     app.get('/question/:id', (req, res) => {
@@ -45,9 +46,9 @@ module.exports = (app, mongo) => {
 
         if (query) {
             let results = await querySite(query, mongo.User, mongo.Ques, mongo.siteData);
-            res.render(VIEWS + 'private/search.ejs', { results, query, pageName: "Search" });
+            res.render(VIEWS + 'private/search.ejs', { results, query, pageName: "Search", subjectTags: tags });
         } else {
-            res.render(VIEWS + 'private/search.ejs', { results: [], query, pageName: "Search" });
+            res.render(VIEWS + 'private/search.ejs', { results: [], query, pageName: "Search", subjectTags: tags });
         }
     });
 
