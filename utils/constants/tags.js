@@ -339,7 +339,7 @@ const tags = {
             "ALKAN": "Alkanes and Cycloalkanes",
             "ISOMR": "Isomerism and Stereoisomerism",
             "ALKYL": "Alkyl Halide Reactions",
-            "ALKEN": "Addition Reactinos and Alkenes",
+            "ALKEN": "Addition Reactions and Alkenes",
             "ALKYN": "Alkynes",
             "SUBEL": "Substitution and Elimination Reactions",
             "PLYMR": "Synthetic and Natural Polymers",
