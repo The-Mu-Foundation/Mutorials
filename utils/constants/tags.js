@@ -36,7 +36,7 @@ const tags = {
         },
         "Concepts": {
             "DIM": "Dimensional Analysis",
-            "UNC": "Uncertainty",
+            "UNC": "Uncertainty and Error Propagation",
 
             "ONE": "1D Motion",
             "PRO": "Projectile Motion",
@@ -339,7 +339,7 @@ const tags = {
             "ALKAN": "Alkanes and Cycloalkanes",
             "ISOMR": "Isomerism and Stereoisomerism",
             "ALKYL": "Alkyl Halide Reactions",
-            "ALKEN": "Addition Reactinos and Alkenes",
+            "ALKEN": "Addition Reactions and Alkenes",
             "ALKYN": "Alkynes",
             "SUBEL": "Substitution and Elimination Reactions",
             "PLYMR": "Synthetic and Natural Polymers",
@@ -440,6 +440,17 @@ const tags = {
             "PREP": "Plant Reproduction",
 
             "LABS": "Lab Skills"
+        }
+    },
+    "USABO": {
+        "Units": {
+            "AAP": "Animal Anatomy and Physiology",
+            "PAP": "Plant Anatomy and Physiology",
+            "CB": "Cell Biology",
+            "GE": "Genetics and Evolution",
+            "ECO": "Ecology",
+            "ETH": "Ethology",
+            "BIOSYS": "Biosystematics"
         }
     }
 };

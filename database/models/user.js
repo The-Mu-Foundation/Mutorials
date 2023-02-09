@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
             physics: Array,
             chemistry: Array,
             biology: Array,
-            usabo: Array,
+            usabo: Array
         },
         rush: {
             highscore: Number,
