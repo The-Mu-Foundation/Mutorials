@@ -24,7 +24,6 @@
             "Physics": [],
             "Chemistry": [],
             "Biology": [],
-            "USABO": [],
             "Labels": []
         }
 
@@ -44,7 +43,7 @@
         // DO NOT DELETE - ratingData is not defined if this is deleted
         console.log(ratingData);
 
-        ["Physics", "Chemistry", "Biology", "USABO"].forEach((subject) => {
+        ["Physics", "Chemistry", "Biology"].forEach((subject) => {
 
             let tracker = $("#ratingTrackerArray-" + subject).val().split('@');
             if(tracker.length < 2) {
@@ -53,7 +52,7 @@
             ratingData[subject] = tracker;
         });
 
-        const labelLength = Math.max(ratingData["Physics"].length, ratingData["Chemistry"].length, ratingData["Biology"].length, ratingData["USABO"].length);
+        const labelLength = Math.max(ratingData["Physics"].length, ratingData["Chemistry"].length, ratingData["Biology"].length);
         var labels = ratingData["Labels"];
         for(var i = labelLength; i > 0; i--) {
             labels.push(i + " Ago");
@@ -92,13 +91,6 @@
                     borderColor: "rgba(40, 240, 110, 1)",
                     fill: false,
                     borderWidth: 5
-                }, {
-                    label: "USABO",
-                    data: ratingData["USABO"],
-                    backgroundColor: "rgba(30, 24, 11, 1)",
-                    borderColor: "rgba(30, 24, 11, 1)",
-                    fill: false,
-                    borderWidth: 5
                 }]
             },
             options: {
@@ -113,8 +105,8 @@
                 scales: {
                     yAxes: [{
                         ticks: {
-                            min: Math.round((Math.min(Math.min.apply(null, ratingData["Physics"]), Math.min.apply(null, ratingData["Chemistry"]), Math.min.apply(null, ratingData["Biology"]), Math.min.apply(null, ratingData["USABO"]))-50)/50)*50,
-                            max: Math.round((Math.max(Math.max.apply(null, ratingData["Physics"]), Math.max.apply(null, ratingData["Chemistry"]), Math.max.apply(null, ratingData["Biology"]), Math.max.apply(null, ratingData["USABO"]))+50)/50)*50,
+                            min: Math.round((Math.min(Math.min.apply(null, ratingData["Physics"]), Math.min.apply(null, ratingData["Chemistry"]), Math.min.apply(null, ratingData["Biology"]))-50)/50)*50,
+                            max: Math.round((Math.max(Math.max.apply(null, ratingData["Physics"]), Math.max.apply(null, ratingData["Chemistry"]), Math.max.apply(null, ratingData["Biology"]))+50)/50)*50,
                             stepSize: 50
                         }
                     }],
@@ -165,7 +157,6 @@
     <div class="jumbotron container mt-2">
         <h3 class="mb-4 text-center">CONTRIBUTORS: <font color="blue"><%= user.contributor %></font></h3>
         <a class="btn btn-primary btn-lg w-100 my-2" href="/contributors/addQuestion">Write Question</a>
-        <a class="btn btn-primary btn-lg w-100 my-2" href="/contributors/addUSABOQuestion">Write A USABO Question</a>
         <a class="btn btn-primary btn-lg w-100 my-2" href="/contributors/stats">View My Contribution Stats</a>
     </div>
 <% } %>
@@ -179,7 +170,6 @@
             <h1 class="display-5 text-center mt-4">Physics: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.physics, 0) %></span></h1>
             <h1 class="display-5 text-center">Chemistry: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.chemistry, 0) %></span></h1>
             <h1 class="display-5 text-center">Biology: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.biology, 0) %></span></h1>
-            <h1 class="display-5 text-center">USABO: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.usabo, 0) %></span></h1>
 
             <div class="canvas-container-center text-center mt-3">
                 <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
@@ -187,7 +177,6 @@
             <input type="hidden" id="ratingTrackerArray-Physics" value="<%= user.stats.ratingTracker.physics.join('@') %>">
             <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
             <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
-            <input type="hidden" id="ratingTrackerArray-USABO" value="<%= user.stats.ratingTracker.usabo.join('@') %>">
         </div>
 
         <div class="col-12 col-lg-7">
@@ -221,7 +210,7 @@
             <h1 class="text-center mt-5" id="classic-subjects-text">Train for USABO!</h1>
             <div class="row">
                 <div class="col-4">
-                    <a href="/train/USABO/chooseUnits" class="USABO-button" id="USABO"><img id="USABO-icon" class="thumbnail mu-rounded center" src="https://f000.backblazeb2.com/file/mutorials/icons/USABO_Main.png" alt="USABO icon"></a>
+                    <a href="/usaboHomepage" class="USABO-button" id="USABO"><img id="USABO-icon" class="thumbnail mu-rounded" src="../usabo/icon.png" alt="USABO icon"></a>
                 </div>
             </div>
 

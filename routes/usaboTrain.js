@@ -35,16 +35,16 @@ module.exports = (app, mongo) => {
         res.redirect('/train/' + 'usabo' + '/chooseCategories');
     });
 
-    app.post('/usaboselQ', (req, res, next) => {
-        let categories = null;
+    app.post('/selQ', (req, res, next) => {
+        let units = null;
         if (req.body.qNum == 1) {
             categories = req.body.categoryChoice;
             if (!categories) {
                 req.flash('errorFlash', 'Please choose at least one category.');
-                res.redirect('/train/usabo/chooseCategories');
+                res.redirect('/train/' + 'usabo' + '/chooseCategories');
             }
             if (categories) {
-                res.redirect('/train/usabo/displayQuestion?categories=' + categories.toString());
+                res.redirect('/train/' + 'usabo' + '/displayQuestion?categories=' + categories.toString());
             }
         }
     });
@@ -229,8 +229,8 @@ module.exports = (app, mongo) => {
         // get experience stats
         let experienceStats = await calculateLevel(req.user.stats.experience);
         // Test if they have a question pending to answer which is valid for their units selected
-        if (q && categories.some(r => q.categories.includes(r))) {
-            res.render(VIEWS + 'usabo/train/displayQuestion.ejs', { categories: categories, newQues: q, round: req.params.round, user: req.user, experienceStats, pageName: "USABO Trainer" });
+        if (q && units.some(r => q.units.includes(r))) {
+            res.render(VIEWS + 'usabo/train/displayQuestion.ejs', { categories: categories, newQues: q, round: req.params.round, user: req.user, experienceStats, pageName: "Classic Trainer" });
         } else {
             // deduct 8 rating if previously queued question was skipped
             if (q) {
@@ -251,7 +251,7 @@ module.exports = (app, mongo) => {
                     return;
                 }
                 // update pending question field
-                updateQuestionQueue(req, req.round, curQ._id);
+                updateQuestionQueue(req, req.params.subject, curQ._id);
                 // push to frontend
                 res.render(VIEWS + 'usabo/train/displayQuestion.ejs', { categories: categories, newQues: curQ, round: req.params.round, user: req.user, experienceStats, pageName: "USABO Trainer" });
             });

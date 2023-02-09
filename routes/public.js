@@ -162,8 +162,7 @@ module.exports = (app, mongo) => {
             rating: {
                 physics: -1,
                 chemistry: -1,
-                biology: -1,
-                usabo: -1
+                biology: -1
             },
             preferences: {
                 hideProfile: ((new Date().getFullYear() - thisYob) < 13 ? true : false)

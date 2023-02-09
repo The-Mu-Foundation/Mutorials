@@ -21,7 +21,7 @@
 				}
 			}
 
-            let cookieData = categories.join('@');
+            let cookieData = units.join('@');
             if(cookieData == "") {
                 cookieData = "none";
             }
@@ -47,8 +47,8 @@
         });
 
         // make unit clustering buttons work
-        var categoryPresets = JSON.parse($("#stringifiedUnits").val());
-        Object.keys(categoryPresets).forEach((preset) => {
+        var unitPresets = JSON.parse($("#stringifiedUnits").val());
+        Object.keys(unitPresets).forEach((preset) => {
             $(document.getElementById(preset.replace(/\s+/g, ''))).click(function() {
 
                 document.getElementsByName("categoryChoice").forEach((checkbox) => {
@@ -57,7 +57,7 @@
                     }
                 });
 
-                categoryPresets[preset].forEach((categories) => {
+                unitPresets[preset].forEach((categories) => {
                     document.getElementById(categories).checked = true;
                 });
 
@@ -92,11 +92,11 @@
 
         <div class="col-12 col-lg-6 mt-5">
 
-            <h3 class="mb-2">Select categories to train in:</h3>
+            <h3 class="mb-2">Select units to train in:</h3>
 
-            <form action="/usaboselQ" method="POST">
+            <form action="/selQ" method="POST">
 
-                <div id="categories">
+                <div id="units">
                     <% categories.forEach((category) => { %>
                         <div class="form-check my-1 me-sm-2" id="DIV <%= category %>">
                             <input type="checkbox" name="categoryChoice" class="form-check-input category-checkbox" id="<%= category %>" value="<%= category %>">

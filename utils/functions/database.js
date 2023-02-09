@@ -270,8 +270,7 @@ async function getSiteData(User, Ques, SiteData) {
         $or: [
             { "rating.physics": { $gte: 2500 } },
             { "rating.chemistry": { $gte: 2500 } },
-            { "rating.biology": { $gte: 2500 } },
-            { "rating.usabo": { $gte: 2500} }
+            { "rating.biology": { $gte: 2500 } }
         ]
     });
 

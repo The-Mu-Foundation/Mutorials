@@ -374,9 +374,6 @@ module.exports = (app, mongo) => {
                 skipQuestionUpdates(mongo.Ques, req, req.params.subject.toLowerCase(), q._id);
             }
             // get parameters set up
-            if (req.user.rating['usabo'] === undefined){
-                setRating('USABO', -1, req);
-            }
             let ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
             const floor = ceilingFloor.floor;
             const ceiling = ceilingFloor.ceiling;

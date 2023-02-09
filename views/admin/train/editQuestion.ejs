@@ -138,12 +138,8 @@
     $("#author").val(questionData.author);
     $("#source-statement").val(questionData.source_statement);
 
-    console.log(questionData);
-    console.log(questionData.units);
     let subjectList = questionData.subject?.join('@').split('@');
     let unitsList = questionData.units?.join('@').split('@');
-    console.log(subjectList);
-    console.log(unitsList);
     [questionData.type, questionData.ext_source, ...subjectList, ...unitsList].forEach((id) => {
       document.getElementById(id).checked = true;
     });

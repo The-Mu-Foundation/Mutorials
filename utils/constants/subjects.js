@@ -1,5 +1,5 @@
 // list of subjects and units used
-const subjects = ["Physics", "Chemistry", "Biology", "USABO"];
+const subjects = ["Physics", "Chemistry", "Biology"];
 const subjectUnitDictionary = {
     "Physics": ["Measurement",
         "Kinematics",
@@ -65,14 +65,7 @@ const subjectUnitDictionary = {
         "Human Anatomy and Physiology",
         "Plant Anatomy and Physiology",
         "Lab Skills"
-    ],
-    "USABO": ["Animal Anatomy and Physiology", 
-    "Plant Anatomy and Physiology", 
-    "Cell Biology", 
-    "Genetics and Evolution", 
-    "Ecology", 
-    "Ethology", 
-    "Biosystematics"]
+    ]
 };
 
 module.exports = { subjectUnitDictionary: subjectUnitDictionary, subjects: subjects };
