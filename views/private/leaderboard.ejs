@@ -146,7 +146,7 @@
                                 <th scope="row"><%= rankUSABO %></th>
                             <% } %>
                             <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 15 ? user.ign : user.ign.substring(0, 12)+"..." %></a></td>
-                            <td><%= user.rating.USABO %></td>
+                            <td><%= user.rating.usabo %></td>
                         </tr>
                         <% rankUSABO++; %>
                     <% }) %>
