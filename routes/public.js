@@ -93,9 +93,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/arc-sw.js', (req, res) => {
-        res.setHeader("Content-Type", "text/javascript");
-        res.type('.js');
-        res.send(arcScript);
+        res.setHeader("Content-Type", "application/javascript").type('.js').send(arcScript);
     });
     
     // PUBLIC POST
