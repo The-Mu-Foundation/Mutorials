@@ -11,13 +11,25 @@ const { getSiteData, getDailyQuestion } = require('../utils/functions/database')
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
 const path = require('path');
+const https = require("https");
 
 const VIEWS = "../views/"
+
+let arcScript = "";
+https.get('https://arc.io/arc-sw.js', resp => {
+    let data = '';
+    resp.on("data", chunk => {
+        data += chunk;
+    });
+    resp.on("end", () => {
+        arcScript = data;
+    });
+})
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
     // `username` is email
-    // `ign` is username    
+    // `ign` is username
     app.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
 
@@ -81,7 +93,9 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/arc-sw.js', (req, res) => {
-        res.sendFile(path.join(__dirname, VIEWS, 'public/arc-sw.js'));
+        res.setHeader("Content-Type", "text/javascript");
+        res.type('.js');
+        res.send(arcScript);
     });
     
     // PUBLIC POST
