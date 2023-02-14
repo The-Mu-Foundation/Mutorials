@@ -10,13 +10,14 @@ const { genPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
+const path = require('path');
 
 const VIEWS = "../views/"
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
     // `username` is email
-    // `ign` is username
+    // `ign` is username    
     app.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
 
@@ -79,6 +80,10 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'public/robots.ejs', { pageName: "robots.txt" });
     });
 
+    app.get('/arc-sw.js', (req, res) => {
+        res.sendFile(path.join(__dirname, VIEWS, 'public/arc-sw.js'));
+    });
+    
     // PUBLIC POST
     app.post('/register', (req, res, next) => {
         req.body.username = req.body.username.toLowerCase();
