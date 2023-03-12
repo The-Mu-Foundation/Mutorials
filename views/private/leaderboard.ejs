@@ -4,13 +4,13 @@
 <%- include("../partials/header") -%>
 <%- include("../partials/navigationPrivate") -%>
 
-<h1 class="my-5 container text-center display-3">Rating Leaderboard</h1>
+<h1 class="my-5 container text-center display-4">Rating Leaderboard</h1>
 
 <div class="container">
 
     <div class="row jumbotron">
 
-        <div class="col-12 col-xl-4">
+        <div class="col-12 col-xl-3">
             <h3 class="text-center">Physics</h3>
             <table class="text-center table">
                 <thead>
@@ -37,7 +37,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankPhysics %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 15 ? user.ign : user.ign.substring(0, 12)+"..." %></a></td>
                             <td><%= user.rating.physics %></td>
                         </tr>
                         <% rankPhysics++; %>
@@ -46,7 +46,7 @@
             </table>
         </div>
 
-        <div class="col-12 col-xl-4">
+        <div class="col-12 col-xl-3">
             <h3 class="text-center">Chemistry</h3>
             <table class="text-center table">
                 <thead>
@@ -73,7 +73,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankChem %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 15 ? user.ign : user.ign.substring(0, 12)+"..." %></a></td>
                             <td><%= user.rating.chemistry %></td>
                         </tr>
                         <% rankChem++; %>
@@ -82,7 +82,7 @@
             </table>
         </div>
 
-        <div class="col-12 col-xl-4">
+        <div class="col-12 col-xl-3">
             <h3 class="text-center">Biology</h3>
             <table class="text-center table">
                 <thead>
@@ -109,7 +109,7 @@
                             <% } else { %>
                                 <th scope="row"><%= rankBio %></th>
                             <% } %>
-                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15)+"..." %></a></td>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 15 ? user.ign : user.ign.substring(0, 12)+"..." %></a></td>
                             <td><%= user.rating.biology %></td>
                         </tr>
                         <% rankBio++; %>
@@ -118,6 +118,42 @@
             </table>
         </div>
 
+        <div class="col-12 col-xl-3">
+            <h3 class="text-center">USABO</h3>
+            <table class="text-center table">
+                <thead>
+                    <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let rankUSABO = 1; %>
+                    <% rankings.usabo.forEach((user) => { %>
+                        <% let style = ""; %>
+                        <% if(rankUSABO == 1) { style = "background-color:#ffd700"; } %>
+                        <% if(rankUSABO == 2) { style = "background-color:#c0c0c0"; } %>
+                        <% if(rankUSABO == 3) { style = "background-color:#cd7f32"; } %>
+                        <tr style=<%= style %>>
+                            <% if(rankUSABO == 1) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_First.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankUSABO == 2) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Second.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else if(rankUSABO == 3) { %>
+                                <th scope="row"><img src="https://f000.backblazeb2.com/file/mutorials/icons/Leaderboard_Third.svg" width="25" height="25" class="d-inline-block align-top" alt=""></th>
+                            <% } else { %>
+                                <th scope="row"><%= rankUSABO %></th>
+                            <% } %>
+                            <td><a href="/profile/<%= user.ign %>" target="_blank" style="text-decoration: none;"><%= user.ign.length <= 15 ? user.ign : user.ign.substring(0, 12)+"..." %></a></td>
+                            <td><%= user.rating.usabo %></td>
+                        </tr>
+                        <% rankUSABO++; %>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+        
     </div>
 
 </div>

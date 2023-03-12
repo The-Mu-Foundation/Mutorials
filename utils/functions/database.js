@@ -200,6 +200,7 @@ async function generateLeaderboard(User, count) {
     let physics = await User.find({ "rating.physics": { $gte: 1000 } }).sort({ "rating.physics": -1 }).limit(count).exec();
     let chem = await User.find({ "rating.chemistry": { $gte: 1000 } }).sort({ "rating.chemistry": -1 }).limit(count).exec();
     let bio = await User.find({ "rating.biology": { $gte: 1000 } }).sort({ "rating.biology": -1 }).limit(count).exec();
+    let usabo = await User.find({ "rating.usabo": { $gte: 1000 } }).sort({ "rating.usabo": -1 }).limit(count).exec();
 
     let rush = await User.find({ "stats.rush.highscore": { $gte: 10 } }).sort({ "stats.rush.highscore": -1 }).limit(count).exec();
     let experience = await User.find({ "stats.experience": { $gte: 10000 } }).sort({ "stats.experience": -1 }).limit(count).exec();
@@ -212,7 +213,7 @@ async function generateLeaderboard(User, count) {
         }
     });
 
-    return { physics, chem, bio, rush, experience };
+    return { physics, chem, bio, usabo, rush, experience };
 
 }
 

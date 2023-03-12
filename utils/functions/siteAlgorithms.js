@@ -1,7 +1,7 @@
 // params: ratings are numbers, correct is boolean (true = player got it right)
 function calculateRatings(userRating, questionRating, correct) {
 
-    // important values: 1000 is spread of elo change, 32 is scale of change
+    // important values: 1000 is spread of elo change, 25 is scale of change
     let chanceOfCorrect = 1 / (1 + Math.pow(9, (questionRating - userRating) / 1000));
     let userRatingChange = Math.round(25 * (correct - chanceOfCorrect));
     let questionRatingChange = -Math.round(userRatingChange / 16);
@@ -24,8 +24,8 @@ function calculateRatings(userRating, questionRating, correct) {
 // input user rating, gives range of ratings for next question's selection
 function ratingCeilingFloor(userRating) {
 
-    let spread = Math.round((Math.random() + 2.7) * (Math.random() + 3.2) * 100);
-    spread += Math.round(userRating / 20);
+    let spread = Math.round((Math.random() + 2.7) * (Math.random() + 0.8) * 100);
+    spread += Math.round(userRating / 10);
 
     let floor = userRating - spread;
     let ceiling = userRating + spread;
