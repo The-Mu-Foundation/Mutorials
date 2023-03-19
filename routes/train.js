@@ -24,13 +24,9 @@ module.exports = (app, mongo) => {
     });
 
     app.post('/private/initialRating', (req, res, next) => {
-        if (req.user.rating[req.body.subject.toLowerCase()] == -1) {
-            req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
-            mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
-        } else {
-            req.flash('errorFlash', 'You\'ve already set your proficiency for that subject');
-        }
-        res.redirect('/train/' + req.body.subject + '/chooseUnits');
+        req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
+        mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
+        res.redirect('/train/chooseSubject'/* + req.body.subject + '/chooseUnits'*/);
     });
 
     app.post('/selQ', (req, res, next) => {
@@ -333,12 +329,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/train/:subject/proficiency', (req, res) => {
-        if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
-
-            res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject, pageName: req.params.subject + " Proficiency" });
-        } else {
-            res.redirect('/train');
-        }
+        res.render(VIEWS + 'private/train/setProficiency.ejs', { subject: req.params.subject, pageName: req.params.subject + " Proficiency" });      
     });
 
     app.get('/train/:subject/chooseUnits', (req, res) => {
