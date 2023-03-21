@@ -26,7 +26,7 @@ module.exports = (app, mongo) => {
     app.post('/private/initialRating', (req, res, next) => {
         req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
         mongo.db.collection('users').findOneAndUpdate({ username: req.user.username }, { $set: { rating: req.user.rating } });
-        res.redirect('/train/chooseSubject'/* + req.body.subject + '/chooseUnits'*/);
+        res.redirect('/'/* + req.body.subject + '/chooseUnits'*/);
     });
 
     app.post('/selQ', (req, res, next) => {
