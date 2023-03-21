@@ -124,6 +124,20 @@ module.exports = (app, mongo) => {
     // Master list of questions
     app.get('/admin/allUSABOQuestions', async (req, res) => {
         const allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
+        /*for (let question of allQuestions){
+            mongo.db.collection('usaboQuestions').findOneAndUpdate(
+                { _id: mongoose.Types.ObjectId(question._id) },
+                {
+                    $set: {
+                        subject: ['USABO'],
+                        stats: {
+                            pass: 0,
+                            fail: 0
+                        }
+                    }
+                }
+            )
+        }*/
         res.render(VIEWS + 'usabo/train/allQuestions.ejs', {
             questions: allQuestions
         });

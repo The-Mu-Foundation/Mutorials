@@ -261,7 +261,7 @@ module.exports = (app, mongo) => {
 
     // Master list of questions
     app.get('/admin/allQuestions', async (req, res) => {
-        let questionArray = await mongo.db.collection('usaboQuestions').find().toArray();
+        /*let questionArray = await mongo.db.collection('usaboQuestions').find().toArray();
         for (question of questionArray){
             for (let i = 0; i < question.categories.length; i++){
                 question.categories[i] = "USABO - " + question.categories[i];
@@ -283,7 +283,7 @@ module.exports = (app, mongo) => {
                 stats: question.stats
             });
             mongo.db.collection("usaboQuestions").deleteOne({ _id: question._id });
-        }
+        }*/
         const allQuestions = await mongo.db.collection('questions').find().toArray();
         res.render(VIEWS + 'admin/train/allQuestions.ejs', {
             questions: allQuestions
@@ -354,7 +354,7 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/reviewQuestions', async (req, res) => {
-        let questionArray = await mongo.db.collection('usaboPendingQuestions').find().toArray();
+        /*let questionArray = await mongo.db.collection('usaboPendingQuestions').find().toArray();
         for (question of questionArray){
             for (let i = 0; i < question.categories.length; i++){
                 question.categories[i] = "USABO - " + question.categories[i];
@@ -376,7 +376,7 @@ module.exports = (app, mongo) => {
                 stats: question.stats
             });
             mongo.db.collection("usaboPendingQuestions").deleteOne({ _id: question._id });
-        }
+        }*/
         let pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         for (let question of pendingQuestions){
             if (question.reviewers.length > 1){

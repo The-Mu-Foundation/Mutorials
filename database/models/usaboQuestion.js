@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 // define question schema
 const usaboQSchema = new mongoose.Schema({
+    subject: {
+        type: Array,
+        default: ['USABO']
+    },
     question: String,
     choices: Array,
     rating: Number,
