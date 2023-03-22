@@ -3,6 +3,8 @@ const db = mongoose.connection;
 
 const { calculateLevel } = require("./siteAlgorithms");
 
+const { updateUSABOCounters } = require("./usaboDatabase");
+
 // input a string (the question ID), returns question entry
 function getQuestion(Ques, id) {
     return Ques.findById(id).exec();
@@ -36,7 +38,11 @@ function setRating(subject, newRating, req) {
 // modify the correct/wrong counter for users, and the pass/fail counter for questions, as well as tag collector tags
 
 function updateAll(req, question, correct) {
-    updateCounters(req, question, correct);
+    if (question.subject == 'USABO'){
+        updateUSABOCounters(req, question, correct);
+    } else {
+        updateCounters(req, question, correct);
+    }
     updateTracker(req, question);
     updateLastAnswered(req, question);
     addExperience(req, correct ? question.rating : Math.ceil(question.rating / 2));

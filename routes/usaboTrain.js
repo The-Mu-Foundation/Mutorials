@@ -56,7 +56,7 @@ module.exports = (app, mongo) => {
             const antsy = getQuestion(mongo.USABOQues, req.body.id).then(async antsy => {
 
                 // clear pending question
-                clearQuestionQueue(req, antsy.round[0]);
+                clearQuestionQueue(req, antsy.subject[0]);
 
                 // check answer
                 if (antsy.answer[0] == req.body.answerChoice) {
@@ -89,7 +89,7 @@ module.exports = (app, mongo) => {
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'usabo/train/answerExplanation.ejs', {
-                    categories: req.body.categories, userAnswer: req.body.answerChoice, userRating: getRating('usabo', req), round: req.body.round,
+                    categories: req.body.categories, userAnswer: req.body.answerChoice, userRating: getRating('USABO', req), subject: 'USABO',
                     newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "USABO Answer Explanation"
                 });
             });
@@ -98,24 +98,24 @@ module.exports = (app, mongo) => {
             const antsy = getQuestion(mongo.USABOQues, req.body.id).then(async antsy => {
 
                 // clear pending question
-                clearQuestionQueue(req, antsy.round[0]);
+                clearQuestionQueue(req, antsy.subject[0]);
 
                 // check answer
                 isRight = arraysEqual(antsy.answer, req.body.saChoice);
 
                 // modify ratings
-                const oldUserRating = req.user.rating['usabo'];
+                const oldUserRating = req.user.rating['USABO'];
                 const oldQRating = antsy.rating;
                 // update stats
                 if (req.user.stats.lastAnswered != antsy._id) {
-                    setRating('usabo', calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
+                    setRating('USABO', calculateRatings(oldUserRating, oldQRating, isRight).newUserRating, req);
                     setQRating(antsy, calculateRatings(oldUserRating, oldQRating, isRight).newQuestionRating);
 
                     // update counters & tag collector
                     updateAll(req, antsy, isRight);
 
                     // update site data
-                    incrementSolveCounter(mongo.SiteData, 'usabo', isRight);
+                    incrementSolveCounter(mongo.SiteData, 'USABO', isRight);
                 } else {
 
                     // update tracker
@@ -129,8 +129,8 @@ module.exports = (app, mongo) => {
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'usabo/train/answerExplanation.ejs', {
-                    categories: req.body.categories, userAnswer: req.body.saChoice, userRating: getRating('usabo', req), round: req.body.round,
-                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: " USABOAnswer Explanation"
+                    categories: req.body.categories, userAnswer: req.body.saChoice, userRating: getRating('usabo', req), subject: 'USABO',
+                    newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: " USABO Answer Explanation"
                 });
             });
         } else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
@@ -138,7 +138,7 @@ module.exports = (app, mongo) => {
             const antsy = getQuestion(mongo.USABOQues, req.body.id).then(async antsy => {
 
                 // clear pending question
-                clearQuestionQueue(req, 'usabo');
+                clearQuestionQueue(req, 'USABO');
 
                 // check answer
                 for (let j = 0; j < antsy.answer.length; j++){
@@ -154,7 +154,7 @@ module.exports = (app, mongo) => {
                     }
                 }
                 // modify ratings
-                const oldUserRating = req.user.rating[antsy.round[0].toLowerCase()];
+                const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
                 const oldQRating = antsy.rating;
 
                 // update stats
@@ -180,14 +180,14 @@ module.exports = (app, mongo) => {
                 // render answer page
                 let experienceStats = await calculateLevel(req.user.stats.experience);
                 res.render(VIEWS + 'usabo/train/answerExplanation.ejs', {
-                    categories: req.body.categories, userAnswer: req.body.freeAnswer, userRating: getRating(req.body.round, req), round: req.body.round,
+                    categories: req.body.categories, userAnswer: req.body.freeAnswer, userRating: getRating('USABO', req), subject: 'USABO',
                     newQues: antsy, correct: isRight, oldUserRating: oldUserRating, oldQ: oldQRating, user: req.user, experienceStats, pageName: "USABO Answer Explanation"
                 });
             });
         } else {
             req.flash('errorFlash', 'Please choose an answer next time... We treated that as a skip (-8 rating).');
-            skipQuestionUpdates(mongo.USABOQues, req, req.body.round, req.body.id);
-            clearQuestionQueue(req, req.body.round);
+            skipQuestionUpdates(mongo.USABOQues, req, 'USABO', req.body.id);
+            clearQuestionQueue(req, 'USABO');
             res.redirect(req.body.redirect);
         }
     });
@@ -252,7 +252,7 @@ module.exports = (app, mongo) => {
                     return;
                 }
                 // update pending question field
-                updateQuestionQueue(req, req.round, curQ._id);
+                updateQuestionQueue(req, 'usabo', curQ._id);
                 // push to frontend
                 res.render(VIEWS + 'usabo/train/displayQuestion.ejs', { categories: categories, newQues: curQ, subject: 'USABO', user: req.user, experienceStats, pageName: "USABO Trainer" });
             });

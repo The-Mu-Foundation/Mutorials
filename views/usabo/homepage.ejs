@@ -67,27 +67,6 @@
             data: {
                 labels: ratingData["Labels"],
                 datasets: [{
-                    label: "Physics",
-                    data: ratingData["Physics"],
-                    backgroundColor: "rgba(100, 200, 230, 1)",
-                    borderColor: "rgba(100, 200, 230, 1)",
-                    fill: false,
-                    borderWidth: 5
-                }, {
-                    label: "Chemistry",
-                    data: ratingData["Chemistry"],
-                    backgroundColor: "rgba(245, 170, 40, 1)",
-                    borderColor: "rgba(245, 170, 40, 1)",
-                    fill: false,
-                    borderWidth: 5
-                }, {
-                    label: "Biology",
-                    data: ratingData["Biology"],
-                    backgroundColor: "rgba(40, 240, 110, 1)",
-                    borderColor: "rgba(40, 240, 110, 1)",
-                    fill: false,
-                    borderWidth: 5
-                }, {
                     label: "USABO",
                     data: ratingData["USABO"],
                     backgroundColor: "rgba(30, 24, 11, 1)",
@@ -108,8 +87,8 @@
                 scales: {
                     yAxes: [{
                         ticks: {
-                            min: Math.round((Math.min(Math.min.apply(null, ratingData["Physics"]), Math.min.apply(null, ratingData["Chemistry"]), Math.min.apply(null, ratingData["Biology"]), Math.min.apply(null, ratingData["USABO"]))-50)/50)*50,
-                            max: Math.round((Math.max(Math.max.apply(null, ratingData["Physics"]), Math.max.apply(null, ratingData["Chemistry"]), Math.max.apply(null, ratingData["Biology"]), Math.max.apply(null, ratingData["USABO"]))+50)/50)*50,
+                            min: Math.round((Math.min(Math.min.apply(null, ratingData["USABO"]))-50)/50)*50,
+                            max: Math.round((Math.max(Math.max.apply(null, ratingData["USABO"]))+50)/50)*50,
                             stepSize: 50
                         }
                     }],
@@ -144,7 +123,6 @@
         <%- include("../partials/flashes") -%>
     </div>
     <h1 class="text-center display-3">Welcome to USABO Practice!</h1>
-    <h1 class="text-center display-3">This Page Is In Progress</h1>
 
     <% if (admin) { %>
       <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/usaboAdminHomepage">USABO Admin Dashboard</a>

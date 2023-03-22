@@ -2,7 +2,7 @@
 <%# ARGUMENTS: newQues - question object, units - units user selected, user - the user object, subject - the subject %>
 
 <%- include("../../partials/header") -%>
-<%- include("../../partials/navigationPrivate") -%>
+<%- include("../partials/usaboNav") -%>
 
 <%# JS code %>
 <script>
@@ -110,7 +110,7 @@
 
                     <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
                     <p><%- newQues.question %></p>
-                    <form action="/train/checkAnswer" method="POST">
+                    <form action="/train/checkUSABOAnswer" method="POST">
                         <div class="mt-4" id="mc-choices">
                             <% var choiceIndex = 1; %>
                             <% newQues.choices.forEach((choice) => { %>
@@ -125,8 +125,8 @@
                         <input type="hidden" name="id" value="<%= newQues._id %>">
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
                         <input type="hidden" name="subject" value="<%= subject %>">
-                        <input type="hidden" name="units" value="<%= units %>">
-                        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+                        <input type="hidden" name="categories" value="<%= categories %>">
+                        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayUSABOQuestion?categories=<%=categories%>">
                     </form>
                 <% } else if(newQues.type == "sa") { %>
 
@@ -134,7 +134,7 @@
 
                     <h3 class="display-4" style="font-size: 1.5rem;">Please read the following and select ALL choices that apply:</h3>
                     <p><%- newQues.question %></p>
-                    <form action="/train/checkAnswer" method="POST">
+                    <form action="/train/checkUSABOAnswer" method="POST">
                         <div class="mt-4" id="sa-choices">
                             <% var choiceIndex = 1; %>
                             <% newQues.choices.forEach((choice) => { %>
@@ -149,8 +149,8 @@
                         <input type="hidden" name="id" value="<%= newQues._id %>">
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
                         <input type="hidden" name="subject" value="<%= subject %>">
-                        <input type="hidden" name="units" value="<%= units %>">
-                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+                        <input type="hidden" name="categories" value="<%= categories %>">
+                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayUSABOQuestion?categories=<%=categories%>">
                     </form>
                 <% } else if(newQues.type == "fr") { %>
 
@@ -158,7 +158,7 @@
 
                     <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and enter your answer in the box:</h3>
                     <p><%- newQues.question %></p>
-                    <form action="/train/checkAnswer" method="POST">
+                    <form action="/train/checkUSABOAnswer" method="POST">
                         <div class="mt-4">
                             <div class="form-group">
                                 <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
@@ -168,8 +168,8 @@
                         <input type="hidden" name="id" value="<%= newQues._id %>">
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
                         <input type="hidden" name="subject" value="<%= subject %>">
-                        <input type="hidden" name="units" value="<%= units %>">
-                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+                        <input type="hidden" name="categories" value="<%= categories %>">
+                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayUSABOQuestion?categories=<%=categories%>">
                     </form>
                 <% } else { %>
                     <% throw "invalid type"; %>
@@ -204,7 +204,7 @@
                     <button type="button" class="btn btn-secondary" id="no-skip">No</button>
                     <button type="submit" class="btn btn-primary" id="yes-skip">Yes</button>
                     <input type="hidden" name="id" value="<%= newQues._id %>">
-                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayUSABOQuestion?categories=<%=categories%>">
                     <input type="hidden" name="subject" value="<%= subject %>">
                 </form>
             </div>
