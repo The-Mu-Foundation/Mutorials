@@ -451,6 +451,9 @@ const tags = {
             "ECO": "Ecology",
             "ETH": "Ethology",
             "BIOSYS": "Biosystematics"
+        },
+        "Concepts": {
+            "DZNTS": "Deez Nuts"
         }
     }
 };
