@@ -346,7 +346,28 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/admin/usaboQuestions', async (req, res) => {
-        
+        //transfer testing stuff - DON'T UNCOMMENT UNLESS YOU WANT A LOT OF QUESTIONS
+        /*for (let i = 1; i <= 200; i++){
+            mongo.db.collection("questions").insertOne({
+                question: 'transfer test' + i,
+                choices: [""],
+                tags: [i + 1822, "Problem: " + i, 'semis'],
+                rating: i,
+                answer: 'deez nuts',
+                answer_ex: 'deez nuts',
+                author: 'PFE',
+                type: 'fr',
+                ext_source: 'Competition',
+                source_statement: 'USABO',
+                subject: ['USABO'],
+                units: ["USABO - Cell Biology"],
+                reviewers: ["isEdit"],
+                stats: {
+                    pass: 0,
+                    fail: 0
+                }
+            });
+        }*/
         const allQuestions = await mongo.db.collection('questions').find().toArray();
         res.render(VIEWS + 'admin/train/usaboQuestions.ejs', {
             questions: allQuestions

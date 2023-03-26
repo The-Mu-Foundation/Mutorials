@@ -16,7 +16,12 @@
 </style>
 
 <h1 class="my-5 container">ADMIN PAGE: All USABO Questions</h1>
-
+<div class="jumbotron container">
+    <h3 class="mb-4"><%= `There are ${leftToTransfer} questions left to transfer.` %></h3>
+</div>
+<div class="container mt-5 mb-1">
+    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/transfer">Transfer</a>
+</div>
 <div class="jumbotron container">
     <div class="grid">
         <% for (let question of questions) { %>
