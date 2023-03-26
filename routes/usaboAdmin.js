@@ -139,7 +139,7 @@ module.exports = (app, mongo) => {
             )
         }*/
         const tempQuestions = await mongo.db.collection('questions').find({ subject: ['USABO'] }).toArray();
-        for (let question of tempQuestions){
+        /*for (let question of tempQuestions){
             let tagStart = 0//question.units.length;
             for (let i = 0; i < question.units.length; i++){
                 question.units[i] = question.units[i].substring(8);
@@ -163,10 +163,10 @@ module.exports = (app, mongo) => {
                 });
                 newQ.save();
                 mongo.db.collection("questions").deleteOne({ _id: question._id });
-        }
+        }*/
         allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
         res.render(VIEWS + 'usabo/train/allQuestions.ejs', {
-            questions: allQuestions
+            questions: allQuestions, leftToTransfer: tempQuestions.length
         });
     });
 
@@ -226,5 +226,36 @@ module.exports = (app, mongo) => {
         }
         pendingQuestions = await mongo.db.collection('usaboPendingQuestions').find().toArray();
         res.render(VIEWS + 'usabo/train/reviewHomepage.ejs', { questions: pendingQuestions });
+    });
+
+    app.get('/admin/transfer', async (req, res) => {
+        const tempQuestions = await mongo.db.collection('questions').find({ subject: ['USABO'] }).toArray();
+        for (let i = 0; i < Math.min(20, tempQuestions.length); i++){
+            let question = tempQuestions[i];
+            let tagStart = 0//question.units.length;
+            for (let i = 0; i < question.units.length; i++){
+                question.units[i] = question.units[i].substring(8);
+            }
+            let newQ = new mongo.USABOQues({
+                question: question.question,
+                choices: question.choices,
+                rating: question.rating,
+                answer: question.answer,
+                answer_ex: question.answer_ex,
+                author: question.author,
+                type: question.type,
+                categories: question.units,
+                year: parseInt(question.tags[tagStart]),
+                problemNumber: question.tags[tagStart + 1].substring(9),
+                round: question.tags[tagStart + 2],
+                stats: question.stats,
+                writtenDate: question.writtenDate,
+                subject: ['USABO'],
+                reviewers: question.reviewers
+                });
+                newQ.save();
+                mongo.db.collection("questions").deleteOne({ _id: question._id });
+        }
+        res.redirect('/admin/allUSABOQuestions');
     });
 }
