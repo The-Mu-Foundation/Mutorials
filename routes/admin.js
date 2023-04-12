@@ -349,7 +349,7 @@ module.exports = (app, mongo) => {
         //transfer testing stuff - DON'T UNCOMMENT UNLESS YOU WANT A LOT OF QUESTIONS
         /*for (let i = 1; i <= 200; i++){
             mongo.db.collection("questions").insertOne({
-                question: 'transfer test' + i,
+                question: 'transfer test ' + i,
                 choices: [""],
                 tags: [i + 1822, "Problem: " + i, 'semis'],
                 rating: i,
