@@ -233,9 +233,11 @@ module.exports = (app, mongo) => {
         for (let i = 0; i < Math.min(20, tempQuestions.length); i++){
             let question = tempQuestions[i];
             let tagStart = 0//question.units.length;
+            
             for (let i = 0; i < question.units.length; i++){
                 question.units[i] = question.units[i].substring(8);
             }
+
             let newQ = new mongo.USABOQues({
                 question: question.question,
                 choices: question.choices,
