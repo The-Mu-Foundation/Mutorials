@@ -232,10 +232,28 @@ module.exports = (app, mongo) => {
         const tempQuestions = await mongo.db.collection('questions').find({ subject: ['USABO'] }).toArray();
         for (let i = 0; i < Math.min(20, tempQuestions.length); i++){
             let question = tempQuestions[i];
-            let tagStart = 0//question.units.length;
-            for (let i = 0; i < question.units.length; i++){
-                question.units[i] = question.units[i].substring(8);
-            }
+            
+            // Extract units from "USABO - " format
+            question.units = question.units.map(unit => {
+                const unitMatch = unit.match(/USABO - (.+)/);
+                return unitMatch ? unitMatch[1] : unit;
+            });
+
+            // Grab necessary USABO attributes--more robust
+            let year, problemNumber;
+            let yearIdx;
+            question.tags.forEach((tag, i) => {
+                // Match year?
+                if (tag.match(/\d{4}/)) {
+                    year = parseInt(tag);
+                    yearIdx = i;
+                }
+
+                // Match problem number?
+                const problemNumberMatch = tag.match(/Problem: (\d+)/);
+                if (problemNumberMatch) problemNumber = problemNumberMatch[1];
+            });
+
             let newQ = new mongo.USABOQues({
                 question: question.question,
                 choices: question.choices,
@@ -245,16 +263,17 @@ module.exports = (app, mongo) => {
                 author: question.author,
                 type: question.type,
                 categories: question.units,
-                year: parseInt(question.tags[tagStart]),
-                problemNumber: question.tags[tagStart + 1].substring(9),
-                round: question.tags[tagStart + 2],
+                year,
+                problemNumber,
+                round: question.tags[yearIdx + 2],
                 stats: question.stats,
                 writtenDate: question.writtenDate,
                 subject: ['USABO'],
                 reviewers: question.reviewers
-                });
-                newQ.save();
-                mongo.db.collection("questions").deleteOne({ _id: question._id });
+            });
+            
+            newQ.save();
+            mongo.db.collection("questions").deleteOne({ _id: question._id });
         }
         res.redirect('/admin/allUSABOQuestions');
     });
