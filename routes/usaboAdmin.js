@@ -102,8 +102,7 @@ module.exports = (app, mongo) => {
         });
     });
 
-    //ADMIN GET ROUTES
-
+    // ADMIN GET ROUTES
     app.get('/admin/usaboAdminHomepage', (req, res) => {
         c = req.cookies['skipQuestions'];
         if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
@@ -111,7 +110,7 @@ module.exports = (app, mongo) => {
             if (err) { console.log(1, err); } else {
                 mongo.db.collection('usaboPendingQuestions').countDocuments({ question: /.*/ }, (err, numAll) => {
                     if (err) { console.log(2, err); }
-                    res.render(VIEWS + 'usabo/adminHomepage.ejs', { numUser: numUser, numAll: numAll });
+                    res.render(VIEWS + 'usabo/adminHomepage.ejs', { numUser, numAll });
                 });
             }
         });
@@ -121,52 +120,30 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'usabo/contributorAddQuestion.ejs', { pageName: "ADMIN Add USABO Question" });
     });
 
+    // DATA ROUTE: Get USABO question stats
+    app.get('/admin/usaboQuestionStats', async (req, res) => {
+        let allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
+
+        // Compute some properties
+        let yearDist = {};  // Distribution of questions across years
+        for (let question of allQuestions) {
+            const { year, round } = question;
+            if (!yearDist[year]) yearDist[year] = { semis: 0, open: 0 };
+            yearDist[year][round]++;
+        }
+
+        res.json({ yearDist: Object.entries(yearDist) });
+    });
+
     // Master list of questions
     app.get('/admin/allUSABOQuestions', async (req, res) => {
         let allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
-        /*for (let question of allQuestions){
-            mongo.db.collection('usaboQuestions').findOneAndUpdate(
-                { _id: mongoose.Types.ObjectId(question._id) },
-                {
-                    $set: {
-                        subject: ['USABO'],
-                        stats: {
-                            pass: 0,
-                            fail: 0
-                        }
-                    }
-                }
-            )
-        }*/
+
         const tempQuestions = await mongo.db.collection('questions').find({ subject: ['USABO'] }).toArray();
-        /*for (let question of tempQuestions){
-            let tagStart = 0//question.units.length;
-            for (let i = 0; i < question.units.length; i++){
-                question.units[i] = question.units[i].substring(8);
-            }
-            let newQ = new mongo.USABOQues({
-                question: question.question,
-                choices: question.choices,
-                rating: question.rating,
-                answer: question.answer,
-                answer_ex: question.answer_ex,
-                author: question.author,
-                type: question.type,
-                categories: question.units,
-                year: parseInt(question.tags[tagStart]),
-                problemNumber: question.tags[tagStart + 1].substring(9),
-                round: question.tags[tagStart + 2],
-                stats: question.stats,
-                writtenDate: question.writtenDate,
-                subject: ['USABO'],
-                reviewers: question.reviewers
-                });
-                newQ.save();
-                mongo.db.collection("questions").deleteOne({ _id: question._id });
-        }*/
         allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
         res.render(VIEWS + 'usabo/train/allQuestions.ejs', {
-            questions: allQuestions, leftToTransfer: tempQuestions.length
+            questions: allQuestions,
+            leftToTransfer: tempQuestions.length
         });
     });
 
