@@ -298,6 +298,9 @@ const tags = {
             "REQUO": "Reaction Quotients",
             "KAYPE": "Equilibrium Involving Pressure",
             "LECHA": "Le Chatellier's Principle",
+            "ENTRP": "Entropy",
+            "GIBBS": "Gibbs Free Energy",
+            "GEQUI": "Free Energy and Equilibrium",
 
             "STREN": "Acid and Base Strength",
             "PHVAL": "The pH Scale",
@@ -308,10 +311,9 @@ const tags = {
             "BUFFR": "Buffers",
             "ABTIT": "Titrations and pH Curves",
             "ABIND": "Acid-Base Indicators",
-
-            "ENTRP": "Entropy",
-            "GIBBS": "Gibbs Free Energy",
-            "GEQUI": "Free Energy and Equilibrium",
+            
+            "TRNSM": "Transition Metals and Their Properties",
+            "COORC": "Coordination Compounds and Complex Ions",
 
             "BALRD": "Balancing Oxidation-Reduction Reactions",
             "GALVN": "Galvanic Cells",
@@ -326,9 +328,9 @@ const tags = {
             "RDKIN": "Radioactive Decay Kinetics",
             "MDABE": "Mass Defect and Binding Energy",
             "FISFU": "Nuclear Fission and Fusion",
-
-            "TRNSM": "Transition Metals and Their Properties",
-            "COORC": "Coordination Compounds and Complex Ions",
+            
+            "NANCH": "Nanochemistry",
+            "SSCHE": "Solid State Chemistry",
 
             "ALKAN": "Alkanes and Cycloalkanes",
             "ISOMR": "Isomerism and Stereoisomerism",
