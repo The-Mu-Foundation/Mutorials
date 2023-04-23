@@ -212,9 +212,10 @@ const tags = {
             "15C": "Coordination Chemistry",
             "16C": "Electrochemistry",
             "17C": "Nuclear Chemistry",
-            "18C": "Biochemistry",
+            "18C": "Materials Chemistry",
             "19C": "Organic Chemistry",
-            "20C": "Lab Skills"
+            "20C": "Biochemistry",
+            "21C": "Lab Skills",
         },
         "Concepts": {
             "DIMEN": "Dimensional Analysis",
