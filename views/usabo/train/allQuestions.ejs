@@ -13,6 +13,10 @@
         gap: 1rem;
         box-sizing: border-box;
     }
+
+    .barChart {
+        width: 50%;
+    }
 </style>
 
 <h1 class="my-5 container">ADMIN PAGE: All USABO Questions</h1>
@@ -23,9 +27,15 @@
     <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/transfer">Transfer</a>
 </div>
 <div class="jumbotron container">
+    <h3>Stats</h3>
+    <div class="d-flex mb-3" style="height: 400px;">
+        <div class="barChart"><canvas id="semisYearDistChart"></canvas></div>
+        <div class="barChart"><canvas id="openYearDistChart"></canvas></div>
+    </div>
+    
     <div class="grid">
         <% for (let question of questions) { %>
-        <div class="card g-col-4 p-3 m-0 bg-light">
+        <div class="card p-3 m-0 bg-light">
             <h4>
                 <a class="text-decoration-none" href="/admin/editUSABOQuestion?id=<%= question['_id'] %>">
                 <%= question['round'] %> (<%= question['rating'] %> rated)
@@ -46,5 +56,46 @@
         <% } %>
     </div>
 </div>
+
+
+<script type="module">
+    // Display bar charts and such
+    let canvasContexts = {
+        semis: document.getElementById('semisYearDistChart'),
+        open: document.getElementById('openYearDistChart'),
+    };
+
+    // See routes/usaboAdmin.js => /admin/usaboQuestionStats route
+    const { yearDist } = await $.get('/admin/usaboQuestionStats');
+
+    // Display a bar chart of how many questions from each year there are
+    const barOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            yAxes: [{
+                display: true,
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+    };
+
+    for (let round of ['semis', 'open']) {
+        new Chart(canvasContexts[round], {
+            type: 'bar',
+            data: {
+                labels: yearDist.map(year => year[0]),
+                datasets: [{
+                    label: round,
+                    data: yearDist.map(year => year[1][round]),
+                    borderWidth: 1
+                }]
+            },
+            options: barOptions,
+        });
+    }
+</script>
 
 <%- include("../../partials/footer") -%>
