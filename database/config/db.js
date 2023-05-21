@@ -1,7 +1,7 @@
 
 const mongoose = require("mongoose");
 
-const MONGOURI = process.env.DB_URL || "mongodb+srv://admin:hg5mAQmZd1CnpGM1@cluster0.7gibd.mongodb.net/mutorialsone?retryWrites=true&w=majority"
+const MONGOURI = process.env.DB_URL || "mongodb+srv://Skippy:qVNOjHeNSJlEoI98@cluster0-7gibd.mongodb.net/test?retryWrites=true&w=majority"
 
 const InitiateMongoServer = async () => {
     try {
