@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { average } = require("./general");
+const { USABOPendingQues, USABOQues } = require("./mongo");
 const db = mongoose.connection;
 
 // get specific admin analytics about the database
@@ -36,65 +37,101 @@ async function queryContributor(id, Ques, PendingQues) {
 
     let written = await Ques.find({ author: id }).exec();
     let pendingWritten = await PendingQues.find({ author: id }).exec();
+    let curUSABO = await USABOQues.find({ author: id }).exec();
+    let pendingUSABO = await USABOPendingQues.find({ author: id }).exec();
 
-    if ((!written || written.length < 1) && (!pendingWritten || pendingWritten.length < 1)) {
+    if (((!written && !curUSABO) || (written.length < 1 || curUSABO.length < 1)) && ((!pendingWritten && !pendingUSABO) || (pendingWritten.length < 1 || pendingUSABO.length < 1))) {
         return { status: "Error" };
     }
 
     let physicsWritten = 0;
     let chemistryWritten = 0;
     let biologyWritten = 0;
+    let usaboWritten = curUSABO.length;
+    let essWritten = 0;
     let physicsRatingSum = 0;
     let chemistryRatingSum = 0;
     let biologyRatingSum = 0;
+    let usaboRatingSum = 0;
+    let essRatingSum = 0;
     let ratingSum = 0;
     let hourSum = 0;
 
-    written.forEach((question) => {
+    if (written.length > 0){
+        written.forEach((question) => {
 
-        if (question.subject.includes("Physics")) {
-            physicsWritten++;
-            physicsRatingSum += question.rating;
-        }
-        if (question.subject.includes("Chemistry")) {
-            chemistryWritten++;
-            chemistryRatingSum += question.rating;
-        }
-        if (question.subject.includes("Biology")) {
-            biologyWritten++;
-            biologyRatingSum += question.rating;
-        }
+            if (question.subject.includes("Physics")) {
+                physicsWritten++;
+                physicsRatingSum += question.rating;
+            }
+            if (question.subject.includes("Chemistry")) {
+                chemistryWritten++;
+                chemistryRatingSum += question.rating;
+            }
+            if (question.subject.includes("Biology")) {
+                biologyWritten++;
+                biologyRatingSum += question.rating;
+            }
+            if (question.subject.includes("ESS")) {
+                essWritten++;
+                essRatingSum += question.rating;
+            }
 
-        ratingSum += question.rating;
+            ratingSum += question.rating;
 
-        hourSum += calculateHours(question.subject[0], question.rating);
-    });
+            hourSum += calculateHours(question.subject[0], question.rating);
+        });
+    }
+
+    if (curUSABO.length > 0){
+        curUSABO.forEach((question) => {
+            ratingSum += question.rating;
+            usaboRatingSum += question.rating;
+            hourSum += calcUSABOHours(question.round[0], question.rating);
+        });
+    }
 
     let ratingAverage = Math.round(ratingSum / Math.max(1, written.length));
     let physicsRatingAverage = Math.round(physicsRatingSum / Math.max(1, physicsWritten));
     let chemistryRatingAverage = Math.round(chemistryRatingSum / Math.max(1, chemistryWritten));
     let biologyRatingAverage = Math.round(biologyRatingSum / Math.max(1, biologyWritten));
+    let essRatingAverage = Math.round(essRatingSum / Math.max(1, essWritten));
+    let usaboRatingAverage = Math.round(usaboRatingSum / Math.max(1, usaboWritten));
 
     let pendingPhysicsWritten = 0;
     let pendingChemistryWritten = 0;
     let pendingBiologyWritten = 0;
+    let pendingESSWritten = 0;
+    let pendingUSABOWritten = pendingUSABO.length;
     let pendingHourSum = 0;
 
-    pendingWritten.forEach((question) => {
+    if (pendingWritten.length > 1){
+        pendingWritten.forEach((question) => {
 
-        if (question.subject.includes("Physics")) {
-            pendingPhysicsWritten++;
-            pendingHourSum += calculateHours(question.subject[0], physicsRatingAverage);
-        }
-        if (question.subject.includes("Chemistry")) {
-            pendingChemistryWritten++;
-            pendingHourSum += calculateHours(question.subject[0], chemistryRatingAverage);
-        }
-        if (question.subject.includes("Biology")) {
-            pendingBiologyWritten++;
-            pendingHourSum += calculateHours(question.subject[0], biologyRatingAverage);
-        }
-    });
+            if (question.subject.includes("Physics")) {
+                pendingPhysicsWritten++;
+                pendingHourSum += calculateHours("Physics", physicsRatingAverage);
+            }
+            if (question.subject.includes("Chemistry")) {
+                pendingChemistryWritten++;
+                pendingHourSum += calculateHours("Chemistry", chemistryRatingAverage);
+            }
+            if (question.subject.includes("Biology")) {
+                pendingBiologyWritten++;
+                pendingHourSum += calculateHours("Biology", biologyRatingAverage);
+            }
+            if (question.subject.includes("ESS")) {
+                pendingESSWritten++;
+                pendingHourSum += calculateHours("ESS", essRatingAverage);
+            }
+        });
+    }
+
+    if (pendingUSABO.length > 1){
+        pendingUSABO.forEach((question) => {
+            pendingHourSum += calcUSABOHours(question.round[0], question.rating);
+        });
+    }
 
     hourSum = Math.round(100 * hourSum) / 100;
     pendingHourSum = Math.round(100 * pendingHourSum) / 100;
@@ -116,6 +153,16 @@ async function queryContributor(id, Ques, PendingQues) {
                 biologyRatingAverage,
                 pendingBiologyWritten
             },
+            ess: {
+                essWritten,
+                essRatingAverage,
+                pendingESSWritten
+            },
+            usabo: {
+                usaboWritten,
+                usaboRatingAverage,
+                pendingUSABOWritten
+            },
             ratingAverage,
             hourSum,
             pendingHourSum
@@ -131,8 +178,16 @@ function calculateHours(subject, rating) {
         return 0.05 * Math.pow(Math.E, 0.0009 * rating);
     } else if (subject == "Chemistry") {
         return 0.03 * Math.pow(Math.E, 0.001 * rating);
-    } else if (subject == "Biology") {
+    } else if (subject == "Biology" || subject == "ESS") {
         return 0.15 * Math.pow(Math.E, 0.0005 * rating);
+    }
+}
+
+function calcUSABOHours(round, rating){
+    if (round == "open") {
+        return 0.05 * Math.pow(Math.E, 0.0007 * rating);
+    } else if (round == "semis"){
+        return 0.075 * Math.pow(Math.E, 0.0007 * rating);
     }
 }
 

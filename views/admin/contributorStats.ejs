@@ -32,12 +32,18 @@
                     $("#physics-written").text(data.data.physics.physicsWritten);
                     $("#chemistry-written").text(data.data.chemistry.chemistryWritten);
                     $("#biology-written").text(data.data.biology.biologyWritten);
+                    $("#ess-written").text(data.data.ess.essWritten);
+                    $("#usabo-written").text(data.data.usabo.usaboWritten);
                     $("#physics-avg-rating").text(data.data.physics.physicsRatingAverage);
                     $("#chemistry-avg-rating").text(data.data.chemistry.chemistryRatingAverage);
                     $("#biology-avg-rating").text(data.data.biology.biologyRatingAverage);
+                    $("#ess-avg-rating").text(data.data.ess.essRatingAverage);
+                    $("#usabo-avg-rating").text(data.data.usabo.usaboRatingAverage);
                     $("#physics-pending").text(data.data.physics.pendingPhysicsWritten);
                     $("#chemistry-pending").text(data.data.chemistry.pendingChemistryWritten);
                     $("#biology-pending").text(data.data.biology.pendingBiologyWritten);
+                    $("#ess-pending").text(data.data.ess.pendingESSWritten);
+                    $("#usabo-pending").text(data.data.usabo.pendingUSABO);
 
                     $("#success").text("Showing results for " + id);
                     
@@ -77,6 +83,8 @@
                 <th scope="col">Physics</th>
                 <th scope="col">Chemistry</th>
                 <th scope="col">Biology</th>
+                <th scope="col">USABO</th>
+                <th scope="col">ESS</th>
             </tr>
         </thead>
         <tbody>
@@ -85,18 +93,24 @@
                 <td id="physics-written">XXX</td>
                 <td id="chemistry-written">XXX</td>
                 <td id="biology-written">XXX</td>
+                <td id="usabo-written">XXX</td>
+                <td id="ess-written">XXX</td>
             </tr>
             <tr>
                 <th scope="row">Average Rating</th>
                 <td id="physics-avg-rating">XXX</td>
                 <td id="chemistry-avg-rating">XXX</td>
                 <td id="biology-avg-rating">XXX</td>
+                <td id="usabo-avg-rating">XXX</td>
+                <td id="ess-avg-rating">XXX</td>
             </tr>
             <tr>
                 <th scope="row">Pending Review</th>
                 <td id="physics-pending">XXX</td>
                 <td id="chemistry-pending">XXX</td>
                 <td id="biology-pending">XXX</td>
+                <td id="usabo-pending">XXX</td>
+                <td id="ess-pending">XXX</td>
             </tr>
         </tbody>
       </table>
