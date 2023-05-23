@@ -15,7 +15,6 @@ const subjectUnitDictionary = {
         "Ray Optics",
         "Wave Optics",
         "Thermodynamics",
-        "Simple Machines",
         "Modern Physics",
         "Nuclear and Particle Physics",
         "Electrostatics",
