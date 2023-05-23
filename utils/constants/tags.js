@@ -168,7 +168,7 @@ const tags = {
             
             "HAL": "The Hall Effect",
             "LRF": "Lorentz Force",
-            "MCH": "Magnetic Force due to various configurations",
+            "MCH": "Magnetic forces and fields due to various configurations",
             "AMP": "Ampere's Law",
             "RHR": "The Right Hand Rule",
             "MDP": "Magnetic Dipoles",
