@@ -163,6 +163,7 @@ const tags = {
             "LEN": "Lenz' Law",
             "GEN": "Generators",
             "IND": "Self-Inductance",
+            "REA": "Reactance",
             "LRC": "LRC Circuits",
             "EMO": "Electromagnetic Oscillation",
             
