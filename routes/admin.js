@@ -212,6 +212,16 @@ module.exports = (app, mongo) => {
         res.cookie('skipQuestions', c).json({ success: true });
     });
 
+    app.post('/admin/hourRefactor', (req, res) => {
+        console.log('refactoring hours...');
+        let newHours = req.body.curFactor * req.body.multiplier;
+        console.log('new hours: ' + newHours);
+        console.log('questionID: ' + req.body.questionID);
+        mongo.db.collection('questions').findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.questionID) }, { $set: { hourRefactor: newHours } });
+        mongo.db.collection('pendingQuestions').findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.questionID) }, { $set: { hourRefactor: newHours } });
+        res.redirect('back');
+    });
+
     //ADMIN GET ROUTES
 
     app.get('/admin/adminHomepage', (req, res) => {
@@ -261,28 +271,30 @@ module.exports = (app, mongo) => {
 
     // Master list of questions
     app.get('/admin/allQuestions', async (req, res) => {
-        /*let questionArray = await mongo.db.collection('usaboQuestions').find().toArray();
-        for (question of questionArray){
-            for (let i = 0; i < question.categories.length; i++){
-                question.categories[i] = "USABO - " + question.categories[i];
+        let questionArray = await mongo.db.collection('questions').find().toArray();
+        /*for (question of questionArray){
+            if (!question.hourRefactor) {
+                let newQ = new mongo.Ques({
+                    question: question.question,
+                    choices: question.choices,
+                    tags: question.tags,
+                    rating: question.rating,
+                    answer: question.answer,
+                    answer_ex: question.answer_ex,
+                    author: question.author,
+                    type: question.type,
+                    ext_source: question.ext_source,
+                    source_statement: question.source_statement,
+                    subject: question.subject,
+                    units: question.units,
+                    reviewers: question.reviewers,
+                    stats: question.stats,
+                    writtenDate: question.writtenDate,
+                    hourRefactor: 1
+                });
+                newQ.save();
+                mongo.db.collection("questions").deleteOne({ _id: question._id });
             }
-            mongo.db.collection("questions").insertOne({
-                question: question.question,
-                choices: question.choices,
-                tags: [question.year, "Problem: " + question.problemNumber, question.round[0]],
-                rating: question.rating,
-                answer: question.answer,
-                answer_ex: question.answer_ex,
-                author: question.author,
-                type: question.type,
-                ext_source: 'Competition',
-                source_statement: 'USABO',
-                subject: ['USABO'],
-                units: question.categories,
-                reviewers: question.reviewers,
-                stats: question.stats
-            });
-            mongo.db.collection("usaboQuestions").deleteOne({ _id: question._id });
         }*/
         const allQuestions = await mongo.db.collection('questions').find().toArray();
         res.render(VIEWS + 'admin/train/allQuestions.ejs', {
@@ -416,10 +428,33 @@ module.exports = (app, mongo) => {
                         source_statement: question.source_statement,
                         subject: question.subject,
                         units: question.units,
-                        reviewers: question.reviewers
+                        reviewers: question.reviewers,
+                        writtenDate: question.writtenDate,
+                        hourRefactor: question.hourRefactor
                     })
                 })
             }
+            /*if (!question.hourRefactor) {
+                let newQ = new PendingQues({
+                    question: question.question,
+                    choices: question.choices,
+                    tags: question.tags,
+                    rating: question.rating,
+                    answer: question.answer,
+                    answer_ex: question.answer_ex,
+                    author: question.author,
+                    type: question.type,
+                    ext_source: question.ext_source,
+                    source_statement: question.source_statement,
+                    subject: question.subject,
+                    units: question.units,
+                    reviewers: question.reviewers,
+                    stats: question.stats,
+                    hourRefactor: 1
+                });
+                newQ.save();
+                mongo.db.collection("pendingQuestions").deleteOne({ _id: question._id });
+            }*/
         }
         pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
         res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions });

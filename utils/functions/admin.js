@@ -59,7 +59,10 @@ async function queryContributor(id, Ques, PendingQues) {
 
     if (written.length > 0){
         written.forEach((question) => {
-
+            let refactor = 1;
+            if (question.hourRefactor){
+                refactor = question.hourRefactor;
+            }
             if (question.subject.includes("Physics")) {
                 physicsWritten++;
                 physicsRatingSum += question.rating;
@@ -79,7 +82,7 @@ async function queryContributor(id, Ques, PendingQues) {
 
             ratingSum += question.rating;
 
-            hourSum += calculateHours(question.subject[0], question.rating);
+            hourSum += calculateHours(question.subject[0], question.rating, refactor);
         });
     }
 
@@ -87,7 +90,7 @@ async function queryContributor(id, Ques, PendingQues) {
         curUSABO.forEach((question) => {
             ratingSum += question.rating;
             usaboRatingSum += question.rating;
-            hourSum += calcUSABOHours(question.round[0], question.rating);
+            hourSum += calcUSABOHours(question.round[0], question.rating, question.hourRefactor);
         });
     }
 
@@ -107,29 +110,36 @@ async function queryContributor(id, Ques, PendingQues) {
 
     if (pendingWritten.length > 1){
         pendingWritten.forEach((question) => {
-
+            let refactor = 1;
+            if (question.hourRefactor){
+                refactor = question.hourRefactor;
+            }
             if (question.subject.includes("Physics")) {
                 pendingPhysicsWritten++;
-                pendingHourSum += calculateHours("Physics", physicsRatingAverage);
+                pendingHourSum += calculateHours("Physics", physicsRatingAverage, refactor);
             }
             if (question.subject.includes("Chemistry")) {
                 pendingChemistryWritten++;
-                pendingHourSum += calculateHours("Chemistry", chemistryRatingAverage);
+                pendingHourSum += calculateHours("Chemistry", chemistryRatingAverage, refactor);
             }
             if (question.subject.includes("Biology")) {
                 pendingBiologyWritten++;
-                pendingHourSum += calculateHours("Biology", biologyRatingAverage);
+                pendingHourSum += calculateHours("Biology", biologyRatingAverage, refactor);
             }
             if (question.subject.includes("ESS")) {
                 pendingESSWritten++;
-                pendingHourSum += calculateHours("ESS", essRatingAverage);
+                pendingHourSum += calculateHours("ESS", essRatingAverage, refactor);
             }
         });
     }
 
     if (pendingUSABO.length > 1){
         pendingUSABO.forEach((question) => {
-            pendingHourSum += calcUSABOHours(question.round[0], question.rating);
+            let refactor = 1;
+            if (question.hourRefactor){
+                refactor = question.hourRefactor;
+            }
+            pendingHourSum += calcUSABOHours(question.round[0], question.rating, refactor);
         });
     }
 
@@ -171,23 +181,23 @@ async function queryContributor(id, Ques, PendingQues) {
 }
 
 // approximation of number of hours to write a single question
-function calculateHours(subject, rating) {
+function calculateHours(subject, rating, hourRefactor) {
 
     // heuristic functions are subject to change
     if (subject == "Physics") {
-        return 0.05 * Math.pow(Math.E, 0.0009 * rating);
+        return 0.05 * Math.pow(Math.E, 0.0009 * rating) * hourRefactor;
     } else if (subject == "Chemistry") {
-        return 0.03 * Math.pow(Math.E, 0.001 * rating);
+        return 0.03 * Math.pow(Math.E, 0.001 * rating) * hourRefactor;
     } else if (subject == "Biology" || subject == "ESS") {
-        return 0.15 * Math.pow(Math.E, 0.0005 * rating);
+        return 0.15 * Math.pow(Math.E, 0.0005 * rating) * hourRefactor;
     }
 }
 
-function calcUSABOHours(round, rating){
+function calcUSABOHours(round, rating, hourRefactor){
     if (round == "open") {
-        return 0.05 * Math.pow(Math.E, 0.0007 * rating);
+        return 0.05 * Math.pow(Math.E, 0.0007 * rating) * hourRefactor;
     } else if (round == "semis"){
-        return 0.075 * Math.pow(Math.E, 0.0007 * rating);
+        return 0.075 * Math.pow(Math.E, 0.0007 * rating) * hourRefactor;
     }
 }
 

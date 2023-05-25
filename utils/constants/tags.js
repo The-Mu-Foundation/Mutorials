@@ -451,6 +451,16 @@ const tags = {
         "Concepts": {
             "DZNTS": "Deez Nuts"
         }
+    },
+    "ESS": {
+        "Units": {
+            "U1": "Unit 1",
+            "U2": "Unit 2",
+            "U3": "Unit 3"
+        },
+        "Concepts": {
+            "UD": "Undefined"
+        }
     }
 };
 

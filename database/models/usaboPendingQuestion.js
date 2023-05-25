@@ -21,6 +21,10 @@ const usaboPendingQSchema = new mongoose.Schema({
     writtenDate: {
         type: String,
         default: new Date().toISOString().split('T')[0]
+    },
+    hourRefactor: {
+        type: Number,
+        default: 1
     }
 });
 
