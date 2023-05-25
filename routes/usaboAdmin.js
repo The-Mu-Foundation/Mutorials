@@ -102,6 +102,16 @@ module.exports = (app, mongo) => {
         });
     });
 
+    app.post('/admin/usaboHourRefactor', (req, res) => {
+        console.log('refactoring hours...');
+        let newHours = req.body.curFactor * req.body.multiplier;
+        console.log('new hours: ' + newHours);
+        console.log('questionID: ' + req.body.questionID);
+        mongo.db.collection('usaboQuestions').findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.questionID) }, { $set: { hourRefactor: newHours } });
+        mongo.db.collection('usaboPendingQuestions').findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.questionID) }, { $set: { hourRefactor: newHours } });
+        res.redirect('back');
+    });
+
     // ADMIN GET ROUTES
     app.get('/admin/usaboAdminHomepage', (req, res) => {
         c = req.cookies['skipQuestions'];
@@ -137,9 +147,12 @@ module.exports = (app, mongo) => {
 
     // Master list of questions
     app.get('/admin/allUSABOQuestions', async (req, res) => {
-        let allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
+        let tempQuestions = await mongo.db.collection('questions').find({ subject: "USABO" }).toArray();
+        /*let allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
+        for (let i = 0; i < allQuestions.length; i++){
+            allQuestions[i].hourRefactor = 1;
+        }*/
 
-        const tempQuestions = await mongo.db.collection('questions').find({ subject: ['USABO'] }).toArray();
         allQuestions = await mongo.db.collection('usaboQuestions').find().toArray();
         res.render(VIEWS + 'usabo/train/allQuestions.ejs', {
             questions: allQuestions,
@@ -196,10 +209,15 @@ module.exports = (app, mongo) => {
                         problemNumber: question.problemNumber,
                         round: question.round,
                         categories: question.categories,
-                        reviewers: question.reviewers
+                        reviewers: question.reviewers,
+                        writtenDate: question.writtenDate,
+                        hourRefactor: question.hourRefactor
                     })
                 })
             }
+            /*if (!question.hourRefactor) {
+                question.hourRefactor = 1;
+            }*/
         }
         pendingQuestions = await mongo.db.collection('usaboPendingQuestions').find().toArray();
         res.render(VIEWS + 'usabo/train/reviewHomepage.ejs', { questions: pendingQuestions });
