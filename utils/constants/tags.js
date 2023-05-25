@@ -17,7 +17,7 @@ const tags = {
             "13P": "Wave Optics",
             "14P": "Thermodynamics",
             "15P": "Modern Physics",
-            "16P": "Nuclear and Patricle Physics",
+            "16P": "Nuclear and Particle Physics",
             "17P": "Electrostatics",
             "18P": "Electric Current and Conductors",
             "19P": "DC Circuits",
