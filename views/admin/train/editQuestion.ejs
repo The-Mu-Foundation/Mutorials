@@ -245,12 +245,14 @@
     <hr>
   <form class="form-group" id="subjects">
     <p>What subject(s) does this question fall under?</p>
-        <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
-            <div class="form-check my-1 me-sm-2">
-                <input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="<%= subject %>">
-                <label class="form-check-label" for="<%= subject %>"><%= subject %></label>
-            </div>
-        <% }) %>
+    <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
+			<% if (subject != "USABO") { %>
+				<div class="form-check my-1 me-sm-2">
+					<input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="<%= subject %>">
+					<label class="form-check-label" for="<%= subject %>"><%= subject %></label>
+				</div>
+			<% } %>
+    <% }) %>
     </form>
 
     <%# UNITS %>
