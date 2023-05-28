@@ -84,6 +84,8 @@ module.exports = (app, mongo) => {
                             problemNumber: req.body.problemNumber,
                             round: req.body.round,
                             categories: req.body.categories,
+                            hourRefactor: question.hourRefactor,
+                            writtenDate: question.writtenDate
                         }, (err, _) => {
                             if (err) {
                                 console.log(err);
@@ -264,7 +266,8 @@ module.exports = (app, mongo) => {
                 stats: question.stats,
                 writtenDate: question.writtenDate,
                 subject: ['USABO'],
-                reviewers: question.reviewers
+                reviewers: question.reviewers,
+                hourRefactor: question.hourRefactor
             });
             
             newQ.save();
