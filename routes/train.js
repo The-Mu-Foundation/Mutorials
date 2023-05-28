@@ -369,10 +369,10 @@ module.exports = (app, mongo) => {
                 setRating('USABO', -1, req);
             }
 
-            if (req.user.ration['ess'] === undefined) {
+            if (req.user.rating['ess'] === undefined) {
                 setRating('ESS', -1, req);
             }
-            
+
             let ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
             const floor = ceilingFloor.floor;
             const ceiling = ceilingFloor.ceiling;

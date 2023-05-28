@@ -63,25 +63,29 @@ function analyze(unitData) {
         physics: [],
         biology: [],
         chemistry: [],
-        usabo: []
+        usabo: [],
+        ess: []
     };
     let weaknesses = {
         physics: [],
         biology: [],
         chemistry: [],
-        usabo: []
+        usabo: [],
+        ess: []
     };
     let studying = {
         physics: [],
         biology: [],
         chemistry: [],
-        usabo: []
+        usabo: [],
+        ess: []
     };
     let favorites = {
         physics: [],
         biology: [],
         chemistry: [],
-        usabo: []
+        usabo: [],
+        ess: []
     };
 
     for (const [unit, data] of Object.entries(unitData)) {
