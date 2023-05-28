@@ -187,6 +187,8 @@ module.exports = (app, mongo) => {
                             source_statement: req.body.sourceStatement,
                             subject: req.body.subject,
                             units: req.body.units,
+                            hourRefactor: question.hourRefactor,
+                            writtenDate: question.writtenDate
                         }, (err, _) => {
                             if (err) {
                                 console.log(err);
