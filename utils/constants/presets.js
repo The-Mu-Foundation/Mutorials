@@ -21,6 +21,9 @@ const presetUnitOptions = {
     },
     "USABO": {
         "All": ["Animal Anatomy and Physiology", "Plant Anatomy and Physiology", "Cell Biology", "Genetics and Evolution", "Ecology", "Ethology", "Biosystematics"]
+    },
+    "ESS": {
+        "All": ["Unit 1", "Unit 2", "Unit 3"]
     }
 };
 

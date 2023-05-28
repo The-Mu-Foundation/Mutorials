@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
             chemistry: Array,
             biology: Array,
             usabo: Array,
-            ess: String
+            ess: Array
         },
         rush: {
             highscore: Number,
@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
         chemistry: Number,
         biology: Number,
         usabo: Number,
-        ess: String
+        ess: Number
     },
     // first index is phys, then chem, then bio; fourth index is 1/0 for proficiency
     preferences: {
