@@ -4,6 +4,7 @@ const db = mongoose.connection;
 const { calculateLevel } = require("./siteAlgorithms");
 
 const { updateUSABOCounters } = require("./usaboDatabase");
+const mongo = require("./mongo");
 
 // input a string (the question ID), returns question entry
 function getQuestion(Ques, id) {
@@ -257,6 +258,8 @@ async function getSiteData(User, Ques, SiteData) {
 
     let userCount = await User.estimatedDocumentCount({});
     let questionCount = await Ques.estimatedDocumentCount({});
+    let usaboQs = await mongo.db.collection('usaboQuestions').find().toArray();
+    questionCount += usaboQs.length;
 
     let tagCounter = () => {
         let { tags } = require("../constants/tags");
@@ -278,7 +281,8 @@ async function getSiteData(User, Ques, SiteData) {
             { "rating.physics": { $gte: 2500 } },
             { "rating.chemistry": { $gte: 2500 } },
             { "rating.biology": { $gte: 2500 } },
-            { "rating.usabo": { $gte: 2500} }
+            { "rating.usabo": { $gte: 2500} },
+            { "rating.ess": { $gte: 2500} }
         ]
     });
 
