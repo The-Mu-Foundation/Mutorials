@@ -76,7 +76,7 @@
         }
       }
 
-      $.post("/admin/editQuestion", { questionID, type, question, choices, tags, externalSource, rating, subject,
+      $.post("/reviewer/editQuestion", { questionID, type, question, choices, tags, externalSource, rating, subject,
         units, answer, answerExplanation, author, sourceStatement, reviewerID}, function (data) {
 
         if(data.success) {
@@ -321,14 +321,14 @@
     <div class="jumbotron container">
       <h3>Question Hour Adjustments</h3>
       <p>Current hour multiplier: <%= question.hourRefactor %></p>
-      <form action="/admin/hourRefactor" method="POST">
+      <form action="/reviewer/hourRefactor" method="POST">
         <button type="input" class="btn btn-primary">+%50</button>
         <input type="hidden" name="multiplier" value="1.5">
         <input type="hidden" name="curFactor" value="<%= question.hourRefactor %>">
         <input type="hidden" name="questionID" value="<%= question._id %>">
       </form>
       <br>
-      <form action="/admin/hourRefactor" method="POST">
+      <form action="/reviewer/hourRefactor" method="POST">
         <button type="input" class="btn btn-primary">-%50</button>
         <input type="hidden" name="multiplier" value="0.5">
         <input type="hidden" name="curFactor" value="<%= question.hourRefactor %>">

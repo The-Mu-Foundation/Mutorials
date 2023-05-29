@@ -17,7 +17,7 @@
 
 <h1 class="my-5 container">ADMIN PAGE: Pending Biology Questions</h1>
 <div class="jumbotron container">
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/reviewQuestions">Back To Review Dashboard</a>
+    <a class="btn btn-primary btn-lg w-100 my-2" href="/reviewer/reviewQuestions">Back To Review Dashboard</a>
 </div>
 <div class="jumbotron container">
     <div class="grid">
@@ -25,7 +25,7 @@
             <% if (question.subject.includes("Biology") && !question.reviewers.includes(logUser.contributor)) { %>
             <div class="card g-col-4 p-3 m-0 bg-light">
                 <h4>
-                    <a class="text-decoration-none" href="/admin/reviewQuestion?id=<%= question['_id'] %>">
+                    <a class="text-decoration-none" href="/reviewer/reviewQuestion?id=<%= question['_id'] %>">
                     <%= question['subject'] %> (<%= question['rating'] %> rated)
                     </a>
                 </h4>

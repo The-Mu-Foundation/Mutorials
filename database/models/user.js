@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    reviewer: {
+        type: Boolean,
+        default: false
+    },
     achievements: {
         join_mutorials: Boolean,
         rating_beginner: Boolean,
