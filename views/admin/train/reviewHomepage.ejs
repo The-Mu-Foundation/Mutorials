@@ -27,9 +27,9 @@
 <div class="jumbotron container">
 
     <h3 class="mb-4">Review By Subject:</h3>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/pendingBioQuestions">Review Biology Questions</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/pendingChemQuestions">Review Chemistry Questions</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/pendingPhysicsQuestions">Review Physics Questions</a>
+    <a class="btn btn-primary btn-lg w-100 my-2" href="/reviewer/pendingBioQuestions">Review Biology Questions</a>
+    <a class="btn btn-primary btn-lg w-100 my-2" href="/reviewer/pendingChemQuestions">Review Chemistry Questions</a>
+    <a class="btn btn-primary btn-lg w-100 my-2" href="/reviewer/pendingPhysicsQuestions">Review Physics Questions</a>
 </div>
 
 <div class="jumbotron container">
@@ -39,7 +39,7 @@
             <% if (!question.reviewers.includes(logUser.contributor)) { %>
             <div class="card g-col-4 p-3 m-0 bg-light">
                 <h4>
-                    <a class="text-decoration-none" href="/admin/reviewQuestion?id=<%= question['_id'] %>">
+                    <a class="text-decoration-none" href="/reviewer/reviewQuestion?id=<%= question['_id'] %>">
                     <%= question['subject'] %> (<%= question['rating'] %> rated)
                     </a>
                 </h4>
