@@ -7,6 +7,8 @@ const { arraysEqual } = require('../utils/functions/general');
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue,
     addExperience, clearQuestionQueue, skipQuestionUpdates, getDailyQuestion, incrementSolveCounter, updateRushStats,
     updateTrainAchievements, updateRushAchievements } = require('../utils/functions/database');
+const mongoose = require('mongoose');
+const db = mongoose.connection;
 
 // LIBRARY IMPORTS
 let pluralize = require('pluralize');
@@ -392,5 +394,14 @@ module.exports = (app, mongo) => {
                 res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
             });
         }
+    });
+
+    app.get('/train/displayQuestion/:id', async (req, res) => {
+        let experienceStats = await calculateLevel(req.user.stats.experience);
+        mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.params.id) }).then((question, err) => {
+            if (!err){
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: question.units, newQues: question, subject: question.subject[0], user: req.user, experienceStats, pageName: "Classic Trainer"});
+            }
+        });
     });
 }

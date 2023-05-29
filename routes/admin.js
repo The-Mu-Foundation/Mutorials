@@ -1,6 +1,6 @@
 // FUNCTION IMPORTS
 const { tags } = require('../utils/constants/tags');
-const { subjectUnitDictionary } = require('../utils/constants/subjects');
+const { subjectUnitDictionary, subjects } = require('../utils/constants/subjects');
 const { adminList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
 const { getSiteData, getAnnouncements } = require('../utils/functions/database');
@@ -224,7 +224,8 @@ module.exports = (app, mongo) => {
         }*/
         const allQuestions = await mongo.db.collection('questions').find().toArray();
         res.render(VIEWS + 'admin/train/allQuestions.ejs', {
-            questions: allQuestions
+            questions: allQuestions,
+            subjects: subjects
         });
     });
 
@@ -244,26 +245,11 @@ module.exports = (app, mongo) => {
         });
     });
 
-    
-
-    app.get('/admin/physicsQuestions', async (req, res) => {
+    app.get('/admin/allQuestions/:subject', async (req, res) => {
         const allQuestions = await mongo.db.collection('questions').find().toArray();
-        res.render(VIEWS + 'admin/train/physicsQuestions.ejs', {
-            questions: allQuestions
-        });
-    });
-
-    app.get('/admin/chemQuestions', async (req, res) => {
-        const allQuestions = await mongo.db.collection('questions').find().toArray();
-        res.render(VIEWS + 'admin/train/chemQuestions.ejs', {
-            questions: allQuestions
-        });
-    });
-
-    app.get('/admin/bioQuestions', async (req, res) => {
-        const allQuestions = await mongo.db.collection('questions').find().toArray();
-        res.render(VIEWS + 'admin/train/bioQuestions.ejs', {
-            questions: allQuestions
+        res.render(VIEWS + 'admin/train/subjectQuestions.ejs', {
+            questions: allQuestions,
+            subject: req.params.subject
         });
     });
 }
