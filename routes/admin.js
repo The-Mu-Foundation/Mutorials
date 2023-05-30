@@ -110,98 +110,32 @@ module.exports = (app, mongo) => {
         });
     })
 
-    app.post('/admin/editQuestion', (req, res) => {
-        if (req.body.question.length < 1
-            || parseDelimiter(req.body.tags).length < 1
-            || req.body.rating.length < 1
-            || parseDelimiter(req.body.answer)[0].length < 1
-            || req.body.answerExplanation.length < 1
-            || req.body.author.length < 1
-            || req.body.type.length < 1
-            || req.body.externalSource.length < 1
-            || !req.body.subject
-            || !req.body.units
-            || (req.user.contributor != req.body.reviewerID) == ('isEdit' != req.body.reviewerID)) {
-            res.json({
-                success: false
+    app.post('/admin/promoteContributor', (req, res) => {
+        console.log('promoting ' + req.body.contributorID);
+        let contributor = mongo.db.collection("users").findOne({ contributor: req.body.contributorID});
+        if (!contributor.reviewer){
+            mongo.db.collection('users').deleteOne({ _id: contributor._id }, () => {
+                mongo.db.collection('users').insertOne({
+                    username: contributor.username,
+                    ign: contributor.ign,
+                    hash: contributor.hash,
+                    salt: contributor.salt,
+                    profile: contributor.profile,
+                    stats: contributor.stats,
+                    email_confirm_code: contributor.email_confirm_code,
+                    rating: contributor.rating,
+                    preferences: contributor.preferences,
+                    classes: contributor.classes,
+                    teachingClasses: contributor.teachingClasses,
+                    contributor: contributor.contributor,
+                    achievements: contributor.achievements,
+                    reviewer: false
+                })
             });
-            return;
         }
-
-        // append unique unit tags to taglist
-        req.body.subject.forEach((subject) => {
-            Object.keys(tags[subject]['Units']).forEach((unitTag) => {
-                if (req.body.units.includes(subject + ' - ' + tags[subject]['Units'][unitTag])) {
-                    if (req.body.tags.length >= 1) {
-                        req.body.tags = unitTag + '@' + req.body.tags;
-                    } else {
-                        req.body.tags = unitTag;
-                    }
-                }
-            });
-        });
-
-        // remove duplicate tags
-        req.body.tags = [...new Set(req.body.tags.split('@'))].join('@');
-        
-        mongo.db.collection(req.body.reviewerID != "isEdit" ? "pendingQuestions" : "questions").findOneAndUpdate(
-            { _id: mongoose.Types.ObjectId(req.body.questionID) },
-            {
-                $set: {
-                    question: req.body.question,
-                    choices: parseDelimiter(req.body.choices),
-                    tags: parseDelimiter(req.body.tags),
-                    rating: req.body.rating,
-                    answer: parseDelimiter(req.body.answer),
-                    answer_ex: req.body.answerExplanation,
-                    author: req.body.author,
-                    type: req.body.type,
-                    ext_source: req.body.externalSource,
-                    source_statement: req.body.sourceStatement,
-                    subject: req.body.subject,
-                    units: req.body.units,
-                },
-                $addToSet: {
-                    reviewers: req.body.reviewerID
-                }
-            },
-            { new: true }
-        ).then((err, question) => {
-            question = question ? question : err.value;
-            if (req.body.reviewerID != 'isEdit' && question && question.reviewers.length > 0) {
-                // 2 reviews complete, move to questions collection
-                mongo.db.collection("pendingQuestions").deleteOne({ _id: question._id }, (err, _) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        mongo.db.collection("questions").insertOne({
-                            question: req.body.question,
-                            choices: parseDelimiter(req.body.choices),
-                            tags: parseDelimiter(req.body.tags),
-                            rating: req.body.rating,
-                            answer: parseDelimiter(req.body.answer),
-                            answer_ex: req.body.answerExplanation,
-                            author: req.body.author,
-                            type: req.body.type,
-                            ext_source: req.body.externalSource,
-                            source_statement: req.body.sourceStatement,
-                            subject: req.body.subject,
-                            units: req.body.units,
-                        }, (err, _) => {
-                            if (err) {
-                                console.log(err);
-                            }
-                            res.json({
-                                success: true
-                            });
-                        });
-                    }
-                });
-            } else {
-                res.json({
-                    success: err ? true : false
-                });
-            }
+        mongo.db.collection("users").findOneAndUpdate({ contributor: req.body.contributorID }, { $set: { reviewer: true } }).then((result) => {
+            (!result.value) ? req.flash('errorFlash', 'Contributor not found.') : req.flash('successFlash', 'Contributor successfully promoted!');
+            res.redirect('back');
         });
     });
 
@@ -212,15 +146,7 @@ module.exports = (app, mongo) => {
         res.cookie('skipQuestions', c).json({ success: true });
     });
 
-    app.post('/admin/hourRefactor', (req, res) => {
-        console.log('refactoring hours...');
-        let newHours = req.body.curFactor * req.body.multiplier;
-        console.log('new hours: ' + newHours);
-        console.log('questionID: ' + req.body.questionID);
-        mongo.db.collection('questions').findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.questionID) }, { $set: { hourRefactor: newHours } });
-        mongo.db.collection('pendingQuestions').findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.questionID) }, { $set: { hourRefactor: newHours } });
-        res.redirect('back');
-    });
+    
 
     //ADMIN GET ROUTES
 
@@ -318,23 +244,7 @@ module.exports = (app, mongo) => {
         });
     });
 
-    app.get('/admin/reviewQuestion', async (req, res) => {
-        c = req.cookies['skipQuestions'];
-        if (!c) { c = []; } else { c = c.map(mongoose.Types.ObjectId) }
-        mongo.db.collection('pendingQuestions').findOne({ $and: [{ reviewers: { $ne: req.user.contributor } }, { _id: { $nin: c } }, {_id: mongoose.Types.ObjectId(req.query.id)}] }).then((question) => {
-            if (question) {
-                res.render(VIEWS + 'admin/train/editQuestion.ejs', {
-                    isReview: true,
-                    subjectUnitDictionary: subjectUnitDictionary,
-                    question: question,
-                    pageName: "ADMIN Review Question"
-                });
-            } else {
-                req.flash('errorFlash', 'No questions to review');
-                res.redirect('/homepage')
-            }
-        })
-    });
+    
 
     app.get('/admin/physicsQuestions', async (req, res) => {
         const allQuestions = await mongo.db.collection('questions').find().toArray();
@@ -356,128 +266,4 @@ module.exports = (app, mongo) => {
             questions: allQuestions
         });
     });
-
-    //TESTING ONLY
-    /*app.get('/admin/usaboQuestions', async (req, res) => {
-        transfer testing stuff - DON'T UNCOMMENT UNLESS YOU WANT A LOT OF QUESTIONS
-        for (let i = 1; i <= 200; i++){
-            mongo.db.collection("questions").insertOne({
-                question: 'transfer test ' + i,
-                choices: [""],
-                tags: [i + 1822, "Problem: " + i, 'semis'],
-                rating: i,
-                answer: 'deez nuts',
-                answer_ex: 'deez nuts',
-                author: 'PFE',
-                type: 'fr',
-                ext_source: 'Competition',
-                source_statement: 'USABO',
-                subject: ['USABO'],
-                units: ["USABO - Cell Biology"],
-                reviewers: ["isEdit"],
-                stats: {
-                    pass: 0,
-                    fail: 0
-                }
-            });
-        }
-        const allQuestions = await mongo.db.collection('questions').find().toArray();
-        res.render(VIEWS + 'admin/train/usaboQuestions.ejs', {
-            questions: allQuestions
-        });
-    });*/
-
-    app.get('/admin/reviewQuestions', async (req, res) => {
-        /*let questionArray = await mongo.db.collection('usaboPendingQuestions').find().toArray();
-        for (question of questionArray){
-            for (let i = 0; i < question.categories.length; i++){
-                question.categories[i] = "USABO - " + question.categories[i];
-            }
-            mongo.db.collection("pendingQuestions").insertOne({
-                question: question.question,
-                choices: question.choices,
-                tags: [question.year, "Problem: " + question.problemNumber, question.round[0]],
-                rating: question.rating,
-                answer: question.answer,
-                answer_ex: question.answer_ex,
-                author: question.author,
-                type: question.type,
-                ext_source: 'Competition',
-                source_statement: 'USABO',
-                subject: ['USABO'],
-                units: question.categories,
-                reviewers: question.reviewers,
-                stats: question.stats
-            });
-            mongo.db.collection("usaboPendingQuestions").deleteOne({ _id: question._id });
-        }*/
-        let pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        for (let question of pendingQuestions){
-            if (question.reviewers.length > 1){
-                mongo.db.collection('pendingQuestions').deleteOne({ _id: question._id }, () => {
-                    mongo.db.collection('questions').insertOne({
-                        question: question.question,
-                        choices: question.choices,
-                        tags: question.tags,
-                        rating: question.rating,
-                        answer: question.answer,
-                        answer_ex: question.answer_ex,
-                        author: question.author,
-                        type: question.type,
-                        ext_source: question.ext_source,
-                        source_statement: question.source_statement,
-                        subject: question.subject,
-                        units: question.units,
-                        reviewers: question.reviewers,
-                        writtenDate: question.writtenDate,
-                        hourRefactor: question.hourRefactor
-                    })
-                })
-            }
-            /*if (!question.hourRefactor) {
-                let newQ = new PendingQues({
-                    question: question.question,
-                    choices: question.choices,
-                    tags: question.tags,
-                    rating: question.rating,
-                    answer: question.answer,
-                    answer_ex: question.answer_ex,
-                    author: question.author,
-                    type: question.type,
-                    ext_source: question.ext_source,
-                    source_statement: question.source_statement,
-                    subject: question.subject,
-                    units: question.units,
-                    reviewers: question.reviewers,
-                    stats: question.stats,
-                    hourRefactor: 1
-                });
-                newQ.save();
-                mongo.db.collection("pendingQuestions").deleteOne({ _id: question._id });
-            }*/
-        }
-        pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions });
-    });
-
-    app.get('/admin/pendingBioQuestions', async (req, res) => {
-        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewBio.ejs', { questions: pendingQuestions });
-    });
-
-    app.get('/admin/pendingChemQuestions', async (req, res) => {
-        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewChem.ejs', { questions: pendingQuestions });
-    });
-
-    app.get('/admin/pendingPhysicsQuestions', async (req, res) => {
-        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewPhysics.ejs', { questions: pendingQuestions });
-    });
-
-    //TESTING ONLY
-    /*app.get('/admin/pendingUSABOQuestions', async (req, res) => {
-        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewUSABO.ejs', { questions: pendingQuestions });
-    });*/
 }

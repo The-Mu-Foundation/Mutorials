@@ -32,7 +32,7 @@
             <% if (!question.reviewers.includes(logUser.contributor)) { %>
             <div class="card g-col-4 p-3 m-0 bg-light">
                 <h4>
-                    <a class="text-decoration-none" href="/admin/reviewUSABOQuestion?id=<%= question['_id'] %>">
+                    <a class="text-decoration-none" href="/reviewer/reviewUSABOQuestion?id=<%= question['_id'] %>">
                     <%= question['round'] %> (<%= question['rating'] %> rated)
                     </a>
                 </h4>

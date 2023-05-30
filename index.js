@@ -69,6 +69,7 @@ require('./routes/stats.js')(app, mongo);
 require('./routes/train.js')(app, mongo);
 require('./routes/usaboAdmin.js')(app, mongo);
 require('./routes/usaboTrain.js')(app, mongo);
+require('./routes/reviewers.js')(app, mongo);
 
 // WILDCARD FOR ALL OTHER ROUTES
 app.get('*', (req, res) => {

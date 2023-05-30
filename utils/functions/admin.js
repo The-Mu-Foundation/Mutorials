@@ -40,7 +40,7 @@ async function queryContributor(id, Ques, PendingQues) {
     let curUSABO = await USABOQues.find({ author: id }).exec();
     let pendingUSABO = await USABOPendingQues.find({ author: id }).exec();
 
-    if (((!written && !curUSABO) || (written.length < 1 || curUSABO.length < 1)) && ((!pendingWritten && !pendingUSABO) || (pendingWritten.length < 1 || pendingUSABO.length < 1))) {
+    if (((!written && !curUSABO) || (written.length < 1 && curUSABO.length < 1)) && ((!pendingWritten && !pendingUSABO) || (pendingWritten.length < 1 && pendingUSABO.length < 1))) {
         return { status: "Error" };
     }
 
