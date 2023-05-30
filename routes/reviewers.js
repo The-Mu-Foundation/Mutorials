@@ -1,6 +1,6 @@
 // FUNCTION IMPORTS
 const { tags } = require('../utils/constants/tags');
-const { subjectUnitDictionary } = require('../utils/constants/subjects');
+const { subjectUnitDictionary, subjects} = require('../utils/constants/subjects');
 const { adminList } = require('../utils/constants/sitesettings');
 const { parseDelimiter } = require('../utils/functions/general');
 const { getSiteData, getAnnouncements } = require('../utils/functions/database');
@@ -312,22 +312,12 @@ module.exports = (app, mongo) => {
             }*/
         }
         pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions });
+        res.render(VIEWS + 'admin/train/reviewHomepage.ejs', { questions: pendingQuestions, subjects: subjects });
     });
 
-    app.get('/reviewer/pendingBioQuestions', async (req, res) => {
+    app.get('/reviewer/reviewQuestions/:subject', async (req, res) => {
         const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewBio.ejs', { questions: pendingQuestions });
-    });
-
-    app.get('/reviewer/pendingChemQuestions', async (req, res) => {
-        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewChem.ejs', { questions: pendingQuestions });
-    });
-
-    app.get('/reviewer/pendingPhysicsQuestions', async (req, res) => {
-        const pendingQuestions = await mongo.db.collection('pendingQuestions').find().toArray();
-        res.render(VIEWS + 'admin/train/reviewPhysics.ejs', { questions: pendingQuestions });
+        res.render(VIEWS + 'admin/train/reviewSubjects.ejs', { questions: pendingQuestions, subject: req.params.subject });
     });
     
     app.get('/reviewer/reviewUSABOQuestion', async (req, res) => {
