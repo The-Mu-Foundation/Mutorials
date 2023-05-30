@@ -116,7 +116,7 @@ const tags = {
             "STT": "Statistical Thermodynamics",
             "FLT": "The First Law of Thermodynamics",
             "SLT": "Entropy and The Second Law of Thermodynamics",
-            "ICE": "Heat Engines",
+            "MGU": "Heat Engines",
 
             "LOR": "Lorentz Transformation",
             "LAG": "The Lagrangian Method",
@@ -182,9 +182,7 @@ const tags = {
             "POY": "Energy Transport in Travelling Waves",
             "DIC": "Displacement Current",
 
-            "TLF": "Temperature, Luminosity, and Flux",
             "OBM": "Orbital Mechanics",
-            "COS": "Cosmology",
             "STP": "Stellar Physics",
             "SPC": "Spectroscopy",
             "TEL": "Telescopes",
@@ -455,12 +453,52 @@ const tags = {
     },
     "ESS": {
         "Units": {
-            "U1": "Unit 1",
-            "U2": "Unit 2",
-            "U3": "Unit 3"
+            "01E": "Rocks and Minerals",
+            "02E": "Tectonics",
+            "03E": "Landscapes",
+            "04E": "Hydrology",
+            "05E": "Astronomy",
+            "06E": "Meteorology",
+            "07E": "Geochronology"
         },
         "Concepts": {
-            "UD": "Undefined"
+            "MID": "ID",
+            "CLS": "Classification",
+            "MTF": "Metamorphic Facies",
+            "MEC": "Ores and Minerals of Economic Value",
+
+            "TEC": "Tectonics",
+            "VOL": "Volcanoes",
+            "EQU": "Earthquakes",
+
+            "SOL": "Soil",
+            "WEA": "Physical and Chemical Weathering",
+            "MSW": "Mass Wasting",
+            "GLC": "Glaciers",
+            "DST": "Deserts",
+            "CST": "Coastlines",
+
+            "STR": "Streams",
+            "GRD": "Groundwater and Karst Topography",
+            "ICE": "Sea Ice",
+            "LIM": "Limnology",
+            "OCN": "Oceanography",
+            
+            "SYS": "Solar System",
+            "SEV": "Stellar Evolution",
+            "SNU": "Stellar Nucleosynthesis",
+            "CON": "Constellations and DSOs",
+            "GXY": "Galaxies",
+            "COS": "Cosmology",
+            "TLF": "Temperature, Luminosity, and Flux",
+
+            "MIC": "Microscale Weather",
+            "SCW": "Mesoscale/Synoptic Scale Weather",
+            "CLI": "Climatology & Planetary Circulation",
+            "EBA": "Energy Balance",
+
+            "TIM": "Geologic Time/Stratigraphy",
+            "DAT": "Radioactive Dating"
         }
     }
 };
