@@ -60,16 +60,21 @@ const subjectUnitDictionary = {
         "Lab Skills"
     ],
     "USABO": ["Animal Anatomy and Physiology", 
-    "Plant Anatomy and Physiology", 
-    "Cell Biology", 
-    "Genetics and Evolution", 
-    "Ecology", 
-    "Ethology", 
-    "Biosystematics"
+        "Plant Anatomy and Physiology", 
+        "Cell Biology", 
+        "Genetics and Evolution", 
+        "Ecology", 
+        "Ethology", 
+        "Biosystematics"
     ],
-    "ESS": ["Unit 1",
-    "Unit 2",
-    "Unit 3"]
+    "ESS": ["Rocks and Minerals",
+        "Tectonics",
+        "Landscapes",
+        "Hydrology",
+        "Astronomy",
+        "Meteorology",
+        "Geochronology"
+    ]
 };
 
 module.exports = { subjectUnitDictionary: subjectUnitDictionary, subjects: subjects };
