@@ -8,3 +8,6 @@ CODEOWNERS
 .vimspector.json
 
 /.vs
+/utils/constants/sitesettings.js
+/.gitignore
+/.gitignore
