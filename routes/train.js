@@ -400,7 +400,7 @@ module.exports = (app, mongo) => {
         let experienceStats = await calculateLevel(req.user.stats.experience);
         mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.params.id) }).then((question, err) => {
             if (!err){
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: question.units, newQues: question, subject: question.subject[0], user: req.user, experienceStats, pageName: "Classic Trainer"});
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: question.units, newQues: question, subject: question.subject[0], user: req.user, experienceStats, pageName: "Classic Trainer", disabled: true});
             }
         });
     });
