@@ -107,8 +107,10 @@
                 <% if(newQues.type == "mc") { %>
 
                     <%# Multiple choice %>
-
+                    
+                    <% if(!(typeof disabled != 'undefined' && disabled)) { %>
                     <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
+                    <% } %>
                     <p><%- newQues.question %></p>
                     <form action="/train/checkAnswer" method="POST">
                         <div class="mt-4" id="mc-choices">
@@ -120,7 +122,9 @@
                                 </div>
                                 <% choiceIndex++; %>
                             <% }) %>
-                            <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
+                            <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+                                <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
+                            <% } %>
                         </div>
                         <input type="hidden" name="id" value="<%= newQues._id %>">
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
@@ -132,7 +136,9 @@
 
                     <%# Select all %>
 
-                    <h3 class="display-4" style="font-size: 1.5rem;">Please read the following and select ALL choices that apply:</h3>
+                    <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+                    <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
+                    <% } %>
                     <p><%- newQues.question %></p>
                     <form action="/train/checkAnswer" method="POST">
                         <div class="mt-4" id="sa-choices">
@@ -144,7 +150,9 @@
                                 </div>
                                 <% choiceIndex++; %>
                             <% }) %>
-                            <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
+                            <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+                                <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
+                            <% } %>
                         </div>
                         <input type="hidden" name="id" value="<%= newQues._id %>">
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
@@ -156,14 +164,18 @@
 
                     <%# Free response %>
 
-                    <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and enter your answer in the box:</h3>
+                    <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+                    <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
+                    <% } %>
                     <p><%- newQues.question %></p>
                     <form action="/train/checkAnswer" method="POST">
                         <div class="mt-4">
+                            <% if(!(typeof disabled != 'undefined' && disabled)) { %>
                             <div class="form-group">
                                 <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
                             </div>
-                            <input class="btn btn-primary" type="submit" value="Submit" id="submit">
+                                <input class="btn btn-primary" type="submit" value="Submit" id="submit">
+                            <% } %>
                         </div>
                         <input type="hidden" name="id" value="<%= newQues._id %>">
                         <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
@@ -190,6 +202,8 @@
         </div>
 
         <%# Skip question %>
+        
+        <% if(!(typeof disabled != 'undefined' && disabled)) { %>
         <div class="mt-2">
 
             <div id="skip-dialogue-1">
@@ -210,7 +224,7 @@
             </div>
 
         </div>
-
+        <% } %>
     <% } catch(err) { %>
 
         <!-- ERROR CODE -->
