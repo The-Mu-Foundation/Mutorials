@@ -7,18 +7,18 @@
 <h1 class="my-5 container">Common Equations</strong></h1>
 
 <div class="container jumbotron mt-5">
-
-    <% Object.keys(equations).forEach((equation) => { %>
-        <div class="my-4 row">
-            <div class="col-12 col-lg-6">
-                <h5><%= equation %></h5>
+    <% Object.keys(referenceSheet).forEach((subject) => { %>
+        <% Object.keys(referenceSheet[subject].Equations).forEach((equation) => { %>
+            <div class="my-4 row">
+                <div class="col-12 col-lg-6">
+                    <h5><%= equation %></h5>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <p><%= referenceSheet[subject].Equations[equation] %></p>
+                </div>
             </div>
-            <div class="col-12 col-lg-6">
-                <p><%= equations[equation] %></p>
-            </div>
-        </div>
+        <% }); %>
     <% }); %>
-
 </div>
 
 <div class="container">

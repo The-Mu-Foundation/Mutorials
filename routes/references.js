@@ -24,11 +24,11 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/references/equations', (req, res) => {
-        res.render(VIEWS + 'private/references/equations.ejs', { equations: referenceSheet.equations, pageName: "Mutorials Equation Sheet" });
+        res.render(VIEWS + 'private/references/equations.ejs', { referenceSheet: referenceSheet, pageName: "Mutorials Equation Sheet" });
     });
 
     app.get('/references/constants', (req, res) => {
-        res.render(VIEWS + 'private/references/constants.ejs', { constants: referenceSheet.constants, pageName: "Mutorials Constant Sheet" });
+        res.render(VIEWS + 'private/references/constants.ejs', { referenceSheet: referenceSheet, pageName: "Mutorials Constant Sheet" });
     });
 
     app.get('/references/taglist', (req, res) => {
