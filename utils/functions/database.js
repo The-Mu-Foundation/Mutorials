@@ -258,8 +258,8 @@ async function getSiteData(User, Ques, SiteData) {
 
     let userCount = await User.estimatedDocumentCount({});
     let questionCount = await Ques.estimatedDocumentCount({});
-    let usaboQs = await mongo.db.collection('usaboQuestions').find().toArray();
-    questionCount += usaboQs.length;
+    let usaboQuestionCount = await mongo.db.collection('usaboQuestions').estimatedDocumentCount({});
+    questionCount += usaboQuestionCount;
 
     let tagCounter = () => {
         let { tags } = require("../constants/tags");
@@ -276,13 +276,13 @@ async function getSiteData(User, Ques, SiteData) {
 
     let tagCount = await tagCounter();
     let proficientCount = await User.countDocuments({
-        // any users with at least 1 rating above 2500
+        // any users with at least 3000 rating
         $or: [
-            { "rating.physics": { $gte: 2500 } },
-            { "rating.chemistry": { $gte: 2500 } },
-            { "rating.biology": { $gte: 2500 } },
-            { "rating.usabo": { $gte: 2500} },
-            { "rating.ess": { $gte: 2500} }
+            { "rating.physics": { $gte: 3000 } },
+            { "rating.chemistry": { $gte: 3000 } },
+            { "rating.biology": { $gte: 3000 } },
+            { "rating.usabo": { $gte: 3000} },
+            { "rating.ess": { $gte: 3000} }
         ]
     });
 
@@ -290,13 +290,19 @@ async function getSiteData(User, Ques, SiteData) {
     let totalSolves = totalQuestionData.data.solves;
     let totalAttempts = totalQuestionData.data.attempts;
 
+
+    let history = await SiteData.findOne({ tag: "HISTORY" }).exec();
+    let historyData = { userbase_month: history.data.userbase_month, userbase_year: history.data.userbase_year };
+
     let siteData = {
         userCount,
         questionCount,
+        usaboQuestionCount,
         tagCount,
         proficientCount,
         totalSolves,
-        totalAttempts
+        totalAttempts,
+        historyData
     }
 
     return siteData;
