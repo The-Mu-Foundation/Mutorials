@@ -291,8 +291,19 @@ async function getSiteData(User, Ques, SiteData) {
     let totalAttempts = totalQuestionData.data.attempts;
 
 
-    let history = await SiteData.findOne({ tag: "HISTORY" }).exec();
-    let historyData = { userbase_month: history.data.userbase_month, userbase_year: history.data.userbase_year };
+    let historyMonth = await SiteData.findOne({ tag: "HISTORY_MONTH" }).exec();
+    let historyYear = await SiteData.findOne({ tag: "HISTORY_YEAR" }).exec();
+    let historyData = {
+        userbase_month: historyMonth.data.userbase,
+        questioncount_month: historyMonth.data.questioncount,
+        attempts_month: historyMonth.data.attempts,
+        solves_month: historyMonth.data.solves,
+
+        userbase_year: historyYear.data.userbase,
+        questioncount_year: historyYear.data.questioncount,
+        attempts_year: historyYear.data.attempts,
+        solves_year: historyYear.data.solves
+    };
 
     let siteData = {
         userCount,
