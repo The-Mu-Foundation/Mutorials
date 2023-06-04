@@ -6,15 +6,34 @@
 
 <script>
 $(document).ready(function() {
-    var historyData = {
+    let historyData = {
         userbaseDataMonth: [ <%= siteData.historyData.userbase_month %> ],
-        userbaseDataYear: [ <%= siteData.historyData.userbase_year %> ]
-    };
-    Object.keys(historyData).forEach(function(key) {
-        renderChart(key, historyData[key]);
-    });
+        questioncountDataMonth: [ <%= siteData.historyData.questioncount_month %> ],
+        attemptsDataMonth: [ <%= siteData.historyData.attempts_month %> ],
+        solvesDataMonth: [ <%= siteData.historyData.solves_month %> ],
 
-    function renderChart(id, data) {
+        userbaseDataYear: [ <%= siteData.historyData.userbase_year %> ],
+        questioncountDataYear: [ <%= siteData.historyData.questioncount_year %> ],
+        attemptsDataYear: [ <%= siteData.historyData.attempts_year %> ],
+        solvesDataYear: [ <%= siteData.historyData.solves_year %> ]
+    };
+
+    let passrateDataMonth = [];
+    historyData.solvesDataMonth.forEach((element, index) => passrateDataMonth.push(Math.round(element / historyData.attemptsDataMonth[index] * 100)));
+    let passrateDataYear = [];
+    historyData.solvesDataYear.forEach((element, index) => passrateDataYear.push(Math.round(element / historyData.attemptsDataYear[index] * 100)));
+
+    renderChart("userbaseDataMonth", historyData.userbaseDataMonth, "Userbase");
+    renderChart("questioncountDataMonth", historyData.questioncountDataMonth, "Question Count");
+    renderChart("attemptsDataMonth", historyData.attemptsDataMonth, "Attempts");
+    renderChart("passrateDataMonth", passrateDataMonth, "Passrate");
+
+    renderChart("userbaseDataYear", historyData.userbaseDataYear, "Userbase");
+    renderChart("questioncountDataYear", historyData.questioncountDataYear, "Question Count");
+    renderChart("attemptsDataYear", historyData.attemptsDataYear, "Attempts");
+    renderChart("passrateDataYear", passrateDataYear, "Passrate");
+
+    function renderChart(id, data, name) {
         var ctx = document.getElementById(id).getContext('2d');
         let chartLabels = [],
             counter = data.length;
@@ -39,7 +58,7 @@ $(document).ready(function() {
             options: {
                 title: {
                     display: true,
-                    text: `Userbase ${id.indexOf("Month") > -1 ? "Monthly" : "Yearly"} History`
+                    text: `${name} ${id.indexOf("Month") > -1 ? "Monthly" : "Yearly"} History`
                 },
                 legend: {
                     display: false,
@@ -82,6 +101,30 @@ $(document).ready(function() {
         </div>
         <div style="flex-grow: 1">
             <canvas id="userbaseDataYear"></canvas>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div style="width: 50%">
+            <canvas id="questioncountDataMonth"></canvas>
+        </div>
+        <div style="flex-grow: 1">
+            <canvas id="questioncountDataYear"></canvas>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div style="width: 50%">
+            <canvas id="attemptsDataMonth"></canvas>
+        </div>
+        <div style="flex-grow: 1">
+            <canvas id="attemptsDataYear"></canvas>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div style="width: 50%">
+            <canvas id="passrateDataMonth"></canvas>
+        </div>
+        <div style="flex-grow: 1">
+            <canvas id="passrateDataYear"></canvas>
         </div>
     </div>
 </div>
