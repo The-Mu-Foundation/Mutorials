@@ -10,8 +10,21 @@ const { genPassword } = require('../utils/functions/password');
 const { getSiteData, getDailyQuestion } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
+const path = require('path');
+const https = require("https");
 
 const VIEWS = "../views/"
+
+let arcScript = "";
+https.get('https://arc.io/arc-sw.js', resp => {
+    let data = '';
+    resp.on("data", chunk => {
+        data += chunk;
+    });
+    resp.on("end", () => {
+        arcScript = data;
+    });
+})
 
 module.exports = (app, mongo) => {
     // PUBLIC GET
@@ -79,6 +92,10 @@ module.exports = (app, mongo) => {
         res.render(VIEWS + 'public/robots.ejs', { pageName: "robots.txt" });
     });
 
+    app.get('/arc-sw.js', (req, res) => {
+        res.setHeader("Content-Type", "application/javascript").type('.js').send(arcScript);
+    });
+    
     // PUBLIC POST
     app.post('/register', (req, res, next) => {
         req.body.username = req.body.username.toLowerCase();
