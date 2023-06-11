@@ -10,6 +10,7 @@ const http = require('http');
 const https = require('https');
 const enforce = require('express-sslify');
 const emailValidation = require('./utils/functions/emailValidation');
+const { initializeAnalytics } = require('./analytics');
 
 // START EXPRESS SERVER
 const app = express();
@@ -93,3 +94,4 @@ http.createServer(app).listen(PORT, function () {
     console.log('Express server listening on port ' + PORT);
 });
 
+initializeAnalytics();
