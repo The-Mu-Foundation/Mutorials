@@ -3,6 +3,7 @@ const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { parseDelimiter } = require('../utils/functions/general');
 const { queryContributor } = require('../utils/functions/admin');
 const mongoose = require("mongoose");
+const { adminList } = require('../utils/constants/sitesettings')
 const db = mongoose.connection;
 
 const VIEWS = __dirname + '/../views/';
@@ -81,6 +82,6 @@ module.exports = (app, mongo) => {
     });
 
     app.get('/contributors/stats', (req, res) => {
-        res.render(VIEWS + 'contributors/contributorStats.ejs', { contributorID: req.user.contributor, pageName: "CONTRIBUTOR Stats" });
+        res.render(VIEWS + 'contributors/contributorStats.ejs', { adminList, user: req.user, contributorID: req.user.contributor, pageName: "CONTRIBUTOR Stats" });
     });
 }
