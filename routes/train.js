@@ -4,6 +4,7 @@ const { presetUnitOptions } = require('../utils/constants/presets');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { genPassword, validPassword } = require('../utils/functions/password');
 const { arraysEqual } = require('../utils/functions/general');
+const { referenceSheet } = require('../utils/constants/referencesheet')
 const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue,
     addExperience, clearQuestionQueue, skipQuestionUpdates, getDailyQuestion, incrementSolveCounter, updateRushStats,
     updateTrainAchievements, updateRushAchievements } = require('../utils/functions/database');
@@ -360,7 +361,7 @@ module.exports = (app, mongo) => {
         let experienceStats = await calculateLevel(req.user.stats.experience);
         // Test if they have a question pending to answer which is valid for their units selected
         if (q && units.some(r => q.units.includes(r))) {
-            res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: q, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
+            res.render(VIEWS + 'private/train/displayQuestion.ejs', { referenceSheet, units: units, newQues: q, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
         } else {
             // deduct 8 rating if previously queued question was skipped
             if (q) {
@@ -391,7 +392,7 @@ module.exports = (app, mongo) => {
                 // update pending question field
                 updateQuestionQueue(req, req.params.subject, curQ._id);
                 // push to frontend
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { referenceSheet, units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
             });
         }
     });
@@ -400,7 +401,7 @@ module.exports = (app, mongo) => {
         let experienceStats = await calculateLevel(req.user.stats.experience);
         mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.params.id) }).then((question, err) => {
             if (!err){
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { units: question.units, newQues: question, subject: question.subject[0], user: req.user, experienceStats, pageName: "Classic Trainer", disabled: true});
+                res.render(VIEWS + 'private/train/displayQuestion.ejs', { referenceSheet, units: question.units, newQues: question, subject: question.subject[0], user: req.user, experienceStats, pageName: "Classic Trainer", disabled: true});
             }
         });
     });

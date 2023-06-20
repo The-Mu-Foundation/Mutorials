@@ -201,6 +201,58 @@
 
         </div>
 
+        <style>
+            summary > * {
+                display: inline;
+            }
+        </style>
+        <br><br>
+        <details>
+            <summary>
+                <h3 class="mt-5">Equations</h3>
+            </summary>
+            <% Object.keys(referenceSheet).forEach((subject) => { %>
+                <% if (newQues.subject.includes(subject)) { %>
+                    <% Object.keys(referenceSheet[subject].Equations).forEach((equation) => { %>
+                        <div class="my-4 row">
+                            <div class="col-12 col-lg-6">
+                                <h5><%= equation %></h5>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <p><%= referenceSheet[subject].Equations[equation] %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+            <% }); %>
+        </details>
+
+        <style>
+            summary > * {
+                display: inline;
+            }
+        </style>
+        <br><br>
+        <details>
+            <summary>
+                <h3 class="mt-5">Constants</h3>
+            </summary>
+            <% Object.keys(referenceSheet).forEach((subject) => { %>
+                <% if (newQues.subject.includes(subject)) { %>
+                    <% Object.keys(referenceSheet[subject].Constants).forEach((constant) => { %>
+                        <div class="my-4 row">
+                            <div class="col-12 col-lg-6">
+                                <h5><%= constant %></h5>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <p><%= referenceSheet[subject].Constants[constant] %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } %>
+            <% }); %>
+        </details>
+
         <%# Skip question %>
         
         <% if(!(typeof disabled != 'undefined' && disabled)) { %>
