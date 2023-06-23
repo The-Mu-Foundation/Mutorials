@@ -23,7 +23,7 @@ const presetUnitOptions = {
         "All": ["Animal Anatomy and Physiology", "Plant Anatomy and Physiology", "Cell Biology", "Genetics and Evolution", "Ecology", "Ethology", "Biosystematics"]
     },
     "ESS": {
-        "All": ["Rocks and Minerals", "Tectonics", "Landscapes", "Hydrology", "Astronomy", "Meteorology", "Geochronology"]
+        "All": ["Rocks and Minerals", "Tectonics", "Landscapes", "Hydrology", "Astronomy", "Meteorology", "Geochronology"],
         "Astro": ["Astronomy"]
     }
 };
