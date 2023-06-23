@@ -189,7 +189,7 @@ function calculateHours(subject, rating, hourRefactor) {
     } else if (subject == "Chemistry") {
         return 0.03 * Math.pow(Math.E, 0.001 * rating) * hourRefactor;
     } else if (subject == "Biology" || subject == "ESS") {
-        return 0.14 * Math.pow(Math.E, 0.0004 * rating) * hourRefactor;
+        return 0.14 * Math.pow(Math.E, 0.0005 * rating) * hourRefactor;
     }
 }
 
