@@ -278,6 +278,7 @@ const tags = {
             "VSEPR": "The VSEPR Model",
             "HYBRD": "Hybridization",
             "MOGEO": "Molecular Geometry",
+            "MOLOT": "Molecular Orbital Theory",
 
             "INTMF": "Intermolecular Forces",
             "METAL": "Metallic Solids",
