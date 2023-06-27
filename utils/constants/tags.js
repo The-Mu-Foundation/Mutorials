@@ -340,7 +340,7 @@ const tags = {
             "SUBEL": "Substitution and Elimination Reactions",
             "PLYMR": "Synthetic and Natural Polymers",
             "SPECC": "Spectroscopy",
-            "AROSB": "Aromatic Substitutions",
+            "AROSB": "Aromatic Compounds and Substitutions",
             "AMINE": "Amines",
             "FRDCL": "Free Radical Reactions",
             "ORGMT": "Organometallics",
