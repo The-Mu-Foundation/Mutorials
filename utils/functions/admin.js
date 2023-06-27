@@ -197,7 +197,7 @@ function calcUSABOHours(round, rating, hourRefactor){
     if (round == "open") {
         return 0.05 * Math.pow(Math.E, 0.0006 * rating) * hourRefactor;
     } else if (round == "semis"){
-        return 0.075 * Math.pow(Math.E, 0.0006 * rating) * hourRefactor;
+        return 0.075 * Math.pow(Math.E, 0.0007 * rating) * hourRefactor;
     }
 }
 
