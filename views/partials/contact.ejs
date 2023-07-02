@@ -1,27 +1,26 @@
 <div class="modal fade" id="contact-modal" tabindex="-1" aria-labelledby="contact-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="contact-form" class="modal-content" method="post" action="/contact">
-            <div class="modal-header">
-                <h5 class="modal-title" id="contact-modal-label">Contact us</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-floating">
-                    <% if (hasOwnProperty("questionId")) { %>
-                        <input name="questionId" value="<%= questionId %>" style="display: none">
-                    <% } %>
-                    <% if (hasOwnProperty("redirect")) { %>
-                        <input name="redirect" value="<%= redirect %>" style="display: none">
-                    <% } %>
-                    <textarea name="comment" class="form-control" placeholder="What do you want to tell us?" id="contactTextarea" style="height: 200px;"></textarea>
-                    <label for="contactTextarea">What do you want to tell us?</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-primary" value="Send messsage">
-            </div>
-        </form>
-    </div>
+  <div class="modal-dialog">
+    <form id="contact-form" class="modal-content" method="post" action="/contact">
+      <div class="modal-header">
+        <h5 class="modal-title" id="contact-modal-label">Contact us</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating">
+          <% if (hasOwnProperty("questionId")) { %>
+          <input name="questionId" value="<%= questionId %>" style="display: none">
+          <% } %>
+          <% if (hasOwnProperty("redirect")) { %>
+          <input name="redirect" value="<%= redirect %>" style="display: none">
+          <% } %>
+          <textarea name="comment" class="form-control" placeholder="What do you want to tell us?" id="contactTextarea" style="height: 200px;"></textarea>
+          <label for="contactTextarea">What do you want to tell us?</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Send messsage">
+      </div>
+    </form>
+  </div>
 </div>
-

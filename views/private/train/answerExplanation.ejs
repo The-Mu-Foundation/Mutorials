@@ -6,286 +6,288 @@
 <%- include("../../partials/navigationPrivate") -%>
 
 <script>
+  window.onload = function() {
+    // render pass/fail chart
 
-    window.onload = function () {
+    Chart.pluginService.register({
+      beforeDraw: function(chart) {
+        if (chart.config.options.passratePlugin) {
+          var width = chart.chart.width;
+          var height = chart.chart.height;
+          var ctx = chart.chart.ctx;
 
-        // render pass/fail chart
+          ctx.restore();
 
-        Chart.pluginService.register({
-            beforeDraw: function (chart) {
+          var fontSize = '1';
+          ctx.font = fontSize + 'em sans-serif';
 
-                if(chart.config.options.passratePlugin) {
+          ctx.fillStyle = '#8d0f0f';
+          var text =
+            'Fail rate: <%= Math.round(100*(newQues.stats.fail)/(newQues.stats.pass+newQues.stats.fail)) %>%';
+          var textX = Math.round((width - ctx.measureText(text).width) / 2);
+          var textY = height / 2 + 20;
+          ctx.fillText(text, textX, textY);
 
-                    var width = chart.chart.width;
-                    var height = chart.chart.height;
-                    var ctx = chart.chart.ctx;
+          ctx.fillStyle = '#208d0f';
+          text =
+            'Pass rate: <%= Math.round(100*(newQues.stats.pass)/(newQues.stats.pass+newQues.stats.fail)) %>%';
+          textX = Math.round((width - ctx.measureText(text).width) / 2);
+          textY -= 20;
+          ctx.fillText(text, textX, textY);
 
-                    ctx.restore();
-
-                    var fontSize = "1";
-                    ctx.font = fontSize + "em sans-serif";
-
-                    ctx.fillStyle = "#8d0f0f";
-                    var text = "Fail rate: <%= Math.round(100*(newQues.stats.fail)/(newQues.stats.pass+newQues.stats.fail)) %>%";
-                    var textX = Math.round((width - ctx.measureText(text).width) / 2);
-                    var textY = (height/2) + 20;
-                    ctx.fillText(text, textX, textY);
-
-                    ctx.fillStyle = "#208d0f";
-                    text = "Pass rate: <%= Math.round(100*(newQues.stats.pass)/(newQues.stats.pass+newQues.stats.fail)) %>%";
-                    textX = Math.round((width - ctx.measureText(text).width) / 2);
-                    textY -= 20;
-                    ctx.fillText(text, textX, textY);
-
-                    ctx.save();
-                }
-            }
-        });
-
-        var ctxPassrate = document.getElementById("passRateChart");
-
-        var style = ctxPassrate.style;
-        style.marginLeft = "auto";
-        style.marginRight = "auto";
-
-        var myChart = new Chart(ctxPassrate, {
-            type: "pie",
-            data: {
-                labels: ["Pass", "Fail"],
-                datasets: [{
-                    label: "Problem Pass/Fail Rates",
-                    data: [$("#passcount").val(), $("#failcount").val()],
-                    backgroundColor: [
-                        "rgba(80, 185, 20, 1)",
-                        "rgba(215, 80, 80, 1)"
-                    ],
-                    hoverBackgroundColor: [
-                        "rgba(80, 185, 20, 1)",
-                        "rgba(215, 80, 80, 1)"
-                    ],
-                    borderColor: [
-                        "rgba(255, 255, 255, 0.5)",
-                        "rgba(255, 255, 255, 0.5)"
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                passratePlugin: true,
-                title: {
-                    display: true,
-                    text: "Question Pass/Fail Rates"
-                },
-                legend: {
-                    display: false
-                },
-                cutoutPercentage: 60,
-                responsive: true
-            }
-        });
-
-        // render rating tracker chart
-
-        var ctxTracker = document.getElementById("ratingTrackerChart");
-
-        var style = ctxTracker.style;
-        style.marginLeft = "auto";
-        style.marginRight = "auto";
-
-        var tracker = $("#ratingTrackerArray").val().split('@');
-        if(tracker.length < 2) {
-            tracker.unshift(tracker[0]);
+          ctx.save();
         }
-        var labels = [];
-        for(var i = tracker.length; i > 0; i--) {
-            labels.push(i + " Ago");
-        }
-        labels.push("");
-        var myChart = new Chart(ctxTracker, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Rating History",
-                    data: tracker,
-                    backgroundColor: "rgba(100, 200, 230, 1)",
-                    borderColor: "rgba(100, 200, 230, 1)",
-                    fill: false,
-                    borderWidth: 5
-                }]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: "My " + "<%= subject %>" + " Rating Tracker"
-                },
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            min: Math.round((Math.min.apply(null, tracker)-50)/50)*50,
-                            max: Math.round((Math.max.apply(null, tracker)+50)/50)*50,
-                            stepSize: 50
-                        }
-                    }],
-                    xAxes: [{
-                        ticks: {
-                            display: false
-                        }
-                    }]
-                },
-                responsive: true
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        
-        // focus on next button if correct
-        if( correct ) {
-            setTimeout(() => {
-                $([document.documentElement, document.body]).animate({
-                    scrollTop: $("#tryanother").offset().top
-                }, 1000);
-                $("#tryanother").focus();
-            }, 1000);
-        }
+      },
     });
 
+    var ctxPassrate = document.getElementById('passRateChart');
+
+    var style = ctxPassrate.style;
+    style.marginLeft = 'auto';
+    style.marginRight = 'auto';
+
+    var myChart = new Chart(ctxPassrate, {
+      type: 'pie',
+      data: {
+        labels: ['Pass', 'Fail'],
+        datasets: [{
+          label: 'Problem Pass/Fail Rates',
+          data: [$('#passcount').val(), $('#failcount').val()],
+          backgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
+          hoverBackgroundColor: [
+            'rgba(80, 185, 20, 1)',
+            'rgba(215, 80, 80, 1)',
+          ],
+          borderColor: [
+            'rgba(255, 255, 255, 0.5)',
+            'rgba(255, 255, 255, 0.5)',
+          ],
+          borderWidth: 2,
+        }, ],
+      },
+      options: {
+        passratePlugin: true,
+        title: {
+          display: true,
+          text: 'Question Pass/Fail Rates',
+        },
+        legend: {
+          display: false,
+        },
+        cutoutPercentage: 60,
+        responsive: true,
+      },
+    });
+
+    // render rating tracker chart
+
+    var ctxTracker = document.getElementById('ratingTrackerChart');
+
+    var style = ctxTracker.style;
+    style.marginLeft = 'auto';
+    style.marginRight = 'auto';
+
+    var tracker = $('#ratingTrackerArray').val().split('@');
+    if (tracker.length < 2) {
+      tracker.unshift(tracker[0]);
+    }
+    var labels = [];
+    for (var i = tracker.length; i > 0; i--) {
+      labels.push(i + ' Ago');
+    }
+    labels.push('');
+    var myChart = new Chart(ctxTracker, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Rating History',
+          data: tracker,
+          backgroundColor: 'rgba(100, 200, 230, 1)',
+          borderColor: 'rgba(100, 200, 230, 1)',
+          fill: false,
+          borderWidth: 5,
+        }, ],
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'My ' + '<%= subject %>' + ' Rating Tracker',
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: Math.round((Math.min.apply(null, tracker) - 50) / 50) * 50,
+              max: Math.round((Math.max.apply(null, tracker) + 50) / 50) * 50,
+              stepSize: 50,
+            },
+          }, ],
+          xAxes: [{
+            ticks: {
+              display: false,
+            },
+          }, ],
+        },
+        responsive: true,
+      },
+    });
+  };
+
+  $(document).ready(function() {
+    // focus on next button if correct
+    if (correct) {
+      setTimeout(() => {
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $('#tryanother').offset().top,
+          },
+          1000
+        );
+        $('#tryanother').focus();
+      }, 1000);
+    }
+  });
 </script>
 
+
 <div class="container mt-5">
-    <%- include("../../partials/components/experienceBar") -%>
+  <%- include("../../partials/components/experienceBar") -%>
 </div>
 
 <div class="jumbotron container mt-3">
+  <div class="row">
+    <div class="col-12 col-lg-8">
+      <%# Question and explanation %>
+      <div class="mb-3">
+        <h3>Question:</h3>
+        <p><%- newQues.question %></p>
+      </div>
 
-    <div class="row">
-
-        <div class="col-12 col-lg-8">
-
-            <%# Question and explanation %>
-            <div class="mb-3">
-                <h3>Question:</h3>
-                <p><%- newQues.question %></p>
-            </div>
-
-            <% if(newQues.type == "mc") { %>
-                <div class="mb-4">
-                    <% var i = 1; %>
-                    <% newQues.choices.forEach((choice) => { %>
-                        <div class="form-check">
-                            <% if(userAnswer == i) { %>
-                                <input class="form-check-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled checked>
-                            <% } else { %>
-                                <input class="form-check-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled>
-                            <% } %>
-                            <% if(newQues.answer[0] == i) { %>
-                                <label class="form-check-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
-                            <% } else if(userAnswer == i) { %>
-                                <label class="form-check-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
-                            <% } else { %>
-                                <label class="form-check-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
-                            <% } %>
-                            <% i++; %>
-                        </div>
-                    <% }) %>
-                </div>
-            <% } else if(newQues.type == "sa") { %>
-                <div class="mb-4">
-                    <% var i = 1; %>
-                    <% newQues.choices.forEach((choice) => { %>
-                        <div class="form-check my-1 me-sm-2">
-                            <% if(userAnswer.includes(''+i)) { %>
-                                <input type="checkbox" name="saChoice" class="form-check-input" id="<%= i %>" value="<%= i %>" disabled checked>
-                            <% } else { %>
-                                <input type="checkbox" name="saChoice" class="form-check-input" id="<%= i %>" value="<%= i %>" disabled>
-                            <% } %>
-                            <% if(newQues.answer.includes(i)) { %>
-                                <label class="form-check-label" for="<%= i %>"><font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
-                            <% } else if(userAnswer.includes(''+i)) { %>
-                                <label class="form-check-label" for="<%= i %>"><font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font></label>
-                            <% } else { %>
-                                <label class="form-check-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
-                            <% } %>
-                            <% i++; %>
-                        </div>
-                    <% }) %>
-                </div>
-            <% } else if(newQues.type == "fr") { %>
-                <div class="mb-4">
-                    <h5>You answered: <%= userAnswer %></h5>
-                    <h5>The correct answer is: <%= newQues.answer %></h5>
-                </div>
-            <% } %>
-
-            <div>
-                <h3>Answer Explanation:</h3>
-                <p><%- newQues.answer_ex %></p>
-            </div>
-
-            <% if(newQues.source_statement) { %>
-                <hr>
-                <p class="text-center"><%= newQues.source_statement %></p>
-            <% } %>
-
+      <% if(newQues.type == "mc") { %>
+      <div class="mb-4">
+        <% var i = 1; %>
+        <% newQues.choices.forEach((choice) => { %>
+        <div class="form-check">
+          <% if(userAnswer == i) { %>
+          <input class="form-check-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled checked>
+          <% } else { %>
+          <input class="form-check-input" type="radio" name="answerChoice" id="<%= i %>" value="<%= i %>" disabled>
+          <% } %>
+          <% if(newQues.answer[0] == i) { %>
+          <label class="form-check-label" for="<%= i %>">
+            <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+          </label>
+          <% } else if(userAnswer == i) { %>
+          <label class="form-check-label" for="<%= i %>">
+            <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+          </label>
+          <% } else { %>
+          <label class="form-check-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
+          <% } %>
+          <% i++; %>
         </div>
+        <% }) %>
+      </div>
 
-        <%# Question data %>
-        <div class="col-12 col-lg-4">
-
-            <div class="mb-4">
-                <% if(correct) { %>
-                    <h3 class="mb-4"><font color="green">Your answer is correct!</font></h3>
-                <% } else { %>
-                    <h3 class="mb-4"><font color="red">Your answer is incorrect.</font></h3>
-                <% } %>
-            </div>
-
-            <div class="my-4">
-                <h5>New <%= subject.toLowerCase() %> rating: <%= userRating %> (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
-                <h5>Question rating: <%= oldQ %></h5>
-            </div>
-
-            <% if(newQues.ext_source != "original") { %>
-                <div>
-                    <h5>Question Source: <%= newQues.ext_source %></h5>
-                </div>
-            <% } %>
-
-            <div>
-                <h5>Question Tags:</h5>
-                <% newQues.tags.forEach((tag) => { %>
-                    <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
-                <% }) %>
-            </div>
-
-            <%# Rating tracker chart %>
-            <div class="canvas-container-center text-center">
-                <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
-            </div>
-            <input type="hidden" id="ratingTrackerArray" value="<%= user.stats.ratingTracker[subject.toLowerCase()].join('@') %>">
-
-            <%# Pass rate chart %>
-            <div class="canvas-container-center text-center">
-                <canvas id="passRateChart" width="400" height="400" class="my-4"></canvas>
-            </div>
-            <input type="hidden" id="passcount" value="<%= newQues.stats.pass %>">
-            <input type="hidden" id="failcount" value="<%= newQues.stats.fail %>">
-
+      <% } else if(newQues.type == "sa") { %>
+      <div class="mb-4">
+        <% var i = 1; %>
+        <% newQues.choices.forEach((choice) => { %>
+        <div class="form-check my-1 me-sm-2">
+          <% if(userAnswer.includes(''+i)) { %>
+          <input type="checkbox" name="saChoice" class="form-check-input" id="<%= i %>" value="<%= i %>" disabled checked>
+          <% } else { %>
+          <input type="checkbox" name="saChoice" class="form-check-input" id="<%= i %>" value="<%= i %>" disabled>
+          <% } %>
+          <% if(newQues.answer.includes(i)) { %>
+          <label class="form-check-label" for="<%= i %>">
+            <font color="green"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+          </label>
+          <% } else if(userAnswer.includes(''+i)) { %>
+          <label class="form-check-label" for="<%= i %>">
+            <font color="red"><%= String.fromCharCode(64+i) %>. <%= choice %></font>
+          </label>
+          <% } else { %>
+          <label class="form-check-label" for="<%= i %>"><%= String.fromCharCode(64+i) %>. <%= choice %></label>
+          <% } %>
+          <% i++; %>
         </div>
+        <% }) %>
+      </div>
+      <% } else if(newQues.type == "fr") { %>
+      <div class="mb-4">
+        <h5>You answered: <%= userAnswer %></h5>
+        <h5>The correct answer is: <%= newQues.answer %></h5>
+      </div>
+      <% } %>
 
+      <div>
+        <h3>Answer Explanation:</h3>
+        <p><%- newQues.answer_ex %></p>
+      </div>
+
+      <% if(newQues.source_statement) { %>
+      <hr>
+      <p class="text-center"><%= newQues.source_statement %></p>
+      <% } %>
     </div>
 
+    <%# Question data %>
+    <div class="col-12 col-lg-4">
+
+      <div class="mb-4">
+        <% if(correct) { %>
+        <h3 class="mb-4">
+          <font color="green">Your answer is correct!</font>
+        </h3>
+        <% } else { %>
+        <h3 class="mb-4">
+          <font color="red">Your answer is incorrect.</font>
+        </h3>
+        <% } %>
+      </div>
+
+      <div class="my-4">
+        <h5>New <%= subject.toLowerCase() %> rating: <%= userRating %> (<%= (userRating-oldUserRating >= 0) ? "+"+(userRating-oldUserRating) : (userRating-oldUserRating) %>)</h5>
+        <h5>Question rating: <%= oldQ %></h5>
+      </div>
+
+      <% if(newQues.ext_source != "original") { %>
+      <div>
+        <h5>Question Source: <%= newQues.ext_source %></h5>
+      </div>
+      <% } %>
+
+      <div>
+        <h5>Question Tags:</h5>
+        <% newQues.tags.forEach((tag) => { %>
+        <button class="btn btn-info btn-sm my-1" disabled><%= tag %></button>
+        <% }) %>
+      </div>
+
+      <%# Rating tracker chart %>
+      <div class="canvas-container-center text-center">
+        <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
+      </div>
+      <input type="hidden" id="ratingTrackerArray" value="<%= user.stats.ratingTracker[subject.toLowerCase()].join('@') %>">
+
+      <%# Pass rate chart %>
+      <div class="canvas-container-center text-center">
+        <canvas id="passRateChart" width="400" height="400" class="my-4"></canvas>
+      </div>
+      <input type="hidden" id="passcount" value="<%= newQues.stats.pass %>">
+      <input type="hidden" id="failcount" value="<%= newQues.stats.fail %>">
+    </div>
+  </div>
 </div>
 
 <div class="container mb-5">
-    <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
-    <a href="/train/<%= subject %>/displayQuestion?units=<%=units%>"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
-    <button type="button" class="btn btn-danger btn-small float-end" id="report" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
-    <%- include ("../../partials/contact", { questionId: newQues._id, redirect: "/train/" + subject + "/displayQuestion?units=" + units }) -%>
+  <a href="/train"><button type="button" class="btn btn-secondary" id="exit">Exit</button></a>
+  <a href="/train/<%= subject %>/displayQuestion?units=<%=units%>"><button type="button" class="btn btn-primary" id="tryanother">Try Another Question</button></a>
+  <button type="button" class="btn btn-danger btn-small float-end" id="report" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
+  <%- include ("../../partials/contact", { questionId: newQues._id, redirect: "/train/" + subject + "/displayQuestion?units=" + units }) -%>
 </div>
 
 <%- include("../../partials/footer") -%>

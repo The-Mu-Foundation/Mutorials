@@ -7,22 +7,22 @@
 <h1 class="my-5 container">Fundamental Constants</strong></h1>
 
 <div class="container jumbotron mt-5">
-    <% Object.keys(referenceSheet).forEach((subject) => { %>
-        <% Object.keys(referenceSheet[subject].Constants).forEach((constant) => { %>
-            <div class="my-4 row">
-                <div class="col-12 col-lg-6">
-                    <h5><%= constant %></h5>
-                </div>
-                <div class="col-12 col-lg-6">
-                    <p><%= referenceSheet[subject].Constants[constant] %></p>
-                </div>
-            </div>
-        <% }); %>
-    <% }); %>
+  <% Object.keys(referenceSheet).forEach((subject) => { %>
+  <% Object.keys(referenceSheet[subject].Constants).forEach((constant) => { %>
+  <div class="my-4 row">
+    <div class="col-12 col-lg-6">
+      <h5><%= constant %></h5>
+    </div>
+    <div class="col-12 col-lg-6">
+      <p><%= referenceSheet[subject].Constants[constant] %></p>
+    </div>
+  </div>
+  <% }); %>
+  <% }); %>
 </div>
 
 <div class="container">
-    <a class="mb-5 btn btn-secondary" href="/references">Return to references page</a>
+  <a class="mb-5 btn btn-secondary" href="/references">Return to references page</a>
 </div>
 
 <%- include("../../partials/footer") -%>

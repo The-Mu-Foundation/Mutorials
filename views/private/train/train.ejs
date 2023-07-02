@@ -4,65 +4,50 @@
 <%- include("../../partials/navigationPrivate") -%>
 
 <div class="jumbotron container mt-5">
+  <div class="row">
+    <div class="col-12 col-lg-4">
+      <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
 
+        <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Classic.svg" alt="Card image cap" <% if (locals.darkMode) { %>style="background-color: #37393f" <% } %>>
 
-    <div class="row">
-
-        <div class="col-12 col-lg-4">
-
-            <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
-
-                <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Classic.svg" alt="Card image cap" <% if (locals.darkMode) { %>style="background-color: #37393f" <% } %>>
-
-                <div class="card-body">
-                    <div class="card-block text-center">
-                        <h5 class="card-title">Classic Training</h5>
-                        <p class="card-text">Train with our classic ELO adpative system in Physics, Biology, or Chemistry.</p>
-                        <button type="button" class="btn btn-primary" onclick="window.location.href='/train/chooseSubject'" id="train">Start Training!</button>
-                    </div>
-                </div>
-
-            </div>
-
+        <div class="card-body">
+          <div class="card-block text-center">
+            <h5 class="card-title">Classic Training</h5>
+            <p class="card-text">Train with our classic ELO adpative system in Physics, Biology, or Chemistry.</p>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='/train/chooseSubject'" id="train">Start Training!</button>
+          </div>
         </div>
-
-        <div class="col-12 col-lg-4">
-
-            <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
-
-                <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Rush.svg" alt="Card image cap" <% if (locals.darkMode) { %>style="background-color: #37393f"<% } %>>
-
-                <div class="card-body">
-                    <div class="card-block text-center">
-                        <h5 class="card-title">Problem Rush</h5>
-                        <p class="card-text">Compete in a fast-paced, increasingly difficult science trivia game!</p>
-                        <button type="button" class="btn btn-primary" onclick="window.location.href='/train/rush'" id="train">Start Rush!</button>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-12 col-lg-4">
-
-            <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
-
-                <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Daily.svg" alt="Card image cap" <% if (locals.darkMode) { %>style="background-color: #37393f"<% } %>>
-
-                <div class="card-body">
-                    <div class="card-block text-center">
-                        <h5 class="card-title">Daily Question</h5>
-                        <p class="card-text">View a new and challenging problem every day! Questions are updated at 00:00 UTC.</p>
-                        <button type="button" class="btn btn-primary" onclick="window.location.href='/train/daily'" id="train">See Challenge!</button>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
+      </div>
     </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
+        <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Rush.svg" alt="Card image cap" <% if (locals.darkMode) { %>style="background-color: #37393f" <% } %>>
+
+        <div class="card-body">
+          <div class="card-block text-center">
+            <h5 class="card-title">Problem Rush</h5>
+            <p class="card-text">Compete in a fast-paced, increasingly difficult science trivia game!</p>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='/train/rush'" id="train">Start Rush!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card mx-auto my-auto h-100 align-items-center" style="width: 18rem;">
+        <img class="card-img-top" src="https://f000.backblazeb2.com/file/mutorials/icons/Train_Daily.svg" alt="Card image cap" <% if (locals.darkMode) { %>style="background-color: #37393f" <% } %>>
+
+        <div class="card-body">
+          <div class="card-block text-center">
+            <h5 class="card-title">Daily Question</h5>
+            <p class="card-text">View a new and challenging problem every day! Questions are updated at 00:00 UTC.</p>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='/train/daily'" id="train">See Challenge!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <%- include("../../partials/footer") -%>

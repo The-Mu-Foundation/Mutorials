@@ -1,100 +1,97 @@
-<%# Admin page to manage announcements %>
-<%# ARGUMENTS: announcements - an array of the current announcements%>
-
-<%- include("../partials/header") -%>
-<%- include("../partials/navigationPrivate") -%>
-
-<%# Backend queries %>
+<%# Admin page to manage announcements %> <%# ARGUMENTS: announcements - an
+array of the current announcements%> <%- include("../partials/header") -%> <%-
+include("../partials/navigationPrivate") -%> <%# Backend queries %>
 
 <script>
-	$(document).ready(function () {
+  $(document).ready(function() {
+    // hide error msg
+    $('#error').hide(0);
+    $('#success').hide(0);
 
-        // hide error msg
-        $("#error").hide(0);
-        $("#success").hide(0);
+    $('#submit').click(function() {
+      // free response text values
+      let author = $('#author').val();
+      let title = $('#announcement-title').val();
+      let text = $('#announcement-text').val();
 
-		$("#submit").click(function () {
+      $.post(
+        '/admin/addAnnouncement', {
+          author,
+          title,
+          text,
+        },
+        (data) => {
+          if (data.status == 'Error') {
+            $('#success').hide(100);
+            $('#error').show(500);
+          } else {
+            $('#error').hide(100);
+            $('#success').show(500);
 
-			// free response text values
-            let author = $("#author").val();
-            let title = $("#announcement-title").val();
-			let text = $("#announcement-text").val();
-
-            $.post("/admin/addAnnouncement", { author, title, text }, (data) => {
-                
-                if(data.status == "Error") {
-
-                    $("#success").hide(100);
-                    $("#error").show(500);
-                } else {
-
-                    $("#error").hide(100);
-                    $("#success").show(500);
-
-                    $("#author").val("");
-                    $("#announcement-title").val("");
-                    $("#announcement-text").val("");
-                }
-            });
-		
-		});
-	});
+            $('#author').val('');
+            $('#announcement-title').val('');
+            $('#announcement-text').val('');
+          }
+        }
+      );
+    });
+  });
 </script>
 
 <h1 class="my-5 container display-2 text-center">Mutorials Announcements</h1>
 
 <div class="jumbotron container">
+  <div class="container">
+    <h3 class="mb-2">Add Mutorials Announcement:</h3>
 
-    <div class="container">
-
-        <h3 class="mb-2">Add Mutorials Announcement:</h3>
-
-        <div class="form-group row my-1">
-            <label for="author" class="col-sm-3 col-form-label">Author</label>
-            <div class="col-sm-9">
-                <input class="form-control" type="text" placeholder="What is your name?" id="author" >
-            </div>
-        </div>
-        <div class="form-group row my-1">
-            <label for="announcement-title" class="col-sm-3 col-form-label">Announcement Title</label>
-            <div class="col-sm-9">
-                <input class="form-control" type="text" placeholder="What is the title of the announcement?" id="announcement-title" >
-            </div>
-        </div>
-        <div class="form-group row my-1">
-            <label for="announcement-text" class="my-1 col-sm-3">Announcement Text</label>
-            <div class="col-sm-9">
-                <textarea class="form-control my-1" id="announcement-text" rows="3" placeholder="Type in an announcement - use markdown for line breaks and text formatting"></textarea>
-            </div>
-        </div>
-
-        <div class="my-2 alert alert-success" id="success">Announcement added! Please refresh the page</div>
-        <div class="my-2 alert alert-danger" id="error">Announcement failed to be added</div>
-
-        <input class="btn btn-primary mt-3" value="Add Announcement" type="button" id="submit">
-
+    <div class="form-group row my-1">
+      <label for="author" class="col-sm-3 col-form-label">Author</label>
+      <div class="col-sm-9">
+        <input class="form-control" type="text" placeholder="What is your name?" id="author" />
+      </div>
+    </div>
+    <div class="form-group row my-1">
+      <label for="announcement-title" class="col-sm-3 col-form-label">Announcement Title</label>
+      <div class="col-sm-9">
+        <input class="form-control" type="text" placeholder="What is the title of the announcement?" id="announcement-title" />
+      </div>
+    </div>
+    <div class="form-group row my-1">
+      <label for="announcement-text" class="my-1 col-sm-3">Announcement Text</label>
+      <div class="col-sm-9">
+        <textarea class="form-control my-1" id="announcement-text" rows="3" placeholder="Type in an announcement - use markdown for line breaks and text formatting"></textarea>
+      </div>
     </div>
 
-    <h3 class="text-center mt-4 mb-3">Past 10 Announcements</h3>
-    <table class="text-center table">
-        <thead>
-            <tr>
-                <th scope="col-1">Date</th>
-                <th scope="col-3">Title</th>
-                <th scope="col-8">Text</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% announcements.forEach((announcement) => { %>
-                <tr>
-                    <th scope="row"><%= announcement.date %></th>
-                    <td><%= announcement.title %></td>
-                    <td><%- announcement.text %></td>
-                </tr>
-            <% }); %>
-        </tbody>
-      </table>
+    <div class="my-2 alert alert-success" id="success">
+      Announcement added! Please refresh the page
+    </div>
+    <div class="my-2 alert alert-danger" id="error">
+      Announcement failed to be added
+    </div>
 
+    <input class="btn btn-primary mt-3" value="Add Announcement" type="button" id="submit" />
+  </div>
+
+  <h3 class="text-center mt-4 mb-3">Past 10 Announcements</h3>
+  <table class="text-center table">
+    <thead>
+      <tr>
+        <th scope="col-1">Date</th>
+        <th scope="col-3">Title</th>
+        <th scope="col-8">Text</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% announcements.forEach((announcement)=> { %>
+      <tr>
+        <th scope="row"><%= announcement.date %></th>
+        <td><%= announcement.title %></td>
+        <td><%- announcement.text %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
 </div>
 
 <%- include("../partials/footer") -%>

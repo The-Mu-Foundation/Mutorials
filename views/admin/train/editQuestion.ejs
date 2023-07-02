@@ -10,9 +10,10 @@
 
 <div id="question-data" data="<%= JSON.stringify(question) %>"></div>
 <% let x = isReview %>
+
 <%# Send to backend %>
 <script>
-  $(document).ready(function () {
+  $(document).ready(function() {
     // get question ID
     let questionID = "<%= question._id %>";
 
@@ -29,8 +30,7 @@
 
     // set what happens when question is submitted
     let type, question, choices, tags, externalSource, rating, subject, units, answer, answerExplanation, author, sourceStatement, reviewerID;
-    $("#submit").click(function () {
-
+    $("#submit").click(function() {
       // free response text values
       question = $("#question").val();
       choices = $("#answerchoices").val();
@@ -39,48 +39,59 @@
       answer = $("#correctanswer").val();
       answerExplanation = $("#answer-explanation").val();
       author = $("#author").val();
-            sourceStatement = $("#source-statement").val();
-            reviewerID = $("#reviewerID").val();
-
+      sourceStatement = $("#source-statement").val();
+      reviewerID = $("#reviewerID").val();
 
       // radio values
       let typeInputs = document.getElementById("question-format").elements;
-      for(let i = 0; i < typeInputs.length; i++) {
-        if(typeInputs[i].checked) {
+      for (let i = 0; i < typeInputs.length; i++) {
+        if (typeInputs[i].checked) {
           type = typeInputs[i].id;
         }
       }
 
       let srcInputs = document.getElementById("external-source").elements;
-      for(let i = 0; i < srcInputs.length; i++) {
-        if(srcInputs[i].checked) {
+      for (let i = 0; i < srcInputs.length; i++) {
+        if (srcInputs[i].checked) {
           externalSource = srcInputs[i].id;
         }
       }
 
-
       // checkbox values - returns ARRAY
       subject = [];
       let subjInputs = document.getElementById("subjects").elements;
-      for(let i = 0; i < subjInputs.length; i++) {
-        if(subjInputs[i].checked) {
+      for (let i = 0; i < subjInputs.length; i++) {
+        if (subjInputs[i].checked) {
           subject.push(subjInputs[i].id);
         }
       }
 
       units = [];
       let unitInputs = document.getElementById("units").elements;
-      for(let i = 0; i < unitInputs.length; i++) {
-        if(unitInputs[i].checked) {
+      for (let i = 0; i < unitInputs.length; i++) {
+        if (unitInputs[i].checked) {
           units.push(unitInputs[i].id);
         }
       }
 
-      $.post("/reviewer/editQuestion", { questionID, type, question, choices, tags, externalSource, rating, subject,
-        units, answer, answerExplanation, author, sourceStatement, reviewerID}, function (data) {
+      $.post("/reviewer/editQuestion", {
+        questionID,
+        type,
+        question,
+        choices,
+        tags,
+        externalSource,
+        rating,
+        subject,
+        units,
+        answer,
+        answerExplanation,
+        author,
+        sourceStatement,
+        reviewerID
+      }, function(data) {
 
-        if(data.success) {
-
+        if (data.success) {
           $("#success").show(500);
           $("#failure").hide(100);
 
@@ -94,11 +105,12 @@
           $("#author").val("");
           $("#source-statement").val("");
           document.getElementsByName("checkableButton").forEach((checkbox) => {
-            if(checkbox.type == "checkbox" || checkbox.type == "radio") {
+            if (checkbox.type == "checkbox" || checkbox.type == "radio") {
               checkbox.checked = false;
             }
           });
           window.location.href = document.referrer;
+
         } else {
           $("#failure").show(500);
           $("#success").hide(100);
@@ -108,22 +120,25 @@
     });
 
     // skip question button
-    $("#skipreview").click(function () {
-
-      $.post("/admin/skipQuestion", { questionID }, function (data) {
-                if (data.success) { history.back(); }
+    $("#skipreview").click(function() {
+      $.post("/admin/skipQuestion", {
+        questionID
+      }, function(data) {
+        if (data.success) {
+          history.back();
+        }
       });
     });
 
     // set unit checkbox toggling
     $(".unit-choice-checkbox").hide(0);
     $(".subject-choice-checkbox").change(function() {
-        let subject = $(this).attr('id');
-        if(this.checked) {
-            $("." + subject + "-unit-checkbox").show(0);
-        } else {
-            $("." + subject + "-unit-checkbox").hide(0);
-        }
+      let subject = $(this).attr('id');
+      if (this.checked) {
+        $("." + subject + "-unit-checkbox").show(0);
+      } else {
+        $("." + subject + "-unit-checkbox").hide(0);
+      }
     });
 
     // set default values of question
@@ -148,7 +163,7 @@
       document.getElementById(id).checked = true;
     });
     subjectList.forEach((subject) => {
-        $("." + subject + "-unit-checkbox").show(0);
+      $("." + subject + "-unit-checkbox").show(0);
     });
   });
 </script>
@@ -156,58 +171,52 @@
 <h1 class="my-5 container">ADMIN PAGE: Edit/Review Question</h1>
 
 <div class="jumbotron container" id="show-compiler-div">
-
   <button type="button" class="btn btn-primary w-100" id="show-compiler">Open LaTeX Compiler</button>
-
 </div>
 
 <div class="jumbotron container" id="latex-compiler">
-
   <div class="form-group">
     <h3>LaTeX Compiler - NOT PART OF THE QUESTION</h3>
     <textarea class="form-control" id="latexcompiler" rows="3" placeholder="Enter LaTeX here and then click Render"></textarea>
-    </div>
+  </div>
 
   <p id="rendersandbox">[Sample rendered LaTeX goes here - did you know $F = ma$ ?]</p>
-
   <button type="button" class="btn btn-primary" id="render" onclick="document.getElementById('rendersandbox').innerHTML = document.getElementById('latexcompiler').value; MathJax.typeset();">Render</button>
-
 </div>
 
 <div class="jumbotron container">
+  <h3>Question Display Data</h3>
 
-    <h3>Question Display Data</h3>
-
-    <%# QUESTION STATEMENT %>
+  <%# QUESTION STATEMENT %>
   <div class="form-group mt-3">
     <p>What is the question?</p>
     <textarea class="form-control" id="question" rows="3" placeholder="Type in a whole question"></textarea>
-    </div>
+  </div>
 
-    <%# ANSWER CHOICES %>
-    <hr>
+  <%# ANSWER CHOICES %>
+  <hr>
   <div class="form-group">
     <p>FOR MC AND SA ONLY: What are the answer choices?</p>
     <textarea class="form-control" id="answerchoices" rows="6" placeholder="Type in answer choices, using '@' characters as deliminators"></textarea>
-    </div>
+  </div>
 
-    <%# CORRRECT ANSWER %>
-    <hr>
+  <%# CORRECT ANSWER %>
+  <hr>
   <div class="form-group">
     <p>What is the correct answer?</p>
     <input class="form-control" id="correctanswer" placeholder="Input the answer, with '@' characters as deliminators if there are multiple">
-    </div>
+  </div>
 
-    <%# RATING %>
-    <hr>
+  <%# RATING %>
+  <hr>
   <div class="form-group">
     <p>What is the rating of this question?</p>
     <input type="number" class="form-control" id="rating" placeholder="Enter an integer rating">
-    </div>
+  </div>
 
-    <%# FORMAT %>
-    <hr>
-    <form class="form-group" id="question-format">
+  <%# FORMAT %>
+  <hr>
+  <form class="form-group" id="question-format">
     <p>What is the format of this question?</p>
     <div class="form-check">
       <input class="form-check-input" type="radio" name="checkableButton" id="mc" value="mc">
@@ -221,63 +230,62 @@
       <input class="form-check-input" type="radio" name="checkableButton" id="sa" value="sa">
       <label class="form-check-label" for="sa">Select All</label>
     </div>
-    </form>
+  </form>
 </div>
 
 <div class="jumbotron container">
+  <h3>Question Background Data</h3>
 
-    <h3>Question Background Data</h3>
-
-    <%# ANSWER EXPLANATION %>
+  <%# ANSWER EXPLANATION %>
   <div class="form-group mt-3">
     <p>What is the answer explanation?</p>
     <textarea class="form-control" id="answer-explanation" rows="3" placeholder="Enter a detailed answer explanation"></textarea>
-    </div>
+  </div>
 
-    <%# TAGS %>
-    <hr>
+  <%# TAGS %>
+  <hr>
   <div class="form-group">
     <p>What are the tags for this question?</p>
     <textarea class="form-control" id="tags" rows="2" placeholder="Type in tags with '@' characters as deliminators"></textarea>
   </div>
 
-    <%# SUBJECTS %>
-    <hr>
+  <%# SUBJECTS %>
+  <hr>
   <form class="form-group" id="subjects">
     <p>What subject(s) does this question fall under?</p>
     <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
-			<% if (subject != "USABO") { %>
-				<div class="form-check my-1 me-sm-2">
-					<input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="<%= subject %>">
-					<label class="form-check-label" for="<%= subject %>"><%= subject %></label>
-				</div>
-			<% } %>
+    <% if (subject != "USABO") { %>
+    <div class="form-check my-1 me-sm-2">
+      <input type="checkbox" class="form-check-input subject-choice-checkbox" name="checkableButton" id="<%= subject %>">
+      <label class="form-check-label" for="<%= subject %>"><%= subject %></label>
+    </div>
+    <% } %>
     <% }) %>
-    </form>
+  </form>
 
-    <%# UNITS %>
-    <hr>
+  <%# UNITS %>
+  <hr>
   <form class="form-group" id="units">
-        <p>What units(s) does this question belong to? (Note: select subjects first)</p>
-        <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
-            <% subjectUnitDictionary[subject].forEach((unit) => { %>
-                <div class="form-check my-1 me-sm-2 unit-choice-checkbox <%= subject %>-unit-checkbox">
-                    <input type="checkbox" class="form-check-input" name="checkableButton" id="<%= subject %> - <%= unit %>">
-                    <label class="form-check-label" for="<%= subject %> - <%= unit %>"><%= subject.toUpperCase() %>: <%= unit %></label>
-                </div>
-            <% }) %>
-        <% }) %>
-    </form>
+    <p>What units(s) does this question belong to? (Note: select subjects first)</p>
+    <% Object.keys(subjectUnitDictionary).forEach((subject) => { %>
+    <% subjectUnitDictionary[subject].forEach((unit) => { %>
+    <div class="form-check my-1 me-sm-2 unit-choice-checkbox <%= subject %>-unit-checkbox">
+      <input type="checkbox" class="form-check-input" name="checkableButton" id="<%= subject %> - <%= unit %>">
+      <label class="form-check-label" for="<%= subject %> - <%= unit %>"><%= subject.toUpperCase() %>: <%= unit %></label>
+    </div>
+    <% }) %>
+    <% }) %>
+  </form>
 
-    <%# AUTHOR %>
-    <hr>
+  <%# AUTHOR %>
+  <hr>
   <div class="form-group">
     <p>INTERNAL USE ONLY: Who is the author of this question?</p>
     <input type="text" class="form-control" id="author" placeholder="Enter a Mutorials ID (WITH CAPITALIZATION)">
-    </div>
+  </div>
 
-    <%# EXTERNAL SOURCES %>
-    <hr>
+  <%# EXTERNAL SOURCES %>
+  <hr>
   <form class="form-group" id="external-source">
     <p>Is this question from an external source?</p>
     <div class="form-check">
@@ -308,60 +316,60 @@
 </div>
 
 <% if(isReview) { %>
-    <div class="jumbotron container">
-        <h3>Question Reviewing Data</h3>
-        <p>Has been reviewed by: <%= !(question.reviewers?.length >= 1) ? "Nobody" : question.reviewers.reduce((a, b) => a + ", " + b) %></p>
-        <input class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID">
-    </div>
+<div class="jumbotron container">
+  <h3>Question Reviewing Data</h3>
+  <p>Has been reviewed by: <%= !(question.reviewers?.length >= 1) ? "Nobody" : question.reviewers.reduce((a, b) => a + ", " + b) %></p>
+  <input class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID">
+</div>
 <% } else { %>
-        <input type="hidden" class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID" value="isEdit">
+<input type="hidden" class="form-control" id="reviewerID" placeholder="Enter your Mutorials ID" value="isEdit">
 <% } %>
 
 <% if (question.hourRefactor) { %>
-    <div class="jumbotron container">
-      <h3>Question Hour Adjustments</h3>
-      <p>Current hour multiplier: <%= question.hourRefactor %></p>
-      <form action="/reviewer/hourRefactor" method="POST">
-        <button type="input" class="btn btn-primary">+%50</button>
-        <input type="hidden" name="multiplier" value="1.5">
-        <input type="hidden" name="curFactor" value="<%= question.hourRefactor %>">
-        <input type="hidden" name="questionID" value="<%= question._id %>">
-      </form>
-      <br>
-      <form action="/reviewer/hourRefactor" method="POST">
-        <button type="input" class="btn btn-primary">-%50</button>
-        <input type="hidden" name="multiplier" value="0.5">
-        <input type="hidden" name="curFactor" value="<%= question.hourRefactor %>">
-        <input type="hidden" name="questionID" value="<%= question._id %>">
-      </form>
-    </div>
+<div class="jumbotron container">
+  <h3>Question Hour Adjustments</h3>
+  <p>Current hour multiplier: <%= question.hourRefactor %></p>
+  <form action="/reviewer/hourRefactor" method="POST">
+    <button type="input" class="btn btn-primary">+%50</button>
+    <input type="hidden" name="multiplier" value="1.5">
+    <input type="hidden" name="curFactor" value="<%= question.hourRefactor %>">
+    <input type="hidden" name="questionID" value="<%= question._id %>">
+  </form>
+  <br>
+  <form action="/reviewer/hourRefactor" method="POST">
+    <button type="input" class="btn btn-primary">-%50</button>
+    <input type="hidden" name="multiplier" value="0.5">
+    <input type="hidden" name="curFactor" value="<%= question.hourRefactor %>">
+    <input type="hidden" name="questionID" value="<%= question._id %>">
+  </form>
+</div>
 <% } %>
 
 <div class="my-2 alert alert-success container" id="success">Success! This question has been updated/reviewed!</div>
 <div class="my-2 alert alert-danger container" id="failure">Your question was not added - check to make sure all fields were filled in</div>
 
-<div class = "container mt-4 mb-5">
-    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
-    <button type="button" class="btn btn-primary" id="submit">Submit</button>
+<div class="container mt-4 mb-5">
+  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
+  <button type="button" class="btn btn-primary" id="submit">Submit</button>
   <button type="button" class="btn btn-info" id="skipreview" style="float: right;">Skip Question</button>
 </div>
 
 <%# Cancel button code %>
 <div class="modal fade" id="confirmCancel" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Are you sure you want to leave this page?</h5>
-            </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure you want to leave this page?</h5>
+      </div>
       <div class="modal-body">
         <p>All your work is unsaved and will be discarded</p>
-            </div>
-            <div class="modal-footer">
+      </div>
+      <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                <a href="/homepage"><button type="button" class="btn btn-primary" id="leaveConfirm">Yes</button></a>
-            </div>
-        </div>
+        <a href="/homepage"><button type="button" class="btn btn-primary" id="leaveConfirm">Yes</button></a>
+      </div>
     </div>
+  </div>
 </div>
 
 <%- include("../../partials/footer") -%>

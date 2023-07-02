@@ -1,50 +1,50 @@
 {
-    "name": "mutorials.org",
-    "version": "0.0.0",
-    "scripts": {
-        "start": "node index.js",
-        "dev": "nodemon index.js",
-        "lint": "eslint . --ext .js"
-    },
-    "engines": {
-        "node": "14.16.1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/The-Mu-Foundation/Mutorials.git"
-    },
-    "dependencies": {
-        "bad-words": "^3.0.4",
-        "bcryptjs": "^2.4.3",
-        "body-parser": "^1.19.0",
-        "connect-flash": "^0.1.1",
-        "connect-mongo": "^3.2.0",
-        "cookie-parser": "^1.4.5",
-        "crypto": "^1.0.1",
-        "debug": "~2.6.9",
-        "ejs": "^3.1.6",
-        "express": "^4.18.2",
-        "express-flash-messages": "^0.1.1",
-        "express-session": "^1.17.2",
-        "express-sslify": "^1.2.0",
-        "express-validator": "^6.12.2",
-        "hcaptcha": "0.0.2",
-        "heroku-ssl-redirect": "^0.1.1",
-        "html": "^1.0.0",
-        "http-errors": "^1.8.0",
-        "jsonwebtoken": "^8.5.1",
-        "mongoose": "^5.13.16",
-        "nanoid": "^3.1.31",
-        "node-fetch": "^2.6.7",
-        "nodemailer": "^6.6.5",
-        "nodemon": "^2.0.22",
-        "passport": "^0.4.1",
-        "passport-local": "^1.0.0",
-        "passport-local-mongoose": "^6.1.0",
-        "pg": "^7.18.2",
-        "pluralize": "^8.0.0"
-    },
-    "devDependencies": {
-        "eslint": "^7.28.0"
-    }
+  "name": "mutorials.org",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint . --ext .js"
+  },
+  "engines": {
+    "node": "14.16.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/The-Mu-Foundation/Mutorials.git"
+  },
+  "dependencies": {
+    "bad-words": "^3.0.4",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^3.2.0",
+    "cookie-parser": "^1.4.5",
+    "crypto": "^1.0.1",
+    "debug": "~2.6.9",
+    "ejs": "^3.1.6",
+    "express": "^4.18.2",
+    "express-flash-messages": "^0.1.1",
+    "express-session": "^1.17.2",
+    "express-sslify": "^1.2.0",
+    "express-validator": "^6.12.2",
+    "hcaptcha": "0.0.2",
+    "heroku-ssl-redirect": "^0.1.1",
+    "html": "^1.0.0",
+    "http-errors": "^1.8.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.16",
+    "nanoid": "^3.1.31",
+    "node-fetch": "^2.6.7",
+    "nodemailer": "^6.6.5",
+    "nodemon": "^2.0.22",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^6.1.0",
+    "pg": "^7.18.2",
+    "pluralize": "^8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0"
+  }
 }
