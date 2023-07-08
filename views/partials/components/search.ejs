@@ -4,82 +4,77 @@
 
 <input type="hidden" id="tagsAndNames" value="<%= JSON.stringify(subjectTags) %>">
 <script>
-    $(document).ready(function() {
-        let unitPresets = JSON.parse($("#tagsAndNames").val());
-        $('select[id=subjects-query]').multiselect({
-            placeholder: "Subject (optional)",
-            onOptionClick: function(element, option) {
-    	        let currentlySelected = $('#tags-query').val();
-                let subjectTags = [];
-                let unitsToAppend = [];
-                $('#subjects-query').val().forEach(element => subjectTags.push(unitPresets[element]['Units']));
-                $('#units-query').multiselect('reset');
-                if (unitPresets.length != 0) {
-                    subjectTags.forEach(element => Object.keys(element).forEach(key => unitsToAppend.push({
-                        name: element[key],
-                        value: key,
-                        checked: currentlySelected.includes(key)
-                    })))
-                    $('#tags-query').multiselect('loadOptions', unitsToAppend);
-                } else {
-                    $('#tags-query').multiselect('reset');
-                }
-            }
-        })
-        $('select[id=tags-query]').multiselect({
-            placeholder: "Units (optional)",
-            search: true,
-            selectAll: true
-        })
-    
-        unitsToAppend = [];
+  $(document).ready(function() {
+    let unitPresets = JSON.parse($("#tagsAndNames").val());
+    $('select[id=subjects-query]').multiselect({
+      placeholder: "Subject (optional)",
+      onOptionClick: function(element, option) {
+        let currentlySelected = $('#tags-query').val();
         let subjectTags = [];
+        let unitsToAppend = [];
         $('#subjects-query').val().forEach(element => subjectTags.push(unitPresets[element]['Units']));
-        $('#tags-query').multiselect('reset');
+        $('#units-query').multiselect('reset');
         if (unitPresets.length != 0) {
-            subjectTags.forEach(element => Object.keys(element).forEach(key => unitsToAppend.push({
-                name: element[key],
-                value: key,
-                checked: (new URLSearchParams(window.location.search)).get("tags").includes(key)
-            })))
-            $('#tags-query').multiselect('loadOptions', unitsToAppend);
+          subjectTags.forEach(element => Object.keys(element).forEach(key => unitsToAppend.push({
+            name: element[key],
+            value: key,
+            checked: currentlySelected.includes(key)
+          })))
+          $('#tags-query').multiselect('loadOptions', unitsToAppend);
         } else {
-            $('#tags-query').multiselect('reset');
+          $('#tags-query').multiselect('reset');
         }
-    
-        const doSearch = () => {
-            // Now we have plaintext query, units, and tags
-            let text = $("#text-query").val();
-            let subjects = $('#subjects-query').val().join(',');
-            let tags = $('#tags-query').val().join(',');
-            window.location.href = `/search?text=${text}&subjects=${subjects}&tags=${tags}`;
-        };
-    
-        $('#text-query').focus().select();
-        $("#search-submit").click(doSearch);
-        $("#search-form input").on("keyup", (e) => {
-            if (e.key === "Enter" || e.keyCode === 13) {
-                doSearch();
-            }
-        });
+      }
+    })
+    $('select[id=tags-query]').multiselect({
+      placeholder: "Units (optional)",
+      search: true,
+      selectAll: true
+    })
+
+    unitsToAppend = [];
+    let subjectTags = [];
+    $('#subjects-query').val().forEach(element => subjectTags.push(unitPresets[element]['Units']));
+    $('#tags-query').multiselect('reset');
+    if (unitPresets.length != 0) {
+      subjectTags.forEach(element => Object.keys(element).forEach(key => unitsToAppend.push({
+        name: element[key],
+        value: key,
+        checked: (new URLSearchParams(window.location.search)).get("tags").includes(key)
+      })))
+      $('#tags-query').multiselect('loadOptions', unitsToAppend);
+    } else {
+      $('#tags-query').multiselect('reset');
+    }
+
+    const doSearch = () => {
+      // Now we have plaintext query, units, and tags
+      let text = $("#text-query").val();
+      let subjects = $('#subjects-query').val().join(',');
+      let tags = $('#tags-query').val().join(',');
+      window.location.href = `/search?text=${text}&subjects=${subjects}&tags=${tags}`;
+    };
+
+    $('#text-query').focus().select();
+    $("#search-submit").click(doSearch);
+    $("#search-form input").on("keyup", (e) => {
+      if (e.key === "Enter" || e.keyCode === 13) {
+        doSearch();
+      }
     });
+  });
 </script>
+
 <form class="row" id="search-form">
-    <div class="col-md-10">
-        <label class="d-none" for="text-query">Text query</label>
-        <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="text-query" value="<%= query.text %>">
-        <select class="form-control form-control-lg my-2" id="subjects-query" multiple="multiple">
-            <option value="Physics"<%if(query.subjects != undefined && query.subjects.includes("Physics")) {%>
-                selected
-                <%}%>>Physics
+  <div class="col-md-10">
+    <label class="d-none" for="text-query">Text query</label>
+    <input class="form-control form-control-lg my-2" type="text" placeholder="Search for questions, users, etc." id="text-query" value="<%= query.text %>">
+    <select class="form-control form-control-lg my-2" id="subjects-query" multiple="multiple">
+      <option value="Physics" <%if(query.subjects != undefined && query.subjects.includes("Physics")) {%> selected <%}%>>Physics
             </option>
-            <option value="Chemistry"<%if(query.subjects != undefined && query.subjects.includes("Chemistry")) {%>
-                selected
-                <%}%>>Chemistry
+            <option value="Chemistry"<%if(query.subjects != undefined && query.subjects.includes("Chemistry")) {%> selected <%}%>>Chemistry
             </option>
-            <option value="Biology"<%if(query.subjects != undefined && query.subjects.includes("Biology")) {%>
-                selected
-                <%}%>>Biology
+            <option value="Biology"<%if(query.subjects != undefined && query.subjects.includes("Biology")) {%> selected <%}%>>Biology
             </option>
         </select>
         <select class="form-control form-control-lg my-2" id="tags-query" multiple="multiple">
