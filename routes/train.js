@@ -27,6 +27,7 @@ const {
   updateTrainAchievements,
   updateRushAchievements,
 } = require('../utils/functions/database');
+const { referenceSheet } = require('../utils/constants/referencesheet.js');
 const mongoose = require('mongoose');
 const db = mongoose.connection;
 
@@ -507,6 +508,7 @@ module.exports = (app, mongo) => {
         user: req.user,
         experienceStats,
         pageName: 'Classic Trainer',
+        referenceSheet
       });
     } else {
       // deduct 8 rating if previously queued question was skipped
@@ -556,6 +558,7 @@ module.exports = (app, mongo) => {
             user: req.user,
             experienceStats,
             pageName: 'Classic Trainer',
+            referenceSheet
           });
         }
       );
@@ -577,6 +580,7 @@ module.exports = (app, mongo) => {
             experienceStats,
             pageName: 'Classic Trainer',
             disabled: true,
+            referenceSheet
           });
         }
       });
