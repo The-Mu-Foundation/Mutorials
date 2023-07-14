@@ -28,7 +28,6 @@ const {
   updateTrainAchievements,
   updateRushAchievements,
 } = require('../utils/functions/database');
-const { referenceSheet } = require('../utils/constants/referencesheet.js');
 const mongoose = require('mongoose');
 const db = mongoose.connection;
 
