@@ -71,7 +71,6 @@
   });
 </script>
 
-
 <div class="container mt-5">
   <%- include("../../partials/components/experienceBar") -%>
 </div>
@@ -80,7 +79,6 @@
   <%- include("../../partials/flashes") -%>
 
   <% try { %>
-
   <%# Test for faulty question %>
   <% if (!newQues) { %>
   <% throw "no questions found"; %>
@@ -100,7 +98,6 @@
 
       <%# Display question %>
       <% if(newQues.type == "mc") { %>
-
       <%# Multiple choice %>
 
       <% if(!(typeof disabled != 'undefined' && disabled)) { %>
@@ -127,8 +124,8 @@
         <input type="hidden" name="units" value="<%= units %>">
         <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
       </form>
-      <% } else if(newQues.type == "sa") { %>
 
+      <% } else if(newQues.type == "sa") { %>
       <%# Select all %>
 
       <% if(!(typeof disabled != 'undefined' && disabled)) { %>
@@ -155,8 +152,8 @@
         <input type="hidden" name="units" value="<%= units %>">
         <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
       </form>
-      <% } else if(newQues.type == "fr") { %>
 
+      <% } else if(newQues.type == "fr") { %>
       <%# Free response %>
 
       <% if(!(typeof disabled != 'undefined' && disabled)) { %>
@@ -178,10 +175,10 @@
         <input type="hidden" name="units" value="<%= units %>">
         <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
       </form>
+
       <% } else { %>
       <% throw "invalid type"; %>
       <% } %>
-
     </div>
 
     <div class="col-12 col-lg-3">
@@ -192,6 +189,54 @@
       <input type="hidden" id="questionRating" value="<%= newQues.rating %>">
     </div>
   </div>
+
+  <style>
+    summary>* {
+      display: inline;
+    }
+  </style>
+
+  <br><br>
+
+  <details>
+    <summary class="mb-3">
+      <h3 class="mb-6">Equations</h3>
+    </summary>
+    <% Object.keys(referenceSheet).forEach((subject) => { %>
+    <% if (newQues.subject.includes(subject)) { %>
+    <% Object.keys(referenceSheet[subject].Equations).forEach((equation) => { %>
+    <div class="my-2 row">
+      <div class="col-12 col-lg-6">
+        <h5><%= equation %></h5>
+      </div>
+      <div class="col-12 col-lg-6">
+        <p><%= referenceSheet[subject].Equations[equation] %></p>
+      </div>
+    </div>
+    <% }); %>
+    <% } %>
+    <% }); %>
+  </details>
+
+  <details class="mb-3">
+    <summary>
+      <h3 class="mb-6">Constants</h3>
+    </summary>
+    <% Object.keys(referenceSheet).forEach((subject) => { %>
+    <% if (newQues.subject.includes(subject)) { %>
+    <% Object.keys(referenceSheet[subject].Constants).forEach((constant) => { %>
+    <div class="my-2 row">
+      <div class="col-12 col-lg-6">
+        <h5><%= constant %></h5>
+      </div>
+      <div class="col-12 col-lg-6">
+        <p><%= referenceSheet[subject].Constants[constant] %></p>
+      </div>
+    </div>
+    <% }); %>
+    <% } %>
+    <% }); %>
+  </details>
 
   <%# Skip question %>
 
@@ -213,25 +258,21 @@
         <input type="hidden" name="subject" value="<%= subject %>">
       </form>
     </div>
-
   </div>
   <% } %>
-  <% } catch(err) { %>
 
+  <% } catch(err) { %>
   <!-- ERROR CODE -->
-  <% if(err=="bad question parameters") { %>
+  <% if (err == "bad question parameters") { %>
   <h3>Someone messed up their equations! Perhaps they said $\sin^2(\theta)+\cos^2(\theta) \neq 1$ ?</h3>
   <p>Sorry, we could not display your question. Please reenter the trainer and inform an admin that the question with ID <font color="red"><%= newQues._id %></font> is dysfunctional.</p>
-
   <% } else { %>
   <h3>We're sorry, we weren't able to find any problems in this unit.</h3>
   <p>We're adding new problems constantly... Check back soon!</p>
 
   <a href="/train" class="btn btn-primary w-100 btn-lg mt-4">Click me to go back</a>
   <% } %>
-
   <% } %>
-
 </div>
 
 <% if(newQues.source_statement) { %>
