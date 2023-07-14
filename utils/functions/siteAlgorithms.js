@@ -3,8 +3,8 @@ function calculateRatings(userRating, questionRating, correct) {
   // important values: 1000 is spread of elo change, 25 is scale of change
   let chanceOfCorrect =
     1 / (1 + Math.pow(9, (questionRating - userRating) / 1000));
-  let userRatingChange = Math.round(25 * (correct - chanceOfCorrect));
-  let questionRatingChange = -Math.round(userRatingChange / 16);
+  let userRatingChange = Math.round(16 * (correct - chanceOfCorrect));
+  let questionRatingChange = -Math.round(userRatingChange / 25);
 
   // assign rating changes
   userRating += userRatingChange;
