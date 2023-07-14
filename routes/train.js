@@ -8,12 +8,6 @@ const { presetUnitOptions } = require('../utils/constants/presets');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { genPassword, validPassword } = require('../utils/functions/password');
 const { arraysEqual } = require('../utils/functions/general');
-<<<<<<< HEAD
-const { referenceSheet } = require('../utils/constants/referencesheet')
-const { getQuestion, getQuestions, getRating, setRating, setQRating, updateTracker, updateCounters, updateAll, updateQuestionQueue,
-    addExperience, clearQuestionQueue, skipQuestionUpdates, getDailyQuestion, incrementSolveCounter, updateRushStats,
-    updateTrainAchievements, updateRushAchievements } = require('../utils/functions/database');
-=======
 const {
   getQuestion,
   getQuestions,
@@ -33,7 +27,6 @@ const {
   updateTrainAchievements,
   updateRushAchievements,
 } = require('../utils/functions/database');
->>>>>>> 3723242b1597b3800cc3fb10dee91c58948d45c9
 const mongoose = require('mongoose');
 const db = mongoose.connection;
 
@@ -133,52 +126,6 @@ module.exports = (app, mongo) => {
 
         // render answer page
         let experienceStats = await calculateLevel(req.user.stats.experience);
-<<<<<<< HEAD
-        // Test if they have a question pending to answer which is valid for their units selected
-        if (q && units.some(r => q.units.includes(r))) {
-            res.render(VIEWS + 'private/train/displayQuestion.ejs', { referenceSheet, units: units, newQues: q, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
-        } else {
-            // deduct 8 rating if previously queued question was skipped
-            if (q) {
-                skipQuestionUpdates(mongo.Ques, req, req.params.subject.toLowerCase(), q._id);
-            }
-            // get parameters set up
-            if (req.user.rating['usabo'] === undefined){
-                setRating('USABO', -1, req);
-            }
-
-            if (req.user.rating['ess'] === undefined) {
-                setRating('ESS', -1, req);
-            }
-
-            let ceilingFloor = ratingCeilingFloor(req.user.rating[req.params.subject.toLowerCase()]);
-            const floor = ceilingFloor.floor;
-            const ceiling = ceilingFloor.ceiling;
-            // get question
-            getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(qs => {
-                // select random question
-                curQ = qs[Math.floor(Math.random() * qs.length)];
-                console.log(curQ);
-                if (!curQ) {
-                    req.flash('errorFlash', 'We couldn\'t find any questions for your rating in the units you selected.');
-                    res.redirect('/train/' + req.params.subject + '/chooseUnits');
-                    return;
-                }
-                // update pending question field
-                updateQuestionQueue(req, req.params.subject, curQ._id);
-                // push to frontend
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { referenceSheet, units: units, newQues: curQ, subject: req.params.subject, user: req.user, experienceStats, pageName: "Classic Trainer" });
-            });
-        }
-    });
-
-    app.get('/train/displayQuestion/:id', async (req, res) => {
-        let experienceStats = await calculateLevel(req.user.stats.experience);
-        mongo.db.collection('questions').findOne({ _id: mongoose.Types.ObjectId(req.params.id) }).then((question, err) => {
-            if (!err){
-                res.render(VIEWS + 'private/train/displayQuestion.ejs', { referenceSheet, units: question.units, newQues: question, subject: question.subject[0], user: req.user, experienceStats, pageName: "Classic Trainer", disabled: true});
-            }
-=======
         res.render(VIEWS + 'private/train/answerExplanation.ejs', {
           units: req.body.units,
           userAnswer: req.body.answerChoice,
@@ -191,7 +138,6 @@ module.exports = (app, mongo) => {
           user: req.user,
           experienceStats,
           pageName: 'Answer Explanation',
->>>>>>> 3723242b1597b3800cc3fb10dee91c58948d45c9
         });
       });
     } else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
