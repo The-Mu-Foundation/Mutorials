@@ -16,18 +16,19 @@
   <meta property="og:image" content="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
   <meta property="og:description" content="Mutorials is a free, adaptive, web-based science trainer powered by a passionate and experienced team of students, with various fun and competitive game modes to enrich your learning!">
   <% try { %>
-  <%# EJS idiosyncrasies - the JS || operator and ternary operator both crash the page when pageName isn't defined %>
-  <%# existenceTest will test whether pageName exists, and will then throw an error %>
-  <%# A test is used because otherwise a stray <title> tag appears in the output %>
-  <% let existenceTest = pageName; %>
-  <title><%= pageName %></title>
-  <meta property="og:title" content="<%= pageName %>" />
+    <%# EJS idiosyncrasies - the JS || operator and ternary operator both crash the page when pageName isn't defined %>
+    <%# existenceTest will test whether pageName exists, and will then throw an error %>
+    <%# A test is used because otherwise a stray <title> tag appears in the output %>
+    <% let existenceTest = pageName; %>
+    <title><%= pageName %></title>
+    <meta property="og:title" content="<%= pageName %>" />
   <% } catch(err) { %>
-  <title>Mutorials</title>
-  <meta property="og:title" content="Mutorials" />
+    <title>Mutorials</title>
+    <meta property="og:title" content="Mutorials" />
   <% } %>
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Mutorials" />
+
   <link rel="icon" href="https://cdn.mutorials.org/images/icons/Icon_Main.svg" sizes="any" type="image/svg+xml">
   <meta property="og:image" content="https://cdn.mutorials.org/images/icons/Icon_Main.svg" />
   <meta property="og:image" content="Mutorials logo" />
@@ -60,12 +61,15 @@
     };
   </script>
 
-  <%# Chartjs import %>
+  <%# chart.js import %>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
   <script>
-    var canvascontainerlist = document.getElementsByClassName("canvas-container-center");
-    for (i = 0; i < canvascontainerlist.length; i++) {
-      var parentStyle = canvascontainerlist[i].style;
+    Chart.defaults.global.defaultFontFamily = "'Inter', Arial, sans-serif";
+    Chart.defaults.global.defaultFontSize = 14;
+
+    let canvasContainerList = document.getElementsByClassName("canvas-container-center");
+    for (i = 0; i < canvasContainerList.length; i++) {
+      let parentStyle = canvasContainerList[i].style;
       parentStyle.textAlign = "center";
       parentStyle.width = "100%";
     }
@@ -81,8 +85,17 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
+  <%# Load font families %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+
   <%# Custom CSS for site %>
   <style>
+    * {
+      font-family: 'Inter', Arial, Helvetica, sans-serif;
+    }
+
     .center {
       display: block;
       margin-left: 175px;
@@ -459,10 +472,16 @@
       clip: rect(1px 1px 1px 1px);
       clip: rect(1px, 1px, 1px, 1px);
     }
+  </style>
 
-    <% if (locals.darkMode) {
+  <%# Dark mode styles %>
+  <% if (locals.darkMode) { %>
+    <script>
+      Chart.defaults.global.defaultFontColor = "#ffffff";
+    </script>
 
-      %>.ms-options-wrap>button:focus,
+    <style>
+      .ms-options-wrap>button:focus,
       .ms-options-wrap>button {
         background-color: #414449;
       }
@@ -546,22 +565,12 @@
       * :not(.ms-options-wrap *) {
         color: #ffffff;
       }
-
-      <%
-    }
-
-    %>
-  </style>
-  <% if (locals.darkMode) { %>
-  <script>
-    Chart.defaults.global.defaultFontColor = "#ffffff";
-  </script>
+    </style>
   <% } %>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-187785187-1">
   </script>
-
   <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -586,8 +595,8 @@
     gtag('config', 'AW-454194095');
   </script>
 
-  <!-- Event snippet for Sign-up conversion page
-    In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+  <%# Event snippet for Sign-up conversion page
+    In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. %>
   <script>
     function gtag_report_conversion(url) {
       var callback = function() {
