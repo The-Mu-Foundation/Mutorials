@@ -6,6 +6,7 @@ const {
 } = require('../utils/functions/siteAlgorithms');
 const { presetUnitOptions } = require('../utils/constants/presets');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
+const { referenceSheet } = require('../utils/constants/referencesheet');
 const { genPassword, validPassword } = require('../utils/functions/password');
 const { arraysEqual } = require('../utils/functions/general');
 const {
@@ -507,6 +508,7 @@ module.exports = (app, mongo) => {
         user: req.user,
         experienceStats,
         pageName: 'Classic Trainer',
+        referenceSheet
       });
     } else {
       // deduct 8 rating if previously queued question was skipped
@@ -556,6 +558,7 @@ module.exports = (app, mongo) => {
             user: req.user,
             experienceStats,
             pageName: 'Classic Trainer',
+            referenceSheet
           });
         }
       );
@@ -577,6 +580,7 @@ module.exports = (app, mongo) => {
             experienceStats,
             pageName: 'Classic Trainer',
             disabled: true,
+            referenceSheet
           });
         }
       });
