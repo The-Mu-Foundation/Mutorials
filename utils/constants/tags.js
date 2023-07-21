@@ -19,7 +19,7 @@ const tags = {
       '15P': 'Modern Physics',
       '16P': 'Nuclear and Particle Physics',
       '17P': 'Electrostatics',
-      '18P': 'Electric Current and Conductors',
+      '18P': 'Electric Conductors and Currents',
       '19P': 'DC Circuits',
       '20P': 'Induction and AC Circuits',
       '21P': 'Magnetic Fields and Forces',
