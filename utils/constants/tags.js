@@ -138,9 +138,7 @@ const tags = {
       ELF: 'Electric Fields and Flux',
       GAU: "Gauss' Law",
       STO: "Stoke's Theorem",
-      LAP: 'The Laplacian',
-      CUR: 'The Curl',
-      EPO: 'Electric Potential',
+      EPO: 'Electric Potential and Energy',
 
       CDT: 'Conductors and Conductivity',
       DSM: 'Doped Semiconductors',
@@ -150,6 +148,7 @@ const tags = {
       ELE: 'Electrical Energy',
       DIE: 'Dielectrics',
       DIP: 'Electric Dipoles',
+      SUP: 'Superconductivity',
 
       OHM: "Ohm's Law",
       EMF: 'Voltage, Potential Difference, and Electromotive Force',
