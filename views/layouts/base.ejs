@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mutorials</title>    
+    <link rel="icon" href="https://cdn.mutorials.org/images/icons/Icon_Main.svg" sizes="any" type="image/svg+xml">
+
+    <%# Meta tags %>
+    <meta property="og:title" content="Mutorials">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mutorials.org/">
+    <meta property="og:image" content="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
+    <meta property="og:description" content="Mutorials is a free, adaptive, web-based science trainer powered by a passionate and experienced team of students, with various fun and competitive game modes to enrich your learning!">
+
+    <%# External fonts %>
+
+    <%# Font awesome icons %>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/63ec6f8c9f.js" crossorigin="anonymous"></script>
+
+    <%# Stylesheets %>
+    <link rel="stylesheet" href="css/style.css">
+
+    <%# Views can insert additional html head content here %>
+    <%- defineContent('head') %>
+  </head>
+
+  <body>
+    <%- defineContent('preMain') %>
+    <main class="flex flex-col items-center px-6">
+      <%- defineContent('main') %>
+    </main>
+  </body>
+</html>

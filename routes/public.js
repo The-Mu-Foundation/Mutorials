@@ -20,6 +20,10 @@ module.exports = (app, mongo) => {
   // PUBLIC GET
   // `username` is email
   // `ign` is username
+  app.get('/v2', (req, res) => {
+    res.render(VIEWS + 'public/indexV2.ejs', { layout: 'layouts/base.ejs' });
+  });
+
   app.get('/', async (req, res) => {
     let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
     const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
@@ -39,7 +43,7 @@ module.exports = (app, mongo) => {
       };
     });
 
-    res.render(VIEWS + 'public/index.ejs', {
+    res.render(VIEWS + 'public/indexV2.ejs', {
       siteStats: siteData,
       question,
       experience,
