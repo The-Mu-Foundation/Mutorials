@@ -47,6 +47,8 @@ require('./utils/functions/passport.js')(app, mongo);
 app.use(flash()); // express-flash-messages config
 app.use(cookieParser());
 
+app.use(express.static('public'));
+
 app.use((req, res, next) => {
   res.locals.successFlash = req.flash('successFlash');
   res.locals.errorFlash = req.flash('errorFlash');

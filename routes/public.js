@@ -21,33 +21,29 @@ module.exports = (app, mongo) => {
   // `username` is email
   // `ign` is username
   app.get('/', async (req, res) => {
-    if (!req.isAuthenticated()) {
-      let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
-      const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+    let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
+    const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
 
-      let experience = await mongo.User.find({
-        'stats.experience': { $gte: 10000 },
-      })
-        .sort({ 'stats.experience': -1 })
-        .limit(10)
-        .exec();
+    let experience = await mongo.User.find({
+      'stats.experience': { $gte: 10000 },
+    })
+      .sort({ 'stats.experience': -1 })
+      .limit(10)
+      .exec();
 
-      experience = experience.map((user) => {
-        return {
-          level: calculateLevel(user.stats.experience),
-          experience: user.stats.experience,
-          ign: user.ign,
-        };
-      });
+    experience = experience.map((user) => {
+      return {
+        level: calculateLevel(user.stats.experience),
+        experience: user.stats.experience,
+        ign: user.ign,
+      };
+    });
 
-      res.render(VIEWS + 'public/index.ejs', {
-        siteStats: siteData,
-        question,
-        experience,
-      });
-    } else {
-      res.redirect('/homepage');
-    }
+    res.render(VIEWS + 'public/index.ejs', {
+      siteStats: siteData,
+      question,
+      experience,
+    });
   });
 
   app.get('/signin', (req, res) => {

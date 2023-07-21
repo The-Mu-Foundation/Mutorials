@@ -1,4 +1,4 @@
-/.vscode
+.vscode/
 .DS_Store
 .iml
 .idea/
@@ -8,3 +8,6 @@ CODEOWNERS
 .vimspector.json
 
 /.vs
+
+# Built files
+public/css/style.css
