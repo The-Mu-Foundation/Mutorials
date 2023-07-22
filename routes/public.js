@@ -2,7 +2,7 @@
 const passport = require('passport');
 const Filter = require('bad-words');
 
-filter = new Filter();
+const filter = new Filter();
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
@@ -52,8 +52,9 @@ module.exports = (app, mongo) => {
 
   app.get('/signin', (req, res) => {
     if (!req.isAuthenticated()) {
-      res.render(VIEWS + 'public/signin.ejs', {
+      res.render(VIEWS + 'public/signinV2.ejs', {
         pageName: 'Sign-in to Mutorials',
+        layout: 'layouts/base.ejs',
       });
     } else {
       res.redirect('/homepage');
@@ -62,8 +63,9 @@ module.exports = (app, mongo) => {
 
   app.get('/signup', (req, res) => {
     if (!req.isAuthenticated()) {
-      res.render(VIEWS + 'public/signup.ejs', {
+      res.render(VIEWS + 'public/signupV2.ejs', {
         pageName: 'Sign-up to Mutorials',
+        layout: 'layouts/base.ejs',
       });
     } else {
       res.redirect('/homepage');
@@ -102,6 +104,8 @@ module.exports = (app, mongo) => {
 
   // PUBLIC POST
   app.post('/register', (req, res, next) => {
+    console.log(`request body: ${JSON.stringify(req.body, null, 1)}`);
+
     req.body.username = req.body.username.toLowerCase();
     req.body.ign = req.body.ign.toLowerCase();
     let registerInputProblems1 = false;

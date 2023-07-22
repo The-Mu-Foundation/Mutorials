@@ -1,0 +1,59 @@
+<%- contentFor('head') %>
+
+<%- contentFor('preMain') %>
+<%- include('../partials/navigationV2.ejs') %>
+
+<%- contentFor('main') %>
+<div class="flex flex-col items-center">
+  <img class="w-12 mb-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
+  <h2 class="mb-2">Sign up for Mutorials</h2>
+  <p class="mb-4">Already have an account? <a href="/signin">Sign in</a></p>
+
+  <div class="flex flex-col items-start full max-w-sm">
+    <form action="/register" method="post" autocomplete="off">
+      <div>
+        <label for="ign">Username</label>
+        <input type="text" class="form-control" id="ign" name="ign">
+      </div>
+      <div>
+        <label for="signupEmail">Email</label>
+        <input type="email" class="form-control" id="signupEmail" name="username">
+      </div>
+      <div>
+        <label for="signupPassword">Password</label>
+        <input type="password" class="form-control" id="signupPassword" name="password">
+        <p class="mb-4 text-sm" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
+      </div>
+      <div>
+        <label for="signupConfirmPassword">Confirm password</label>
+        <input type="password" class="form-control" id="signupConfirmPassword" name="confirmPassword">
+      </div>
+      <div>
+        <label for="yob">Year of birth</label>
+        <input type="number" class="form-control" id="yob" name="yob">
+      </div>
+
+      <div>
+        <div class="flex items-start gap-2">
+          <div class="flex items-center">
+            &#8203;
+            <input type="checkbox" class="form-checkbox" id="agreeTOS" name="agreeTOS">
+          </div>
+          <label for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a>.</label><br>
+        </div>
+        <div class="flex items-start gap-2">          
+          <div class="flex items-center">
+            &#8203;
+            &#8203;
+            <input type="checkbox" class="form-checkbox" id="agreeAge" name="agreeAge">
+          </div>
+          <label for="agreeAge">I am at least 13 years old, or I have permission from my parent, guardian, teacher, or school to use Mutorials.</label><br>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <input class="btn btn-primary w-full" type="submit" id="submitButton" value="Sign Up">
+      </div>
+    </form>
+  </div>
+</div>

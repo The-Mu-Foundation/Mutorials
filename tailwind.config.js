@@ -1,6 +1,6 @@
 module.exports = {
   mode: 'jit',
-  content: ['./views/**/*.ejs'],
+  content: ['./views/**/*.ejs', './public/css/**/*.css'],
   theme: {
     extend: {
       fontFamily: {
@@ -8,5 +8,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 };

@@ -2,7 +2,8 @@
   @apply px-4 py-2
     rounded
     font-medium
-    transition-all
+    shadow-none
+    transition-shadow
     whitespace-nowrap
     hover:shadow-md;
 }
