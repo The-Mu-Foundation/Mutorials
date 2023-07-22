@@ -1,13 +1,13 @@
 @layer base {
   h1 {
-    font-size: 4em;
+    font-size: 3em;
     font-weight: bold;
     letter-spacing: -0.02em;
     line-height: 1;
   }
 
   h2 {
-    font-size: 3em;
+    font-size: 2em;
     font-weight: bold;
     letter-spacing: -0.02em;
     line-height: 1;
