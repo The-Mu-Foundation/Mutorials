@@ -1,8 +1,61 @@
+<%- contentFor('head') %>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11"></script>
+<script defer>
+  const $ = document.querySelector.bind(document);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const typedOptions = {
+      strings: ['free', 'challenging', 'adaptive', 'open-source'],
+      typeSpeed: 40,
+      backSpeed: 40,
+      backDelay: 1500,
+      startDelay: 500,
+      loop: true,
+      preStringTyped: (pos, self) => {
+        $("#typed-a").innerText = (pos > 1) ? "an" : "a";
+      },
+    };
+    const typed = new Typed("#typed-span", typedOptions);
+    typed.start();
+  });
+</script>
+
 <%- contentFor('preMain') %>
 <%- include('../partials/navigationV2') %>
 
 <%- contentFor('main') %>
-<div class="max-w-4xl">
-  <h1>Hello</h1>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam est diam, egestas dapibus luctus ut, convallis mattis mi. Maecenas non tortor suscipit, posuere elit sed, iaculis eros. Fusce ut ullamcorper tellus. In sit amet felis ac nibh egestas iaculis a et ipsum. In tincidunt tempus ante vel pretium. Vestibulum id mauris elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Curabitur erat velit, efficitur eu nibh vehicula, scelerisque faucibus nibh.</p>
+<%# Hero %>
+<div class="w-full max-w-4xl my-10">
+  <div class="flex justify-between w-full">
+    <div class="flex flex-col items-start mr-12">
+      <h2 class="mb-4 whitespace-nowrap">
+        Mutorials is <span id="typed-a">a</span><br>
+        <span class="font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600" id="typed-span"></span><br>
+        science trainer.
+      </h2>
+      <a class="btn btn-primary" href="/signup">Get started</a>
+    </div>
+
+    <div class="relative flex items-center w-full overflow-visible -z-10">
+      <%# Terrible hack to center oversized image in a div %>
+      <%# https://stackoverflow.com/questions/14562457/center-oversized-image-in-div %>
+      <img
+        class="absolute w-[600px] top-[-9999px] bottom-[-9999px] left-[-9999px] right-[-9999px] m-auto max-w-none"
+        src="https://mutorials03.azureedge.net/images/icons/Icon_Fancy.svg"
+      >
+    </div>
+  </div>
+</div>
+
+
+<div class="flex items-center max-w-4xl my-10">
+  <h3 class="w-7/12 mr-4">
+    Practice <b>thousands</b> of science problems from honors curriculum to national competition level—all with explanations.
+  </h3>
+  <div class="w-5/12">
+    <img
+      class="aspect-video object-cover rounded"
+      src="https://plus.unsplash.com/premium_photo-1681121352693-0a15991e025e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZGF0YWJhc2V8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60"
+    >
+  </div>
 </div>

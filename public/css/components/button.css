@@ -1,8 +1,9 @@
 .btn {
   @apply px-4 py-2
-    shadow-sm
+    rounded
     font-medium
-    transition-colors;
+    transition-colors
+    whitespace-nowrap;
 }
 
 .btn-primary {

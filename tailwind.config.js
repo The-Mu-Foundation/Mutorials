@@ -1,6 +1,6 @@
 module.exports = {
   mode: 'jit',
-  content: ['./views/**/*.ejs', './public/css/**/*.css'],
+  content: ['./views/**/*.ejs'],
   theme: {
     extend: {
       fontFamily: {

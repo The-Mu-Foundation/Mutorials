@@ -3,14 +3,18 @@
     font-size: 4em;
     font-weight: bold;
     letter-spacing: -0.02em;
+    line-height: 1;
   }
 
   h2 {
     font-size: 3em;
+    font-weight: bold;
     letter-spacing: -0.02em;
+    line-height: 1;
   }
 
   h3 {
-    font-size: 2em;
+    font-size: 1.5em;
+    line-height: 1.2;
   }
 }
