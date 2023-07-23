@@ -1,7 +1,31 @@
 <%- contentFor('head') %>
+<script defer>
+  $(document).ready(() =>  {
+    /* $("#password-req").hide();
+    $("#signupPassword").focus(() => {
+      $("#password-req").show(100);
+    });
+    $("#signupPassword").blur(() => {
+      window.setTimeout(() => {
+        $("#password-req").hide(100);
+      }, 1000);
+    }); */
+
+    $("#username-characters").hide();
+    $("#ign").focus(() => {
+      $("#username-characters").show(100);
+    });
+    $("#ign").blur(() => {
+      window.setTimeout(() => {
+        $("#username-characters").hide(100);
+      }, 1000);
+    });
+  });
+</script>
 
 <%- contentFor('preMain') %>
 <%- include('../partials/navigationV2.ejs') %>
+<%- include ('../partials/flashes.ejs') -%>
 
 <%- contentFor('main') %>
 <div class="flex flex-col items-center">
@@ -13,7 +37,7 @@
     <form action="/register" method="post" autocomplete="off">
       <div>
         <label for="ign">Username</label>
-        <input type="text" class="form-control" id="ign" name="ign">
+        <input type="text" class="form-control" id="ign" name="ign" autocomplete="username">
       </div>
       <div>
         <label for="signupEmail">Email</label>
@@ -21,12 +45,12 @@
       </div>
       <div>
         <label for="signupPassword">Password</label>
-        <input type="password" class="form-control" id="signupPassword" name="password">
+        <input type="password" class="form-control" id="signupPassword" name="password" autocomplete="new-password">
         <p class="mb-4 text-sm" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
       </div>
       <div>
         <label for="signupConfirmPassword">Confirm password</label>
-        <input type="password" class="form-control" id="signupConfirmPassword" name="confirmPassword">
+        <input type="password" class="form-control" id="signupConfirmPassword" name="confirmPassword" autocomplete="new-password">
       </div>
       <div>
         <label for="yob">Year of birth</label>
@@ -41,7 +65,7 @@
           </div>
           <label for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a>.</label><br>
         </div>
-        <div class="flex items-start gap-2">          
+        <div class="flex items-start gap-2">
           <div class="flex items-center">
             &#8203;
             &#8203;

@@ -20,34 +20,8 @@ module.exports = (app, mongo) => {
   // PUBLIC GET
   // `username` is email
   // `ign` is username
-  app.get('/v2', (req, res) => {
+  app.get('/', (req, res) => {
     res.render(VIEWS + 'public/indexV2.ejs', { layout: 'layouts/base.ejs' });
-  });
-
-  app.get('/', async (req, res) => {
-    let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
-    const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
-
-    let experience = await mongo.User.find({
-      'stats.experience': { $gte: 10000 },
-    })
-      .sort({ 'stats.experience': -1 })
-      .limit(10)
-      .exec();
-
-    experience = experience.map((user) => {
-      return {
-        level: calculateLevel(user.stats.experience),
-        experience: user.stats.experience,
-        ign: user.ign,
-      };
-    });
-
-    res.render(VIEWS + 'public/indexV2.ejs', {
-      siteStats: siteData,
-      question,
-      experience,
-    });
   });
 
   app.get('/signin', (req, res) => {
@@ -104,8 +78,6 @@ module.exports = (app, mongo) => {
 
   // PUBLIC POST
   app.post('/register', (req, res, next) => {
-    console.log(`request body: ${JSON.stringify(req.body, null, 1)}`);
-
     req.body.username = req.body.username.toLowerCase();
     req.body.ign = req.body.ign.toLowerCase();
     let registerInputProblems1 = false;
@@ -126,14 +98,15 @@ module.exports = (app, mongo) => {
       );
       registerInputProblems1 = true;
     }
-    if (req.body.ign != filter.clean(req.body.ign)) {
+    if (req.body.ign && req.body.ign != filter.clean(req.body.ign)) {
       req.flash('errorFlash', 'Keep it appropriate.');
       registerInputProblems1 = true;
     }
     if (
-      req.body.password.length < 7 ||
-      !/\d/.test(req.body.password) ||
-      !/[a-zA-Z]/.test(req.body.password)
+      req.body.password &&
+      (req.body.password.length < 7 ||
+        !/\d/.test(req.body.password) ||
+        !/[a-zA-Z]/.test(req.body.password))
     ) {
       req.flash(
         'errorFlash',

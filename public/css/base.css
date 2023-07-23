@@ -37,7 +37,7 @@
   input[type='number'] {
     @apply block
       w-full
-      mb-2
+      mt-1 mb-3
       px-2 py-1
       border-2 border-neutral-200
       rounded

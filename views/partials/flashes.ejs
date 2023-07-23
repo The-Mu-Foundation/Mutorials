@@ -1,27 +1,58 @@
 <%# Template for flashes %>
+<%# messages is 
+  {
+    errorFlash: [...],
+    error: [...],
+    successFlash: [...],
+    success: [...]
+  }
+%>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<% var messages = getMessages() %>
+<% const messages = getMessages() %>
+<% const flashMessages = [
+  [messages.errorFlash, 'error'],
+  [messages.error, 'error']
+  [messages.successFlash, 'success'],
+  [messages.success, 'success']
+];
+%>
 
-<% if (messages.errorFlash) { %>
-  <% for(var i=0; i < messages.errorFlash.length; i++) { %>
-    <div class="alert alert-danger" role="alert"><%- messages.errorFlash[i] %></div>
-  <% } %>
-<% } %>
+<div class="absolute flex justify-center w-full top-12">
+  <div class="flex flex-col w-full max-w-md">
+    <% for (let pair of flashMessages) { %>
+      <% if (!pair || !pair[0]) continue; %>
+      <% const [messageList, messageType] = pair %>
 
-<% if (messages.error) { %>
-  <% for(var i=0; i < messages.error.length; i++) { %>
-    <div class="alert alert-danger" role="alert"><%- messages.error[i] %></div>
-  <% } %>
-<% } %>
-
-<% if (messages.successFlash) { %>
-  <% for(var i=0; i < messages.successFlash.length; i++) { %>
-    <div class="alert alert-success" role="alert"><%- messages.successFlash[i] %></div>
-  <% } %>
-<% } %>
-
-<% if (messages.success) { %>
-  <% for(var i=0; i < messages.success.length; i++) { %>
-    <div class="alert alert-success" role="alert"><%- messages.success[i] %></div>
-  <% } %>
-<% } %>
+      <% for (let message of messageList) { %>
+        <% let bgColor = messageType === 'error' ? 'bg-red-50' : 'bg-green-50' %>
+        <% let borderColor = messageType === 'error' ? 'border-red-100' : 'border-green-100' %>
+        <div
+          class="w-full max-h-none mb-2 p-3 <%= bgColor %> border-2 <%= borderColor %>
+                 box-border rounded-md shadow-md overflow-hidden cursor-pointer"
+          x-data=""
+          @click="(event) => {
+            event.target.style.opacity = 0.5;
+            event.target.addEventListener('transitionend', ({ propertyName }) => {
+              if (propertyName !== 'opacity') return;
+              event.target.style.maxHeight = 0;
+              event.target.style.marginBottom = 0;
+              event.target.style.padding = 0;
+            })
+          }"
+          style="
+          max-height: '9999px';
+          transform-origin: top;
+          transition:
+            opacity 2s 0s,
+            max-height 2s 0s ease,
+            margin-bottom 2s 0s,
+            padding 2s 0;
+          "
+        >
+          <span @click="event.stopPropagation();"><%= message %></span>
+        </div>
+      <% } %>
+    <% } %>
+  </div>
+</div>

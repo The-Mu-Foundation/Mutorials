@@ -2,10 +2,10 @@
   @apply px-4 py-2
     rounded
     font-medium
-    shadow-none
-    transition-shadow
+    shadow-none hover:shadow-md
+    transition
     whitespace-nowrap
-    hover:shadow-md;
+    cursor-pointer;
 }
 
 .btn-primary {
