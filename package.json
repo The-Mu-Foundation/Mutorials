@@ -4,6 +4,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "run-p dev:*",
+    "dev:sync": "browser-sync start --no-notify --proxy=localhost:3000 --port=3001 --files \"**/*\"",
     "dev:express": "nodemon index.js",
     "dev:css": "postcss public/css/tailwind.css -o public/css/style.css --watch",
     "build": "postcss public/css/tailwind.css -o public/css/style.css",
@@ -17,14 +18,17 @@
     "url": "git+https://github.com/The-Mu-Foundation/Mutorials.git"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "autoprefixer": "^10.4.14",
     "bad-words": "^3.0.4",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "browser-sync": "^2.29.3",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.5",
     "crypto": "^1.0.1",
+    "D": "^1.0.0",
     "debug": "~2.6.9",
     "ejs": "^3.1.6",
     "express": "^4.18.2",
