@@ -36,24 +36,24 @@
   <div class="flex flex-col items-start full max-w-sm">
     <form action="/register" method="post" autocomplete="off" spellcheck="false">
       <div>
-        <label for="ign">Username</label>
+        <label class="font-medium" for="ign">Username</label>
         <input type="text" class="form-control" id="ign" name="ign" autocomplete="username">
       </div>
       <div>
-        <label for="signupEmail">Email</label>
+        <label class="font-medium" for="signupEmail">Email</label>
         <input type="email" class="form-control" id="signupEmail" name="username">
       </div>
       <div>
-        <label for="signupPassword">Password</label>
+        <label class="font-medium" for="signupPassword">Password</label>
         <input type="password" class="form-control" id="signupPassword" name="password" autocomplete="new-password">
         <p class="mb-4 text-sm" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
       </div>
       <div>
-        <label for="signupConfirmPassword">Confirm password</label>
+        <label class="font-medium" for="signupConfirmPassword">Confirm password</label>
         <input type="password" class="form-control" id="signupConfirmPassword" name="confirmPassword" autocomplete="new-password">
       </div>
       <div>
-        <label for="yob">Year of birth</label>
+        <label class="font-medium" for="yob">Year of birth</label>
         <input type="number" class="form-control" id="yob" name="yob">
       </div>
 
@@ -81,3 +81,5 @@
     </form>
   </div>
 </div>
+
+<%- include('../partials/footerV2.ejs') %>

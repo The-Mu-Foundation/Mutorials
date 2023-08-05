@@ -22,30 +22,4 @@
       opacity-100 hover:opacity-70
       transition-opacity;
   }
-
-  input[type='checkbox'] {
-    @apply appearance-none
-      min-w-[1rem] h-4
-      text-blue-500
-      border-2 border-neutral-200
-      rounded
-      outline-blue-500;
-  }
-  input[type='text'],
-  input[type='password'],
-  input[type='email'],
-  input[type='number'] {
-    @apply block
-      w-full
-      mt-1 mb-3
-      px-2 py-1
-      border-2 border-neutral-200
-      rounded
-      outline-blue-500;
-  }
-  input[type='number']::-webkit-inner-spin-button,
-  input[type='number']::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
 }

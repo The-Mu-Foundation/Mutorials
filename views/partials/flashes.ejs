@@ -18,7 +18,7 @@
 ];
 %>
 
-<div class="absolute flex justify-center w-full top-12">
+<div class="flex justify-center w-full mb-4">
   <div class="flex flex-col w-full max-w-md gap-2">
     <% for (let pair of flashMessages) { %>
       <% if (!pair || !pair[0]) continue; %>
@@ -29,8 +29,9 @@
         <% let borderColor = messageType === 'error' ? 'border-red-100' : 'border-green-100' %>
         <div
           class="w-full max-h-none px-4 py-2 <%= bgColor %> border-2 <%= borderColor %>
-                 box-border rounded-md shadow-md cursor-pointer transition duration-300"
+                 box-border rounded-md cursor-pointer transition duration-300"
           x-data=""
+          <%# Fade first, then disappear %>
           @click="(event) => {
             event.target.style.opacity = 0;
               event.target.addEventListener('transitionend', () => {
