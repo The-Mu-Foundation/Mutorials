@@ -33,8 +33,8 @@ app.use(flash()); // express-flash-messages config
 app.use(cookieParser());
 
 app.set('view engine', 'ejs');
-app.use(expressLayouts);
-app.set('layout', 'layouts/empty.ejs');
+// app.use(expressLayouts);
+// app.set('layout', 'layouts/empty.ejs');
 
 app.use(express.static('public'));
 

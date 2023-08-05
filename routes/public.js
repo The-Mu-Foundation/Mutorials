@@ -2,6 +2,8 @@
 const passport = require('passport');
 const Filter = require('bad-words');
 
+const expressLayouts = require('express-ejs-layouts');
+
 const filter = new Filter();
 
 // FUNCTION IMPORTS
@@ -20,11 +22,11 @@ module.exports = (app, mongo) => {
   // PUBLIC GET
   // `username` is email
   // `ign` is username
-  app.get('/', (req, res) => {
+  app.get('/', expressLayouts, (req, res) => {
     res.render(VIEWS + 'public/indexV2.ejs', { layout: 'layouts/base.ejs' });
   });
 
-  app.get('/signin', (req, res) => {
+  app.get('/signin', expressLayouts, (req, res) => {
     if (!req.isAuthenticated()) {
       res.render(VIEWS + 'public/signinV2.ejs', {
         pageName: 'Sign-in to Mutorials',
@@ -35,7 +37,7 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/signup', (req, res) => {
+  app.get('/signup', expressLayouts, (req, res) => {
     if (!req.isAuthenticated()) {
       res.render(VIEWS + 'public/signupV2.ejs', {
         pageName: 'Sign-up to Mutorials',
