@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Mutorials</title>    
+  
+    <title>Mutorials <%= locals.pageName ? `• ${locals.pageName}` : "" %></title>
     <link rel="icon" href="https://cdn.mutorials.org/images/icons/Icon_Main.svg" sizes="any" type="image/svg+xml">
 
     <%# Meta tags %>
@@ -34,9 +34,11 @@
   </head>
 
   <body class="overflow-x-hidden">
-    <%- defineContent('preMain') %>
-    <main class="flex flex-col items-center">
+    <%- include('../partials/navigationV2') %>
+    <%- include ('../partials/flashes') %>
+    <div class="flex flex-col items-center">
       <%- defineContent('main') %>
-    </main>
+    </div>
+    <%- include('../partials/footerV2.ejs') %>
   </body>
 </html>

@@ -1,85 +1,80 @@
-<%- contentFor('head') %>
-<script defer>
-  $(document).ready(() =>  {
-    /* $("#password-req").hide();
-    $("#signupPassword").focus(() => {
-      $("#password-req").show(100);
-    });
-    $("#signupPassword").blur(() => {
-      window.setTimeout(() => {
-        $("#password-req").hide(100);
-      }, 1000);
-    }); */
-
-    $("#username-characters").hide();
-    $("#ign").focus(() => {
-      $("#username-characters").show(100);
-    });
-    $("#ign").blur(() => {
-      window.setTimeout(() => {
-        $("#username-characters").hide(100);
-      }, 1000);
-    });
-  });
-</script>
-
-<%- contentFor('preMain') %>
-<%- include('../partials/navigationV2.ejs') %>
-<%- include ('../partials/flashes.ejs') -%>
-
 <%- contentFor('main') %>
-<div class="flex flex-col items-center">
+<div class="flex flex-col items-center max-w-sm">
   <img class="w-12 mb-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
   <h2 class="mb-2">Sign up for Mutorials</h2>
   <p class="mb-4">Already have an account? <a href="/signin">Sign in</a></p>
 
-  <div class="flex flex-col items-start full max-w-sm">
-    <form action="/register" method="post" autocomplete="off" spellcheck="false">
-      <div>
-        <label class="font-medium" for="ign">Username</label>
-        <input type="text" class="form-control" id="ign" name="ign" autocomplete="username">
-      </div>
-      <div>
-        <label class="font-medium" for="signupEmail">Email</label>
-        <input type="email" class="form-control" id="signupEmail" name="username">
-      </div>
-      <div>
-        <label class="font-medium" for="signupPassword">Password</label>
-        <input type="password" class="form-control" id="signupPassword" name="password" autocomplete="new-password">
-        <p class="mb-4 text-sm" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
-      </div>
-      <div>
-        <label class="font-medium" for="signupConfirmPassword">Confirm password</label>
-        <input type="password" class="form-control" id="signupConfirmPassword" name="confirmPassword" autocomplete="new-password">
-      </div>
-      <div>
-        <label class="font-medium" for="yob">Year of birth</label>
-        <input type="number" class="form-control" id="yob" name="yob">
-      </div>
+  <form class="w-full" action="/register" method="post" autocomplete="off" spellcheck="false">
+    <div class="mb-4">
+      <label class="font-medium" for="ign">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        id="ign" name="ign"
+        autocomplete="username"
+      >
+      <p class="text-sm" id="username-characters">You may use only <strong>letters</strong>, <strong>numbers</strong>, underscore (_), hyphen (-), period (.), and tilde (~) in your username.</p>
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="signupEmail">Email</label>
+      <input 
+        type="email"
+        class="form-control"
+        id="signupEmail"
+        name="username"
+      >
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="signupPassword">Password</label>
+      <input
+        type="password"
+          class="form-control"  
+          id="signupPassword" 
+          name="password"
+          autocomplete="new-password"
+        >
+      <p class="mb-4 text-sm" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="signupConfirmPassword">Confirm password</label>
+      <input
+        type="password"
+        class="form-control"
+        id="signupConfirmPassword"
+        name="confirmPassword"
+        autocomplete="new-password"
+      >
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="yob">Year of birth</label>
+      <input
+        type="number"
+        class="form-control"
+        id="yob"
+        name="yob"
+      >
+    </div>
 
-      <div>
-        <div class="flex items-start gap-2">
-          <div class="flex items-center">
-            &#8203;
-            <input type="checkbox" class="form-checkbox" id="agreeTOS" name="agreeTOS">
-          </div>
-          <label for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a>.</label><br>
+    <div>
+      <div class="flex items-start gap-2">
+        <div class="flex items-center">
+          &#8203;
+          <input type="checkbox" id="agreeTOS" name="agreeTOS">
         </div>
-        <div class="flex items-start gap-2">
-          <div class="flex items-center">
-            &#8203;
-            &#8203;
-            <input type="checkbox" class="form-checkbox" id="agreeAge" name="agreeAge">
-          </div>
-          <label for="agreeAge">I am at least 13 years old, or I have permission from my parent, guardian, teacher, or school to use Mutorials.</label><br>
-        </div>
+        <label for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a>.</label><br>
       </div>
+      <div class="flex items-start gap-2">
+        <div class="flex items-center">
+          &#8203;
+          &#8203;
+          <input type="checkbox" id="agreeAge" name="agreeAge">
+        </div>
+        <label for="agreeAge">I am at least 13 years old, or I have permission from my parent, guardian, teacher, or school to use Mutorials.</label><br>
+      </div>
+    </div>
 
-      <div class="mt-4">
-        <input class="btn btn-primary w-full" type="submit" id="submitButton" value="Sign Up">
-      </div>
-    </form>
-  </div>
+    <div class="mt-4">
+      <input class="btn btn-primary w-full" type="submit" id="submitButton" value="Sign Up">
+    </div>
+  </form>
 </div>
-
-<%- include('../partials/footerV2.ejs') %>

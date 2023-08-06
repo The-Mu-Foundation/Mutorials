@@ -29,7 +29,7 @@ module.exports = (app, mongo) => {
   app.get('/signin', expressLayouts, (req, res) => {
     if (!req.isAuthenticated()) {
       res.render(VIEWS + 'public/signinV2.ejs', {
-        pageName: 'Sign-in to Mutorials',
+        pageName: 'Sign in',
         layout: 'layouts/base.ejs',
       });
     } else {
@@ -40,7 +40,7 @@ module.exports = (app, mongo) => {
   app.get('/signup', expressLayouts, (req, res) => {
     if (!req.isAuthenticated()) {
       res.render(VIEWS + 'public/signupV2.ejs', {
-        pageName: 'Sign-up to Mutorials',
+        pageName: 'Sign up',
         layout: 'layouts/base.ejs',
       });
     } else {
@@ -240,7 +240,10 @@ module.exports = (app, mongo) => {
     passport.authenticate('local', {
       failureRedirect: '/signin',
       successRedirect: '/homepage',
-      failureFlash: 'Invalid username or password.',
+      failureFlash: {
+        type: 'errorFlash',
+        message: 'Invalid username or password.',
+      },
       successFlash: 'Welcome!',
     }),
     (req, res, next) => {

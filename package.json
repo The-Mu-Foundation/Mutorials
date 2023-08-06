@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "run-p dev:*",
-    "dev:sync": "browser-sync start --no-notify --proxy=localhost:3000 --port=3001 --files \"**/*\"",
+    "dev:sync": "browser-sync start --no-notify --no-open --proxy=localhost:3000 --port=3001 --files \"**/*\"",
     "dev:express": "nodemon index.js",
     "dev:css": "postcss public/css/tailwind.css -o public/css/style.css --watch",
     "build": "postcss public/css/tailwind.css -o public/css/style.css",

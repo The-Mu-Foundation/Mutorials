@@ -1,12 +1,15 @@
+console.log('Importing...');
+
 // MODULE IMPORTS
 const cookieParser = require('cookie-parser');
 const express = require('express');
-const expressLayouts = require('express-ejs-layouts');
 const flash = require('express-flash-messages');
 const session = require('express-session');
 const http = require('http');
 const enforce = require('express-sslify');
 const { initializeAnalytics } = require('./analytics');
+
+console.log('Setting up Express server...');
 
 // START EXPRESS SERVER
 const app = express();

@@ -1,5 +1,56 @@
 <%- contentFor('head') %>
+<script defer>
+  $(document).ready(function () {
+    $('#forgot-password-form').hide(0);
+    $('#forgotPasswordTrigger').click(function() {
+        $('#forgot-password-form').show(1000);
+        $('#signin-form').hide(500);
+    });
+    $('#cancel-password').click(function() {
+        $('#forgot-password-form').hide(500);
+        $('#signin-form').show(1000);
+    });
+  });
+</script>
 
 <%- contentFor('main') %>
-<h1>Hello there</h1>
-<p>This is the sign in page !</p>
+
+<div class="flex flex-col items-center max-w-sm">
+  <img class="w-12 mb-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
+  <h2 class="mb-2">Sign in to Mutorials</h2>
+  <p class="mb-4">Don't have an account? <a href="/signup">Sign up</a></p>
+
+  <form class="w-full" action="/login" method="post" autocomplete="off" spellcheck="false">
+    <div class="mb-4">
+      <label class="font-medium" for="loginEmail">Username / Email address</label>
+      <input
+        type="text"
+        id="loginEmail" name="username"
+        autocomplete="username"
+      >
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="signupConfirmPassword">Password</label>
+      <input
+        type="password"
+        id="signupConfirmPassword"
+        name="confirmPassword"
+        autocomplete="password"
+      >
+    </div>
+
+    <div>
+      <div class="flex items-start gap-2">
+        <div class="flex items-center">
+          &#8203;
+          <input type="checkbox" id="stayLoggedIn" name="stayLoggedIn">
+        </div>
+        <label for="stayLoggedIn">Keep me signed in</label><br>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <input class="btn btn-primary w-full" type="submit" id="submitButton" value="Sign Up">
+    </div>
+  </form>
+</div>

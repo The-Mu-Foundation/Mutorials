@@ -13,7 +13,7 @@ input[type='number'] {
   @apply appearance-none
     block
     w-full
-    mt-1 mb-3
+    my-1
     px-3 py-2
     border-2 border-neutral-200
     -outline-offset-2
