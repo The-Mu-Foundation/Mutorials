@@ -12,6 +12,7 @@
         class="form-control"
         id="ign" name="ign"
         autocomplete="username"
+        required="true"
       >
       <p class="text-sm" id="username-characters">You may use only <strong>letters</strong>, <strong>numbers</strong>, underscore (_), hyphen (-), period (.), and tilde (~) in your username.</p>
     </div>
@@ -22,6 +23,7 @@
         class="form-control"
         id="signupEmail"
         name="username"
+        required="true"
       >
     </div>
     <div class="mb-4">
@@ -32,6 +34,7 @@
           id="signupPassword" 
           name="password"
           autocomplete="new-password"
+          required="true"
         >
       <p class="mb-4 text-sm" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
     </div>
@@ -43,6 +46,7 @@
         id="signupConfirmPassword"
         name="confirmPassword"
         autocomplete="new-password"
+        required="true"
       >
     </div>
     <div class="mb-4">
@@ -52,6 +56,7 @@
         class="form-control"
         id="yob"
         name="yob"
+        required="true"
       >
     </div>
 
@@ -59,7 +64,11 @@
       <div class="flex items-start gap-2">
         <div class="flex items-center">
           &#8203;
-          <input type="checkbox" id="agreeTOS" name="agreeTOS">
+          <input
+            type="checkbox"
+            id="agreeTOS"
+            name="agreeTOS"
+            required="true">
         </div>
         <label for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a>.</label><br>
       </div>
@@ -67,7 +76,11 @@
         <div class="flex items-center">
           &#8203;
           &#8203;
-          <input type="checkbox" id="agreeAge" name="agreeAge">
+          <input
+            type="checkbox"
+            id="agreeAge"
+            name="agreeAge"
+            required="true">
         </div>
         <label for="agreeAge">I am at least 13 years old, or I have permission from my parent, guardian, teacher, or school to use Mutorials.</label><br>
       </div>

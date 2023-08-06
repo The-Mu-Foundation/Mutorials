@@ -247,8 +247,7 @@ module.exports = (app, mongo) => {
       successFlash: 'Welcome!',
     }),
     (req, res, next) => {
-      console.log('Oh hi');
-      console.log('req.session');
+      console.log('routes/publicjs: User just signed in');
     }
   );
 

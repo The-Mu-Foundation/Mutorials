@@ -31,6 +31,8 @@
       <% const [messageList, messageType] = pair %>
 
       <% for (let message of messageList) { %>
+        <% console.log(`flash message content: ${message}`) %>
+
         <% let bgColor = flashColors[messageType][0] %>
         <% let borderColor = flashColors[messageType][1] %>
         <div
