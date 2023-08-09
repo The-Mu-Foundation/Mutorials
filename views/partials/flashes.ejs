@@ -20,7 +20,7 @@
 %>
 
 <% flashColors = {
-  error: ['bg-red-50', 'border-red-50'],
+  error: ['bg-red-50', 'border-red-100'],
   success: ['bg-green-100', 'border-green-100']
 } %>
 
@@ -31,8 +31,6 @@
       <% const [messageList, messageType] = pair %>
 
       <% for (let message of messageList) { %>
-        <% console.log(`flash message content: ${message}`) %>
-
         <% let bgColor = flashColors[messageType][0] %>
         <% let borderColor = flashColors[messageType][1] %>
         <div
