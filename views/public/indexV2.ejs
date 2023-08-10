@@ -55,16 +55,16 @@
   <h2 class="mb-2">Wide coverage</h2>
   <h3 class="mb-4">Four core subjects with 60 distinct units.</h3>
 
-  <div class="flex gap-4">
+  <div class="flex items-stretch gap-4">
     <% for (let [subject, unitCount, image] of [
-      ['Physics', 15, 'https://cdn.mutorials.org/images/icons/Physics_Main.svg'],
-      ['Chemistry', 15, 'https://cdn.mutorials.org/images/icons/Chem_Main.svg'],
-      ['Biology', 15, 'https://cdn.mutorials.org/images/icons/Bio_Main.svg'],
+      ['Physics', 15, 'https://images.unsplash.com/photo-1591306208574-969f12f1ebfe'],
+      ['Chemistry', 15, 'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6'],
+      ['Biology', 15, 'https://images.unsplash.com/photo-1576086213369-97a306d36557'],
       ['Earth & Space', 15, 'https://images.unsplash.com/photo-1634176866089-b633f4aec882'],
     ]) {%>
       <div class="flex flex-col items-center w-1/4">
-        <img class="mb-2 object-cover rounded-md" src="<%= image %>" draggable="false">
-        <h3 class="mb-0 text-sm sm:text-normal text-center font-bold"><%= subject %></h3>
+        <img class="mb-2 aspect-square object-cover rounded-md" src="<%= image %>" draggable="false">
+        <h3 class="mb-0 sm:text-normal text-center font-bold"><%= subject %></h3>
         <p><%= unitCount %> units</p>
       </div>
     <% } %>
@@ -96,12 +96,12 @@
 </div>
 
 <%# USABO %>
-<div class="flex flex-col items-center w-screen px-6 py-10 bg-blue-800 text-white">
+<div class="flex flex-col items-center w-screen px-6 py-16 bg-blue-800 text-white">
   <p class="mb-8 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full">NEW!</p>
   <h1 class="mb-2">USABO Training</h1>
   <h3 class="mb-4 text-center">The USA Biology Olympiad is very cool. 👍 We do USABO problems too.</h3>
   <div class="w-96">
-    <img class="rounded-xl aspect-video object-cover" src="https://images.unsplash.com/photo-1576086213369-97a306d36557">
+    <img class="rounded-xl aspect-video object-cover" src="https://www.science.edu/acellus/wp-content/uploads/2016/12/Biology-Gen-Honors-720x380.jpg">
   </div>
 </div>
 
