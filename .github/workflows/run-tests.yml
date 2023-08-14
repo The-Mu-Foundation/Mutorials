@@ -4,12 +4,11 @@ name: Run Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -17,6 +16,6 @@ jobs:
 
       - name: Install modules
         run: npm install
-        
+
       - name: Run ESLint
         run: npm run lint

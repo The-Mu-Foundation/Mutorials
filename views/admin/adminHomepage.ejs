@@ -7,109 +7,107 @@
 <h1 class="my-5 container text-center">Mutorials Admin Dashboard</h1>
 
 <div class="container">
-    <%- include ("../partials/flashes") -%>
+  <%- include ("../partials/flashes") -%>
+</div>
+
+<div class="jumbotron container">
+  <h3 class="mb-4">Database Control:</h3>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/addQuestion">Add Question</a>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="#" data-bs-toggle="modal" data-bs-target="#editQuestionModal">Edit Question</a>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="/reviewer/reviewQuestions">Review Questions</a>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/allQuestions">All Questions</a>
+  <div class="w-100 text-center" style="font-size: 1.4rem">
+    (you have <%= numUser %> questions pending review, <%= numAll %> total)<br />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"> </script>
+    <script>
+      function clearskipcookie() {
+        Cookies.remove('skipQuestions');
+      }
+    </script>
+    <button class="btn btn-warning" onclick="clearskipcookie()">clear skipped questions</button>
+  </div>
 </div>
 
 <div class="jumbotron container">
 
-    <h3 class="mb-4">Database Control:</h3>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/addQuestion">Add Question</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="#" data-bs-toggle="modal" data-bs-target="#editQuestionModal">Edit Question</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/reviewer/reviewQuestions">Review Questions</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/allQuestions">All Questions</a>
-    <div class="w-100 text-center" style="font-size: 1.4rem">
-        (you have <%= numUser %> questions pending review, <%= numAll %> total)<br>
-        <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"> </script>
-        <script>
-        function clearskipcookie() {
-            Cookies.remove('skipQuestions');
-        }
-        </script>
-        <button class="btn btn-warning" onclick="clearskipcookie()">clear skipped questions</button>
-    </div>
-</div>
-
-<div class="jumbotron container">
-
-    <h3 class="mb-4">Site Control:</h3>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/announcements">Manage Announcements</a>
+  <h3 class="mb-4">Site Control:</h3>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/announcements">Manage Announcements</a>
 
 </div>
 
 <div class="jumbotron container">
-
-    <h3 class="mb-4">Stat Querying/Fetching:</h3>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/contributorStats">Contributor Stats</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="#" data-bs-toggle="modal" data-bs-target="#contributorAddModal">Add Contributor</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="#" data-bs-toggle="modal" data-bs-target="#contributorPromoteModal">Promote Contributor</a>
-    <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/analytics">Site Analytics</a>
-
+  <h3 class="mb-4">Stat Querying/Fetching:</h3>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/contributorStats">Contributor Stats</a>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="#" data-bs-toggle="modal" data-bs-target="#contributorAddModal">Add Contributor</a>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="#" data-bs-toggle="modal" data-bs-target="#contributorPromoteModal">Promote Contributor</a>
+  <a class="btn btn-primary btn-lg w-100 my-2" href="/admin/analytics">Site Analytics</a>
 </div>
+
 <div class="modal fade" id="contributorAddModal" tabindex="-1" aria-labelledby="add-contributor-label" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="add-contributor-form" class="modal-content" method="post" action="/admin/addContributor">
-            <div class="modal-header">
-                <h5 class="modal-title" id="add-contributor-label">Add Contributor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-floating">
-                    <input name="contributorUsername" class="form-control mt-1" placeholder="Contributor Username" id="contributorUsername">
-                    <label for="contributorUsername">Contributor Username</label>
-                </div>
-                <div class="form-floating">
-                    <input name="contributorID" class="form-control mt-1" placeholder="Contributor ID" id="contributorID">
-                    <label for="contributor ID">Contributor ID</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-primary" value="Add contributor">
-            </div>
-        </form>
-    </div>
+  <div class="modal-dialog">
+    <form id="add-contributor-form" class="modal-content" method="post" action="/admin/addContributor">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add-contributor-label">Add Contributor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating">
+          <input name="contributorUsername" class="form-control mt-1" placeholder="Contributor Username" id="contributorUsername">
+          <label for="contributorUsername">Contributor Username</label>
+        </div>
+        <div class="form-floating">
+          <input name="contributorID" class="form-control mt-1" placeholder="Contributor ID" id="contributorID">
+          <label for="contributor ID">Contributor ID</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Add contributor">
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="modal fade" id="contributorPromoteModal" tabindex="-1" aria-labelledby="promote-contributor-label" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="add-contributor-form" class="modal-content" method="post" action="/admin/promoteContributor">
-            <div class="modal-header">
-                <h5 class="modal-title" id="promote-contributor-label">Promote Contributor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-floating">
-                    <input name="contributorID" class="form-control mt-1" placeholder="Contributor ID" id="contributorID">
-                    <label for="contributor ID">Contributor ID</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-primary" value="Promote contributor">
-            </div>
-        </form>
-    </div>
+  <div class="modal-dialog">
+    <form id="add-contributor-form" class="modal-content" method="post" action="/admin/promoteContributor">
+      <div class="modal-header">
+        <h5 class="modal-title" id="promote-contributor-label">Promote Contributor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating">
+          <input name="contributorID" class="form-control mt-1" placeholder="Contributor ID" id="contributorID">
+          <label for="contributor ID">Contributor ID</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Promote contributor">
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="edit-question-label" aria-hidden="true">
-    <div class="modal-dialog">
-        <form id="edit-question-form" class="modal-content" method="get" action="/admin/editQuestion">
-            <div class="modal-header">
-                <h5 class="modal-title" id="add-contributor-label">Edit Question</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-floating">
-                    <input name="id" class="form-control mt-1" placeholder="Question ID" id="editID">
-                    <label for="editID">Question ID</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-primary" value="Edit question">
-            </div>
-        </form>
-    </div>
+  <div class="modal-dialog">
+    <form id="edit-question-form" class="modal-content" method="get" action="/admin/editQuestion">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add-contributor-label">Edit Question</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating">
+          <input name="id" class="form-control mt-1" placeholder="Question ID" id="editID">
+          <label for="editID">Question ID</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Edit question">
+      </div>
+    </form>
+  </div>
 </div>
 
 <%- include("../partials/footer") -%>

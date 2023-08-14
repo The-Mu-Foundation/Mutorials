@@ -1,14 +1,16 @@
 <%# This is a footer template %>
-        <div class="container my-5">
-            <footer class="text-center"><br><hr>&copy; The Mu Foundation<span class="year-label"></span>, a 501(c)(3) nonprofit. All Rights Reserved.<br><a href='/termsOfService#terms-of-service'>Terms of Service</a> | <a href='/termsOfService#privacy-policy'>Privacy Policy</a> | <button type="button" class="btn btn-link" style="padding: 0px; margin-top: -1px;" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button></footer>
-        </div>
+<div class="container my-5">
+  <footer class="text-center"><br>
+    <hr>&copy; The Mu Foundation<span class="year-label"></span>, a 501(c)(3) nonprofit. All Rights Reserved.<br><a href='/termsOfService#terms-of-service'>Terms of Service</a> | <a href='/termsOfService#privacy-policy'>Privacy Policy</a> | <button type="button" class="btn btn-link" style="padding: 0px; margin-top: -1px;" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button>
+  </footer>
+</div>
 
-    </body>
+</body>
 
-    <%# Turn off form autocomplete globally and set the year %>
-    <script>
-        $(':input').attr('autocomplete','off');
-        $('.year-label').text(` ${new Date().getFullYear()}`);
-    </script>
+<%# Turn off form autocomplete globally and set the year %>
+<script>
+  $(':input').attr('autocomplete', 'off');
+  $('.year-label').text(` ${new Date().getFullYear()}`);
+</script>
 
 </html>

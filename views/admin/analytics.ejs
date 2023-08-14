@@ -5,23 +5,27 @@
 <%- include("../partials/navigationPrivate") -%>
 
 <script>
-$(document).ready(function() {
+  $(document).ready(function() {
     let historyData = {
-        userbaseDataMonth: [ <%= siteData.historyData.userbase_month %> ],
-        questioncountDataMonth: [ <%= siteData.historyData.questioncount_month %> ],
-        attemptsDataMonth: [ <%= siteData.historyData.attempts_month %> ],
-        solvesDataMonth: [ <%= siteData.historyData.solves_month %> ],
+      userbaseDataMonth: [<%= siteData.historyData.userbase_month %>],
+      questioncountDataMonth: [<%= siteData.historyData.questioncount_month %>],
+      attemptsDataMonth: [<%= siteData.historyData.attempts_month %>],
+      solvesDataMonth: [<%= siteData.historyData.solves_month %>],
 
-        userbaseDataYear: [ <%= siteData.historyData.userbase_year %> ],
-        questioncountDataYear: [ <%= siteData.historyData.questioncount_year %> ],
-        attemptsDataYear: [ <%= siteData.historyData.attempts_year %> ],
-        solvesDataYear: [ <%= siteData.historyData.solves_year %> ]
+      userbaseDataYear: [<%= siteData.historyData.userbase_year %>],
+      questioncountDataYear: [<%= siteData.historyData.questioncount_year %>],
+      attemptsDataYear: [<%= siteData.historyData.attempts_year %>],
+      solvesDataYear: [<%= siteData.historyData.solves_year %>]
     };
 
     let passrateDataMonth = [];
-    historyData.solvesDataMonth.forEach((element, index) => passrateDataMonth.push(Math.round(element / historyData.attemptsDataMonth[index] * 100)));
+    historyData.solvesDataMonth.forEach(
+      (element, index) => passrateDataMonth.push(Math.round(element / historyData.attemptsDataMonth[index] * 100))
+    );
     let passrateDataYear = [];
-    historyData.solvesDataYear.forEach((element, index) => passrateDataYear.push(Math.round(element / historyData.attemptsDataYear[index] * 100)));
+    historyData.solvesDataYear.forEach(
+      (element, index) => passrateDataYear.push(Math.round(element / historyData.attemptsDataYear[index] * 100))
+    );
 
     renderChart("userbaseDataMonth", historyData.userbaseDataMonth, "Userbase");
     renderChart("questioncountDataMonth", historyData.questioncountDataMonth, "Question Count");
@@ -34,161 +38,167 @@ $(document).ready(function() {
     renderChart("passrateDataYear", passrateDataYear, "Passrate");
 
     function renderChart(id, data, name) {
-        var ctx = document.getElementById(id).getContext('2d');
-        let chartLabels = [],
-            counter = data.length;
-        data.forEach(element => chartLabels.push(`${(new Date(Date.now() - counter-- * (id.indexOf("Month") > -1 ? 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000))).toJSON().substr(0,10)}: ${element}`));
-        var chart = new Chart(ctx, {
-            // The type of chart we want to create
-            type: 'line',
+      var ctx = document.getElementById(id).getContext('2d');
+      let chartLabels = [],
+        counter = data.length;
+      data.forEach(
+        element => chartLabels.push(
+          `${(new Date(
+            Date.now() - counter-- * (id.indexOf("Month") > -1 ? 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000)
+          )).toJSON().substr(0,10)}: ${element}`
+        )
+      );
+      var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
 
-            // The data for our dataset
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: "Users",
-                    borderColor: 'rgb(100, 200, 230)',
-                    backgroundColor: 'rgb(100, 200, 230)',
-                    fill: false,
-                    data: data,
-                }]
-            },
+        // The data for our dataset
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: "Users",
+            borderColor: 'rgb(100, 200, 230)',
+            backgroundColor: 'rgb(100, 200, 230)',
+            fill: false,
+            data: data,
+          }]
+        },
 
-            // Configuration options go here
-            options: {
-                title: {
-                    display: true,
-                    text: `${name} ${id.indexOf("Month") > -1 ? "Monthly" : "Yearly"} History`
-                },
-                legend: {
-                    display: false,
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            display: false
-                        }
-                    }]
-                },
-            }
-        });
+        // Configuration options go here
+        options: {
+          title: {
+            display: true,
+            text: `${name} ${id.indexOf("Month") > -1 ? "Monthly" : "Yearly"} History`
+          },
+          legend: {
+            display: false,
+          },
+          scales: {
+            xAxes: [{
+              ticks: {
+                display: false
+              }
+            }]
+          },
+        }
+      });
     }
-});
+  });
 </script>
 
 <h1 class="my-5 container display-2 text-center">Mutorials Admin Analytics</h1>
 <h2 class="display-5 text-center">Important Indicators</h2>
 <div class="jumbotron container d-flex">
+  <div style="width: 50%">
+    <h5 class="">User count: <%= siteData.userCount %></h5>
+    <h5 class="">3000+ User count: <%= siteData.proficientCount %></h5>
+    <h5 class="">Question count: <%= siteData.questionCount %></h5>
+    <h5 class="">USABO Question count: <%= siteData.usaboQuestionCount %></h5>
+  </div>
+  <div style="flex-grow: 1">
+    <h5 class="">Attempts Count: <%= siteData.totalAttempts.physics + siteData.totalAttempts.chemistry + siteData.totalAttempts.biology %></h5>
+    <h5 class="">USABO Attempts: <%= siteData.totalAttempts.usabo %></h5>
+    <h5 class="">Solves Count: <%= siteData.totalSolves.physics + siteData.totalSolves.chemistry + siteData.totalSolves.biology %></h5>
+    <h5 class="">USABO Solves: <%= siteData.totalSolves.usabo %></h5>
+  </div>
+</div>
+
+<div class="jumbotron container">
+  <h3 class="mb-3 text-center">Graphs</h3>
+  <div class="d-flex">
     <div style="width: 50%">
-        <h5 class="">User count: <%= siteData.userCount %></h5>
-        <h5 class="">3000+ User count: <%= siteData.proficientCount %></h5>
-        <h5 class="">Question count: <%= siteData.questionCount %></h5>
-        <h5 class="">USABO Question count: <%= siteData.usaboQuestionCount %></h5>
+      <canvas id="userbaseDataMonth"></canvas>
     </div>
     <div style="flex-grow: 1">
-        <h5 class="">Attempts Count: <%= siteData.totalAttempts.physics + siteData.totalAttempts.chemistry + siteData.totalAttempts.biology %></h5>
-        <h5 class="">USABO Attempts: <%= siteData.totalAttempts.usabo %></h5>
-        <h5 class="">Solves Count: <%= siteData.totalSolves.physics + siteData.totalSolves.chemistry + siteData.totalSolves.biology %></h5>
-        <h5 class="">USABO Solves: <%= siteData.totalSolves.usabo %></h5>
+      <canvas id="userbaseDataYear"></canvas>
     </div>
+  </div>
+  <div class="d-flex">
+    <div style="width: 50%">
+      <canvas id="questioncountDataMonth"></canvas>
+    </div>
+    <div style="flex-grow: 1">
+      <canvas id="questioncountDataYear"></canvas>
+    </div>
+  </div>
+  <div class="d-flex">
+    <div style="width: 50%">
+      <canvas id="attemptsDataMonth"></canvas>
+    </div>
+    <div style="flex-grow: 1">
+      <canvas id="attemptsDataYear"></canvas>
+    </div>
+  </div>
+  <div class="d-flex">
+    <div style="width: 50%">
+      <canvas id="passrateDataMonth"></canvas>
+    </div>
+    <div style="flex-grow: 1">
+      <canvas id="passrateDataYear"></canvas>
+    </div>
+  </div>
 </div>
 
 <div class="jumbotron container">
-    <h3 class="mb-3 text-center">Graphs</h3>
-    <div class="d-flex">
-        <div style="width: 50%">
-            <canvas id="userbaseDataMonth"></canvas>
-        </div>
-        <div style="flex-grow: 1">
-            <canvas id="userbaseDataYear"></canvas>
-        </div>
-    </div>
-    <div class="d-flex">
-        <div style="width: 50%">
-            <canvas id="questioncountDataMonth"></canvas>
-        </div>
-        <div style="flex-grow: 1">
-            <canvas id="questioncountDataYear"></canvas>
-        </div>
-    </div>
-    <div class="d-flex">
-        <div style="width: 50%">
-            <canvas id="attemptsDataMonth"></canvas>
-        </div>
-        <div style="flex-grow: 1">
-            <canvas id="attemptsDataYear"></canvas>
-        </div>
-    </div>
-    <div class="d-flex">
-        <div style="width: 50%">
-            <canvas id="passrateDataMonth"></canvas>
-        </div>
-        <div style="flex-grow: 1">
-            <canvas id="passrateDataYear"></canvas>
-        </div>
-    </div>
+  <h3 class="mb-3 text-center">Subject-wise question data</h3>
+  <table class="text-center table">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Physics</th>
+        <th scope="col">Chemistry</th>
+        <th scope="col">Biology</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Question Count</th>
+        <td><%= adminData.physicsQuestionCount %></td>
+        <td><%= adminData.chemistryQuestionCount %></td>
+        <td><%= adminData.biologyQuestionCount %></td>
+      </tr>
+      <tr>
+        <th scope="row">Average Rating</th>
+        <td><%= adminData.physicsAverageRating %></td>
+        <td><%= adminData.chemistryAverageRating %></td>
+        <td><%= adminData.biologyAverageRating %></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <div class="jumbotron container">
-    <h3 class="mb-3 text-center">Subject-wise question data</h3>
-    <table class="text-center table">
-        <thead>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col">Physics</th>
-                <th scope="col">Chemistry</th>
-                <th scope="col">Biology</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">Question Count</th>
-                <td><%= adminData.physicsQuestionCount %></td>
-                <td><%= adminData.chemistryQuestionCount %></td>
-                <td><%= adminData.biologyQuestionCount %></td>
-            </tr>
-            <tr>
-                <th scope="row">Average Rating</th>
-                <td><%= adminData.physicsAverageRating %></td>
-                <td><%= adminData.chemistryAverageRating %></td>
-                <td><%= adminData.biologyAverageRating %></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div class="jumbotron container">
-    <h3 class="mb-3 text-center">Subject-wise total attempts and solves</h3>
-    <table class="text-center table">
-        <thead>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col">Physics</th>
-                <th scope="col">Chemistry</th>
-                <th scope="col">Biology</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">Attempts</th>
-                <td><%= siteData.totalAttempts.physics %></td>
-                <td><%= siteData.totalAttempts.chemistry %></td>
-                <td><%= siteData.totalAttempts.biology %></td>
-            </tr>
-            <tr>
-                <th scope="row">Solves</th>
-                <td><%= siteData.totalSolves.physics %></td>
-                <td><%= siteData.totalSolves.chemistry %></td>
-                <td><%= siteData.totalSolves.biology %></td>
-            </tr>
-            <tr>
-                <th scope="row">Passrate</th>
-                <td><%= Math.round(100*siteData.totalSolves.physics/siteData.totalAttempts.physics) %>%</td>
-                <td><%= Math.round(100*siteData.totalSolves.chemistry/siteData.totalAttempts.chemistry) %>%</td>
-                <td><%= Math.round(100*siteData.totalSolves.biology/siteData.totalAttempts.biology) %>%</td>
-            </tr>
-        </tbody>
-      </table>
+  <h3 class="mb-3 text-center">Subject-wise total attempts and solves</h3>
+  <table class="text-center table">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Physics</th>
+        <th scope="col">Chemistry</th>
+        <th scope="col">Biology</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Attempts</th>
+        <td><%= siteData.totalAttempts.physics %></td>
+        <td><%= siteData.totalAttempts.chemistry %></td>
+        <td><%= siteData.totalAttempts.biology %></td>
+      </tr>
+      <tr>
+        <th scope="row">Solves</th>
+        <td><%= siteData.totalSolves.physics %></td>
+        <td><%= siteData.totalSolves.chemistry %></td>
+        <td><%= siteData.totalSolves.biology %></td>
+      </tr>
+      <tr>
+        <th scope="row">Passrate</th>
+        <td><%= Math.round(100*siteData.totalSolves.physics/siteData.totalAttempts.physics) %>%</td>
+        <td><%= Math.round(100*siteData.totalSolves.chemistry/siteData.totalAttempts.chemistry) %>%</td>
+        <td><%= Math.round(100*siteData.totalSolves.biology/siteData.totalAttempts.biology) %>%</td>
+      </tr>
+    </tbody>
+  </table>
 
 </div>
 

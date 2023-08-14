@@ -6,245 +6,275 @@
 
 <%# JS code %>
 <script>
+  $(document).ready(function() {
+    // obtain hidden tag info [NOT IN USE RIGHT NOW]
+    var type = $('#hiddentypetag').val();
 
-    $(document).ready(function () {
+    // hide skip dialogue code
+    $('#skip-dialogue-1').show();
+    $('#skip-dialogue-2').hide(0);
 
-        // obtain hidden tag info [NOT IN USE RIGHT NOW]
-        var type = $("#hiddentypetag").val();
-
-		// hide skip dialogue code
-		$("#skip-dialogue-1").show();
-		$("#skip-dialogue-2").hide(0);
-
-		// skip button confirm message
-        $("#skip-button").click(function () {
-            $("#skip-dialogue-2").show(1000);
-			$("#skip-dialogue-1").hide(1000);
-        });
-		$("#no-skip").click(function () {
-			$("#skip-dialogue-1").show(1000);
-			$("#skip-dialogue-2").hide(1000);
-        });
-
-        // render rating display
-        var ctxRating = document.getElementById("ratingChart");
-
-        var style = ctxRating.style;
-        style.marginLeft = "auto";
-        style.marginRight = "auto";
-
-        var myChart = new Chart(ctxRating, {
-            type: "pie",
-            data: {
-                labels: ["User", "Question"],
-                datasets: [{
-                    label: "Current Rating",
-                    data: [$("#userRating").val(), $("#questionRating").val()],
-                    backgroundColor: [
-                        "rgba(80, 185, 20, 0.7)",
-                        "rgba(85, 190, 230, 0.7)"
-                    ],
-                    hoverBackgroundColor: [
-                        "rgba(80, 185, 20, 1)",
-                        "rgba(85, 190, 230, 1)"
-                    ],
-                    borderColor: [
-                        "rgba(255, 255, 255, 0.5)",
-                        "rgba(255, 255, 255, 0.5)"
-                    ],
-                    borderWidth: 2,
-                }]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: "Current Ratings"
-                },
-                legend: {
-                    display: false
-                },
-                cutoutPercentage: 40,
-                responsive: true
-            }
-        });
-
-        // decheck all
-        $('.form-check-input').prop('checked', false);
-
+    // skip button confirm message
+    $('#skip-button').click(function() {
+      $('#skip-dialogue-2').show(1000);
+      $('#skip-dialogue-1').hide(1000);
+    });
+    $('#no-skip').click(function() {
+      $('#skip-dialogue-1').show(1000);
+      $('#skip-dialogue-2').hide(1000);
     });
 
+    // render rating display
+    var ctxRating = document.getElementById('ratingChart');
+
+    var style = ctxRating.style;
+    style.marginLeft = 'auto';
+    style.marginRight = 'auto';
+
+    var myChart = new Chart(ctxRating, {
+      type: 'pie',
+      data: {
+        labels: ['User', 'Question'],
+        datasets: [{
+          label: 'Current Rating',
+          data: [$('#userRating').val(), $('#questionRating').val()],
+          backgroundColor: [
+            'rgba(80, 185, 20, 0.7)',
+            'rgba(85, 190, 230, 0.7)',
+          ],
+          hoverBackgroundColor: [
+            'rgba(80, 185, 20, 1)',
+            'rgba(85, 190, 230, 1)',
+          ],
+          borderColor: [
+            'rgba(255, 255, 255, 0.5)',
+            'rgba(255, 255, 255, 0.5)',
+          ],
+          borderWidth: 2,
+        }, ],
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Current Ratings',
+        },
+        legend: {
+          display: false,
+        },
+        cutoutPercentage: 40,
+        responsive: true,
+      },
+    });
+
+    // decheck all
+    $('.form-check-input').prop('checked', false);
+  });
 </script>
 
 <div class="container mt-5">
-    <%- include("../../partials/components/experienceBar") -%>
+  <%- include("../../partials/components/experienceBar") -%>
 </div>
 
 <div class="jumbotron container mt-3">
-    <%- include("../../partials/flashes") -%>
+  <%- include("../../partials/flashes") -%>
 
-    <% try { %>
+  <% try { %>
+  <%# Test for faulty question %>
+  <% if (!newQues) { %>
+  <% throw "no questions found"; %>
+  <% } %>
+  <% if((newQues.question == "") || (newQues.rating == null) || (newQues.answer[0] == "") || (newQues.answerEx == "")) { %>
+  <% throw "bad question parameters"; %>
+  <% } %>
 
-        <%# Test for faulty question %>
-        <% if (!newQues) { %>
-            <% throw "no questions found"; %>
-        <% } %>
-        <% if((newQues.question == "") || (newQues.rating == null) || (newQues.answer[0] == "") || (newQues.answerEx == "")) { %>
-            <% throw "bad question parameters"; %>
-        <% } %>
+  <div class="row">
+    <div class="col-12 col-lg-9">
+      <p class="lead mb-3">
+        <% if(newQues.ext_source != "original") { %>
+      <p>Question Source: <%= newQues.ext_source %></p>
+      <p><%= newQues.source_statement %></p>
+      <% } %>
+      </p>
 
-        <div class="row">
+      <%# Display question %>
+      <% if(newQues.type == "mc") { %>
+      <%# Multiple choice %>
 
-            <div class="col-12 col-lg-9">
-
-                <p class="lead mb-3">
-                    <% if(newQues.ext_source != "original") { %>
-                        <p>Question Source: <%= newQues.ext_source %></p>
-                        <p><%= newQues.source_statement %></p>
-                    <% } %>
-                </p>
-
-                <%# Display question %>
-                <% if(newQues.type == "mc") { %>
-
-                    <%# Multiple choice %>
-                    
-                    <% if(!(typeof disabled != 'undefined' && disabled)) { %>
-                    <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
-                    <% } %>
-                    <p><%- newQues.question %></p>
-                    <form action="/train/checkAnswer" method="POST">
-                        <div class="mt-4" id="mc-choices">
-                            <% var choiceIndex = 1; %>
-                            <% newQues.choices.forEach((choice) => { %>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="answerChoice" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
-                                    <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
-                                </div>
-                                <% choiceIndex++; %>
-                            <% }) %>
-                            <% if(!(typeof disabled != 'undefined' && disabled)) { %>
-                                <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
-                            <% } %>
-                        </div>
-                        <input type="hidden" name="id" value="<%= newQues._id %>">
-                        <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
-                        <input type="hidden" name="subject" value="<%= subject %>">
-                        <input type="hidden" name="units" value="<%= units %>">
-                        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
-                    </form>
-                <% } else if(newQues.type == "sa") { %>
-
-                    <%# Select all %>
-
-                    <% if(!(typeof disabled != 'undefined' && disabled)) { %>
-                    <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
-                    <% } %>
-                    <p><%- newQues.question %></p>
-                    <form action="/train/checkAnswer" method="POST">
-                        <div class="mt-4" id="sa-choices">
-                            <% var choiceIndex = 1; %>
-                            <% newQues.choices.forEach((choice) => { %>
-                                <div class="form-check my-1 me-sm-2">
-                                    <input type="checkbox" name="saChoice" class="form-check-input" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
-                                    <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
-                                </div>
-                                <% choiceIndex++; %>
-                            <% }) %>
-                            <% if(!(typeof disabled != 'undefined' && disabled)) { %>
-                                <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
-                            <% } %>
-                        </div>
-                        <input type="hidden" name="id" value="<%= newQues._id %>">
-                        <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
-                        <input type="hidden" name="subject" value="<%= subject %>">
-                        <input type="hidden" name="units" value="<%= units %>">
-                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
-                    </form>
-                <% } else if(newQues.type == "fr") { %>
-
-                    <%# Free response %>
-
-                    <% if(!(typeof disabled != 'undefined' && disabled)) { %>
-                    <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
-                    <% } %>
-                    <p><%- newQues.question %></p>
-                    <form action="/train/checkAnswer" method="POST">
-                        <div class="mt-4">
-                            <% if(!(typeof disabled != 'undefined' && disabled)) { %>
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
-                            </div>
-                                <input class="btn btn-primary" type="submit" value="Submit" id="submit">
-                            <% } %>
-                        </div>
-                        <input type="hidden" name="id" value="<%= newQues._id %>">
-                        <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
-                        <input type="hidden" name="subject" value="<%= subject %>">
-                        <input type="hidden" name="units" value="<%= units %>">
-                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
-                    </form>
-                <% } else { %>
-                    <% throw "invalid type"; %>
-                <% } %>
-
-            </div>
-
-            <div class="col-12 col-lg-3">
-
-                <div class="canvas-container-center text-center">
-                    <canvas id="ratingChart" width="400" height="400"></canvas>
-                </div>
-                <input type="hidden" id="userRating" value="<%= user.rating[subject.toLowerCase()] %>">
-                <input type="hidden" id="questionRating" value="<%= newQues.rating %>">
-
-            </div>
-
+      <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+      <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
+      <% } %>
+      <p><%- newQues.question %></p>
+      <form action="/train/checkAnswer" method="POST">
+        <div class="mt-4" id="mc-choices">
+          <% var choiceIndex = 1; %>
+          <% newQues.choices.forEach((choice) => { %>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="answerChoice" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
+            <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+          </div>
+          <% choiceIndex++; %>
+          <% }) %>
+          <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+          <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
+          <% } %>
         </div>
+        <input type="hidden" name="id" value="<%= newQues._id %>">
+        <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
+        <input type="hidden" name="subject" value="<%= subject %>">
+        <input type="hidden" name="units" value="<%= units %>">
+        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+      </form>
 
-        <%# Skip question %>
-        
-        <% if(!(typeof disabled != 'undefined' && disabled)) { %>
-        <div class="mt-2">
+      <% } else if(newQues.type == "sa") { %>
+      <%# Select all %>
 
-            <div id="skip-dialogue-1">
-                <h3 class="display-4" style="font-size: 1.5rem;">Question's content out of reach of your knowledge?</h3>
-                <button type="button" class="btn btn-primary mt-2" id="skip-button">Skip Question</button>
-            </div>
-
-            <div id="skip-dialogue-2">
-                <h3 class="display-4" style="font-size: 1.5rem;">Are you sure you want to skip this question?</h3>
-                <p>A new question will be randomly chosen, but you will lose 8 rating for skipping</p>
-                <form action="/train/skipQuestion" method="POST">
-                    <button type="button" class="btn btn-secondary" id="no-skip">No</button>
-                    <button type="submit" class="btn btn-primary" id="yes-skip">Yes</button>
-                    <input type="hidden" name="id" value="<%= newQues._id %>">
-                    <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
-                    <input type="hidden" name="subject" value="<%= subject %>">
-                </form>
-            </div>
-
+      <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+      <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
+      <% } %>
+      <p><%- newQues.question %></p>
+      <form action="/train/checkAnswer" method="POST">
+        <div class="mt-4" id="sa-choices">
+          <% var choiceIndex = 1; %>
+          <% newQues.choices.forEach((choice) => { %>
+          <div class="form-check my-1 me-sm-2">
+            <input type="checkbox" name="saChoice" class="form-check-input" id="<%= choiceIndex %>" value="<%= choiceIndex %>">
+            <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+          </div>
+          <% choiceIndex++; %>
+          <% }) %>
+          <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+          <input class="btn btn-primary mt-4" type="submit" value="Submit" id="submit">
+          <% } %>
         </div>
-        <% } %>
-    <% } catch(err) { %>
+        <input type="hidden" name="id" value="<%= newQues._id %>">
+        <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
+        <input type="hidden" name="subject" value="<%= subject %>">
+        <input type="hidden" name="units" value="<%= units %>">
+        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+      </form>
 
-        <!-- ERROR CODE -->
-        <% if(err=="bad question parameters") { %>
-            <h3>Someone messed up their equations! Perhaps they said $\sin^2(\theta)+\cos^2(\theta) \neq 1$ ?</h3>
-            <p>Sorry, we could not display your question. Please reenter the trainer and inform an admin that the question with ID <font color="red"><%= newQues._id %></font> is dysfunctional.</p>
+      <% } else if(newQues.type == "fr") { %>
+      <%# Free response %>
 
-        <% } else { %>
-            <h3>We're sorry, we weren't able to find any problems in this unit.</h3>
-            <p>We're adding new problems constantly... Check back soon!</p>
+      <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+      <h3 class="display-4" style="font-size: 1.5rem;">Please read the following question and select the best answer:</h3>
+      <% } %>
+      <p><%- newQues.question %></p>
+      <form action="/train/checkAnswer" method="POST">
+        <div class="mt-4">
+          <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+          <div class="form-group">
+            <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
+          </div>
+          <input class="btn btn-primary" type="submit" value="Submit" id="submit">
+          <% } %>
+        </div>
+        <input type="hidden" name="id" value="<%= newQues._id %>">
+        <input type="hidden" name="type" value="<%= newQues.type %>" id="hiddentypetag">
+        <input type="hidden" name="subject" value="<%= subject %>">
+        <input type="hidden" name="units" value="<%= units %>">
+        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+      </form>
 
-            <a href="/train" class="btn btn-primary w-100 btn-lg mt-4">Click me to go back</a>
-        <% } %>
+      <% } else { %>
+      <% throw "invalid type"; %>
+      <% } %>
+    </div>
 
+    <div class="col-12 col-lg-3">
+      <div class="canvas-container-center text-center">
+        <canvas id="ratingChart" width="400" height="400"></canvas>
+      </div>
+      <input type="hidden" id="userRating" value="<%= user.rating[subject.toLowerCase()] %>">
+      <input type="hidden" id="questionRating" value="<%= newQues.rating %>">
+    </div>
+  </div>
+
+  <style>
+    summary>* {
+      display: inline;
+    }
+  </style>
+
+  <details>
+    <summary class="mb-3">
+      <h3 class="mb-6">Equations</h3>
+    </summary>
+    <% Object.keys(referenceSheet).forEach((subject) => { %>
+    <% if (newQues.subject.includes(subject)) { %>
+    <% Object.keys(referenceSheet[subject].Equations).forEach((equation) => { %>
+    <div class="my-2 row">
+      <div class="col-12 col-lg-6">
+        <h5><%= equation %></h5>
+      </div>
+      <div class="col-12 col-lg-6">
+        <p><%= referenceSheet[subject].Equations[equation] %></p>
+      </div>
+    </div>
+    <% }); %>
     <% } %>
+    <% }); %>
+  </details>
 
+  <details class="mb-3">
+    <summary>
+      <h3 class="mb-6">Constants</h3>
+    </summary>
+    <% Object.keys(referenceSheet).forEach((subject) => { %>
+    <% if (newQues.subject.includes(subject)) { %>
+    <% Object.keys(referenceSheet[subject].Constants).forEach((constant) => { %>
+    <div class="my-2 row">
+      <div class="col-12 col-lg-6">
+        <h5><%= constant %></h5>
+      </div>
+      <div class="col-12 col-lg-6">
+        <p><%= referenceSheet[subject].Constants[constant] %></p>
+      </div>
+    </div>
+    <% }); %>
+    <% } %>
+    <% }); %>
+  </details>
+
+  <%# Skip question %>
+
+  <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+  <div class="mt-2">
+    <div id="skip-dialogue-1">
+      <h3 class="display-4" style="font-size: 1.5rem;">Question's content out of reach of your knowledge?</h3>
+      <button type="button" class="btn btn-primary mt-2" id="skip-button">Skip Question</button>
+    </div>
+
+    <div id="skip-dialogue-2">
+      <h3 class="display-4" style="font-size: 1.5rem;">Are you sure you want to skip this question?</h3>
+      <p>A new question will be randomly chosen, but you will lose 8 rating for skipping</p>
+      <form action="/train/skipQuestion" method="POST">
+        <button type="button" class="btn btn-secondary" id="no-skip">No</button>
+        <button type="submit" class="btn btn-primary" id="yes-skip">Yes</button>
+        <input type="hidden" name="id" value="<%= newQues._id %>">
+        <input type="hidden" name="redirect" value="/train/<%= subject %>/displayQuestion?units=<%=units%>">
+        <input type="hidden" name="subject" value="<%= subject %>">
+      </form>
+    </div>
+  </div>
+  <% } %>
+
+  <% } catch(err) { %>
+  <!-- ERROR CODE -->
+  <% if (err == "bad question parameters") { %>
+  <h3>Someone messed up their equations! Perhaps they said $\sin^2(\theta)+\cos^2(\theta) \neq 1$ ?</h3>
+  <p>Sorry, we could not display your question. Please reenter the trainer and inform an admin that the question with ID <font color="red"><%= newQues._id %></font> is dysfunctional.</p>
+  <% } else { %>
+  <h3>We're sorry, we weren't able to find any problems in this unit.</h3>
+  <p>We're adding new problems constantly... Check back soon!</p>
+
+  <a href="/train" class="btn btn-primary w-100 btn-lg mt-4">Click me to go back</a>
+  <% } %>
+  <% } %>
 </div>
 
 <% if(newQues.source_statement) { %>
-    <p class="text-center mb-5"><%= newQues.source_statement %></p>
+<p class="text-center mb-5"><%= newQues.source_statement %></p>
 <% } %>
 
 <%- include("../../partials/footer") -%>
