@@ -20,7 +20,7 @@
 
     let passrateDataMonth = [];
     historyData.solvesDataMonth.forEach(
-      (element, index) => passrateDataMonth.push(Math.round(element / historyData.attemptsDataMonth[index] * 100))
+      (element, index) => passrateDataMonth.push(Math.round((element - historyData.solvesDataMonth[index - 1]) / (historyData.attemptsDataMonth[index] - historyData.attemptsDataMonth[index -1 ]) * 100))
     );
     let passrateDataYear = [];
     historyData.solvesDataYear.forEach(
