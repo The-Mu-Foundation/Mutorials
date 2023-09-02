@@ -1,191 +1,190 @@
 #center {
-    width: 80%;
-    text-align: center;
+  width: 80%;
+  text-align: center;
 }
 
 .personElement {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    text-align: center;
-    margin: 0px 16px 24px 16px;
-    width: 300px;
-    border-radius: 12px;
-    padding: 14px;
-    box-shadow: 0px 0px 31px 3px rgba(0,0,0,0.07);
-    -webkit-box-shadow: 0px 0px 31px 3px rgba(0,0,0,0.07);
-    -moz-box-shadow: 0px 0px 31px 3px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+  margin: 0px 16px 24px 16px;
+  width: 300px;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0px 0px 31px 3px rgba(0, 0, 0, 0.07);
+  -webkit-box-shadow: 0px 0px 31px 3px rgba(0, 0, 0, 0.07);
+  -moz-box-shadow: 0px 0px 31px 3px rgba(0, 0, 0, 0.07);
 }
 
 .personElement:hover .socialLinks {
-    opacity: 1;
+  opacity: 1;
 }
 
 .personName {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .personImage {
-    height: 300px !important;
-    object-fit: cover;
-    margin: auto;
-    width: 100%;
+  height: 300px !important;
+  object-fit: cover;
+  margin: auto;
+  width: 100%;
 }
 
 .text {
-    padding: 12px;
+  padding: 12px;
 }
 
 .imageElement {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .socialLinks {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    padding: 0px;
-    height: 40px;
-    justify-content: center;
-    display: flex;
-    opacity: 0;
-    transition-duration: 0.3s;
-    background-color: rgba(255, 255, 255, 0.574);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 0px;
+  height: 40px;
+  justify-content: center;
+  display: flex;
+  opacity: 0;
+  transition-duration: 0.3s;
+  background-color: rgba(255, 255, 255, 0.574);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .icon {
-    position: relative;
-    top: 8px;
+  position: relative;
+  top: 8px;
 }
 
 #personContainer {
-    width: 80%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin: 4% auto auto auto;
-    flex-wrap: wrap;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 #secondPersonContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin: 4% auto auto auto;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 4% auto auto auto;
+  flex-wrap: wrap;
 }
 
 .personTitle {
-    color: grey;
-    padding-bottom: 12px;
+  color: grey;
+  padding-bottom: 12px;
 }
 
 #formerBoard {
-    width: 90%;
-    margin: 4% auto auto auto;
-    text-align: left;
+  width: 90%;
+  margin: 4% auto auto auto;
+  text-align: left;
 }
 
 #formerBoardTitle {
-    cursor: pointer;
-    width: 90%;
-    margin: auto;
-    font-size: 1.3em;
+  cursor: pointer;
+  width: 90%;
+  margin: auto;
+  font-size: 1.3em;
 }
 
 #expandArrow {
-    position: relative;
-    top: 4px;
+  position: relative;
+  top: 4px;
 }
 
 #formerBoardSub {
-    display: none;
-    width: 90%;
-    margin: auto;
+  display: none;
+  width: 90%;
+  margin: auto;
 }
 
 .noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-       -khtml-user-select: none; /* Konqueror HTML */
-         -moz-user-select: none; /* Old versions of Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome, Edge, Opera and Firefox */
 }
 
 #contributorsSect {
-    width: 90%;
-    margin: 4% auto auto auto;
-    text-align: left;
+  width: 90%;
+  margin: 4% auto auto auto;
+  text-align: left;
 }
 
 #contributorSub {
-    width: 90%;
-    margin: auto;
+  width: 90%;
+  margin: auto;
 }
 
 #contributorTeam {
-    font-weight: bold;
-    font-size: 1.3em;
+  font-weight: bold;
+  font-size: 1.3em;
 }
 
 #contributorDesc {
-    margin-top: 12px;
+  margin-top: 12px;
 }
 
 .contributorNumber {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .contributorTitle {
-    padding-top: 36px;
+  padding-top: 36px;
 }
 
 #goldPersonCont {
-    padding-top: 18px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: auto;
-    width: 100%;
-    justify-content: center;
+  padding-top: 18px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: auto;
+  width: 100%;
+  justify-content: center;
 }
 
 #silverContributors {
-    padding-top: 18px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  padding-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 #silverContributors p {
-    white-space: nowrap;
-    margin: auto;
-    text-align: center;
+  white-space: nowrap;
+  margin: auto;
+  text-align: center;
 }
 
 #joinTitle {
-    padding-top: 64px;
-    font-weight: bold;
-    font-size: 1.3em;
+  padding-top: 64px;
+  font-weight: bold;
+  font-size: 1.3em;
 }
 
 #joinList {
-    list-style: decimal;
-    padding: 12px 0px 0px 36px;
-    margin: auto;
+  list-style: decimal;
+  padding: 12px 0px 0px 36px;
+  margin: auto;
 }
 
 #discordLink {
-    text-decoration: underline;
-    color: blue;
+  text-decoration: underline;
+  color: blue;
 }
 
 #bottomJoin {
-    margin-bottom: 48px;
+  margin-bottom: 48px;
 }
