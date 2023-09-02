@@ -54,16 +54,18 @@ module.exports = (app, mongo) => {
     });
   });
 
-  app.get('/whoWeAre', (req, res) => {
+  app.get('/whoWeAre', expressLayouts, (req, res) => {
     if (req.isAuthenticated()) {
-      res.render(VIEWS + 'public/whoWeAre.ejs', {
+      res.render(VIEWS + 'public/teamV2', {
         pageName: 'About Mutorials',
         authenticated: true,
+        layout: 'layouts/base.ejs'
       });
     } else {
-      res.render(VIEWS + 'public/whoWeAre.ejs', {
+      res.render(VIEWS + 'public/teamV2', {
         pageName: 'About Mutorials',
         authenticated: false,
+        layout: 'layouts/base.ejs'
       });
     }
   });
