@@ -1,0 +1,28 @@
+input[type='checkbox'] {
+  @apply appearance-none
+    min-w-[1rem] h-4
+    text-blue-500
+    border-2 border-neutral-200
+    rounded
+    outline-blue-500;
+}
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='number'] {
+  @apply appearance-none
+    block
+    w-full
+    my-1
+    px-3 py-2
+    border-2 border-neutral-200
+    -outline-offset-2
+    focus:outline
+    rounded
+    outline-blue-500 !important;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

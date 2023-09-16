@@ -1,32 +1,20 @@
+console.log('Importing...');
+
 // MODULE IMPORTS
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const express = require('express');
 const flash = require('express-flash-messages');
 const session = require('express-session');
 const http = require('http');
-const https = require('https');
 const enforce = require('express-sslify');
-const emailValidation = require('./utils/functions/emailValidation');
 const { initializeAnalytics } = require('./analytics');
+
+console.log('Setting up Express server...');
 
 // START EXPRESS SERVER
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'devsecret';
-
-// https SETUP
-const httpsConfig = {
-  cert: process.env.SSL_CRT,
-  ca: process.env.SSL_CA_BUNDLE,
-  key: process.env.SSL_KEY,
-  passphrase: process.env.SSL_PASSPHRASE,
-};
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(httpsConfig, app);
-
 if (PORT != 3000) {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
@@ -46,6 +34,12 @@ require('./utils/functions/passport.js')(app, mongo);
 
 app.use(flash()); // express-flash-messages config
 app.use(cookieParser());
+
+app.set('view engine', 'ejs');
+// app.use(expressLayouts);
+// app.set('layout', 'layouts/empty.ejs');
+
+app.use(express.static('public'));
 
 app.use((req, res, next) => {
   res.locals.successFlash = req.flash('successFlash');

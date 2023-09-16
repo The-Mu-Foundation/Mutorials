@@ -1,0 +1,93 @@
+<%- contentFor('main') %>
+<div class="flex flex-col items-center max-w-sm">
+  <img class="w-12 mb-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
+  <h2 class="mb-2">Sign up for Mutorials</h2>
+  <p class="mb-4">Already have an account? <a href="/signin">Sign in</a></p>
+
+  <form class="w-full" action="/register" method="post" autocomplete="off" spellcheck="false">
+    <div class="mb-4">
+      <label class="font-medium" for="ign">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        id="ign" name="ign"
+        autocomplete="username"
+        required="true"
+      >
+      <p class="text-sm" id="username-characters">You may use only <strong>letters</strong>, <strong>numbers</strong>, underscore (_), hyphen (-), period (.), and tilde (~) in your username.</p>
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="signupEmail">Email</label>
+      <input 
+        type="email"
+        class="form-control"
+        id="signupEmail"
+        name="username"
+        required="true"
+      >
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="signupPassword">Password</label>
+      <input
+        type="password"
+          class="form-control"  
+          id="signupPassword" 
+          name="password"
+          autocomplete="new-password"
+          required="true"
+        >
+      <p class="mb-4 text-sm" id="password-req">A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong></p>
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="signupConfirmPassword">Confirm password</label>
+      <input
+        type="password"
+        class="form-control"
+        id="signupConfirmPassword"
+        name="confirmPassword"
+        autocomplete="new-password"
+        required="true"
+      >
+    </div>
+    <div class="mb-4">
+      <label class="font-medium" for="yob">Year of birth</label>
+      <input
+        type="number"
+        class="form-control"
+        id="yob"
+        name="yob"
+        required="true"
+      >
+    </div>
+
+    <div>
+      <div class="flex items-start gap-2">
+        <div class="flex items-center">
+          &#8203;
+          <input
+            type="checkbox"
+            id="agreeTOS"
+            name="agreeTOS"
+            required="true">
+        </div>
+        <label for="agreeTOS">I have read and agree to the <a href='/termsOfService#terms-of-service'>Terms of Service</a>.</label><br>
+      </div>
+      <div class="flex items-start gap-2">
+        <div class="flex items-center">
+          &#8203;
+          &#8203;
+          <input
+            type="checkbox"
+            id="agreeAge"
+            name="agreeAge"
+            required="true">
+        </div>
+        <label for="agreeAge">I am at least 13 years old, or I have permission from my parent, guardian, teacher, or school to use Mutorials.</label><br>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <input class="btn btn-primary w-full" type="submit" id="submitButton" value="Sign Up">
+    </div>
+  </form>
+</div>

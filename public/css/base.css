@@ -1,0 +1,25 @@
+@layer base {
+  h1 {
+    font-size: 3em;
+    font-weight: bold;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  h2 {
+    font-size: 2em;
+    font-weight: bold;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  h3 {
+    font-size: 1.5em;
+    line-height: 1.2;
+  }
+
+  p a,
+  label a {
+    @apply text-blue-500
+      opacity-100 hover:opacity-70
+      transition-opacity;
+  }
+}

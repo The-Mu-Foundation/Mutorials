@@ -58,6 +58,7 @@ These are to be followed all the time 😁
 - In `index.js`, all comments should go inside functions; no floating comments
   - EXCEPTION: comments in ALL CAPS that describe either configuration or describe other large blocks of code.
 - In helper files, put a comment on top of each function being exported to briefly detail what it does
+- browsersync is used to live reload the browser. It refreshes all connected browsers whenever there's a specified set of files is modified. A somewhat weird command is used in `package.json`; check [this StacOverflow post](https://stackoverflow.com/questions/41682378/express-combined-with-browser-sync-with-node) for more info.
 
 #### Frontend
 

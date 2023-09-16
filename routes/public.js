@@ -2,7 +2,9 @@
 const passport = require('passport');
 const Filter = require('bad-words');
 
-filter = new Filter();
+const expressLayouts = require('express-ejs-layouts');
+
+const filter = new Filter();
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
@@ -20,50 +22,26 @@ module.exports = (app, mongo) => {
   // PUBLIC GET
   // `username` is email
   // `ign` is username
-  app.get('/', async (req, res) => {
+  app.get('/', expressLayouts, (req, res) => {
+    res.render(VIEWS + 'public/indexV2.ejs', { layout: 'layouts/base.ejs' });
+  });
+
+  app.get('/signin', expressLayouts, (req, res) => {
     if (!req.isAuthenticated()) {
-      let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
-      const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
-
-      let experience = await mongo.User.find({
-        'stats.experience': { $gte: 10000 },
-      })
-        .sort({ 'stats.experience': -1 })
-        .limit(10)
-        .exec();
-
-      experience = experience.map((user) => {
-        return {
-          level: calculateLevel(user.stats.experience),
-          experience: user.stats.experience,
-          ign: user.ign,
-        };
-      });
-
-      res.render(VIEWS + 'public/index.ejs', {
-        siteStats: siteData,
-        question,
-        experience,
+      res.render(VIEWS + 'public/signinV2.ejs', {
+        pageName: 'Sign in',
+        layout: 'layouts/base.ejs',
       });
     } else {
       res.redirect('/homepage');
     }
   });
 
-  app.get('/signin', (req, res) => {
+  app.get('/signup', expressLayouts, (req, res) => {
     if (!req.isAuthenticated()) {
-      res.render(VIEWS + 'public/signin.ejs', {
-        pageName: 'Sign-in to Mutorials',
-      });
-    } else {
-      res.redirect('/homepage');
-    }
-  });
-
-  app.get('/signup', (req, res) => {
-    if (!req.isAuthenticated()) {
-      res.render(VIEWS + 'public/signup.ejs', {
-        pageName: 'Sign-up to Mutorials',
+      res.render(VIEWS + 'public/signupV2.ejs', {
+        pageName: 'Sign up',
+        layout: 'layouts/base.ejs',
       });
     } else {
       res.redirect('/homepage');
@@ -76,16 +54,18 @@ module.exports = (app, mongo) => {
     });
   });
 
-  app.get('/whoWeAre', (req, res) => {
+  app.get('/whoWeAre', expressLayouts, (req, res) => {
     if (req.isAuthenticated()) {
-      res.render(VIEWS + 'public/whoWeAre.ejs', {
+      res.render(VIEWS + 'public/teamV2', {
         pageName: 'About Mutorials',
         authenticated: true,
+        layout: 'layouts/base.ejs'
       });
     } else {
-      res.render(VIEWS + 'public/whoWeAre.ejs', {
+      res.render(VIEWS + 'public/teamV2', {
         pageName: 'About Mutorials',
         authenticated: false,
+        layout: 'layouts/base.ejs'
       });
     }
   });
@@ -122,14 +102,15 @@ module.exports = (app, mongo) => {
       );
       registerInputProblems1 = true;
     }
-    if (req.body.ign != filter.clean(req.body.ign)) {
+    if (req.body.ign && req.body.ign != filter.clean(req.body.ign)) {
       req.flash('errorFlash', 'Keep it appropriate.');
       registerInputProblems1 = true;
     }
     if (
-      req.body.password.length < 7 ||
-      !/\d/.test(req.body.password) ||
-      !/[a-zA-Z]/.test(req.body.password)
+      req.body.password &&
+      (req.body.password.length < 7 ||
+        !/\d/.test(req.body.password) ||
+        !/[a-zA-Z]/.test(req.body.password))
     ) {
       req.flash(
         'errorFlash',
@@ -261,12 +242,14 @@ module.exports = (app, mongo) => {
     passport.authenticate('local', {
       failureRedirect: '/signin',
       successRedirect: '/homepage',
-      failureFlash: 'Invalid username or password.',
+      failureFlash: {
+        type: 'errorFlash',
+        message: 'Invalid username or password.',
+      },
       successFlash: 'Welcome!',
     }),
     (req, res, next) => {
-      console.log('Oh hi');
-      console.log('req.session');
+      console.log('routes/publicjs: User just signed in');
     }
   );
 
