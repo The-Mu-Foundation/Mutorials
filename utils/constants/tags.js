@@ -19,7 +19,7 @@ const tags = {
       '15P': 'Modern Physics',
       '16P': 'Nuclear and Particle Physics',
       '17P': 'Electrostatics',
-      '18P': 'Electric Current and Conductors',
+      '18P': 'Electric Conductors and Currents',
       '19P': 'DC Circuits',
       '20P': 'Induction and AC Circuits',
       '21P': 'Magnetic Fields and Forces',
@@ -138,9 +138,7 @@ const tags = {
       ELF: 'Electric Fields and Flux',
       GAU: "Gauss' Law",
       STO: "Stoke's Theorem",
-      LAP: 'The Laplacian',
-      CUR: 'The Curl',
-      EPO: 'Electric Potential',
+      EPO: 'Electric Potential and Energy',
 
       CDT: 'Conductors and Conductivity',
       DSM: 'Doped Semiconductors',
@@ -150,6 +148,7 @@ const tags = {
       ELE: 'Electrical Energy',
       DIE: 'Dielectrics',
       DIP: 'Electric Dipoles',
+      SUP: 'Superconductivity',
 
       OHM: "Ohm's Law",
       EMF: 'Voltage, Potential Difference, and Electromotive Force',

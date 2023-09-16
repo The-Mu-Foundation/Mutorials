@@ -143,6 +143,7 @@ module.exports = (app, mongo) => {
                     units: req.body.units,
                     hourRefactor: question.hourRefactor,
                     writtenDate: question.writtenDate,
+                    reviewers: question.reviewers
                   },
                   (err, _) => {
                     if (err) {
@@ -241,6 +242,7 @@ module.exports = (app, mongo) => {
                     categories: req.body.categories,
                     hourRefactor: question.hourRefactor,
                     writtenDate: question.writtenDate,
+                    reviewers: question.reviewers
                   },
                   (err, _) => {
                     if (err) {
