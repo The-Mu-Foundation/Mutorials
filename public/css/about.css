@@ -19,6 +19,9 @@
 .personElement:hover .socialLinks {
   opacity: 1;
 }
+.personElement:hover .socialLinks a {
+  width: 100%;
+}
 
 .personName {
   font-weight: bold;
