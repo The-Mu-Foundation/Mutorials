@@ -8,7 +8,6 @@
   flex-direction: column;
   justify-content: flex-start;
   text-align: center;
-  margin: 0px 16px 24px 16px;
   width: 300px;
   border-radius: 12px;
   padding: 14px;
@@ -94,17 +93,6 @@
   width: 90%;
   margin: auto;
   font-size: 1.3em;
-}
-
-#expandArrow {
-  position: relative;
-  top: 4px;
-}
-
-#formerBoardSub {
-  display: none;
-  width: 90%;
-  margin: auto;
 }
 
 .noselect {
