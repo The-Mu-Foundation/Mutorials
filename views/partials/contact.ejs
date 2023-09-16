@@ -8,10 +8,10 @@
       <div class="modal-body">
         <div class="form-floating">
           <% if (hasOwnProperty("questionId")) { %>
-          <input name="questionId" value="<%= questionId %>" style="display: none">
+            <input name="questionId" value="<%= questionId %>" style="display: none">
           <% } %>
           <% if (hasOwnProperty("redirect")) { %>
-          <input name="redirect" value="<%= redirect %>" style="display: none">
+            <input name="redirect" value="<%= redirect %>" style="display: none">
           <% } %>
           <textarea name="comment" class="form-control" placeholder="What do you want to tell us?" id="contactTextarea" style="height: 200px;"></textarea>
           <label for="contactTextarea">What do you want to tell us?</label>

@@ -187,11 +187,38 @@
 
         <div class="col-12 col-lg-5">
 
-            <h1 class="display-5 text-center mt-4">Physics: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.physics, 0) %></span></h1>
-            <h1 class="display-5 text-center">Chemistry: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.chemistry, 0) %></span></h1>
-            <h1 class="display-5 text-center">Biology: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.biology, 0) %></span></h1>
+            <h1 class="display-5 text-center mt-4">Physics: <span class="badge rounded-pill bg-primary">
+              <% if (user.rating.physics > 0) { %>
+                <%= Math.max(user.rating.physics, 0) %>
+              <% } else { %>
+                No rating
+              <% } %>
+            </span></h1>
+
+            <h1 class="display-5 text-center mt-4">Chemistry: <span class="badge rounded-pill bg-primary">
+              <% if (user.rating.chemistry > 0) { %>
+                <%= Math.max(user.rating.chemistry, 0) %>
+              <% } else { %>
+                No rating
+              <% } %>
+            </span></h1>
+
+            <h1 class="display-5 text-center mt-4">Biology: <span class="badge rounded-pill bg-primary">
+              <% if (user.rating.biology > 0) { %>
+                <%= Math.max(user.rating.biology, 0) %>
+              <% } else { %>
+                No rating
+              <% } %>
+            </span></h1>
             <!-- <h1 class="display-5 text-center">ESS: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.ess, 0) %></span></h1> -->
-            <h1 class="display-5 text-center">USABO: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.usabo, 0) %></span></h1>
+
+            <h1 class="display-5 text-center mt-4">USABO: <span class="badge rounded-pill bg-primary">
+              <% if (user.rating.usabo > 0) { %>
+                <%= Math.max(user.rating.usabo, 0) %>
+              <% } else { %>
+                No rating
+              <% } %>
+            </span></h1>
 
             <div class="canvas-container-center text-center mt-3">
                 <canvas id="ratingTrackerChart" width="400" height="400" class="my-4"></canvas>
@@ -268,5 +295,4 @@
 <footer class="text-center"><button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#contact-modal">Contact us</button></footer>
 
 <br><br>
-<%- include ("../partials/contact") -%>
 <%- include("../partials/footer") -%>
