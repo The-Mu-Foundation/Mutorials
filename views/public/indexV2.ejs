@@ -21,7 +21,7 @@
 
 <%- contentFor('main') %>
 <%# Hero %>
-<div class="w-full max-w-4xl m-0 px-6 py-10 sm:mt-36 sm:mb-40">
+<div class="w-full max-w-4xl m-0 px-6 py-10 sm:mt-32 sm:mb-40">
   <div class="flex justify-between w-full">
     <div class="flex flex-col items-start w-7/12 mr-6">
       <h1 class="mb-4 text-4xl sm:text-5xl whitespace-nowrap">
@@ -56,10 +56,10 @@
 
   <div class="grid grid-cols-2 sm:grid-cols-4 items-stretch gap-4">
     <% for (let [subject, unitCount, image] of [
-      ['Physics', 15, 'https://images.unsplash.com/photo-1591306208574-969f12f1ebfe'],
-      ['Chemistry', 15, 'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6'],
-      ['Biology', 15, 'https://images.unsplash.com/photo-1576086213369-97a306d36557'],
-      ['Earth & Space', 15, 'https://images.unsplash.com/photo-1634176866089-b633f4aec882'],
+      ['Physics', 24, 'https://images.unsplash.com/photo-1591306208574-969f12f1ebfe'],
+      ['Chemistry', 21, 'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6'],
+      ['Biology', 9, 'https://images.unsplash.com/photo-1576086213369-97a306d36557'],
+      ['Earth & Space', 7, 'https://images.unsplash.com/photo-1634176866089-b633f4aec882'],
     ]) {%>
       <div class="flex flex-col items-center">
         <img class="mb-2 aspect-square object-cover rounded-md" src="<%= image %>" draggable="false">
