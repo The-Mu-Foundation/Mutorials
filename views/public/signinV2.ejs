@@ -1,58 +1,62 @@
 <%- contentFor('head') %>
-<script defer>
-  $(document).ready(function () {
-    $('#forgot-password-form').hide(0);
-    $('#forgotPasswordTrigger').click(function() {
-        $('#forgot-password-form').show(1000);
-        $('#signin-form').hide(500);
-    });
-    $('#cancel-password').click(function() {
-        $('#forgot-password-form').hide(500);
-        $('#signin-form').show(1000);
-    });
-  });
-</script>
+<!-- Alpine, for animating the "forgot password" div -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <%- contentFor('main') %>
-
-<div class="flex flex-col items-center max-w-sm">
+<div class="flex flex-col items-center max-w-sm"  x-data="{ forgotPassOpen: false }">
   <img class="w-12 mb-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
   <h2 class="mb-2">Sign in to Mutorials</h2>
   <p class="mb-4">Don't have an account? <a href="/signup">Sign up</a></p>
 
-  <form class="w-full" action="/login" method="post" autocomplete="off" spellcheck="false">
-    <div class="mb-4">
-      <label class="font-medium" for="loginEmail">Username / Email address</label>
+  <form class="flex flex-col gap-4 w-full" action="/login" method="post" autocomplete="off" spellcheck="false">
+    <div>
+      <label class="font-medium" for="login-email">Username / Email address</label>
       <input
         type="text"
-        id="loginEmail" name="username"
+        id="login-email" name="username"
         autocomplete="username"
         required="true"
       >
     </div>
-    <div class="mb-4">
-      <label class="font-medium" for="signupConfirmPassword">Password</label>
+    <div>
+      <label class="font-medium" for="password">Password</label>
       <input
         type="password"
-        id="signupConfirmPassword"
+        id="password"
         name="password"
         autocomplete="password"
         required="true"
       >
     </div>
 
-    <div>
-      <div class="flex items-start gap-2">
-        <div class="flex items-center">
-          &#8203;
-          <input type="checkbox" id="stayLoggedIn" name="stayLoggedIn">
-        </div>
-        <label for="stayLoggedIn">Keep me signed in</label><br>
+    <div class="flex items-start gap-2">
+      <div class="flex items-center">
+        &#8203;
+        <input type="checkbox" id="stayLoggedIn" name="stayLoggedIn">
       </div>
+      <label for="stayLoggedIn">Keep me signed in</label><br>
+    </div>
+    <div>
+      <p class="cursor-pointer" @click="() => forgotPassOpen = !forgotPassOpen">
+        <a>Forgot password?</a>
+      </p>
     </div>
 
-    <div class="mt-4">
+    <div>
       <input class="btn btn-primary w-full" type="submit" id="submitButton" value="Sign in">
     </div>
   </form>
+
+  <div class="w-full mt-6" id="forgot-pass" x-show="forgotPassOpen" x-transition>
+    <form action="/forgotPassword" method="post">
+      <div class="mb-4">
+        <label class="font-medium" for="forgot-email">Email</label>
+        <input type="text" id="forgot-email" name="forgotEmail">
+      </div>
+      <div class="flex justify-between gap-2">
+        <a class="btn btn-outline" @click="forgotPassOpen = !forgotPassOpen">Cancel</a>
+        <input class="btn btn-primary" type="submit" value="Reset Password">
+      </div>
+    </form>
+  </div>
 </div>
