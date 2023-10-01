@@ -57,7 +57,7 @@ module.exports = (app, mongo) => {
         { username: req.user.username },
         { $set: { rating: req.user.rating } }
       );
-    res.redirect('/' /* + req.body.subject + '/chooseUnits'*/);
+    res.redirect('/homepage' /* + req.body.subject + '/chooseUnits'*/);
   });
 
   app.post('/selQ', (req, res, next) => {
