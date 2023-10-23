@@ -501,6 +501,9 @@ module.exports = (app, mongo) => {
     let experienceStats = await calculateLevel(req.user.stats.experience);
     // Test if they have a question pending to answer which is valid for their units selected
     if (q && units.some((r) => q.units.includes(r))) {
+
+      console.log("in the if statement");
+
       res.render(VIEWS + 'private/train/displayQuestion.ejs', {
         units: units,
         newQues: q,
@@ -511,6 +514,9 @@ module.exports = (app, mongo) => {
         referenceSheet
       });
     } else {
+
+      console.log("in the else statement");
+
       // deduct 8 rating if previously queued question was skipped
       if (q) {
         skipQuestionUpdates(
@@ -537,7 +543,7 @@ module.exports = (app, mongo) => {
 
       //debugging usage
       console.log(floor);
-      conosle.log(ceiling);
+      console.log(ceiling);
       
       // get question
       getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(
