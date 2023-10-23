@@ -118,6 +118,7 @@ module.exports = (app, mongo) => {
       source_statement: req.body.sourceStatement,
       subject: req.body.subject,
       units: req.body.units,
+      hourRefactor: 1,
       stats: {
         pass: 0,
         fail: 0,

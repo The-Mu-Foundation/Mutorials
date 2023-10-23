@@ -491,12 +491,14 @@ module.exports = (app, mongo) => {
     // define units and attempt to get queued question
     const units = req.query.units.split(',');
     let q = '';
-    if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
+
+    /*if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
       q = await getQuestion(
         mongo.Ques,
         req.user.stats.toAnswer[req.params.subject.toLowerCase()]
       );
-    }
+    }*/
+
     // get experience stats
     let experienceStats = await calculateLevel(req.user.stats.experience);
     // Test if they have a question pending to answer which is valid for their units selected
@@ -527,11 +529,8 @@ module.exports = (app, mongo) => {
         );
       }
       // get parameters set up
-      if (req.user.rating['usabo'] === undefined) {
-        setRating('USABO', -1, req);
-      }
-
       if (req.user.rating['ess'] === undefined) {
+        console.log('setting ess rating from undefined to -1');
         setRating('ESS', -1, req);
       }
 
@@ -548,6 +547,9 @@ module.exports = (app, mongo) => {
       // get question
       getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(
         (qs) => {
+
+          //console.log(qs);
+
           // select random question
           curQ = qs[Math.floor(Math.random() * qs.length)];
           console.log(curQ);
