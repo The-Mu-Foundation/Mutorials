@@ -492,12 +492,12 @@ module.exports = (app, mongo) => {
     const units = req.query.units.split(',');
     let q = '';
 
-    /*if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
+    if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
       q = await getQuestion(
         mongo.Ques,
         req.user.stats.toAnswer[req.params.subject.toLowerCase()]
       );
-    }*/
+    }
 
     // get experience stats
     let experienceStats = await calculateLevel(req.user.stats.experience);
