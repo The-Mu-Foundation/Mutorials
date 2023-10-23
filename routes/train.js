@@ -534,6 +534,11 @@ module.exports = (app, mongo) => {
       );
       const floor = ceilingFloor.floor;
       const ceiling = ceilingFloor.ceiling;
+
+      //debugging usage
+      console.log(floor);
+      conosle.log(ceiling);
+      
       // get question
       getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(
         (qs) => {
