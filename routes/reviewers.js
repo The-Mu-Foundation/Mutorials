@@ -127,8 +127,7 @@ module.exports = (app, mongo) => {
               if (err) {
                 console.log(err);
               } else {
-                mongo.db.collection('questions').insertOne(
-                  {
+                const newQ = new mongo.Ques({
                     question: req.body.question,
                     choices: parseDelimiter(req.body.choices),
                     tags: parseDelimiter(req.body.tags),
@@ -144,16 +143,8 @@ module.exports = (app, mongo) => {
                     hourRefactor: question.hourRefactor,
                     writtenDate: question.writtenDate,
                     reviewers: question.reviewers
-                  },
-                  (err, _) => {
-                    if (err) {
-                      console.log(err);
-                    }
-                    res.json({
-                      success: true,
-                    });
-                  }
-                );
+                });
+                newQ.save();
               }
             });
         } else {
@@ -227,8 +218,7 @@ module.exports = (app, mongo) => {
               if (err) {
                 console.log(err);
               } else {
-                mongo.db.collection('usaboQuestions').insertOne(
-                  {
+                const newQ = new mongo.USABOQues({
                     question: req.body.question,
                     choices: parseDelimiter(req.body.choices),
                     year: req.body.year,
@@ -242,17 +232,13 @@ module.exports = (app, mongo) => {
                     categories: req.body.categories,
                     hourRefactor: question.hourRefactor,
                     writtenDate: question.writtenDate,
-                    reviewers: question.reviewers
-                  },
-                  (err, _) => {
-                    if (err) {
-                      console.log(err);
+                    reviewers: question.reviewers,
+                    stats: {
+                      pass: 0,
+                      fail: 0
                     }
-                    res.json({
-                      success: true,
-                    });
-                  }
-                );
+                });
+                newQ.save();
               }
             });
         } else {

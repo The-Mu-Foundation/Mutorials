@@ -17,7 +17,11 @@ async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, units) {
     subject: [subject],
     rating: { $gte: ratingFloor, $lte: ratingCeiling },
   });
+
   let tempQ = await gotQ.exec();
+
+  console.log(tempQ.length);
+
   for (i = 0; i < tempQ.length; i++) {
     const found = units.some((r) => tempQ[i].units.includes(r));
     if (!found) {

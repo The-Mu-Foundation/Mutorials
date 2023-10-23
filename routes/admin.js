@@ -118,6 +118,7 @@ module.exports = (app, mongo) => {
       source_statement: req.body.sourceStatement,
       subject: req.body.subject,
       units: req.body.units,
+      hourRefactor: 1,
       stats: {
         pass: 0,
         fail: 0,
@@ -287,31 +288,29 @@ module.exports = (app, mongo) => {
 
   // Master list of questions
   app.get('/admin/allQuestions', async (req, res) => {
-    let questionArray = await mongo.db.collection('questions').find().toArray();
-    /*for (question of questionArray){
-            if (!question.hourRefactor) {
-                let newQ = new mongo.Ques({
-                    question: question.question,
-                    choices: question.choices,
-                    tags: question.tags,
-                    rating: question.rating,
-                    answer: question.answer,
-                    answer_ex: question.answer_ex,
-                    author: question.author,
-                    type: question.type,
-                    ext_source: question.ext_source,
-                    source_statement: question.source_statement,
-                    subject: question.subject,
-                    units: question.units,
-                    reviewers: question.reviewers,
-                    stats: question.stats,
-                    writtenDate: question.writtenDate,
-                    hourRefactor: 1
-                });
-                newQ.save();
-                mongo.db.collection("questions").deleteOne({ _id: question._id });
-            }
-        }*/
+    /*let questionArray = await mongo.db.collection('questions').find().toArray();
+    for (question of questionArray){
+      let newQ = new mongo.Ques({
+        question: question.question,
+        choices: question.choices,
+        tags: question.tags,
+        rating: question.rating,
+        answer: question.answer,
+        answer_ex: question.answer_ex,
+        author: question.author,
+        type: question.type,
+        ext_source: question.ext_source,
+        source_statement: question.source_statement,
+        subject: question.subject,
+        units: question.units,
+        reviewers: question.reviewers,
+        stats: question.stats,
+        writtenDate: question.writtenDate,
+        hourRefactor: 1
+      });
+      newQ.save();
+      mongo.db.collection("questions").deleteOne({ _id: mongoose.Types.ObjectId(question._id) });       
+    }*/
     const allQuestions = await mongo.db
       .collection('questions')
       .find()
