@@ -157,6 +157,7 @@ module.exports = (app, mongo) => {
     if (
       !/^(19|20)\d{2}$/.test(req.body.yob) ||
       req.body.yob.length != 4 ||
+      req.body.yob < 1900 ||
       req.body.yob > new Date().getFullYear()
     ) {
       req.flash('errorFlash', 'Please enter a valid year of birth!');
@@ -202,6 +203,7 @@ module.exports = (app, mongo) => {
       },
       preferences: {
         hideProfile: new Date().getFullYear() - thisYob < 13 ? true : false,
+        dark_mode: true,
       },
       achievements: {
         join_mutorials: true,
