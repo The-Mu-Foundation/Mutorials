@@ -142,7 +142,11 @@ module.exports = (app, mongo) => {
                     units: req.body.units,
                     hourRefactor: question.hourRefactor,
                     writtenDate: question.writtenDate,
-                    reviewers: question.reviewers
+                    reviewers: question.reviewers,
+                    stats: {
+                      pass: 0,
+                      fail: 0
+                    }
                 });
                 newQ.save();
               }
