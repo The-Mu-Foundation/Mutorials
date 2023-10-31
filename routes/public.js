@@ -32,7 +32,7 @@ module.exports = (app, mongo) => {
       questionCount: questionCount + usaboQuestionCount,
       tagCount,
       totalSolves: Array.from(Object.values(totalSolves)).reduce(
-        (a, b) => a + b,
+        (a, b) => (a + b ? b : 0), // Catch if b is NaN
         0
       ),
     });
