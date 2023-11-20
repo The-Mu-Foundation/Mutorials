@@ -93,14 +93,14 @@
                     borderColor: "rgba(40, 240, 110, 1)",
                     fill: false,
                     borderWidth: 5
-                }, /*{
+                }, {
                     label: "ESS",
                     data: ratingData["ESS"],
                     backgroundColor: "rgba(184, 150, 191, 1)",
                     borderColor: "rgba(184, 150, 191, 1)",
                     fill: false,
                     borderWidth: 5
-                },*/ {
+                }, {
                     label: "USABO",
                     data: ratingData["USABO"],
                     backgroundColor: "rgba(113, 16, 1, 1)",
@@ -210,7 +210,14 @@
                 No rating
               <% } %>
             </span></h1>
-            <!-- <h1 class="display-5 text-center">ESS: <span class="badge rounded-pill bg-primary"><%= Math.max(user.rating.ess, 0) %></span></h1> -->
+
+            <h1 class="display-5 text-center">ESS: <span class="badge rounded-pill bg-primary">
+              <% if (user.rating.ess > 0) { %>
+                <%= Math.max(user.rating.ess, 0) %>
+              <% } else { %>
+                No rating
+              <% } %>
+            </span></h1>
 
             <h1 class="display-5 text-center mt-4">USABO: <span class="badge rounded-pill bg-primary">
               <% if (user.rating.usabo > 0) { %>
@@ -257,12 +264,23 @@
                     <a href="/train/Biology/chooseUnits" class="classic-subject-button" id="Biology"><img id="bio-icon" class="thumbnail mu-rounded" src="https://cdn.mutorials.org/images/icons/Bio_Main.svg" alt="Bio icon"></a>
                 </div>
             </div>
+            
+            <h1 class="text-center mt-5" id="classic-subjects-text"></h1>
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <a href="/train/ESS/chooseUnits" class="classic-subject-button" id="ESS"><img id="ESS-icon" class="thumbnail mu-rounded img-fluid" src="https://mutorials.blob.core.windows.net/images/icons/ess icon.jpeg" alt="ESS icon"></a>
+                </div>
+                <div class="col-4"></div>     
+            </div>
 
             <h1 class="text-center mt-5" id="classic-subjects-text">Train for USABO!</h1>
             <div class="row">
+                <div class="col-4"></div>
                 <div class="col-4">
-                    <a href="/usaboHomepage" class="USABO-button" id="USABO"><img id="USABO-icon" class="thumbnail mu-rounded center" src="https://cdn.mutorials.org/images/icons/USABO_Main.png" alt="USABO icon"></a>
+                    <a href="/usaboHomepage" class="USABO-button" id="USABO"><img id="USABO-icon" class="thumbnail mu-rounded img-fluid" src="https://cdn.mutorials.org/images/icons/USABO_Main.png" alt="USABO icon"></a>
                 </div>
+                <div class="col-4"></div>
             </div>
 
             <a class="btn btn-primary w-100 btn-lg mt-5" href="/train">Train Now!</a>

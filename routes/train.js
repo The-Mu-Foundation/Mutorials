@@ -57,7 +57,7 @@ module.exports = (app, mongo) => {
         { username: req.user.username },
         { $set: { rating: req.user.rating } }
       );
-    res.redirect('/' /* + req.body.subject + '/chooseUnits'*/);
+    res.redirect('/homepage' /* + req.body.subject + '/chooseUnits'*/);
   });
 
   app.post('/selQ', (req, res, next) => {
@@ -491,16 +491,21 @@ module.exports = (app, mongo) => {
     // define units and attempt to get queued question
     const units = req.query.units.split(',');
     let q = '';
+
     if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
       q = await getQuestion(
         mongo.Ques,
         req.user.stats.toAnswer[req.params.subject.toLowerCase()]
       );
     }
+
     // get experience stats
     let experienceStats = await calculateLevel(req.user.stats.experience);
     // Test if they have a question pending to answer which is valid for their units selected
     if (q && units.some((r) => q.units.includes(r))) {
+
+      console.log("in the if statement");
+
       res.render(VIEWS + 'private/train/displayQuestion.ejs', {
         units: units,
         newQues: q,
@@ -511,6 +516,9 @@ module.exports = (app, mongo) => {
         referenceSheet
       });
     } else {
+
+      console.log("in the else statement");
+
       // deduct 8 rating if previously queued question was skipped
       if (q) {
         skipQuestionUpdates(
@@ -521,11 +529,8 @@ module.exports = (app, mongo) => {
         );
       }
       // get parameters set up
-      if (req.user.rating['usabo'] === undefined) {
-        setRating('USABO', -1, req);
-      }
-
       if (req.user.rating['ess'] === undefined) {
+        console.log('setting ess rating from undefined to -1');
         setRating('ESS', -1, req);
       }
 
@@ -534,9 +539,17 @@ module.exports = (app, mongo) => {
       );
       const floor = ceilingFloor.floor;
       const ceiling = ceilingFloor.ceiling;
+
+      //debugging usage
+      console.log(floor);
+      console.log(ceiling);
+      
       // get question
       getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(
         (qs) => {
+
+          //console.log(qs);
+
           // select random question
           curQ = qs[Math.floor(Math.random() * qs.length)];
           console.log(curQ);

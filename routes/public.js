@@ -15,6 +15,7 @@ const {
 } = require('../utils/functions/database');
 const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { sendDiscordWebhook } = require('../utils/functions/webhook.js');
+const { User, Ques, SiteData } = require('../utils/functions/mongo');
 
 const VIEWS = '../views/';
 
@@ -22,8 +23,19 @@ module.exports = (app, mongo) => {
   // PUBLIC GET
   // `username` is email
   // `ign` is username
-  app.get('/', expressLayouts, (req, res) => {
-    res.render(VIEWS + 'public/indexV2.ejs', { layout: 'layouts/base.ejs' });
+  app.get('/', expressLayouts, async (req, res) => {
+    const { questionCount, tagCount, usaboQuestionCount, totalSolves } =
+      await getSiteData(User, Ques, SiteData);
+
+    res.render(VIEWS + 'public/indexV2.ejs', {
+      layout: 'layouts/base.ejs',
+      questionCount: questionCount + usaboQuestionCount,
+      tagCount,
+      totalSolves: Array.from(Object.values(totalSolves)).reduce(
+        (a, b) => (a + b ? b : 0), // Catch if b is NaN
+        0
+      ),
+    });
   });
 
   app.get('/signin', expressLayouts, (req, res) => {
@@ -59,13 +71,13 @@ module.exports = (app, mongo) => {
       res.render(VIEWS + 'public/teamV2', {
         pageName: 'About Mutorials',
         authenticated: true,
-        layout: 'layouts/base.ejs'
+        layout: 'layouts/base.ejs',
       });
     } else {
       res.render(VIEWS + 'public/teamV2', {
         pageName: 'About Mutorials',
         authenticated: false,
-        layout: 'layouts/base.ejs'
+        layout: 'layouts/base.ejs',
       });
     }
   });
@@ -145,6 +157,7 @@ module.exports = (app, mongo) => {
     if (
       !/^(19|20)\d{2}$/.test(req.body.yob) ||
       req.body.yob.length != 4 ||
+      req.body.yob < 1900 ||
       req.body.yob > new Date().getFullYear()
     ) {
       req.flash('errorFlash', 'Please enter a valid year of birth!');
@@ -190,6 +203,7 @@ module.exports = (app, mongo) => {
       },
       preferences: {
         hideProfile: new Date().getFullYear() - thisYob < 13 ? true : false,
+        dark_mode: true,
       },
       achievements: {
         join_mutorials: true,
