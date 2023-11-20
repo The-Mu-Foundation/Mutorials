@@ -1,5 +1,6 @@
 .btn {
-  @apply px-4 py-2
+  @apply flex items-center
+    px-4 py-2
     rounded
     font-medium
     shadow-none hover:shadow-md
@@ -15,6 +16,7 @@
 
 .btn-outline {
   @apply bg-white
+    box-border
     border-2 border-neutral-200
     hover:bg-neutral-50;
 }
