@@ -27,12 +27,14 @@ module.exports = (app, mongo) => {
     const { questionCount, tagCount, usaboQuestionCount, totalSolves } =
       await getSiteData(User, Ques, SiteData);
 
+    console.log(totalSolves);
+
     res.render(VIEWS + 'public/indexV2.ejs', {
       layout: 'layouts/base.ejs',
       questionCount: questionCount + usaboQuestionCount,
       tagCount,
       totalSolves: Array.from(Object.values(totalSolves)).reduce(
-        (a, b) => (a + b ? b : 0), // Catch if b is NaN
+        (a, b) => a + (b || 0), // Catch if b is NaN
         0
       ),
     });
