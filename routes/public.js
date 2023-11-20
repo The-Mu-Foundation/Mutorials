@@ -35,7 +35,7 @@ module.exports = (app, mongo) => {
       tagCount,
       totalSolves: Array.from(Object.values(totalSolves)).reduce(
         (a, b) => a + (b || 0), // Catch if b is NaN
-        0
+        0,
       ),
     });
   });
@@ -112,7 +112,7 @@ module.exports = (app, mongo) => {
     if (!/^[\w\-\.\~]+$/.test(req.body.ign)) {
       req.flash(
         'errorFlash',
-        'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.'
+        'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',
       );
       registerInputProblems1 = true;
     }
@@ -128,7 +128,7 @@ module.exports = (app, mongo) => {
     ) {
       req.flash(
         'errorFlash',
-        'The password you entered does not meet the requirements.'
+        'The password you entered does not meet the requirements.',
       );
       registerInputProblems1 = true;
     }
@@ -144,14 +144,7 @@ module.exports = (app, mongo) => {
     if (!req.body.agreeTOS) {
       req.flash(
         'errorFlash',
-        'You must agree to the Terms of Service and Privacy Policy to register an account with us.'
-      );
-      registerInputProblems1 = true;
-    }
-    if (!req.body.agreeAge) {
-      req.flash(
-        'errorFlash',
-        'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.'
+        'You must agree to the Terms of Service and Privacy Policy to register an account with us.',
       );
       registerInputProblems1 = true;
     }
@@ -205,7 +198,7 @@ module.exports = (app, mongo) => {
       },
       preferences: {
         hideProfile: new Date().getFullYear() - thisYob < 13 ? true : false,
-        dark_mode: true,
+        dark_mode: false,
       },
       achievements: {
         join_mutorials: true,
@@ -266,7 +259,7 @@ module.exports = (app, mongo) => {
     }),
     (req, res, next) => {
       console.log('routes/publicjs: User just signed in');
-    }
+    },
   );
 
   app.post('/forgotPassword', (req, res) => {
@@ -282,16 +275,16 @@ module.exports = (app, mongo) => {
                 .collection('users')
                 .findOneAndUpdate(
                   { username: req.body.forgotEmail },
-                  { $set: { email_confirm_code: buf.toString('hex') } }
+                  { $set: { email_confirm_code: buf.toString('hex') } },
                 )
                 .then((success) => {
                   emailValidation.emailCodeSend(
                     req.body.forgotEmail,
-                    buf.toString('hex')
+                    buf.toString('hex'),
                   );
                   req.flash(
                     'successFlash',
-                    "You've been emailed a confirmation code."
+                    "You've been emailed a confirmation code.",
                   );
                   res.locals.forgotPassUser = req.body.forgotEmail;
                   res.render(VIEWS + 'public/forgotPassword.ejs', {
@@ -320,7 +313,7 @@ module.exports = (app, mongo) => {
             ) {
               req.flash(
                 'errorFlash',
-                'The password you entered does not meet the requirements.'
+                'The password you entered does not meet the requirements.',
               );
               res.locals.forgotPassUser = req.body.username;
               res.render(VIEWS + 'public/forgotPassword.ejs', {
@@ -340,7 +333,7 @@ module.exports = (app, mongo) => {
                 .collection('users')
                 .findOneAndUpdate(
                   { username: req.body.username },
-                  { $set: { email_confirm_code: '', salt: salt, hash: hash } }
+                  { $set: { email_confirm_code: '', salt: salt, hash: hash } },
                 )
                 .then((success) => {
                   req.flash('successFlash', 'Your password has been changed.');
@@ -367,13 +360,13 @@ module.exports = (app, mongo) => {
           req.body.comment,
           req.user.username,
           req.user.ign,
-          req.body.questionId
+          req.body.questionId,
         )
       : sendDiscordWebhook(
           req.body.comment,
           'N/A',
           'User not signed in.',
-          req.body.questionId
+          req.body.questionId,
         );
     req.flash('successFlash', 'Thanks for your feedback!');
     if (req.body.redirect) {
