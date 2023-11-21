@@ -1,21 +1,114 @@
-<nav class="flex justify-center w-full p-6">
-  <div class="flex w-full max-w-4xl">
-    <%# Left group: logo, about %>
-    <ul class="flex items-center gap-4 mr-auto">
-      <li>
-        <a class="flex items-center" href="/">
-          <img class="mr-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg" width="30">
-          <b class="hidden sm:block sm:visible">Mutorials</b>
-        </a>
-      </li>
-      <li><a class="hidden sm:block font-medium hover:opacity-50 transition-opacity" href="/whoWeAre">About</a></li>
-    </ul>
+<%#
+  locals.user is passed and contains user info if user is logged in.
+    If user is not logged in, locals.user is undefined.
+%>
 
-    <%# Right group: search, log in, sign up %>
-    <ul class="flex items-center ml-auto gap-2">
-      <li class="flex items-center mr-2"><a class="hover:opacity-50 transition-opacity" href="/search"><i class="fas fa-search"></i></a></li>
-      <li><a class="btn btn-outline rounded-md" href="/signin">Log in</a></li>
-      <li><a class="btn btn-primary rounded-md" href="/signup">Sign up</a></li>
-    </ul>
+<nav class="flex justify-center w-full pt-6">
+  <div class="flex flex-col justify-between md:flex-row w-full max-w-4xl px-6">
+    <div class="flex items-center justify-between">
+      <a class="flex items-center mr-16" href="/">
+        <img class="mr-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg" width="30">
+        <b class="hidden sm:block sm:visible">Mutorials</b>
+      </a>
+    
+      <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="md:flex items-center hidden w-full pt-8 md:pt-0" id="navbar-dropdown">
+      <div class="flex-col flex md:flex-row justify-between gap-4 w-full">
+        <ul class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6">
+          <%# Train dropdown menu %>
+          <% if (locals.user) { %>
+            <li class="w-1/2">
+              <button
+                data-dropdown-toggle="train-menu"
+                class="dropdown-toggle"
+              >
+                <i class="fas fa-atom mr-1"></i>
+                Train
+                <i class="fas fa-chevron-down ml-2"></i>
+              </button>
+              <div id="train-menu" class="dropdown-menu">
+                <ul>
+                  <li><a href="train/physics/chooseUnits">Physics</a></li>
+                  <li><a href="train/chemistry/chooseUnits">Chemistry</a></li>
+                  <li><a href="train/biology/chooseUnits">Biology</a></li>
+                  <li><a href="train/ESS/chooseUnits">Earth & Space Science</a></li>
+                </ul>
+                <ul>
+                  <li><a href="train/rush">Problem Rush</a></li>
+                  <li><a href="train/daily">Daily Question</a></li>
+                </ul>
+                <ul>
+                  <li><a href="usaboHomepage">USABO Homepage</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="w-1/2">
+              <button
+                data-dropdown-toggle="stats-menu"
+                class="dropdown-toggle"
+              >
+                <i class="fas fa-chart-line mr-1"></i>
+                Stats
+                <i class="fas fa-chevron-down ml-2"></i>
+              </button>
+              <div id="stats-menu" class="dropdown-menu">
+                <ul>
+                  <li><a href="stats">Statistics</a></li>
+                  <li><a href="leaderboard">Leaderboard</a></li>
+                </ul>
+              </div>
+            </li>
+          <% } %>
+
+          <li><a class="font-medium hover:opacity-50 transition-opacity" href="/whoWeAre">About</a></li>
+
+          <li><a class="font-medium hover:opacity-50 transition-opacity" href="/references">References</a></li>
+        </ul>
+
+        <%# Right group: search, log in, sign up %>
+        <ul class="flex items-center">
+          <% if (locals.user) { %>
+            <%# Profile dropdown menu %>
+            <button
+              data-dropdown-toggle="profile-menu"
+              class="dropdown-toggle"
+            >
+              <i class="fas fa-cog mr-1"></i>
+              <%= locals.user.profile.name %>
+              <i class="fas fa-chevron-down ml-2"></i>
+            </button>
+            <div
+              id="profile-menu"
+              class="dropdown-menu w-48"
+            >
+              <ul>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/class/dash">Classes</a></li>
+                <li><a href="/settings">Settings</a></li>
+              </ul>
+              <ul>
+                <li><a href="/logout">Log out</a></li>
+              </ul>
+            </div>
+
+          <% } else { %>
+            <li class="flex items-center mr-2">
+              <a class="hover:opacity-50 transition-opacity" href="/search">
+                <i class="fas fa-search"></i>
+              </a>
+            </li>
+            <li><a class="btn btn-outline rounded-md" href="/signin">Log in</a></li>
+            <li><a class="btn btn-primary rounded-md" href="/signup">Sign up</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
   </div>
 </nav>

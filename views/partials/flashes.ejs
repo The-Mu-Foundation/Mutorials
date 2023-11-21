@@ -34,8 +34,7 @@
         <% let bgColor = flashColors[messageType][0] %>
         <% let borderColor = flashColors[messageType][1] %>
         <div
-          class="w-full max-h-none px-4 py-2 <%= bgColor %> border-2 <%= borderColor %>
-                 box-border rounded-md cursor-pointer transition duration-300"
+          class="w-full max-h-none px-4 py-2 <%= bgColor %> border-2 <%= borderColor %> box-border rounded-md cursor-pointer transition duration-300"
           x-data=""
           <%# Fade first, then disappear %>
           @click="(event) => {

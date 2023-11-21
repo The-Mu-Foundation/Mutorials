@@ -22,4 +22,8 @@
       opacity-100 hover:underline
       transition-opacity;
   }
+
+  nav li {
+    @apply list-none;
+  }
 }

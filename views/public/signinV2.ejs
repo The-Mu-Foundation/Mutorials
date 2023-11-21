@@ -1,7 +1,3 @@
-<%- contentFor('head') %>
-<!-- Alpine, for animating the "forgot password" div -->
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
 <%- contentFor('main') %>
 <div class="flex flex-col items-center max-w-sm"  x-data="{ forgotPassOpen: false }">
   <img class="w-12 mb-2" src="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
@@ -37,7 +33,12 @@
       <label for="stayLoggedIn">Keep me signed in</label><br>
     </div>
     <div>
-      <p class="cursor-pointer" @click="() => forgotPassOpen = !forgotPassOpen">
+      <p
+        class="cursor-pointer"
+        @keyup.enter="forgotPassOpen = !forgotPassOpen"
+        @click="forgotPassOpen = !forgotPassOpen"
+        tabindex="0"
+      >
         <a>Forgot password?</a>
       </p>
     </div>

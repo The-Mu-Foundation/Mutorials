@@ -10,7 +10,7 @@
       startDelay: 500,
       loop: true,
       preStringTyped: (pos, self) => {
-        $("#typed-a").text((pos > 1) ? "an" : "a");
+        $("#typed-a").innerText = (pos > 1) ? "an" : "a";
       },
     };
     const typed = new Typed("#typed-span", typedOptions);
@@ -38,7 +38,7 @@
       <p class="mb-2 mr-4">
         Practice <b>thousands</b> of science problems from honors curriculum to national competition level—all with explanations.
       </p>
-      <a class="btn btn-outline" href="/signup">
+      <a class="btn btn-outline gap-2" href="/signup">
         Get started
         <i class="fas fa-arrow-right"></i>
       </a>

@@ -21,13 +21,12 @@ const VIEWS = '../views/';
 
 module.exports = (app, mongo) => {
   // PUBLIC GET
-  // `username` is email
-  // `ign` is username
   app.get('/', expressLayouts, async (req, res) => {
     const { questionCount, tagCount, usaboQuestionCount, totalSolves } =
       await getSiteData(User, Ques, SiteData);
 
     res.render(VIEWS + 'public/indexV2.ejs', {
+      user: req.user,
       layout: 'layouts/base.ejs',
       questionCount: questionCount + usaboQuestionCount,
       tagCount,
@@ -62,28 +61,22 @@ module.exports = (app, mongo) => {
 
   app.get('/latexCompiler', (req, res) => {
     res.render(VIEWS + 'public/latexcompiler.ejs', {
+      user: req.user,
       pageName: 'LaTeX Compiler',
     });
   });
 
   app.get('/whoWeAre', expressLayouts, (req, res) => {
-    if (req.isAuthenticated()) {
-      res.render(VIEWS + 'public/teamV2', {
-        pageName: 'About Mutorials',
-        authenticated: true,
-        layout: 'layouts/base.ejs',
-      });
-    } else {
-      res.render(VIEWS + 'public/teamV2', {
-        pageName: 'About Mutorials',
-        authenticated: false,
-        layout: 'layouts/base.ejs',
-      });
-    }
+    res.render(VIEWS + 'public/teamV2', {
+      user: req.user,
+      pageName: 'About Mutorials',
+      layout: 'layouts/base.ejs',
+    });
   });
 
   app.get('/termsOfService', (req, res) => {
     res.render(VIEWS + 'public/termsOfService.ejs', {
+      user: req.user,
       pageName: 'Mutorials TOS',
     });
   });
