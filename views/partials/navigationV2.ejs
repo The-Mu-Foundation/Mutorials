@@ -24,9 +24,10 @@
         <ul class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-6">
           <%# Train dropdown menu %>
           <% if (locals.user) { %>
-            <li class="w-1/2">
+            <li>
               <button
                 data-dropdown-toggle="train-menu"
+                data-dropdown-placement="bottom-start"
                 class="dropdown-toggle"
               >
                 <i class="fas fa-atom mr-1"></i>
@@ -49,9 +50,10 @@
                 </ul>
               </div>
             </li>
-            <li class="w-1/2">
+            <li>
               <button
                 data-dropdown-toggle="stats-menu"
+                data-dropdown-placement="bottom-start"
                 class="dropdown-toggle"
               >
                 <i class="fas fa-chart-line mr-1"></i>
@@ -78,6 +80,7 @@
             <%# Profile dropdown menu %>
             <button
               data-dropdown-toggle="profile-menu"
+              data-dropdown-placement="bottom-start"
               class="dropdown-toggle"
             >
               <i class="fas fa-cog mr-1"></i>
