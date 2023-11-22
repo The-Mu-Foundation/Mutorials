@@ -39,7 +39,7 @@
         Practice <b>thousands</b> of science problems from honors curriculum to national competition level—all with explanations.
       </p>
       <a class="btn btn-outline gap-2" href="/signup">
-        Get started
+        <%= locals.user ? 'Homepage' : 'Get started' %>
         <i class="fas fa-arrow-right"></i>
       </a>
     </div>

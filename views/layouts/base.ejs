@@ -1,39 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-    <title>Mutorials <%= locals.pageName ? `• ${locals.pageName}` : "" %></title>
-    <link rel="icon" href="https://cdn.mutorials.org/images/icons/Icon_Main.svg" sizes="any" type="image/svg+xml">
-
-    <%# Meta tags %>
-    <meta property="og:title" content="Mutorials">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.mutorials.org/">
-    <meta property="og:image" content="https://cdn.mutorials.org/images/icons/Icon_Main.svg">
-    <meta property="og:description" content="Mutorials is a free, adaptive, web-based science trainer powered by a passionate and experienced team of students, with various fun and competitive game modes to enrich your learning!">
-
-    <%# External fonts %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <%# Font awesome icons %>
-    <script src="https://kit.fontawesome.com/d7086e8b06.js" crossorigin="anonymous"></script>
-
-    <%# Stylesheets %>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-      [x-cloak] {
-        display: none;
-      }
-    </style>
-
-    <!-- Scripts! -->
-    <script src="js/utils.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/flowbite.min.js"></script>
+    <%- include('../partials/headV2.ejs') %>
 
     <%# Views can insert additional html head content here %>
     <%- defineContent('head') %>
