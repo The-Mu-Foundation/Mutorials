@@ -79,7 +79,7 @@
 <%# Stats %>
 <div class="flex flex-col sm:flex-row justify-center max-w-4xl my-10 px-6 gap-4">
   <% for (let [quantity, label, id] of [
-    [questionCount, 'questions with solutions', 'question-count'],
+    [questionCount, 'originalquestions', 'question-count'],
     [tagCount, 'unique tags', 'tag-count'],
     [totalSolves, 'total solves', 'solve-count']
   ]) { %>
@@ -101,12 +101,16 @@
 </div>
 
 <%# USABO %>
-<div class="flex flex-col items-center w-screen px-16 py-16 bg-blue-800 text-white gap-8">
-  <p class="px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full">NEW!</p>
-    <h1 class="text-center">USABO Training</h1>
-    <h3 class="text-center max-w-2xl">Train for the USA Biology Olympiad, the premiere high-school biology competition in the United States.</h3>
-  <div class="sm:w-full sm:max-w-xl">
-    <img class="rounded-xl aspect-video object-cover" src="https://www.science.edu/acellus/wp-content/uploads/2016/12/Biology-Gen-Honors-720x380.jpg">
+<div class="flex flex-col sm:flex-row w-full items-stretch text-white sm:max-h-96">
+  <div class="flex items-center sm:justify-end sm:w-1/2 bg-blue-800">
+    <div class="flex flex-col items-start justify-center w-full h-full max-w-md px-6 sm:pl-6 sm:pr-24 py-8 sm:py-12">
+      <p class="mb-4 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full">NEW!</p>
+      <h2 class="mb-2">USABO Training</h1>
+      <p class="text-base sm:text-xl">Train for the USA Biology Olympiad, the premiere high-school biology competition in the United States.</p>
+    </div>
+  </div>
+  <div class="sm:w-1/2 overflow-hidden">
+    <img class="w-full h-full object-cover" src="https://www.science.edu/acellus/wp-content/uploads/2016/12/Biology-Gen-Honors-720x380.jpg">
   </div>
 </div>
 
