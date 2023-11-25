@@ -31,7 +31,7 @@
 
 <%- contentFor('main') %>
 <%# Hero %>
-<div class="flex items-center w-full max-w-4xl sm:min-h-screen m-0 px-6 py-10 sm:-mt-24">
+<div class="flex items-center w-full max-w-4xl sm:min-h-screen m-0 px-6 py-10 sm:-mt-20">
   <div class="flex justify-between w-full">
     <div class="flex flex-col items-start w-full sm:w-7/12 mr-6">
       <h1 class="mb-4 text-4xl sm:text-5xl whitespace-nowrap">
@@ -83,100 +83,102 @@
 </div>
 
 <%# "Wide coverage" -> subjects %>
-<div
-  class="flex flex-col items-center max-w-4xl sm:py-10 px-6"
-  data-aos="zoom-in"
->
-  <h2 class="mb-2">Wide coverage</h2>
-  <h3 class="mb-4">Four core subjects with 60 distinct units.</h3>
+<div class="flex flex-col items-center justify-center w-full min-h-screen mt-10 py-10 bg-black text-white">
+  <div
+    class="flex flex-col items-center max-w-4xl sm:py-10 px-6"
+  >
+    <div data-aos="fade-down text-center">
+      <h2 class="mb-2">Wide coverage</h2>
+      <h3 class="mb-4">Four core subjects with 60 distinct units.</h3>
+    </div>
 
-  <div class="grid grid-cols-2 sm:grid-cols-4 items-stretch gap-4">
-    <% for (let [subject, unitCount, image] of [
-      ['Physics', 24, 'https://images.unsplash.com/photo-1591306208574-969f12f1ebfe'],
-      ['Chemistry', 21, 'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6'],
-      ['Biology', 9, 'https://images.unsplash.com/photo-1576086213369-97a306d36557'],
-      ['Earth & Space', 7, 'https://images.unsplash.com/photo-1634176866089-b633f4aec882'],
-    ]) {%>
-      <div class="flex flex-col items-center">
-        <img class="mb-2 aspect-square object-cover rounded-md" src="<%= image %>" draggable="false">
-        <h3 class="mb-0 sm:text-normal text-center font-bold"><%= subject %></h3>
-        <p><%= unitCount %> units</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 items-stretch gap-4">
+      <% [
+        ['Physics', 24, 'https://images.unsplash.com/photo-1591306208574-969f12f1ebfe'],
+        ['Chemistry', 21, 'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6'],
+        ['Biology', 9, 'https://images.unsplash.com/photo-1576086213369-97a306d36557'],
+        ['Earth & Space', 7, 'https://images.unsplash.com/photo-1634176866089-b633f4aec882'],
+      ].forEach(([subject, unitCount, image], i) => { %>
+        <div
+          class="flex flex-col items-center"
+          data-aos="fade-up"
+          data-aos-delay="<%= i * 300 + 100 %>"
+        >
+          <img class="mb-2 aspect-square object-cover rounded-md" src="<%= image %>" draggable="false">
+          <h3 class="mb-0 sm:text-normal text-center font-bold"><%= subject %></h3>
+          <p><%= unitCount %> units</p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <%# Stats %>
+  <div class="flex flex-col sm:flex-row justify-center max-w-4xl px-6 my-10 gap-4">
+    <% for (let [quantity, label, id] of [
+      [questionCount, 'original questions', 'question-count'],
+      [tagCount, 'unique tags', 'tag-count'],
+      [totalSolves, 'total solves', 'solve-count']
+    ]) { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          let c = new countUp.CountUp(
+            `sitestat-<%= id %>`,
+            '<%= quantity %>',
+            { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 200 }
+          );
+          c.start();
+        })
+      </script>
+      <div class="flex flex-col items-center w-48">
+        <h1 class="font-extrabold text-blue-500 text-shadow mb-1" id="sitestat-<%= id %>"><%= quantity %></h1>
+        <p><%= label %></p>
       </div>
     <% } %>
   </div>
 </div>
 
-<%# Stats %>
-<div class="flex flex-col sm:flex-row justify-center max-w-4xl px-6 my-10 sm:my-40 gap-4">
-  <% for (let [quantity, label, id] of [
-    [questionCount, 'original questions', 'question-count'],
-    [tagCount, 'unique tags', 'tag-count'],
-    [totalSolves, 'total solves', 'solve-count']
-  ]) { %>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        let c = new countUp.CountUp(
-          `sitestat-<%= id %>`,
-          '<%= quantity %>',
-          { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 200 }
-        );
-        c.start();
-      })
-    </script>
-    <div class="flex flex-col items-center w-48">
-      <h1 class="font-extrabold text-blue-600 mb-1" id="sitestat-<%= id %>"><%= quantity %></h1>
-      <p><%= label %></p>
-    </div>
-  <% } %>
-</div>
-
 <%# Learn and grow %>
-<div class="flex flex-col items-center justify-center w-full h-screen bg-blue-50">
-  <div class="flex flex-col gap-8 w-full max-w-4xl px-6">
-    <h1 class="max-w-xl">Learn and grow with the <span class="text-blue-600">Mutorials community.</span></h1>
-    <div class="flex flex-col md:flex-row gap-8">
-      <%# Leaderboard %>
-      <div class="h-full md:w-2/3 overflow-x-auto bg-white rounded border">
-        <table class="w-full text-sm">
-          <thead class="bg-neutral-100">
-            <tr>
-              <th>Rank</th>
-              <th>Username</th>
-              <th>Level</th>
-              <th>Experience</th>
+<div class="flex flex-col items-center justify-center w-full min-h-screen py-10 bg-purple-50">
+  <div class="flex flex-col items-center md:flex-row gap-12 w-full max-w-4xl px-6">
+    <div
+      class="flex flex-col items-start gap-4"
+      data-aos="fade-right"
+    >
+      <h1>Learn and grow with the <span class="text-purple-700">Mutorials community.</span></h1>
+      <p>
+        Connect with fellow learners, discuss science topics,
+        and stay updated on challenges in the Mutorials Discord server.
+      </p>
+      <a
+        class="btn btn-outline"
+        href="https://discord.com/invite/ccbZu4q"
+      ><i class="fab fa-discord mr-2"></i> Join the Discord</a>
+    </div>
+    <div
+      class="w-full overflow-x-auto sm:overflow-x-visible bg-white rounded border"
+      data-aos="fade-left"
+      data-aos-delay="300"
+    >
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-100">
+          <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Level</th>
+            <th>Experience</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% locals.leaderboard.forEach((user, i) => { %>
+            <tr class="bg-white">
+              <td><%= i %></td>
+              <td class="whitespace-nowrap"><%= user.ign %></td>
+              <td><%= user.level.level %></td>
+              <td><%= user.experience?.toLocaleString('en-US', { maximumFractionDigits: 0 }) %></td>
             </tr>
-          </thead>
-          <tbody>
-            <% locals.leaderboard.forEach((user, i) => { %>
-              <tr>
-                <td><%= i %></td>
-                <td><%= user.ign %></td>
-                <td><%= user.level.level %></td>
-                <td
-                  id="user-<%= user.ign %>-experience"
-                >0</td>
-                <script defer>                  
-                  document.addEventListener('DOMContentLoaded', () => {
-                    setTimeout(() => {
-                      let x = new countUp.CountUp(
-                        'user-<%= user.ign %>-experience',
-                        <%= user.experience %>,
-                        { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 200 }
-                      );
-                      x.start();
-                    });
-                  });
-                </script>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-
-      <%# Daily question %>
-      <div class="w-1/3 p-6 border bg-white">
-        Daily question
-      </div>
+          <% }) %>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
