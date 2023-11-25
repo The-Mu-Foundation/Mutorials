@@ -1,5 +1,5 @@
 <%- contentFor('head') %>
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11" defer></script>
 <script defer>
   document.addEventListener('DOMContentLoaded', () => {
     const typedOptions = {
@@ -17,7 +17,11 @@
     typed.start();
   });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.7.0/countUp.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.7.0/countUp.umd.min.js" defer></script>
+
+<%# Animate on scroll %>
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
 <style>
   div.main {
@@ -27,9 +31,9 @@
 
 <%- contentFor('main') %>
 <%# Hero %>
-<div class="w-full max-w-4xl m-0 px-6 py-10 md:mt-32 md:mb-40">
+<div class="flex items-center w-full max-w-4xl sm:min-h-screen m-0 px-6 py-10 sm:-mt-24">
   <div class="flex justify-between w-full">
-    <div class="flex flex-col items-start w-7/12 mr-6">
+    <div class="flex flex-col items-start w-full sm:w-7/12 mr-6">
       <h1 class="mb-4 text-4xl sm:text-5xl whitespace-nowrap">
         Mutorials is <span id="typed-a">a</span><br>
         <span class="font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600" id="typed-span"></span><br>
@@ -44,7 +48,7 @@
       </a>
     </div>
 
-    <div class="relative flex items-center w-5/12 overflow-visible -z-10">
+    <div class="relative flex items-center sm:w-5/12 overflow-visible -z-10">
       <%# Terrible hack to center oversized image in a div %>
       <%# https://stackoverflow.com/questions/14562457/center-oversized-image-in-div %>
       <div
@@ -79,7 +83,10 @@
 </div>
 
 <%# "Wide coverage" -> subjects %>
-<div class="flex flex-col items-center max-w-4xl sm:py-10 px-6">
+<div
+  class="flex flex-col items-center max-w-4xl sm:py-10 px-6"
+  data-aos="zoom-in"
+>
   <h2 class="mb-2">Wide coverage</h2>
   <h3 class="mb-4">Four core subjects with 60 distinct units.</h3>
 
@@ -100,15 +107,15 @@
 </div>
 
 <%# Stats %>
-<div class="flex flex-col sm:flex-row justify-center max-w-4xl my-10 px-6 gap-4">
+<div class="flex flex-col sm:flex-row justify-center max-w-4xl px-6 my-10 sm:my-40 gap-4">
   <% for (let [quantity, label, id] of [
-    [questionCount, 'originalquestions', 'question-count'],
+    [questionCount, 'original questions', 'question-count'],
     [tagCount, 'unique tags', 'tag-count'],
     [totalSolves, 'total solves', 'solve-count']
   ]) { %>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
-        var c = new countUp.CountUp(
+        let c = new countUp.CountUp(
           `sitestat-<%= id %>`,
           '<%= quantity %>',
           { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 200 }
@@ -123,16 +130,71 @@
   <% } %>
 </div>
 
-<%# USABO %>
-<div class="flex flex-col sm:flex-row w-full items-stretch text-white sm:max-h-96">
-  <div class="flex items-center sm:justify-end sm:w-1/2 bg-blue-800">
-    <div class="flex flex-col items-start justify-center w-full h-full sm:max-w-md px-6 sm:pl-6 sm:pr-24 py-8 sm:py-12">
-      <p class="mb-4 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full">NEW!</p>
-      <h2 class="mb-2">USABO Training</h1>
-      <p class="text-base sm:text-xl">Train for the USA Biology Olympiad, the premiere high-school biology competition in the United States.</p>
+<%# Learn and grow %>
+<div class="flex flex-col items-center justify-center w-full h-screen bg-blue-50">
+  <div class="flex flex-col gap-8 w-full max-w-4xl px-6">
+    <h1 class="max-w-xl">Learn and grow with the <span class="text-blue-600">Mutorials community.</span></h1>
+    <div class="flex flex-col md:flex-row gap-8">
+      <%# Leaderboard %>
+      <div class="h-full md:w-2/3 overflow-x-auto bg-white rounded border">
+        <table class="w-full text-sm">
+          <thead class="bg-neutral-100">
+            <tr>
+              <th>Rank</th>
+              <th>Username</th>
+              <th>Level</th>
+              <th>Experience</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% locals.leaderboard.forEach((user, i) => { %>
+              <tr>
+                <td><%= i %></td>
+                <td><%= user.ign %></td>
+                <td><%= user.level.level %></td>
+                <td
+                  id="user-<%= user.ign %>-experience"
+                >0</td>
+                <script defer>                  
+                  document.addEventListener('DOMContentLoaded', () => {
+                    setTimeout(() => {
+                      let x = new countUp.CountUp(
+                        'user-<%= user.ign %>-experience',
+                        <%= user.experience %>,
+                        { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 200 }
+                      );
+                      x.start();
+                    });
+                  });
+                </script>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <%# Daily question %>
+      <div class="w-1/3 p-6 border bg-white">
+        Daily question
+      </div>
     </div>
   </div>
-  <div class="sm:w-1/2 overflow-hidden">
+</div>
+
+<%# USABO %>
+<div class="relative flex flex-col sm:flex-row items-stretch w-full overflow-hidden text-white">
+  <div class="flex items-center sm:justify-end overflow-hidden sm:w-1/2 bg-black sm:bg-blue-900 backdrop-blur-sm bg-opacity-50 sm:backdrop-blur-none">
+    <div
+      class="flex flex-col items-start justify-center w-full h-full sm:max-w-md px-6 sm:pl-6 sm:pr-24 py-8 sm:py-12"
+      data-aos="fade-up"
+    >
+      <p class="mb-4 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full select-none">NEW!</p>
+      <h2 class="mb-2">USABO Training</h1>
+      <p class="text-base sm:text-xl mb-4">Train for the USA Biology Olympiad, the premiere high-school biology competition in the United States.</p>
+      <a class="btn btn-primary" href="/train/Biology/chooseUnits">Train now</a>
+    </div>
+  </div>
+  <div class="absolute sm:relative w-full sm:w-1/2 h-full sm:h-auto -z-10">
     <img class="w-full h-full object-cover" src="https://www.science.edu/acellus/wp-content/uploads/2016/12/Biology-Gen-Honors-720x380.jpg">
   </div>
 </div>
@@ -144,7 +206,20 @@
   </div>
   <h1 class="mb-4 text-center">Get started today.</h1>
   <div class="flex items-center gap-4">
-    <a class="btn btn-primary" href="/signup">Start training</a>
-    <a class="btn btn-outline" href="https://discord.com/invite/ccbZu4q">Join the team</a>
+    <a
+      class="btn btn-primary"
+      href="/signup"
+      data-aos="fade-up"
+    >Start training</a>
+    <a
+      class="btn btn-outline"
+      href="https://discord.com/invite/ccbZu4q"
+      data-aos="fade-up"
+      data-aos-delay="300"
+    >Join the team</a>
   </div>
 </div>
+
+<script defer>
+  AOS.init({ once: true });
+</script>

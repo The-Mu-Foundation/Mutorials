@@ -4,6 +4,7 @@
 @import 'components/button.css';
 @import 'components/input.css';
 @import 'components/dropdown-menu.css';
+@import 'components/table.css';
 @import 'tailwindcss/components';
 
 @import 'tailwindcss/utilities';

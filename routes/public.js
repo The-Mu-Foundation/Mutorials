@@ -25,6 +25,22 @@ module.exports = (app, mongo) => {
     const { questionCount, tagCount, usaboQuestionCount, totalSolves } =
       await getSiteData(User, Ques, SiteData);
 
+    // Leaderboard
+    let leaderboard = (
+      await mongo.User.find({
+        'stats.experience': { $gte: 10000 },
+      })
+        .sort({ 'stats.experience': -1 })
+        .limit(10)
+        .exec()
+    ).map((user) => {
+      return {
+        level: calculateLevel(user.stats.experience),
+        experience: user.stats.experience,
+        ign: user.ign,
+      };
+    });
+
     res.render(VIEWS + 'public/indexV2.ejs', {
       user: req.user,
       layout: 'layouts/base.ejs',
@@ -34,6 +50,7 @@ module.exports = (app, mongo) => {
         (a, b) => a + (b || 0), // Catch if b is NaN
         0
       ),
+      leaderboard,
     });
   });
 

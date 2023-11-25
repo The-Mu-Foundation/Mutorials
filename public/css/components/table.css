@@ -1,0 +1,14 @@
+/* Let's make tables look nice */
+
+table td,
+table th {
+  @apply px-6 py-4;
+}
+
+table thead {
+  @apply uppercase font-bold border-b text-left;
+}
+
+table tbody {
+  @apply divide-y;
+}
