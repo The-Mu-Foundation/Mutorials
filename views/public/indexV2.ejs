@@ -31,7 +31,7 @@
 
 <%- contentFor('main') %>
 <%# Hero %>
-<div class="flex items-center w-full max-w-4xl sm:min-h-screen m-0 px-6 py-10 sm:-mt-20">
+<div class="flex items-center w-full max-w-4xl min-h-screen m-0 px-6 py-10 sm:-mt-20">
   <div class="flex justify-between w-full">
     <div class="flex flex-col items-start w-full sm:w-7/12 mr-6">
       <h1 class="mb-4 text-4xl sm:text-5xl whitespace-nowrap">
@@ -89,7 +89,7 @@
   >
     <div class="text-center" data-aos="fade-down">
       <h1 class="mb-4">Wide coverage</h1>
-      <h2 class="font-normal mb-8">Four core subjects with 60 distinct units.</h2>
+      <p class="font-normal mb-8">Four core subjects with 60 distinct units.</p>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-4 items-stretch gap-4">
@@ -185,7 +185,7 @@
         <tbody>
           <% locals.leaderboard.forEach((user, i) => { %>
             <tr class="bg-white">
-              <td><%= i %></td>
+              <td><%= i + 1 %></td>
               <td class="whitespace-nowrap"><%= user.ign %></td>
               <td><%= user.level.level %></td>
               <td><%= user.experience?.toLocaleString('en-US', { maximumFractionDigits: 0 }) %></td>
