@@ -83,7 +83,7 @@
 </div>
 
 <%# "Wide coverage" -> subjects %>
-<div class="flex flex-col items-center justify-center w-full min-h-screen mt-10 py-10 bg-black text-white">
+<div class="flex flex-col items-center justify-center w-full sm:min-h-screen mt-10 py-10 bg-black text-white">
   <div
     class="flex flex-col items-center max-w-4xl sm:py-10 px-6"
   >
@@ -138,21 +138,21 @@
 </div>
 
 <%# Daily question %>
-<div class="flex items-center justify-center w-full overflow-hidden min-h-screen py-10">
-  <div
-    class="flex flex-col gap-2 max-w-4xl px-6"
-    data-aos="fade-up"
-  >
+<div class="flex items-center justify-center w-full overflow-hidden sm:min-h-screen py-10">
+  <div class="flex flex-col gap-2 max-w-4xl px-6">
     <h1>Daily Question</h1>
     <p class="mb-4">Try today's daily question!</p>
-    <div class="p-8 rounded-xl border-2 shadow-lg">
+    <div
+      class="p-8 rounded-xl border-2 shadow-lg" 
+      data-aos="fade-up"
+    >
       <%- include('../partials/components/dailySnippet.ejs') %>
     </div>
   </div>
 </div>
 
 <%# Learn and grow %>
-<div class="flex flex-col items-center justify-center w-full min-h-screen py-10 bg-purple-50">
+<div class="flex flex-col items-center justify-center w-full sm:min-h-screen py-10 bg-purple-50">
   <div class="flex flex-col items-center md:flex-row gap-12 w-full max-w-4xl px-6">
     <div
       class="flex flex-col items-start gap-4"
@@ -169,7 +169,7 @@
       ><i class="fab fa-discord mr-2"></i> Join the Discord</a>
     </div>
     <div
-      class="w-full overflow-x-auto sm:overflow-x-visible bg-white rounded border"
+      class="w-full overflow-x-auto sm:overflow-x-visible bg-white rounded border-2"
       data-aos="fade-left"
       data-aos-delay="300"
     >
