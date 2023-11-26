@@ -541,7 +541,6 @@ module.exports = (app, mongo) => {
       //debugging usage
       console.log(floor);
       console.log(ceiling);
-
       // get question
       getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(
         (qs) => {
