@@ -22,8 +22,12 @@ const VIEWS = '../views/';
 module.exports = (app, mongo) => {
   // PUBLIC GET
   app.get('/', expressLayouts, async (req, res) => {
+    // Site data
     const { questionCount, tagCount, usaboQuestionCount, totalSolves } =
       await getSiteData(User, Ques, SiteData);
+
+    // Daily question
+    const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
 
     // Leaderboard
     let leaderboard = (
@@ -50,6 +54,7 @@ module.exports = (app, mongo) => {
         (a, b) => a + (b || 0), // Catch if b is NaN
         0
       ),
+      question,
       leaderboard,
     });
   });

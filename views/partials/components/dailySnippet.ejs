@@ -1,131 +1,124 @@
 <%# Code for a snapshot of the daily question %>
 
 <% try { %>
+  <% let questionSnippet = locals.question; %>
 
-<% let questionSnippet = question; %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script defer>
+    $(document).ready(function() {
+      // declare useful helper method
+      function arraysEqual(a, b) {
+        if (a === b) return true;
+        if (a == null || b == null) return false;
+        if (a.length !== b.length) return false;
 
-<script>
-  $(document).ready(function() {
-    // declare useful helper method
-    function arraysEqual(a, b) {
-      if (a === b) return true;
-      if (a == null || b == null) return false;
-      if (a.length !== b.length) return false;
-
-      for (let i = 0; i < a.length; ++i) {
-        if (a[i] !== b[i]) return false;
+        for (let i = 0; i < a.length; ++i) {
+          if (a[i] !== b[i]) return false;
+        }
+        return true;
       }
-      return true;
-    }
 
-    // decheck all checkboxes/radio buttons
-    $('.form-check-input').prop('checked', false);
+      // decheck all checkboxes/radio buttons
+      $('.form-check-input').prop('checked', false);
 
-    // hide all flashes and answer explanation upon loading
-    $('#correct').hide(0);
-    $('#wrong').hide(0);
+      // hide all flashes and answer explanation upon loading
+      $('#correct').hide(0);
+      $('#wrong').hide(0);
 
-    // configure check answer button
-    $('#submit').click(() => {
-      let correct = false;
-      const type = $('#hiddenType').val();
+      // configure check answer button
+      $('#submit').click(() => {
+        let correct = false;
+        const type = $('#hiddenType').val();
 
-      let correctAnswer = $('#hiddenAnswer').val().split('@');
-      let numOfChoices = parseInt($('#numOfChoices').val());
-      if (type == 'mc') {
-        let userAnswer = 0;
-        for (i = 1; i <= numOfChoices; i++) {
-          if ($('#' + i).is(':checked')) {
-            userAnswer = i;
+        let correctAnswer = $('#hiddenAnswer').val().split('@');
+        let numOfChoices = parseInt($('#numOfChoices').val());
+        if (type == 'mc') {
+          let userAnswer = 0;
+          for (i = 1; i <= numOfChoices; i++) {
+            if ($('#' + i).is(':checked')) {
+              userAnswer = i;
+            }
+          }
+
+          if (correctAnswer[0] == userAnswer) {
+            correct = true;
+          }
+        } else if (type == 'sa') {
+          let userAnswer = [];
+          for (i = 1; i <= numOfChoices; i++) {
+            if ($('#' + i).is(':checked')) {
+              userAnswer.push('' + i);
+            }
+          }
+
+          if (arraysEqual(userAnswer, correctAnswer)) {
+            correct = true;
+          }
+        } else if (type == 'fr') {
+          let userAnswer = $('#fr-answer').val();
+          if (userAnswer.trim().toLowerCase() == correctAnswer[0].toLowerCase()) {
+            correct = true;
           }
         }
 
-        if (correctAnswer[0] == userAnswer) {
-          correct = true;
+        if (correct) {
+          $('#wrong').hide(0);
+          $('#correct').show(500);
+        } else {
+          $('#wrong').show(500);
+          $('#correct').hide(0);
         }
-      } else if (type == 'sa') {
-        let userAnswer = [];
-        for (i = 1; i <= numOfChoices; i++) {
-          if ($('#' + i).is(':checked')) {
-            userAnswer.push('' + i);
-          }
-        }
-
-        if (arraysEqual(userAnswer, correctAnswer)) {
-          correct = true;
-        }
-      } else if (type == 'fr') {
-        let userAnswer = $('#fr-answer').val();
-        if (userAnswer.trim().toLowerCase() == correctAnswer[0].toLowerCase()) {
-          correct = true;
-        }
-      }
-
-      if (correct) {
-        $('#wrong').hide(0);
-        $('#correct').show(500);
-      } else {
-        $('#wrong').show(500);
-        $('#correct').hide(0);
-      }
+      });
     });
-  });
-</script>
+  </script>
 
 
-<div class="card">
-  <h5 class="card-header text-center"><%= new Date().toISOString().split('T')[0] %> Daily Question</h5>
+  <div>
+    <div class="flex flex-col items-start gap-4">
+      <p class="font-bold text-2xl"><%= (new Date()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+      <p><%- questionSnippet.question %></p>
 
-  <div class="card-body">
-    <p class="card-text"><%- questionSnippet.question %></p>
-
-    <% if(question.type == "mc") { %>
-
-    <div class="mt-4" id="mc-choices">
-      <% var choiceIndex = 1; %>
-      <% questionSnippet.choices.forEach((choice) => { %>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="answerChoice" id="<%= choiceIndex %>">
-        <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
-        <% choiceIndex++; %>
+      <% if (question.type == "mc") { %>
+        <div class="flex flex-col gap-2" id="mc-choices">
+          <% let choiceIndex = 1; %>
+          <% questionSnippet.choices.forEach((choice) => { %>
+            <div class="flex items-center">
+              <input class="mr-2 cursor-pointer" type="radio" name="answerChoice" id="<%= choiceIndex %>">
+              <label for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+              <% choiceIndex++; %>
+            </div>
+          <% }) %>
+        </div>
+      <% } else if (questionSnippet.type == "sa") { %>
+      <div class="flex flex-col gap-2" id="sa-choices">
+        <% let choiceIndex = 1; %>
+        <% questionSnippet.choices.forEach((choice) => { %>
+          <div class="flex items-center">
+            <input class="mr-2 cursor-pointer" type="checkbox" name="saChoice" id="<%= choiceIndex %>">
+            <label for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
+          </div>
+          <% choiceIndex++; %>
+        <% }) %>
       </div>
-      <% }) %>
+      <% } else if (question.type == "fr") { %>
+        <div>
+          <input type="text" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
+        </div>
+      <% } %>
+
+      <input class="btn btn-primary" type="button" value="Check Answer" id="submit">
+
+      <input type="hidden" id="hiddenType" value="<%= questionSnippet.type %>">
+      <input type="hidden" id="hiddenAnswer" value="<%= questionSnippet.answer.join('@') %>">
+      <input type="hidden" id="numOfChoices" value="<%= questionSnippet.choices.length %>">
+
+      <div class="bg-green-50 border-green-200 p-4 whitespace-nowrap rounded border-2" id="correct">Your answer is correct!</div>
+      <div class="bg-red-50 border-red-200 p-4 whitespace-nowrap rounded border-2" id="wrong">Your answer is incorrect.</div>
+
+      <p>Go to the <a class="prose" href="/train/daily">daily question page</a> to view the answer explanation!</p>
     </div>
-
-    <% } else if(questionSnippet.type == "sa") { %>
-    <div class="mt-4" id="sa-choices">
-      <% var choiceIndex = 1; %>
-      <% questionSnippet.choices.forEach((choice) => { %>
-      <div class="form-check my-1 me-sm-2">
-        <input type="checkbox" name="saChoice" class="form-check-input" id="<%= choiceIndex %>">
-        <label class="form-check-label" for="<%= choiceIndex %>"><%= String.fromCharCode(64+choiceIndex) %>. <%= choice %></label>
-      </div>
-      <% choiceIndex++; %>
-      <% }) %>
-    </div>
-    <% } else if(question.type == "fr") { %>
-    <div class="mt-4">
-      <div class="form-group">
-        <input type="text" class="form-control" id="fr-answer" placeholder="Enter your answer here" name="freeAnswer" value="">
-      </div>
-    </div>
-    <% } %>
-
-    <input class="btn btn-primary my-2" type="button" value="Check Answer" id="submit">
-
-    <input type="hidden" id="hiddenType" value="<%= questionSnippet.type %>">
-    <input type="hidden" id="hiddenAnswer" value="<%= questionSnippet.answer.join('@') %>">
-    <input type="hidden" id="numOfChoices" value="<%= questionSnippet.choices.length %>">
-
-    <div class="alert alert-success" id="correct">Your answer is correct!</div>
-    <div class="alert alert-danger" id="wrong">Your answer is incorrect!</div>
-
-    <h6 class="card-title mt-4 text-center">Go to the daily question page to view the answer explanation!</h6>
   </div>
-</div>
 
 <% } catch(err) { %>
-<p class="text-center">
-  <font color="red">[Site component can not be displayed due to an internal error]</font>
-</p>
+  <p class="text text-red"><%= err %></p>
 <% } %>

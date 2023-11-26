@@ -87,9 +87,9 @@
   <div
     class="flex flex-col items-center max-w-4xl sm:py-10 px-6"
   >
-    <div data-aos="fade-down text-center">
-      <h2 class="mb-2">Wide coverage</h2>
-      <h3 class="mb-4">Four core subjects with 60 distinct units.</h3>
+    <div class="text-center" data-aos="fade-down">
+      <h1 class="mb-4">Wide coverage</h1>
+      <h2 class="font-normal mb-8">Four core subjects with 60 distinct units.</h2>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-4 items-stretch gap-4">
@@ -114,26 +114,40 @@
 
   <%# Stats %>
   <div class="flex flex-col sm:flex-row justify-center max-w-4xl px-6 my-10 gap-4">
-    <% for (let [quantity, label, id] of [
+    <% [
       [questionCount, 'original questions', 'question-count'],
       [tagCount, 'unique tags', 'tag-count'],
       [totalSolves, 'total solves', 'solve-count']
-    ]) { %>
+    ].forEach(([quantity, label, id], i) => { %>
       <script>
         document.addEventListener('DOMContentLoaded', () => {
           let c = new countUp.CountUp(
             `sitestat-<%= id %>`,
             '<%= quantity %>',
-            { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 200 }
+            { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 100 }
           );
           c.start();
         })
       </script>
       <div class="flex flex-col items-center w-48">
-        <h1 class="font-extrabold text-blue-500 text-shadow mb-1" id="sitestat-<%= id %>"><%= quantity %></h1>
+        <h1 class="font-extrabold text-blue-500 text-shadow-lg shadow-blue-700 mb-1" id="sitestat-<%= id %>"><%= quantity %></h1>
         <p><%= label %></p>
       </div>
-    <% } %>
+    <% }) %>
+  </div>
+</div>
+
+<%# Daily question %>
+<div class="flex items-center justify-center w-full overflow-hidden min-h-screen py-10">
+  <div
+    class="flex flex-col gap-2 max-w-4xl px-6"
+    data-aos="fade-up"
+  >
+    <h1>Daily Question</h1>
+    <p class="mb-4">Try today's daily question!</p>
+    <div class="p-8 rounded-xl border-2 shadow-lg">
+      <%- include('../partials/components/dailySnippet.ejs') %>
+    </div>
   </div>
 </div>
 
@@ -192,8 +206,11 @@
     >
       <p class="mb-4 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full select-none">NEW!</p>
       <h2 class="mb-2">USABO Training</h1>
-      <p class="text-base sm:text-xl mb-4">Train for the USA Biology Olympiad, the premiere high-school biology competition in the United States.</p>
-      <a class="btn btn-primary" href="/train/Biology/chooseUnits">Train now</a>
+      <p class="mb-4">Train for the USA Biology Olympiad, the premiere high-school biology competition in the United States.</p>
+      <a
+        class="btn btn-primary gap-2"
+        href="/train/Biology/chooseUnits"
+      >Let's do some bio <i class="fas fa-arrow-right"></i></a>
     </div>
   </div>
   <div class="absolute sm:relative w-full sm:w-1/2 h-full sm:h-auto -z-10">
@@ -208,17 +225,18 @@
   </div>
   <h1 class="mb-4 text-center">Get started today.</h1>
   <div class="flex items-center gap-4">
-    <a
-      class="btn btn-primary"
-      href="/signup"
-      data-aos="fade-up"
-    >Start training</a>
-    <a
-      class="btn btn-outline"
-      href="https://discord.com/invite/ccbZu4q"
-      data-aos="fade-up"
-      data-aos-delay="300"
-    >Join the team</a>
+    <div data-aos="fade-up">
+      <a
+        class="btn btn-primary"
+        href="/signup"
+      >Start training</a>
+    </div>
+    <div data-aos="fade-up" data-aos-delay="300">
+      <a
+        class="btn btn-outline"
+        href="https://discord.com/invite/ccbZu4q"
+      >Join the team</a>
+    </div>
   </div>
 </div>
 
