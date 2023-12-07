@@ -12,7 +12,7 @@
     line-height: 1;
   }
   h3 {
-    font-size: 1.5em;
+    font-size: 1em;
     line-height: 1.2;
   }
 
@@ -21,5 +21,9 @@
     @apply text-blue-600 underline-offset-2
       opacity-100 hover:underline
       transition-opacity;
+  }
+
+  nav li {
+    @apply list-none;
   }
 }

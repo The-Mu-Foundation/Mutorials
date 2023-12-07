@@ -11,6 +11,14 @@ const { initializeAnalytics } = require('./analytics');
 
 console.log('Setting up Express server...');
 
+try {
+  require('dotenv').config();
+} catch {
+  console.log(
+    'Not in development environment. Skipping loading from .env file.'
+  );
+}
+
 // START EXPRESS SERVER
 const app = express();
 const PORT = process.env.PORT || 3000;

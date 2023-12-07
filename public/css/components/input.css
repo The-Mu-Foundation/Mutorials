@@ -18,6 +18,7 @@ input[type='number'] {
     border-2 border-neutral-200
     -outline-offset-2
     focus:outline
+    transition
     rounded
     outline-blue-500 !important;
 }
