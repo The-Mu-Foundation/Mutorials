@@ -321,7 +321,7 @@ module.exports = (app, mongo) => {
 
   app.get('/train/usabo/chooseCategories', (req, res) => {
     const qNum = 1;
-    if (req.user.rating[req.params.round] == -1) {
+    if (req.user.rating['usabo'] == -1) {
       //check to see if redir needed
       res.redirect('/train/' + 'usabo' + '/proficiency'); //ROUTING FIX
     } else {
