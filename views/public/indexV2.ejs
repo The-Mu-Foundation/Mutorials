@@ -1,5 +1,5 @@
 <%- contentFor('head') %>
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11" defer></script>
 <script defer>
   document.addEventListener('DOMContentLoaded', () => {
     const typedOptions = {
@@ -10,20 +10,30 @@
       startDelay: 500,
       loop: true,
       preStringTyped: (pos, self) => {
-        $("#typed-a").text((pos > 1) ? "an" : "a");
+        $("#typed-a").innerText = (pos > 1) ? "an" : "a";
       },
     };
     const typed = new Typed("#typed-span", typedOptions);
     typed.start();
   });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.7.0/countUp.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.7.0/countUp.umd.min.js" defer></script>
+
+<%# Animate on scroll %>
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<style>
+  div.main {
+    overflow-x: hidden;
+  }
+</style>
 
 <%- contentFor('main') %>
 <%# Hero %>
-<div class="w-full max-w-4xl m-0 px-6 py-10 sm:mt-32 sm:mb-40">
+<div class="flex items-center w-full max-w-4xl min-h-screen m-0 px-6 py-10 sm:-mt-20">
   <div class="flex justify-between w-full">
-    <div class="flex flex-col items-start w-7/12 mr-6">
+    <div class="flex flex-col items-start w-full sm:w-7/12 mr-6">
       <h1 class="mb-4 text-4xl sm:text-5xl whitespace-nowrap">
         Mutorials is <span id="typed-a">a</span><br>
         <span class="font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600" id="typed-span"></span><br>
@@ -32,75 +42,179 @@
       <p class="mb-2 mr-4">
         Practice <b>thousands</b> of science problems from honors curriculum to national competition level—all with explanations.
       </p>
-      <a class="btn btn-outline" href="/signup">
-        Get started
+      <a class="btn btn-outline gap-2" href="/signup">
+        <%= locals.user ? 'Homepage' : 'Get started' %>
         <i class="fas fa-arrow-right"></i>
       </a>
     </div>
 
-    <div class="relative flex items-center w-5/12 overflow-visible -z-10">
+    <div class="relative flex items-center sm:w-5/12 overflow-visible -z-10">
       <%# Terrible hack to center oversized image in a div %>
       <%# https://stackoverflow.com/questions/14562457/center-oversized-image-in-div %>
-      <img
-        class="absolute opacity-20 sm:opacity-100 blur-sm sm:blur-none w-[600px] top-[-9999px] bottom-[-9999px] left-[-9999px] right-[-9999px] m-auto max-w-none"
-        src="https://mutorials03.azureedge.net/images/icons/Icon_Fancy.svg"
+      <div
+        class="absolute w-[600px] h-[600px] top-[-9999px] bottom-[-9999px] left-[-9999px] right-[-9999px] m-auto max-w-none opacity-20 sm:opacity-100 blur-sm sm:blur-none"
       >
+        <%- include('../partials/components/fancyLogo.ejs') %>
+        <style>
+          @keyframes hue {
+            0% {
+              filter: hue-rotate(0deg);
+            }
+            25% {
+              filter: hue-rotate(10deg);
+            }
+            50% {
+              filter: hue-rotate(0deg);
+            }
+            75% {
+              filter: hue-rotate(-10deg);
+            }
+            100% {
+              filter: hue-rotate(0deg);
+            }
+          }
+          svg g ellipse {
+            animation: hue 20s infinite linear;
+          }
+        </style>
+      </div>
     </div>
   </div>
 </div>
 
 <%# "Wide coverage" -> subjects %>
-<div class="flex flex-col items-center max-w-4xl sm:py-10 px-6">
-  <h2 class="mb-2">Wide coverage</h2>
-  <h3 class="mb-4">Four core subjects with 60 distinct units.</h3>
+<div class="flex flex-col items-center justify-center w-full sm:min-h-screen mt-10 py-10 bg-black text-white">
+  <div
+    class="flex flex-col items-center max-w-4xl sm:py-10 px-6"
+  >
+    <div class="text-center" data-aos="fade-down">
+      <h1 class="mb-4">Wide coverage</h1>
+      <p class="font-normal mb-8">Four core subjects with 60 distinct units.</p>
+    </div>
 
-  <div class="grid grid-cols-2 sm:grid-cols-4 items-stretch gap-4">
-    <% for (let [subject, unitCount, image] of [
-      ['Physics', 24, 'https://images.unsplash.com/photo-1591306208574-969f12f1ebfe'],
-      ['Chemistry', 21, 'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6'],
-      ['Biology', 9, 'https://images.unsplash.com/photo-1576086213369-97a306d36557'],
-      ['Earth & Space', 7, 'https://images.unsplash.com/photo-1634176866089-b633f4aec882'],
-    ]) {%>
-      <div class="flex flex-col items-center">
-        <img class="mb-2 aspect-square object-cover rounded-md" src="<%= image %>" draggable="false">
-        <h3 class="mb-0 sm:text-normal text-center font-bold"><%= subject %></h3>
-        <p><%= unitCount %> units</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 items-stretch gap-4">
+      <% [
+        ['Physics', 24, 'https://images.unsplash.com/photo-1591306208574-969f12f1ebfe'],
+        ['Chemistry', 21, 'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6'],
+        ['Biology', 9, 'https://images.unsplash.com/photo-1576086213369-97a306d36557'],
+        ['Earth & Space', 7, 'https://images.unsplash.com/photo-1634176866089-b633f4aec882'],
+      ].forEach(([subject, unitCount, image], i) => { %>
+        <div
+          class="flex flex-col items-center"
+          data-aos="fade-up"
+          data-aos-delay="<%= i * 300 + 100 %>"
+        >
+          <img class="mb-2 aspect-square w-full object-cover rounded-md" src="<%= image %>" draggable="false">
+          <h3 class="mb-0 sm:text-normal text-center font-bold"><%= subject %></h3>
+          <p><%= unitCount %> units</p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <%# Stats %>
+  <div class="flex flex-col sm:flex-row justify-center max-w-4xl px-6 my-10 gap-4">
+    <% [
+      [questionCount, 'original questions', 'question-count'],
+      [tagCount, 'unique tags', 'tag-count'],
+      [totalSolves, 'total solves', 'solve-count']
+    ].forEach(([quantity, label, id], i) => { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          let c = new countUp.CountUp(
+            `sitestat-<%= id %>`,
+            '<%= quantity %>',
+            { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 100 }
+          );
+          c.start();
+        })
+      </script>
+      <div class="flex flex-col items-center w-48">
+        <h1 class="font-extrabold text-blue-500 text-shadow-lg shadow-blue-700 mb-1" id="sitestat-<%= id %>"><%= quantity %></h1>
+        <p><%= label %></p>
       </div>
-    <% } %>
+    <% }) %>
   </div>
 </div>
 
-<%# Stats %>
-<div class="flex flex-col sm:flex-row justify-center max-w-4xl my-10 px-6 gap-4">
-  <% for (let [quantity, label, id] of [
-    [questionCount, 'questions with solutions', 'question-count'],
-    [tagCount, 'unique tags', 'tag-count'],
-    [totalSolves, 'total solves', 'solve-count']
-  ]) { %>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        var c = new countUp.CountUp(
-          `sitestat-<%= id %>`,
-          '<%= quantity %>',
-          { enableScrollSpy: true, scrollSpyOnce: true, scrollSpyDelay: 200 }
-        );
-        c.start();
-      })
-    </script>
-    <div class="flex flex-col items-center w-48">
-      <h1 class="font-extrabold text-blue-600 mb-1" id="sitestat-<%= id %>"><%= quantity %></h1>
-      <p><%= label %></p>
+<%# Daily question %>
+<div class="flex items-center justify-center w-full overflow-hidden sm:min-h-screen py-10">
+  <div class="flex flex-col gap-2 max-w-4xl px-6">
+    <h1>Daily Question</h1>
+    <p class="mb-4">Try today's daily question!</p>
+    <div
+      class="p-8 rounded-xl border-2 shadow-lg" 
+      data-aos="fade-up"
+    >
+      <%- include('../partials/components/dailySnippetV2.ejs') %>
     </div>
-  <% } %>
+  </div>
+</div>
+
+<%# Learn and grow %>
+<div class="flex flex-col items-center justify-center w-full sm:min-h-screen py-10 bg-purple-50">
+  <div class="flex flex-col items-center md:flex-row gap-12 w-full max-w-4xl px-6">
+    <div
+      class="flex flex-col items-start gap-4"
+      data-aos="fade-right"
+    >
+      <h1>Learn and grow with the <span class="text-purple-700">Mutorials community.</span></h1>
+      <p>
+        Connect with fellow learners, discuss science topics,
+        and stay updated on challenges in the Mutorials Discord server.
+      </p>
+      <a
+        class="btn btn-outline"
+        href="https://discord.com/invite/ccbZu4q"
+      ><i class="fab fa-discord mr-2"></i> Join the Discord</a>
+    </div>
+    <div
+      class="w-full overflow-x-auto sm:overflow-x-visible bg-white rounded border-2"
+      data-aos="fade-left"
+      data-aos-delay="300"
+    >
+      <table class="w-full text-sm">
+        <thead class="bg-neutral-100">
+          <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Level</th>
+            <th>Experience</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% locals.leaderboard.forEach((user, i) => { %>
+            <tr class="bg-white">
+              <td><%= i + 1 %></td>
+              <td class="whitespace-nowrap"><%= user.ign %></td>
+              <td><%= user.level.level %></td>
+              <td><%= user.experience?.toLocaleString('en-US', { maximumFractionDigits: 0 }) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <%# USABO %>
-<div class="flex flex-col items-center w-screen px-16 py-16 bg-blue-800 text-white">
-  <p class="mb-8 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full">NEW!</p>
-  <h1 class="mb-2 text-center">USABO Training</h1>
-  <h3 class="mb-4 text-center">The USA Biology Olympiad is very cool. 👍 We do USABO problems too.</h3>
-  <div class="sm:w-96">
-    <img class="rounded-xl aspect-video object-cover" src="https://www.science.edu/acellus/wp-content/uploads/2016/12/Biology-Gen-Honors-720x380.jpg">
+<div class="relative flex flex-col sm:flex-row items-stretch w-full overflow-hidden text-white">
+  <div class="flex items-center sm:justify-end overflow-hidden sm:w-1/2 bg-black sm:bg-blue-900 backdrop-blur-sm bg-opacity-50 sm:backdrop-blur-none">
+    <div
+      class="flex flex-col items-start justify-center w-full h-full sm:max-w-md px-6 sm:pl-6 sm:pr-24 py-8 sm:py-12"
+      data-aos="fade-up"
+    >
+      <p class="mb-4 px-4 py-2 bg-gradient-to-r from-blue-700 to-blue-500 font-bold rounded-full select-none">NEW!</p>
+      <h2 class="mb-2">USABO Training</h1>
+      <p class="mb-4">Train for the USA Biology Olympiad, the premiere high-school biology competition in the United States.</p>
+      <a
+        class="btn btn-primary gap-2"
+        href="/train/Biology/chooseUnits"
+      >Let's do some bio <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+  <div class="absolute sm:relative w-full sm:w-1/2 h-full sm:h-auto -z-10">
+    <img class="w-full h-full object-cover" src="https://www.science.edu/acellus/wp-content/uploads/2016/12/Biology-Gen-Honors-720x380.jpg">
   </div>
 </div>
 
@@ -111,7 +225,21 @@
   </div>
   <h1 class="mb-4 text-center">Get started today.</h1>
   <div class="flex items-center gap-4">
-    <a class="btn btn-primary" href="/signup">Start training!</a>
-    <a class="btn btn-outline" href="/whoWeAre">Join the team</a>
+    <div data-aos="fade-up">
+      <a
+        class="btn btn-primary"
+        href="/signup"
+      >Start training</a>
+    </div>
+    <div data-aos="fade-up" data-aos-delay="300">
+      <a
+        class="btn btn-outline"
+        href="https://discord.com/invite/ccbZu4q"
+      >Join the team</a>
+    </div>
   </div>
 </div>
+
+<script defer>
+  AOS.init({ once: true });
+</script>

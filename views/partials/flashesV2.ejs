@@ -1,0 +1,52 @@
+<%# Template for flashes %>
+<%# messages is 
+  {
+    errorFlash: [...],
+    error: [...],
+    successFlash: [...],
+    success: [...]
+  }
+%>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<% const messages = getMessages() %>
+<% const flashMessages = [
+  [messages.errorFlash, 'error'],
+  [messages.error, 'error']
+  [messages.successFlash, 'success'],
+  [messages.success, 'success'],
+  [messages.failureFlash, 'error']
+];
+%>
+
+<% flashColors = {
+  error: ['bg-red-50', 'border-red-100'],
+  success: ['bg-green-100', 'border-green-100']
+} %>
+
+<div id="flash-container" class="flex justify-center w-full px-6">
+  <div class="flex flex-col w-full max-w-md gap-2">
+    <% for (let pair of flashMessages) { %>
+      <% if (!pair || !pair[0]) continue; %>
+      <% const [messageList, messageType] = pair %>
+
+      <% for (let message of messageList) { %>
+        <% let bgColor = flashColors[messageType][0] %>
+        <% let borderColor = flashColors[messageType][1] %>
+        <div
+          class="w-full max-h-none mb-4 px-4 py-2 <%= bgColor %> border-2 <%= borderColor %> box-border rounded-md cursor-pointer transition duration-300"
+          x-data=""
+          <%# Fade first, then disappear %>
+          @click="(event) => {
+            event.target.style.opacity = 0;
+              event.target.addEventListener('transitionend', () => {
+              event.target.style.display = 'none';
+            })
+          }"
+        >
+          <span class="pointer-events-none"><%= message %></span>
+        </div>
+      <% } %>
+    <% } %>
+  </div>
+</div>

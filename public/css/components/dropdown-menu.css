@@ -1,0 +1,22 @@
+.dropdown-toggle {
+  @apply flex items-center
+    w-full
+    font-medium
+    hover:opacity-50 transition-opacity
+    rounded-lg cursor-pointer;
+}
+
+.dropdown-menu {
+  @apply hidden z-20;
+  @apply relative bg-white divide-y
+    text-base text-black border shadow-lg rounded;
+}
+.dropdown-menu ul {
+  @apply py-1;
+}
+.dropdown-menu ul li {
+  @apply hover:bg-gray-100 transition-colors;
+}
+.dropdown-menu ul li a {
+  @apply block w-full px-4 py-[0.4rem];
+}

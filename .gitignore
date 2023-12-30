@@ -6,6 +6,7 @@
 CODEOWNERS
 **/node_modules
 .vimspector.json
+.env
 
 /.vs
 

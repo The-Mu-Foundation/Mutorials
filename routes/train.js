@@ -45,7 +45,7 @@ module.exports = (app, mongo) => {
         'errorFlash',
         'Error 401: Unauthorized. You need to login to see this page.'
       );
-      res.redirect('/');
+      res.redirect('/signin');
     }
   });
 
@@ -503,8 +503,7 @@ module.exports = (app, mongo) => {
     let experienceStats = await calculateLevel(req.user.stats.experience);
     // Test if they have a question pending to answer which is valid for their units selected
     if (q && units.some((r) => q.units.includes(r))) {
-
-      console.log("in the if statement");
+      console.log('in the if statement');
 
       res.render(VIEWS + 'private/train/displayQuestion.ejs', {
         units: units,
@@ -513,11 +512,10 @@ module.exports = (app, mongo) => {
         user: req.user,
         experienceStats,
         pageName: 'Classic Trainer',
-        referenceSheet
+        referenceSheet,
       });
     } else {
-
-      console.log("in the else statement");
+      console.log('in the else statement');
 
       // deduct 8 rating if previously queued question was skipped
       if (q) {
@@ -543,11 +541,9 @@ module.exports = (app, mongo) => {
       //debugging usage
       console.log(floor);
       console.log(ceiling);
-      
       // get question
       getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(
         (qs) => {
-
           //console.log(qs);
 
           // select random question
@@ -571,7 +567,7 @@ module.exports = (app, mongo) => {
             user: req.user,
             experienceStats,
             pageName: 'Classic Trainer',
-            referenceSheet
+            referenceSheet,
           });
         }
       );
@@ -593,7 +589,7 @@ module.exports = (app, mongo) => {
             experienceStats,
             pageName: 'Classic Trainer',
             disabled: true,
-            referenceSheet
+            referenceSheet,
           });
         }
       });
