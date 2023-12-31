@@ -21,21 +21,72 @@ const VIEWS = '../views/';
 
 module.exports = (app, mongo) => {
   // PUBLIC GET
-  // `username` is email
-  // `ign` is username
   app.get('/', expressLayouts, async (req, res) => {
+    // Site data
     const { questionCount, tagCount, usaboQuestionCount, totalSolves } =
       await getSiteData(User, Ques, SiteData);
 
+    // Daily question
+    const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+
+    // Leaderboard
+    let leaderboard = (
+      await mongo.User.find({
+        'stats.experience': { $gte: 10000 },
+      })
+        .sort({ 'stats.experience': -1 })
+        .limit(10)
+        .exec()
+    ).map((user) => {
+      return {
+        level: calculateLevel(user.stats.experience),
+        experience: user.stats.experience,
+        ign: user.ign,
+      };
+    });
+
     res.render(VIEWS + 'public/indexV2.ejs', {
+      user: req.user,
       layout: 'layouts/base.ejs',
       questionCount: questionCount + usaboQuestionCount,
       tagCount,
       totalSolves: Array.from(Object.values(totalSolves)).reduce(
-        (a, b) => (a + b ? b : 0), // Catch if b is NaN
+        (a, b) => a + (b || 0), // Catch if b is NaN
         0
       ),
+      question,
+      leaderboard,
     });
+  });
+
+  app.get('/index2', async (req, res) => {
+    if (!req.isAuthenticated()) {
+      let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
+      const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+
+      let experience = await mongo.User.find({
+        'stats.experience': { $gte: 10000 },
+      })
+        .sort({ 'stats.experience': -1 })
+        .limit(10)
+        .exec();
+
+      experience = experience.map((user) => {
+        return {
+          level: calculateLevel(user.stats.experience),
+          experience: user.stats.experience,
+          ign: user.ign,
+        };
+      });
+
+      res.render(VIEWS + 'public/index.ejs', {
+        siteStats: siteData,
+        question,
+        experience,
+      });
+    } else {
+      res.redirect('/homepage');
+    }
   });
 
   app.get('/signin', expressLayouts, (req, res) => {
@@ -62,28 +113,22 @@ module.exports = (app, mongo) => {
 
   app.get('/latexCompiler', (req, res) => {
     res.render(VIEWS + 'public/latexcompiler.ejs', {
+      user: req.user,
       pageName: 'LaTeX Compiler',
     });
   });
 
   app.get('/whoWeAre', expressLayouts, (req, res) => {
-    if (req.isAuthenticated()) {
-      res.render(VIEWS + 'public/teamV2', {
-        pageName: 'About Mutorials',
-        authenticated: true,
-        layout: 'layouts/base.ejs',
-      });
-    } else {
-      res.render(VIEWS + 'public/teamV2', {
-        pageName: 'About Mutorials',
-        authenticated: false,
-        layout: 'layouts/base.ejs',
-      });
-    }
+    res.render(VIEWS + 'public/teamV2', {
+      user: req.user,
+      pageName: 'About Mutorials',
+      layout: 'layouts/base.ejs',
+    });
   });
 
   app.get('/termsOfService', (req, res) => {
     res.render(VIEWS + 'public/termsOfService.ejs', {
+      user: req.user,
       pageName: 'Mutorials TOS',
     });
   });
@@ -143,13 +188,6 @@ module.exports = (app, mongo) => {
       req.flash(
         'errorFlash',
         'You must agree to the Terms of Service and Privacy Policy to register an account with us.'
-      );
-      registerInputProblems1 = true;
-    }
-    if (!req.body.agreeAge) {
-      req.flash(
-        'errorFlash',
-        'You must be at least 13 years old, or have permission from your parent, guardian, teacher, or school to use Mutorials.'
       );
       registerInputProblems1 = true;
     }

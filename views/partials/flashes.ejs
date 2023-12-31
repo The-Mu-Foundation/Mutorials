@@ -1,53 +1,27 @@
 <%# Template for flashes %>
-<%# messages is 
-  {
-    errorFlash: [...],
-    error: [...],
-    successFlash: [...],
-    success: [...]
-  }
-%>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<% const messages = getMessages() %>
-<% const flashMessages = [
-  [messages.errorFlash, 'error'],
-  [messages.error, 'error']
-  [messages.successFlash, 'success'],
-  [messages.success, 'success'],
-  [messages.failureFlash, 'error']
-];
-%>
+<% var messages = getMessages() %>
 
-<% flashColors = {
-  error: ['bg-red-50', 'border-red-100'],
-  success: ['bg-green-100', 'border-green-100']
-} %>
+<% if (messages.errorFlash) { %>
+  <% for(var i=0; i < messages.errorFlash.length; i++) { %>
+    <div class="alert alert-danger" role="alert"><%- messages.errorFlash[i] %></div>
+  <% } %>
+<% } %>
 
-<div id="flash-container" class="flex justify-center w-full">
-  <div class="flex flex-col w-full max-w-md gap-2">
-    <% for (let pair of flashMessages) { %>
-      <% if (!pair || !pair[0]) continue; %>
-      <% const [messageList, messageType] = pair %>
+<% if (messages.error) { %>
+  <% for(var i=0; i < messages.error.length; i++) { %>
+    <div class="alert alert-danger" role="alert"><%- messages.error[i] %></div>
+  <% } %>
+<% } %>
 
-      <% for (let message of messageList) { %>
-        <% let bgColor = flashColors[messageType][0] %>
-        <% let borderColor = flashColors[messageType][1] %>
-        <div
-          class="w-full max-h-none px-4 py-2 <%= bgColor %> border-2 <%= borderColor %>
-                 box-border rounded-md cursor-pointer transition duration-300"
-          x-data=""
-          <%# Fade first, then disappear %>
-          @click="(event) => {
-            event.target.style.opacity = 0;
-              event.target.addEventListener('transitionend', () => {
-              event.target.style.display = 'none';
-            })
-          }"
-        >
-          <span class="pointer-events-none"><%= message %></span>
-        </div>
-      <% } %>
-    <% } %>
-  </div>
-</div>
+<% if (messages.successFlash) { %>
+  <% for(var i=0; i < messages.successFlash.length; i++) { %>
+    <div class="alert alert-success" role="alert"><%- messages.successFlash[i] %></div>
+  <% } %>
+<% } %>
+
+<% if (messages.success) { %>
+  <% for(var i=0; i < messages.success.length; i++) { %>
+    <div class="alert alert-success" role="alert"><%- messages.success[i] %></div>
+  <% } %>
+<% } %>
