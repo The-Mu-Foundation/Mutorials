@@ -491,6 +491,7 @@ const tags = {
       GXY: 'Galaxies',
       COS: 'Cosmology',
       TLF: 'Temperature, Luminosity, and Flux',
+      OBS: 'Observational',
 
       MIC: 'Microscale Weather',
       SCW: 'Mesoscale/Synoptic Scale Weather',
