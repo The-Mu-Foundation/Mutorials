@@ -492,6 +492,7 @@ const tags = {
       GXY: 'Galaxies',
       COS: 'Cosmology',
       TLF: 'Temperature, Luminosity, and Flux',
+      BLK: 'Black Holes',
       OBS: 'Observational',
 
       MIC: 'Microscale Weather',
