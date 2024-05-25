@@ -26,6 +26,7 @@ const tags = {
       '22P': 'Electromagnetic Waves',
       '23P': 'Astrophysics',
       '24P': 'Lab Skills',
+      '25P': 'Quantum Physics',
       CALC: 'Calculus-Based',
     },
     Concepts: {
@@ -188,6 +189,10 @@ const tags = {
       TEL: 'Telescopes',
 
       LAB: 'Lab Skills',
+
+      WFC: 'Wavefunctions',
+      NRM: 'Normalisation',
+      BKT: 'Bra-Kets',
 
       CALC: 'Calculus-Based',
     },
