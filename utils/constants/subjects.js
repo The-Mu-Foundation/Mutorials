@@ -27,6 +27,7 @@ const subjectUnitDictionary = {
     'Astrophysics',
     'Lab Skills',
     'Calculus-Based',
+    'Quantum Physics',
   ],
   Chemistry: [
     'Measurement',
