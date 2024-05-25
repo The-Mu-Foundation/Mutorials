@@ -73,6 +73,7 @@ const tags = {
       GPE: 'Gravitational Potential Energy',
       GRF: 'Gravitational Fields',
       KEP: "Kepler's Laws of Planetary Motion",
+      LAG: 'The Lagrangian Method',
 
       DEN: 'Density',
       PRE: 'Pressure',
@@ -118,8 +119,8 @@ const tags = {
       SLT: 'Entropy and The Second Law of Thermodynamics',
       MGU: 'Heat Engines',
 
-      LOR: 'Lorentz Transformation',
-      LAG: 'The Lagrangian Method',
+      LOR: 'Lorentz Transformations',
+      FUN: 'The Fundamental Effects',
       REK: 'Relativistic Kinematics',
       RED: 'Relativistic Dynamics',
       FVE: '4-Vectors',
