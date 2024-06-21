@@ -3,7 +3,7 @@ const adminList = process.env.adminemails?.split(';') || [
   'patrickfengsr@gmail.com',
   'heatherlam268@gmail.com',
   'womogenes2@gmail.com',
-  'justanotherinternetguysocial@gmail.com',
+  'devesh@aggarwal.com',
 ];
 const contributorList = [];
 
