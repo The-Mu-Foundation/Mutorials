@@ -1,0 +1,264 @@
+<%- include("../partials/header") -%>
+
+<% if(isAuthenticated) { %>
+    <%- include("../partials/navigationPrivate") -%>
+<% } else { %>
+    <%- include("../partials/navigationPublic") -%>
+<% } %>
+
+<h1 class="my-5 container display-2 text-center">Zetamac on Mutorials</h1>
+
+<div class="jumbotron container">
+    <h2>Arithmetic Game</h2>
+    <div id="init">
+        <p>The Arithmetic Game is a fast-paced speed drill where you are given two minutes to
+            solve as many
+            arithmetic problems as you can.</p>
+        <div id="initConfig">
+            <% const CONFIG={ Addition: { symbol: "+" , range: [2, 100] }, Subtraction: {
+                symbol: "-" , range: [2, 100], additionalOptions: [{ name: "allow negative" ,
+                id: "allowNegative" , checked: false, }, { name: "same as Addition" ,
+                id: "sameAsAddition" , checked: true, }] }, Multiplication: { symbol: "×" ,
+                range: [2, 100] }, Division: { symbol: "÷" , range: [2, 100], additionalOptions:
+                [{ name: "same as Multiplication" , id: "sameAsMultiplication" , checked: true,
+                }] } }; %>
+                <% ["Addition", "Subtraction" , "Multiplication" , "Division" ].forEach((op)=> {
+                    %>
+                    <div id="<%= op.toLowerCase() %>">
+                        <label>
+                            <input type="checkbox" checked id="<%= op.toLowerCase() %>_enabled">
+                            <%= op %>
+                        </label>
+                        <br>
+                        <ul class="subOptions" id="<%= op.toLowerCase() %>_options">
+                            <li>Range: (
+                                <input type="number" id="<%= op.toLowerCase() %>_min1"
+                                    value="<%- CONFIG[op].range[0] %>"
+                                    class="form-control d-inline-block numOptions">
+                                to
+                                <input type="number" id="<%= op.toLowerCase() %>_max1"
+                                    value="<%- CONFIG[op].range[1] %>"
+                                    class="form-control d-inline-block numOptions">
+                                )
+                                <%- CONFIG[op].symbol %>
+                                    (
+                                    <input type="number" id="<%= op.toLowerCase() %>_min2"
+                                        value="<%- CONFIG[op].range[0] %>"
+                                        class="form-control d-inline-block numOptions">
+                                    to
+                                    <input type="number" id="<%= op.toLowerCase() %>_max2"
+                                        value="<%- CONFIG[op].range[1] %>"
+                                        class="form-control d-inline-block numOptions">
+                                    )
+                            </li>
+                            <% if (CONFIG[op].additionalOptions) { %>
+                                <% CONFIG[op].additionalOptions.forEach((option)=> { %>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox"
+                                                id="<%= op.toLowerCase() %>_<%= option.id %>"
+                                                <%=option.checked ? "checked" : "" %>>
+                                            <%= option.name %>
+                                        </label>
+                                    </li>
+                                    <% }); %>
+                                        <% } %>
+                        </ul>
+                    </div>
+                    <% }); %>
+                        time: <input type="number" id="gameTime" value="120"
+                            class="form-control d-inline-block numOptions"> seconds
+                        <br>
+                        <br>
+                        <button class="btn btn-primary" onclick="startGame()">start</button>
+        </div>
+    </div>
+    <div id="game" hidden>
+        <p id="time">Time left: <span id="timeLeft"></span> seconds</p>
+        <p id="score">Score: <span id="scoreValue">0</span></p>
+        <p>Problem:</p>
+        <div id="problem" class="problem">
+            <span id="problemValue"></span><input type="number" id="answer"
+                class="form-control d-inline-block numOptions problem" style="width:10rem">
+        </div>
+        <button class="btn btn-primary" onclick="reset()">cancel game</button>
+    </div>
+    <div id="results" hidden>
+        <br>
+        <h3>Game Over!</h3>
+        <p>Your answered <span id="finalScore"></span> questions in <span id="finalTime"></span>
+            seconds</p>
+        <button class="btn btn-primary" onclick="startGame()">play again</button>
+        <button class="btn btn-primary" onclick="reset()">change settings</button>
+    </div>
+</div>
+
+<script>
+
+    const SYMBOLS = { addition: "+", subtraction: "-", multiplication: "×", division: "÷" };
+    const opFuncs = {
+        addition: (a, b) => a + b,
+        subtraction: (a, b) => a - b,
+        multiplication: (a, b) => a * b,
+        division: (a, b) => a / b
+    };
+    let opConfig = {
+        addition: {
+            enabled: true,
+            range: [[], []],
+        },
+        subtraction: {
+            enabled: true,
+            range: [[], []],
+            allowNegative: false,
+            sameAsAddition: false
+        },
+        multiplication: {
+            enabled: true,
+            range: [[], []],
+        },
+        division: {
+            enabled: true,
+            range: [[], []],
+            sameAsMultiplication: false
+        }
+    };
+
+    for (let op in opConfig) {
+        document.getElementById(`${op}_enabled`).addEventListener("change", () => {
+            opConfig[op].enabled = document.getElementById(`${op}_enabled`).checked;
+            document.getElementById(`${op}_options`).hidden = !opConfig[op].enabled;
+        });
+
+        let configMap = {
+            "_min1": [0, 0],
+            "_max1": [0, 1],
+            "_min2": [1, 0],
+            "_max2": [1, 1],
+        };
+        for (let key in configMap) {
+            let element = document.getElementById(op + key);
+            opConfig[op].range[configMap[key][0]][configMap[key][1]] = parseInt(element.value);
+            element.addEventListener("change", () => {
+                opConfig[op].range[configMap[key][0]][configMap[key][1]] = parseInt(element.value);
+            })
+        }
+        for (let additionalOption in opConfig[op]) {
+            if (additionalOption == "enabled" || additionalOption == "range") continue;
+            let element = document.getElementById(`${op}_${additionalOption}`);
+            if (additionalOption.startsWith("sameAs")) {
+                document.getElementById(`${op}_options`).firstElementChild.hidden = true;
+            }
+            element.addEventListener("change", () => {
+                opConfig[op][additionalOption] = element.checked;
+                if (additionalOption.startsWith("sameAs")) {
+                    document.getElementById(`${op}_options`).firstElementChild.hidden = opConfig[op][additionalOption];
+                }
+            });
+        }
+    }
+
+    window.generateQuestion = function (config) {
+        let op = Object.keys(config)[Math.floor(Math.random() * Object.keys(config).length)];
+        let range1 = config[op].range[0];
+        let range2 = config[op].range[1];
+        let symbol = SYMBOLS[op];
+        let problem;
+        let answer;
+        let num1 = Math.floor(Math.random() * (range1[1] - range1[0] + 1)) + range1[0];
+        let num2 = Math.floor(Math.random() * (range2[1] - range2[0] + 1)) + range2[0];
+        if (op == "addition") {
+            problem = `${num1} ${symbol} ${num2} = `;
+            answer = opFuncs[op](num1, num2);
+        }
+        else if (op == "subtraction") {
+            if (config[op].allowNegative && num1 < num2) {
+                problem = `${num2} ${symbol} ${num1} = `;
+                answer = opFuncs[op](num2, num1);
+            }
+            else {
+                problem = `${num1} ${symbol} ${num2} = `;
+                answer = opFuncs[op](num1, num2);
+            }
+        }
+        else if (op == "multiplication") {
+            problem = `${num1} ${symbol} ${num2} = `;
+            answer = opFuncs[op](num1, num2);
+        }
+        else if (op == "division") {
+            problem = `${num1 * num2} ${symbol} ${num2} = `;
+            answer = opFuncs[op](num1 * num2, num2);
+        }
+        return { problem, answer };
+    }
+
+    window.startGame = function () {
+        let gameConfig = structuredClone(opConfig);
+        let gameTime = document.getElementById("gameTime").value;
+        let score = 0;
+        for (let op in gameConfig) {
+            if (!gameConfig[op].enabled) { delete gameConfig[op]; }
+        }
+        if (Object.keys(gameConfig).length == 0) {
+            alert("Please enable at least one operation");
+            return;
+        }
+
+        document.getElementById("init").hidden = true;
+        document.getElementById("game").hidden = false;
+
+        document.getElementById("scoreValue").innerText = 0;
+        let startTime = Date.now();
+        window.timer = setInterval(() => {
+            let timeLeft = gameTime - Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById("timeLeft").innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(window.timer);
+                document.getElementById("game").hidden = true;
+                document.getElementById("results").hidden = false;
+                document.getElementById("finalScore").innerText = score;
+                document.getElementById("finalTime").innerText = gameTime;
+            }
+        }, 100);
+
+        document.getElementById('answer').focus();
+
+        let question = generateQuestion(gameConfig);
+        document.getElementById("problemValue").innerText = question.problem;
+        document.getElementById("answer").addEventListener("input", (event) => {
+            if (parseInt(event.target.value) == question.answer) {
+                score++;
+                document.getElementById("scoreValue").innerText = score;
+                question = generateQuestion(gameConfig);
+                document.getElementById("problemValue").innerText = question.problem;
+                document.getElementById("answer").value = "";
+            }
+        });
+    }
+
+    window.reset = function () {
+        clearInterval(window.timer);
+        document.getElementById("init").hidden = false;
+        document.getElementById("game").hidden = true;
+        document.getElementById("results").hidden = true;
+    }
+
+</script>
+
+<style>
+    .subOptions {
+        list-style-type: none;
+    }
+
+    .numOptions {
+        width: 5rem;
+    }
+
+    .problem {
+        text-align: center;
+        font-size: 3rem;
+        height: 3rem;
+    }
+</style>
+
+<%- include("../partials/footer") -%>
