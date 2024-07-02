@@ -137,6 +137,10 @@ module.exports = (app, mongo) => {
     res.render(VIEWS + 'public/robots.ejs', { pageName: 'robots.txt' });
   });
 
+  app.get('/zetamac', (req, res) => {
+    res.render(VIEWS + 'public/zetamac.ejs', { isAuthenticated: req.isAuthenticated(), });
+  });
+
   // PUBLIC POST
   app.post('/register', (req, res, next) => {
     req.body.username = req.body.username.toLowerCase();
@@ -400,17 +404,17 @@ module.exports = (app, mongo) => {
   app.post('/contact', (req, res) => {
     req.isAuthenticated()
       ? sendDiscordWebhook(
-          req.body.comment,
-          req.user.username,
-          req.user.ign,
-          req.body.questionId
-        )
+        req.body.comment,
+        req.user.username,
+        req.user.ign,
+        req.body.questionId
+      )
       : sendDiscordWebhook(
-          req.body.comment,
-          'N/A',
-          'User not signed in.',
-          req.body.questionId
-        );
+        req.body.comment,
+        'N/A',
+        'User not signed in.',
+        req.body.questionId
+      );
     req.flash('successFlash', 'Thanks for your feedback!');
     if (req.body.redirect) {
       res.redirect(req.body.redirect);
