@@ -9,18 +9,17 @@
 <h1 class="my-5 container display-2 text-center">Zetamac on Mutorials</h1>
 
 <div class="jumbotron container">
-    <h2>Arithmetic Game</h2>
+    <h2>Zetamac</h2>
     <div id="init">
-        <p>The Arithmetic Game is a fast-paced speed drill where you are given two minutes to
-            solve as many
-            arithmetic problems as you can.</p>
+        <p><a href='https://arithmetic.zetamac.com/'>Zetamac</a> is a fast-paced math speed drill where you are given two minutes to
+            solve as many arithmetic problems as you can.</p>
         <div id="initConfig">
             <% const CONFIG={ Addition: { symbol: "+" , range: [2, 100] }, Subtraction: {
-                symbol: "-" , range: [2, 100], additionalOptions: [{ name: "allow negative" ,
-                id: "allowNegative" , checked: false, }, { name: "same as Addition" ,
+                symbol: "-" , range: [2, 100], additionalOptions: [{ name: "Allow negative answers" ,
+                id: "allowNegative" , checked: false, }, { name: "Same range as addition" ,
                 id: "sameAsAddition" , checked: true, }] }, Multiplication: { symbol: "×" ,
                 range: [2, 100] }, Division: { symbol: "÷" , range: [2, 100], additionalOptions:
-                [{ name: "same as Multiplication" , id: "sameAsMultiplication" , checked: true,
+                [{ name: "Same range as multiplication" , id: "sameAsMultiplication" , checked: true,
                 }] } }; %>
                 <% ["Addition", "Subtraction" , "Multiplication" , "Division" ].forEach((op)=> {
                     %>
