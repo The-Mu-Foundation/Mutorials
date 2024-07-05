@@ -82,8 +82,8 @@
             <% }); %>
             <p>time: <input type="number" id="gameTime" value="120" class="form-control d-inline-block numOptions"> seconds</p>
             <br>
-            <button class="btn btn-primary" onclick="startGame()">start</button>
-            <button class="btn btn-secondary" onclick="window.location.reload()">reset settings</button>
+            <button class="btn btn-primary" onclick="startGame()">Start</button>
+            <button class="btn btn-secondary" onclick="window.location.reload()">Reset Settings</button>
         </div>
     </div>
     <div id="game" hidden>
@@ -94,15 +94,15 @@
             <span id="problemValue"></span><input type="number" id="answer"
                 class="form-control d-inline-block numOptions problem" style="width:10rem">
         </div>
-        <button class="btn btn-primary" onclick="reset()">cancel game</button>
+        <button class="btn btn-primary" onclick="reset()">Cancel Game</button>
     </div>
     <div id="results" hidden>
         <br>
         <h3>Game Over!</h3>
         <p>Your answered <span id="finalScore"></span> questions in <span id="finalTime"></span>
-            seconds</p>
-        <button class="btn btn-primary" onclick="startGame()">play again</button>
-        <button class="btn btn-secondary" onclick="reset()">change settings</button>
+            seconds.</p>
+        <button class="btn btn-primary" onclick="startGame()">Play Again</button>
+        <button class="btn btn-secondary" onclick="reset()">Change Settings</button>
     </div>
 </div>
 
