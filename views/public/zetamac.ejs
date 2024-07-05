@@ -14,62 +14,76 @@
         <p><a href='https://arithmetic.zetamac.com/'>Zetamac</a> is a fast-paced math speed drill where you are given two minutes to
             solve as many arithmetic problems as you can.</p>
         <div id="initConfig">
-            <% const CONFIG={ Addition: { symbol: "+" , range: [2, 100] }, Subtraction: {
-                symbol: "-" , range: [2, 100], additionalOptions: [{ name: "Allow negative answers" ,
-                id: "allowNegative" , checked: false, }, { name: "Same range as addition" ,
-                id: "sameAsAddition" , checked: true, }] }, Multiplication: { symbol: "×" ,
-                range: [2, 12] }, Division: { symbol: "÷" , range: [2, 12], additionalOptions:
-                [{ name: "Same range as multiplication" , id: "sameAsMultiplication" , checked: true,
-                }] } }; %>
-                <% ["Addition", "Subtraction" , "Multiplication" , "Division" ].forEach((op)=> {
-                    %>
-                    <div id="<%= op.toLowerCase() %>">
-                        <label>
-                            <input type="checkbox" checked id="<%= op.toLowerCase() %>_enabled">
-                            <%= op %>
-                        </label>
-                        <br>
-                        <ul class="subOptions" id="<%= op.toLowerCase() %>_options">
-                            <li>Range: (
-                                <input type="number" id="<%= op.toLowerCase() %>_min1"
-                                    value="<%- CONFIG[op].range[0] %>"
-                                    class="form-control d-inline-block numOptions">
-                                to
-                                <input type="number" id="<%= op.toLowerCase() %>_max1"
-                                    value="<%- CONFIG[op].range[1] %>"
-                                    class="form-control d-inline-block numOptions">
-                                )
-                                <%- CONFIG[op].symbol %>
-                                    (
-                                    <input type="number" id="<%= op.toLowerCase() %>_min2"
-                                        value="<%- CONFIG[op].range[0] %>"
-                                        class="form-control d-inline-block numOptions">
-                                    to
-                                    <input type="number" id="<%= op.toLowerCase() %>_max2"
-                                        value="<%- CONFIG[op].range[1] %>"
-                                        class="form-control d-inline-block numOptions">
-                                    )
-                            </li>
-                            <% if (CONFIG[op].additionalOptions) { %>
-                                <% CONFIG[op].additionalOptions.forEach((option)=> { %>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox"
-                                                id="<%= op.toLowerCase() %>_<%= option.id %>"
-                                                <%=option.checked ? "checked" : "" %>>
-                                            <%= option.name %>
-                                        </label>
-                                    </li>
-                                    <% }); %>
-                                        <% } %>
-                        </ul>
-                    </div>
-                    <% }); %>
-                        time: <input type="number" id="gameTime" value="120"
-                            class="form-control d-inline-block numOptions"> seconds
-                        <br>
-                        <br>
-                        <button class="btn btn-primary" onclick="startGame()">start</button>
+            <% const CONFIG = {
+                Addition: {
+                    symbol: "+",
+                    range: [[2, 100], [2, 100]]
+                },
+                Subtraction: {
+                    symbol: "-",
+                    range: [[2, 100], [2, 100]],
+                    additionalOptions: [{
+                        name: "Allow negative answers",
+                        id: "allowNegative",
+                        checked: false,
+                    }, {
+                        name: "Same range as addition",
+                        id: "sameAsAddition",
+                        checked: true,
+                    }]
+                },
+                Multiplication: {
+                    symbol: "×",
+                    range: [[2, 12], [2, 100]]
+                },
+                Division: {
+                    symbol: "÷",
+                    range: [[2, 12], [2, 100]],
+                    additionalOptions: [{
+                        name: "Same range as multiplication",
+                        id: "sameAsMultiplication",
+                        checked: true,
+                    }]
+                }
+            }; %>
+            <% ["Addition", "Subtraction" , "Multiplication" , "Division" ].forEach((op)=> { %>
+                <div id="<%= op.toLowerCase() %>">
+                    <label>
+                        <input type="checkbox" checked id="<%= op.toLowerCase() %>_enabled">
+                        <%= op %>
+                    </label>
+                    <br>
+                    <ul class="subOptions" id="<%= op.toLowerCase() %>_options">
+                        <li>Range:
+                            (
+                            <input type="number" id="<%= op.toLowerCase() %>_min1" value="<%- CONFIG[op].range[0][0] %>" class="form-control d-inline-block numOptions">
+                            to
+                            <input type="number" id="<%= op.toLowerCase() %>_max1" value="<%- CONFIG[op].range[0][1] %>" class="form-control d-inline-block numOptions">
+                            )
+                            <%- CONFIG[op].symbol %>
+                            (
+                            <input type="number" id="<%= op.toLowerCase() %>_min2" value="<%- CONFIG[op].range[1][0] %>" class="form-control d-inline-block numOptions">
+                            to
+                            <input type="number" id="<%= op.toLowerCase() %>_max2" value="<%- CONFIG[op].range[1][1] %>" class="form-control d-inline-block numOptions">
+                            )
+                        </li>
+                        <% if (CONFIG[op].additionalOptions) { %>
+                            <% CONFIG[op].additionalOptions.forEach((option)=> { %>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" id="<%= op.toLowerCase() %>_<%= option.id %>" <%=option.checked ? "checked" : "" %>>
+                                        <%= option.name %>
+                                    </label>
+                                </li>
+                            <% }); %>                          
+                        <% } %>
+                    </ul>
+                </div>
+            <% }); %>
+            <p>time: <input type="number" id="gameTime" value="120" class="form-control d-inline-block numOptions"> seconds</p>
+            <br>
+            <button class="btn btn-primary" onclick="startGame()">start</button>
+            <button class="btn btn-secondary" onclick="window.location.reload()">reset settings</button>
         </div>
     </div>
     <div id="game" hidden>
@@ -88,14 +102,13 @@
         <p>Your answered <span id="finalScore"></span> questions in <span id="finalTime"></span>
             seconds</p>
         <button class="btn btn-primary" onclick="startGame()">play again</button>
-        <button class="btn btn-primary" onclick="reset()">change settings</button>
+        <button class="btn btn-secondary" onclick="reset()">change settings</button>
     </div>
 </div>
 
 <script>
-
     const SYMBOLS = { addition: "+", subtraction: "-", multiplication: "×", division: "÷" };
-    const opFuncs = {
+    const OPERATOR_FUNCTIONS = {
         addition: (a, b) => a + b,
         subtraction: (a, b) => a - b,
         multiplication: (a, b) => a * b,
@@ -143,7 +156,7 @@
             })
         }
         for (let additionalOption in opConfig[op]) {
-            if (additionalOption == "enabled" || additionalOption == "range") continue;
+            if (additionalOption == "enabled" || additionalOption == "range") { continue };
             let element = document.getElementById(`${op}_${additionalOption}`);
             if (additionalOption.startsWith("sameAs")) {
                 document.getElementById(`${op}_options`).firstElementChild.hidden = true;
@@ -168,25 +181,22 @@
         let num2 = Math.floor(Math.random() * (range2[1] - range2[0] + 1)) + range2[0];
         if (op == "addition") {
             problem = `${num1} ${symbol} ${num2} = `;
-            answer = opFuncs[op](num1, num2);
+            answer = OPERATOR_FUNCTIONS[op](num1, num2);
         }
         else if (op == "subtraction") {
-            if (config[op].allowNegative && num1 < num2) {
-                problem = `${num2} ${symbol} ${num1} = `;
-                answer = opFuncs[op](num2, num1);
+            if (num1 < num2 && !config[op].allowNegative) {
+                [num1, num2] = [num2, num1];
             }
-            else {
-                problem = `${num1} ${symbol} ${num2} = `;
-                answer = opFuncs[op](num1, num2);
-            }
+            problem = `${num1} ${symbol} ${num2} = `;
+            answer = OPERATOR_FUNCTIONS[op](num1, num2);
         }
         else if (op == "multiplication") {
             problem = `${num1} ${symbol} ${num2} = `;
-            answer = opFuncs[op](num1, num2);
+            answer = OPERATOR_FUNCTIONS[op](num1, num2);
         }
         else if (op == "division") {
-            problem = `${num1 * num2} ${symbol} ${num2} = `;
-            answer = opFuncs[op](num1 * num2, num2);
+            problem = `${num1 * num2} ${symbol} ${num1} = `;
+            answer = num2;
         }
         return { problem, answer };
     }
@@ -195,6 +205,14 @@
         let gameConfig = structuredClone(opConfig);
         let gameTime = document.getElementById("gameTime").value;
         let score = 0;
+
+        if (gameConfig.subtraction.sameAsAddition) {
+            gameConfig.subtraction.range = gameConfig.addition.range;
+        }
+        if (gameConfig.division.sameAsMultiplication) {
+            gameConfig.division.range = gameConfig.multiplication.range;
+        }
+
         for (let op in gameConfig) {
             if (!gameConfig[op].enabled) { delete gameConfig[op]; }
         }
