@@ -3,6 +3,16 @@
   <head>
     <%- include('../partials/headV2.ejs') %>
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RPHB3361MQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RPHB3361MQ');
+    </script>
+
     <%# Views can insert additional html head content here %>
     <%- defineContent('head') %>
   </head>
