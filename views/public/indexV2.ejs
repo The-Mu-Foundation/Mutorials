@@ -1,3 +1,6 @@
+<head>
+  <link href="../../dist/tailwind.css" rel="stylesheet">
+</head>
 <%- contentFor('head') %>
 
 <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11" defer></script>
@@ -30,9 +33,67 @@
   }
 </style>
 
+<style>
+  .announcement_modal {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+  }
+
+  .popup-overlay {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+  }
+</style>
+
+<div class="popup-overlay" id="popupOverlay"></div>
+<div id="announcementPopup" class="announcement_modal">
+  <div class="modal-body">
+      <h2>Mutorials is hiring!</h2>
+      <p>We're looking for passionate individuals to fill our Marketing Director and Subject Lead Roles!</p>
+      <a class="btn btn-primary rounded-md" href="https://docs.google.com/forms/d/e/1FAIpQLSdApNSVCwUQSarhzrp9MboT0S_bCO5pwbL4xUGQm-0DXWaRpg/viewform?usp=sharing">Apply Now!</a>
+      <button class="btn btn-outline rounded-md" id="closePopupBtn">Close</button>
+  </div>
+</div>
+
+<script>
+  const popup = document.getElementById('announcementPopup');
+  const close = document.getElementById('closePopupBtn');
+
+  function showPopup() {
+    popup.style.display = 'block';
+    overlay.style.display = 'block';
+  }
+
+  function closePopup() {
+    popup.style.display = 'none';
+    overlay.style.display = 'none';
+  }
+
+  window.onload = function() {
+    showPopup();
+  };
+
+  closePopupBtn.addEventListener('click', closePopup);
+
+</script>
+
 <%- contentFor('main') %>
 <%# Hero %>
-<div class="flex items-center w-full max-w-4xl min-h-screen m-0 px-6 py-10 sm:-mt-20">
+<div class="flex items-center w-full max-w-4xl min-h-screen m-0 px-6 py-10 sm:-mt-20 popup-overlay">
   <div class="flex justify-between w-full">
     <div class="flex flex-col items-start w-full sm:w-7/12 mr-6">
       <h1 class="mb-4 text-4xl sm:text-5xl whitespace-nowrap">
