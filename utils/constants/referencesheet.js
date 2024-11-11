@@ -48,7 +48,7 @@ const referenceSheet = {
         '$6.67\\times10^{-11}\\:\\mathrm{Nm^2/kg^2}$',
       "Acceleration due to gravity at Earth's surface":
         '$g = 9.809\\:\\mathrm{m/s^2}$',
-      "Avogadro's number": '$N_0 = 6.02\\times10^{23}\\:\\mathrm{mol^{-1}}$',
+      "Avogadro's number": '$N_A = 6.02\\times10^{23}\\:\\mathrm{mol^{-1}}$',
       'Universal gas constant': '$R = 8.31\\: \\mathrm{J/(mol\\cdot K)}$',
       "Boltzmann's constant": '$k_B = 1.38\\times10^{-23}\\:\\mathrm{J/K}$',
       '1 electron volt':
@@ -69,10 +69,10 @@ const referenceSheet = {
   },
   Chemistry: {
     Equations: {
-      'Henderseon-Hasselbach': 'hm',
+      'Henderseon-Hasselbach': '$pH = pKa + \\log{\\frac{[A^-]}{[HA]}}$',
     },
     Constants: {
-      "Faraday's Constant": '96485 [unit]',
+      "Faraday's Constant": '$96485 \\:\\mathrm{s\\cdot A \\cdot mol^{-1}}$',
     },
   },
   Biology: {
@@ -80,23 +80,25 @@ const referenceSheet = {
       'Hardy-Weinberg Equilibrium': '$p^2+2pq+q^2=1$',
     },
     Constants: {
-      'Karring Kapasity': 'something',
+      'Avogadro\'s number': '$N_A = 6.02\\times10^{23}\\:\\mathrm{mol^{-1}}$',
     },
   },
   ESS: {
     Equations: {
-      'Hardy-Weinberg Equilibrium': '$p^2+2pq+q^2=1$',
+      'Darcy\'s Law': '$q = -\\frac{k}{\\mu} \\Delta p$',
+      
     },
     Constants: {
-      'Karring Kapasity': 'something',
+      'Earth\'s Average Density': '$\\rho = 5.51 \\:\\mathrm{g/cm^3}$',
+      'Earth\'s Radius': '$R = 6.371\\times 10^6 \\:\\mathrm{m}$',
     },
   },
   USABO: {
     Equations: {
-      'Hardy-Weinberg Equilibrium': '$p^2+2pq+q^2=1$',
+      '': '',
     },
     Constants: {
-      'Karring Kapasity': 'something',
+      '': '',
     },
   },
 };
