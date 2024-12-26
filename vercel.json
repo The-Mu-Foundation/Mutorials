@@ -6,6 +6,14 @@
             "use": "@vercel/node"
         },
         {
+            "src": "public/css/tailwind.css",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "public/css",
+                "buildCommand": "npm run build"
+            }
+        },
+        {
             "src": "public/**",
             "use": "@vercel/static"
         }
