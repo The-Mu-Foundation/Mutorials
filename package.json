@@ -7,7 +7,7 @@
     "dev:sync": "browser-sync start --no-notify --no-open --proxy=localhost:3000 --port=3001 --files=\"**/*\" --reload-delay=100",
     "dev:express": "nodemon index.js",
     "dev:css": "tailwindcss -i public/css/tailwind.css -o public/css/style.css --watch",
-    "build": "tailwindcss -i public/css/tailwind.css -o public/css/style.css",
+    "build": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css",
     "lint": "eslint . --ext .js"
   },
   "engines": {
