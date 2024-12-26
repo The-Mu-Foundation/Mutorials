@@ -47,7 +47,7 @@ app.set('view engine', 'ejs');
 // app.use(expressLayouts);
 // app.set('layout', 'layouts/empty.ejs');
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   res.locals.successFlash = req.flash('successFlash');
