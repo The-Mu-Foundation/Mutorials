@@ -10,6 +10,14 @@ const enforce = require('express-sslify');
 const { initializeAnalytics } = require('./analytics');
 const path = require('path');
 
+import { readdirSync } from 'fs';
+
+const getDirectories = (source) =>
+  readdirSync(source, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+console.log('getDirectories:', getDirectories());
+
 console.log('Setting up Express server...');
 
 try {
@@ -49,6 +57,13 @@ app.set('view engine', 'ejs');
 // app.set('layout', 'layouts/empty.ejs');
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+console.log('__filename:', __filename);
+console.log('__dirname:', __dirname);
+app.use((req, res, next) => {
+  console.log(`Incoming request for ${req.originalUrl}`);
+  next();
+});
 
 app.use((req, res, next) => {
   res.locals.successFlash = req.flash('successFlash');
