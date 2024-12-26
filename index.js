@@ -10,34 +10,6 @@ const enforce = require('express-sslify');
 const { initializeAnalytics } = require('./analytics');
 const path = require('path');
 
-const fs = require('fs');
-
-// Function to list the first two layers of files and directories
-function listDirectories(baseDir, depth = 2, currentDepth = 0) {
-  if (currentDepth >= depth) return;
-
-  try {
-    const items = fs.readdirSync(baseDir);
-
-    items.forEach((item) => {
-      const itemPath = path.join(baseDir, item);
-      const stats = fs.statSync(itemPath);
-
-      console.log(`${' '.repeat(currentDepth * 2)}- ${item}`);
-
-      // If it's a directory, recursively list its contents
-      if (stats.isDirectory()) {
-        listDirectories(itemPath, depth, currentDepth + 1);
-      }
-    });
-  } catch (err) {
-    console.error(`Error reading directory ${baseDir}:`, err);
-  }
-}
-
-// List the top 2 layers from the current directory
-listDirectories(process.cwd());
-
 console.log('Setting up Express server...');
 
 try {
@@ -75,14 +47,6 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 // app.use(expressLayouts);
 // app.set('layout', 'layouts/empty.ejs');
-
-console.log('process.cwd():', process.cwd());
-console.log('__filename:   ', __filename);
-console.log('__dirname:    ', __dirname);
-app.use((req, res, next) => {
-  console.log(`Incoming request for ${req.originalUrl}`);
-  next();
-});
 
 app.use(express.static(path.join(__dirname, 'public')));
 
