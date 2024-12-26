@@ -4,6 +4,18 @@
         {
             "src": "./index.js",
             "use": "@vercel/node"
+        },
+        {
+            "src": "package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "public/css",
+                "buildCommand": "npm run build"
+            }
+        },
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -11,6 +23,5 @@
             "src": "/(.*)",
             "dest": "/"
         }
-    ],
-    "buildCommand": "npm run build"
+    ]
 }

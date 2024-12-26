@@ -8,6 +8,7 @@ const session = require('express-session');
 const http = require('http');
 const enforce = require('express-sslify');
 const { initializeAnalytics } = require('./analytics');
+const path = require('path');
 
 console.log('Setting up Express server...');
 
@@ -47,7 +48,7 @@ app.set('view engine', 'ejs');
 // app.use(expressLayouts);
 // app.set('layout', 'layouts/empty.ejs');
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   res.locals.successFlash = req.flash('successFlash');
