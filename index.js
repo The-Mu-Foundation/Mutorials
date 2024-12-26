@@ -8,6 +8,7 @@ const session = require('express-session');
 const http = require('http');
 const enforce = require('express-sslify');
 const { initializeAnalytics } = require('./analytics');
+const path = require('path');
 
 console.log('Setting up Express server...');
 
