@@ -1,3 +1,12 @@
+try {
+  require('dotenv').config();
+  console.log('Loaded env vars from .env file.');
+} catch {
+  console.log(
+    'Not in development environment. Skipping loading from .env file.'
+  );
+}
+
 console.log('Importing...');
 
 // MODULE IMPORTS
@@ -11,14 +20,6 @@ const { initializeAnalytics } = require('./analytics');
 const path = require('path');
 
 console.log('Setting up Express server...');
-
-try {
-  require('dotenv').config();
-} catch {
-  console.log(
-    'Not in development environment. Skipping loading from .env file.'
-  );
-}
 
 // START EXPRESS SERVER
 const app = express();
