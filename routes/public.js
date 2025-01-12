@@ -23,27 +23,37 @@ module.exports = (app, mongo) => {
   // PUBLIC GET
   app.get('/', expressLayouts, async (req, res) => {
     // Site data
-    const { questionCount, tagCount, usaboQuestionCount, totalSolves } =
-      await getSiteData(User, Ques, SiteData);
+    let questionCount, tagCount, usaboQuestionCount, totalSolves;
+    const siteDataQuery = getSiteData(User, Ques, SiteData).then((data) => {
+      ({ questionCount, tagCount, usaboQuestionCount, totalSolves } = data);
+    });
 
     // Daily question
-    const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+    let question;
+    const dailyQuestionQuery = getDailyQuestion(mongo.Daily, mongo.Ques).then((data) => {
+      question = data;
+    });
 
     // Leaderboard
-    let leaderboard = (
-      await mongo.User.find({
-        'stats.experience': { $gte: 10000 },
-      })
-        .sort({ 'stats.experience': -1 })
-        .limit(10)
-        .exec()
-    ).map((user) => {
-      return {
-        level: calculateLevel(user.stats.experience),
-        experience: user.stats.experience,
-        ign: user.ign,
-      };
-    });
+    let leaderboard;
+    const leaderboardQuery = mongo.User.find({
+      'stats.experience': { $gte: 10000 },
+    })
+      .sort({ 'stats.experience': -1 })
+      .limit(10)
+      .exec()
+      .then((data) => {
+        leaderboard = data.map((user) => {
+          return {
+            level: calculateLevel(user.stats.experience),
+            experience: user.stats.experience,
+            ign: user.ign,
+          };
+        });
+      });
+
+    // Wait for all queries to finish
+    await Promise.all([siteDataQuery, dailyQuestionQuery, leaderboardQuery]);
 
     res.render(VIEWS + 'public/indexV2.ejs', {
       user: req.user,
