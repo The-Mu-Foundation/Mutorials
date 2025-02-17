@@ -56,44 +56,6 @@
   }
 </style>
 
-<div class="popup-overlay" id="popupOverlay"></div>
-<div id="announcementPopup" class="announcement_modal">
-  <div class="modal-body">
-      <h2 style="margin-bottom:3mm;"> Mutorials is hiring!</h2>
-      <p style="margin-bottom:3mm;">We are looking for passionate individuals to fill our Subject Lead roles for biology, chemistry, and physics! Due <b>1/25/25</b> at 5:30 PM PST.</p>
-      <a class="btn btn-primary rounded-md" id="linkButton" style="margin-bottom:1mm;">Apply Now!</a>
-      <a class="btn btn-outline rounded-md" id="closePopupBtn">Close</a>
-  </div>
-</div>
-
-<script>
-  const popup = document.getElementById('announcementPopup');
-  const close = document.getElementById('closePopupBtn');
-  const link = document.getElementById('linkButton');
-
-  function showPopup() {
-    popup.style.display = 'block';
-    overlay.style.display = 'block';
-  }
-
-  function closePopup() {
-    popup.style.display = 'none';
-    overlay.style.display = 'none';
-  }
-
-  function goToForm() {
-    window.location.href="https://docs.google.com/forms/d/e/1FAIpQLSdApNSVCwUQSarhzrp9MboT0S_bCO5pwbL4xUGQm-0DXWaRpg/viewform?usp=sharing";
-  }
-
-  window.onload = function() {
-    showPopup();
-  };
-
-  linkButton.addEventListener('click', goToForm);
-  closePopupBtn.addEventListener('click', closePopup);
-
-</script>
-
 <%- contentFor('main') %>
 <%# Hero %>
 <div class="flex items-center w-full max-w-4xl min-h-screen m-0 px-6 py-10 sm:-mt-20">
