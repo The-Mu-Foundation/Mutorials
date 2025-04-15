@@ -145,7 +145,7 @@ const tags = {
       CDT: 'Conductors and Conductivity',
       DSM: 'Doped Semiconductors',
       PNJ: 'The p-n Junction',
-      RTY: 'Resisitivity',
+      RTY: 'Resistivity',
       CAP: 'Capacitance',
       ELE: 'Electrical Energy',
       DIE: 'Dielectrics',

@@ -69,7 +69,7 @@ const referenceSheet = {
   },
   Chemistry: {
     Equations: {
-      'Henderseon-Hasselbach': '$pH = pKa + \\log{\\frac{[A^-]}{[HA]}}$',
+      'Henderseon-Hasselbalch': '$pH = pKa + \\log{\\frac{[A^-]}{[HA]}}$',
     },
     Constants: {
       "Faraday's Constant": '$96485 \\:\\mathrm{s\\cdot A \\cdot mol^{-1}}$',
@@ -86,7 +86,7 @@ const referenceSheet = {
   ESS: {
     Equations: {
       'Darcy\'s Law': '$q = -\\frac{k}{\\mu} \\Delta p$',
-      
+
     },
     Constants: {
       'Earth\'s Average Density': '$\\rho = 5.51 \\:\\mathrm{g/cm^3}$',
