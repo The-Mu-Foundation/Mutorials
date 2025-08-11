@@ -1,0 +1,25 @@
+name: deploy to server
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ssh.mutorials.org
+          port: 53667
+          username: mutorial
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            source /home/mutorial/nodevenv/programs/Mutorials/22/bin/activate && cd /home/mutorial/programs/Mutorials
+            git pull
+            npm install
+            npm run build
+            cloudlinux-selector restart --json --interpreter nodejs --app-root programs/Mutorials
