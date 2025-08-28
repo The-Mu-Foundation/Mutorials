@@ -19,7 +19,8 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             source /home/mutorial/nodevenv/programs/Mutorials/22/bin/activate && cd /home/mutorial/programs/Mutorials
-            git pull
+            rm -rf *
+            git clone https://github.com/The-Mu-Foundation/Mutorials .
             npm install
             npm run build
             cloudlinux-selector restart --json --interpreter nodejs --app-root programs/Mutorials
