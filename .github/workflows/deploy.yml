@@ -19,7 +19,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             source /home/mutorial/nodevenv/programs/Mutorials/22/bin/activate && cd /home/mutorial/programs/Mutorials
-            rm -rf *
+            rm -rf {*,.*}
             git clone https://github.com/The-Mu-Foundation/Mutorials .
             npm install
             npm run build
