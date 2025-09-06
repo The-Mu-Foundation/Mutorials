@@ -6,13 +6,18 @@
     <%- include("../partials/navigationPublic") -%>
 <% } %>
 
-<h1 class="my-5 container display-2 text-center">Zetamac on Mutorials</h1>
-
-<div class="jumbotron container">
-    <h2>Zetamac</h2>
+<h1 class="my-5 text-center" style="font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-size:4rem; font-weight: 600;">
+    <span style="background: linear-gradient(45deg, #3b82f6, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800;">Zetamac</span>
+    <span style="color: black; font-weight: 600;"> on Mutorials</span>
+</h1>
+<div style="font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; text-align: center; margin-top: -1rem; margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6; color: #374151;">
+    <a href='https://arithmetic.zetamac.com/' style="color: #3b82f6; text-decoration: none; font-weight: 500;">Zetamac</a> is a fast-paced math speed drill where you are given a set amount of time to
+    solve as many arithmetic problems as you can.
+</div>
+<div class="jumbotron" style="position: relative; background: rgba(230, 220, 255, 0.95); border-radius: 20px; backdrop-filter: blur(10px); box-shadow: 0 0 80px rgba(59, 130, 246, 0.55), 0 0 160px rgba(147, 51, 234, 0.45); overflow: hidden; max-width: 900px; margin: 5rem auto; padding: 2rem; font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;">
+    
     <div id="init">
-        <p><a href='https://arithmetic.zetamac.com/'>Zetamac</a> is a fast-paced math speed drill where you are given two minutes to
-            solve as many arithmetic problems as you can.</p>
+    
         <div id="initConfig">
             <% const CONFIG = {
                 Addition: {
@@ -47,31 +52,32 @@
                 }
             }; %>
             <% ["Addition", "Subtraction" , "Multiplication" , "Division" ].forEach((op)=> { %>
-                <div id="<%= op.toLowerCase() %>">
-                    <label>
-                        <input type="checkbox" checked id="<%= op.toLowerCase() %>_enabled">
+                <div id="<%= op.toLowerCase() %>" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.3); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.1); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(59, 130, 246, 0.15);">
+                    <label style="font-weight: 600; font-size: 1.1rem; color: #1e40af; margin-bottom: 0.75rem; display: block;">
+                        <input type="checkbox" checked id="<%= op.toLowerCase() %>_enabled" style="margin-right: 0.5rem;">
                         <%= op %>
                     </label>
-                    <br>
-                    <ul class="subOptions" id="<%= op.toLowerCase() %>_options">
-                        <li>Range:
+                    <ul class="subOptions" id="<%= op.toLowerCase() %>_options" style="margin-left: 1.5rem; margin-top: 0.75rem;">
+                        <li style="margin-bottom: 0.5rem; font-size: 0.95rem;">Range:
+                            <span style="display: inline-block; margin-left: 0.5rem;">
                             (
-                            <input type="number" id="<%= op.toLowerCase() %>_min1" value="<%- CONFIG[op].range[0][0] %>" class="form-control d-inline-block numOptions">
+                            <input type="number" id="<%= op.toLowerCase() %>_min1" value="<%- CONFIG[op].range[0][0] %>" class="form-control d-inline-block numOptions" style="margin: 0 0.25rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                             to
-                            <input type="number" id="<%= op.toLowerCase() %>_max1" value="<%- CONFIG[op].range[0][1] %>" class="form-control d-inline-block numOptions">
+                            <input type="number" id="<%= op.toLowerCase() %>_max1" value="<%- CONFIG[op].range[0][1] %>" class="form-control d-inline-block numOptions" style="margin: 0 0.25rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                             )
-                            <%- CONFIG[op].symbol %>
+                            <span style="margin: 0 0.5rem; font-weight: bold; color: #3b82f6;"><%- CONFIG[op].symbol %></span>
                             (
-                            <input type="number" id="<%= op.toLowerCase() %>_min2" value="<%- CONFIG[op].range[1][0] %>" class="form-control d-inline-block numOptions">
+                            <input type="number" id="<%= op.toLowerCase() %>_min2" value="<%- CONFIG[op].range[1][0] %>" class="form-control d-inline-block numOptions" style="margin: 0 0.25rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                             to
-                            <input type="number" id="<%= op.toLowerCase() %>_max2" value="<%- CONFIG[op].range[1][1] %>" class="form-control d-inline-block numOptions">
+                            <input type="number" id="<%= op.toLowerCase() %>_max2" value="<%- CONFIG[op].range[1][1] %>" class="form-control d-inline-block numOptions" style="margin: 0 0.25rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                             )
+                            </span>
                         </li>
                         <% if (CONFIG[op].additionalOptions) { %>
                             <% CONFIG[op].additionalOptions.forEach((option)=> { %>
-                                <li>
-                                    <label>
-                                        <input type="checkbox" id="<%= op.toLowerCase() %>_<%= option.id %>" <%=option.checked ? "checked" : "" %>>
+                                <li style="margin-bottom: 0.5rem; margin-top: 0.5rem;">
+                                    <label style="font-size: 0.9rem; color: #374151;">
+                                        <input type="checkbox" id="<%= op.toLowerCase() %>_<%= option.id %>" <%=option.checked ? "checked" : "" %> style="margin-right: 0.5rem;">
                                         <%= option.name %>
                                     </label>
                                 </li>
@@ -80,31 +86,65 @@
                     </ul>
                 </div>
             <% }); %>
-            <p>time: <input type="number" id="gameTime" value="120" class="form-control d-inline-block numOptions"> seconds</p>
-            <br>
-            <button class="btn btn-primary" onclick="startGame()">Start</button>
-            <button class="btn btn-secondary" onclick="window.location.reload()">Reset Settings</button>
+            <div style="margin: 2rem 0 1.5rem 0; padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 12px; text-align: center; box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2), 0 2px 6px rgba(0, 0, 0, 0.08);">
+                <label style="font-weight: 600; font-size: 1.1rem; color: #1e40af; font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;">
+                    Time: <input type="number" id="gameTime" value="120" class="form-control d-inline-block numOptions" style="margin: 0 0.5rem; width: 4rem; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3); font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;"> seconds
+                </label>
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                
+                <button class="btn my-2 px-3 py-1 d-inline-flex align-items-center gradient-button" type="button" onclick="startGame()" style="background: linear-gradient(135deg, #3b82f6, #1e40af); color: #fff; font-size: 1rem; border-radius: 0.5rem; border: none; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); margin-right: 1rem; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15); font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 600;">
+                    Get started <span aria-hidden="true" class="ml-2" style="font-size:1.2rem;">&rarr;</span>
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.reload()" style="margin-left: 1rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500;">Reset Settings</button>
+            </div>
         </div>
     </div>
-    <div id="game" hidden>
-        <p id="time">Time left: <span id="timeLeft"></span> seconds</p>
-        <p id="score">Score: <span id="scoreValue">0</span></p>
-        <p>Problem:</p>
-        <div id="problem" class="problem">
-            <span id="problemValue"></span><input type="number" id="answer"
-                class="form-control d-inline-block numOptions problem" style="width:10rem">
+    <div id="game" hidden style="font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; padding: 2rem 0;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 1.5rem;">
+            <p id="time" style="font-size: 1.5rem; font-weight: 700; color: #1e40af; margin-bottom: 0;">
+                <span id="formattedTime"></span>
+            </p>
+            <p id="score" style="font-size: 1.5rem; font-weight: 700; color: #0004ff; margin-bottom: 0;">Score: <span id="scoreValue">0</span></p>
         </div>
-        <button class="btn btn-primary" onclick="reset()">Cancel Game</button>
+        <!-- Animated +1 feedback -->
+        <span id="plusOne" style="position: absolute; left: 50%; top: 0; transform: translate(-50%, 0); font-size: 2rem; font-weight: 700; color: #059669; opacity: 0; pointer-events: none; z-index: 10; transition: none;"></span>
+        <div id="problem" class="problem" style="margin: 2.5rem 0 2rem 0;">
+            <span id="problemValue" style="font-size: 2.2rem; font-weight: 700; color: #1f2937; margin-right: 1.2rem;"></span>
+            <input type="number" id="answer"
+                class="form-control d-inline-block numOptions problem"
+                style="width: 10rem; height: 3rem; font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-size: 1.5rem; padding: 0.3rem 1rem; border-radius: 0.7rem; border: 2px solid #3b82f6; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.12);">
+        </div>
+        <p style="height: 1.5rem;">&nbsp;</p>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <button class="btn my-2 px-4 py-2 d-inline-flex align-items-center gradient-button" type="button" onclick="reset()" style="background: linear-gradient(135deg, #f64e3b, #ff0101); color: #fff; font-size: 1.1rem; border-radius: 0.7rem; border: none; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); margin-right: 1rem; box-shadow: 0 6px 18px rgba(229, 36, 6, 0.18), 0 3px 8px rgba(173, 0, 0, 0.08); font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700;">
+                Cancel Game&nbsp;&nbsp;<span aria-hidden="true" class="ml-2" style="font-size:1.5rem;">&#10006;</span>
+            </button>
+        </div>
+        <!-- Progress Bar for Time Left -->
+        <div style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; background: transparent;">
+            <div id="timeProgressBarContainer" style="width: 100%; height: 12px; background: #e0e7ff; border-radius: 0 0 8px 8px; overflow: hidden;">
+                <div id="timeProgressBar" style="height: 100%; width: 100%; background: linear-gradient(90deg, #3b82f6, #9333ea); transition: width 0.2s linear;"></div>
+            </div>
+        </div>
+    
     </div>
-    <div id="results" hidden>
-        <br>
-        <h3>Game Over!</h3>
-        <p>Your answered <span id="finalScore"></span> questions in <span id="finalTime"></span>
-            seconds.</p>
-        <button class="btn btn-primary" onclick="startGame()">Play Again</button>
-        <button class="btn btn-secondary" onclick="reset()">Change Settings</button>
+
+    <!-- We could animate a rotation of the Game Over sign coming up first, then the score, and then the Play Again buttons -->
+    <div id="results" hidden style="opacity: 0; transform: translateY(30px) scale(0.95);">
+        <h2 style="text-align:center; font-size:2.2rem; font-weight:700; color:#1e40af; margin-bottom:1.5rem;">Game Over!</h2>
+        <div style="text-align:center; font-size:1.3rem; margin-bottom:1rem;">
+            <span>Your Score: <span id="finalScore" style="font-weight:700; color:#059669;">0</span></span><br>
+            <span>Time: <span id="finalTime" style="font-weight:700; color:#3b82f6;">0</span> seconds</span>
+        </div>
+        <div style="text-align:center; margin-top:2rem;">
+            <button class="btn my-2 px-4 py-2 d-inline-flex align-items-center gradient-button" type="button" onclick="reset()" style="background: linear-gradient(135deg, #f64e3b, #ff0101); color: #fff; font-size: 1.1rem; border-radius: 0.7rem; border: none; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); margin-right: 1rem; box-shadow: 0 6px 18px rgba(229, 36, 6, 0.18), 0 3px 8px rgba(173, 0, 0, 0.08); font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700;">
+                Play Again&nbsp;&nbsp;<span aria-hidden="true" class="ml-2" style="font-size:1.5rem;">&#8635;</span>
+            </button>
     </div>
 </div>
+
 
 <script>
     const SYMBOLS = { addition: "+", subtraction: "-", multiplication: "×", division: "÷" };
@@ -202,9 +242,13 @@
     }
 
     window.startGame = function () {
+        console.log("Starting game..."); // Debug log
+        
         let gameConfig = structuredClone(opConfig);
-        let gameTime = document.getElementById("gameTime").value;
-        let score = 0;
+        let gameTime = parseInt(document.getElementById("gameTime").value);
+        window.gameScore = 0;
+        
+        console.log("Game time:", gameTime); // Debug log
 
         if (gameConfig.subtraction.sameAsAddition) {
             gameConfig.subtraction.range = gameConfig.addition.range;
@@ -221,43 +265,157 @@
             return;
         }
 
+        // Hide init and show game
         document.getElementById("init").hidden = true;
         document.getElementById("game").hidden = false;
+        document.getElementById("results").hidden = true;
 
         document.getElementById("scoreValue").innerText = 0;
+        
         let startTime = Date.now();
-        window.timer = setInterval(() => {
-            let timeLeft = gameTime - Math.floor((Date.now() - startTime) / 1000);
-            document.getElementById("timeLeft").innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(window.timer);
-                document.getElementById("game").hidden = true;
-                document.getElementById("results").hidden = false;
-                document.getElementById("finalScore").innerText = score;
-                document.getElementById("finalTime").innerText = gameTime;
+        
+        // Clear any existing timer
+        if (window.gameTimer) {
+            clearInterval(window.gameTimer);
+        }
+        
+        // Timer function
+        function updateTimer() {
+            let currentTime = Date.now();
+            let elapsed = Math.floor((currentTime - startTime) / 1000);
+            let timeLeft = Math.max(0, gameTime - elapsed);
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            let formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update the formatted time display
+            let formattedTimeElement = document.getElementById("formattedTime");
+            if (formattedTimeElement) {
+                formattedTimeElement.innerText = formattedTime;
             }
-        }, 100);
+            
+            console.log("Time left:", timeLeft); // Debug log
+            
+            // Update progress bar
+            let progressBar = document.getElementById("timeProgressBar");
+            if (progressBar) {
+                let progress = Math.max(0, (timeLeft / gameTime) * 100);
+                progressBar.style.width = progress + '%';
+            }
+            
+            if (timeLeft <= 0) {
+                console.log("Time's up! Showing results..."); // Debug log
+                clearInterval(window.gameTimer);
+                window.gameTimer = null;
+                
+                // Show results with fade-in animation
+                document.getElementById("game").hidden = true;
+                
+                let resultsElement = document.getElementById("results");
+                resultsElement.hidden = false;
+                resultsElement.classList.remove('results-fade-in'); // Remove if exists
+                resultsElement.classList.add('results-fade-in'); // Add animation class immediately
+                
+                document.getElementById("finalScore").innerText = window.gameScore || 0;
+                document.getElementById("finalTime").innerText = gameTime;
+                
+                console.log("Results shown. Final score:", window.gameScore); // Debug log
+                return;
+            }
+        }
+        
+        // Start the timer
+        window.gameTimer = setInterval(updateTimer, 100);
+        
+        // Initial timer update
+        updateTimer();
 
         document.getElementById('answer').focus();
 
         let question = generateQuestion(gameConfig);
         document.getElementById("problemValue").innerText = question.problem;
-        document.getElementById("answer").addEventListener("input", (event) => {
-            if (parseInt(event.target.value) == question.answer) {
-                score++;
-                document.getElementById("scoreValue").innerText = score;
+        
+        // Clear previous answer
+        document.getElementById("answer").value = "";
+        
+        // Remove any existing event listeners and add new one
+        let answerInput = document.getElementById("answer");
+        let newAnswerInput = answerInput.cloneNode(true);
+        answerInput.parentNode.replaceChild(newAnswerInput, answerInput);
+        
+        newAnswerInput.addEventListener("input", function(event) {
+            let userAnswer = parseInt(event.target.value);
+            if (!isNaN(userAnswer) && userAnswer === question.answer) {
+                window.gameScore = (window.gameScore || 0) + 1;
+                document.getElementById("scoreValue").innerText = window.gameScore;
+
+                // Trigger +1 animation
+                showPlusOneAnimation();
+
                 question = generateQuestion(gameConfig);
                 document.getElementById("problemValue").innerText = question.problem;
-                document.getElementById("answer").value = "";
+                event.target.value = "";
+                event.target.focus();
             }
         });
     }
 
+    // Function to create and animate +1 feedback
+    function showPlusOneAnimation() {
+        const jumbotron = document.querySelector('.jumbotron');
+        if (!jumbotron) return;
+
+        const plusOne = document.createElement('div');
+        plusOne.textContent = '+1';
+        plusOne.className = 'plus-one';
+        
+        // Position in the center of the jumbotron
+        const jumbotronRect = jumbotron.getBoundingClientRect();
+        const centerX = jumbotronRect.width / 2;
+        const centerY = jumbotronRect.height / 2;
+        
+        plusOne.style.left = centerX + 'px';
+        plusOne.style.top = centerY + 'px';
+        
+        jumbotron.appendChild(plusOne);
+        
+        // Remove the element after animation completes
+        setTimeout(() => {
+            if (plusOne.parentNode) {
+                plusOne.parentNode.removeChild(plusOne);
+            }
+        }, 1800);
+    }
+
     window.reset = function () {
-        clearInterval(window.timer);
+        console.log("Resetting game..."); // Debug log
+        
+        if (window.gameTimer) {
+            clearInterval(window.gameTimer);
+            window.gameTimer = null;
+        }
+        window.gameScore = 0;
+        
         document.getElementById("init").hidden = false;
         document.getElementById("game").hidden = true;
-        document.getElementById("results").hidden = true;
+        
+        let resultsElement = document.getElementById("results");
+        resultsElement.hidden = true;
+        resultsElement.classList.remove('results-fade-in'); // Clean up animation class
+        
+        // Reset progress bar
+        let progressBar = document.getElementById("timeProgressBar");
+        if (progressBar) {
+            progressBar.style.width = '100%';
+        }
+        
+        // Clear answer input
+        let answerInput = document.getElementById("answer");
+        if (answerInput) {
+            answerInput.value = "";
+        }
+        
+        console.log("Game reset complete."); // Debug log
     }
 
 </script>
@@ -276,6 +434,285 @@
         font-size: 3rem;
         height: 3rem;
     }
+
+    .gradient-button {
+        position: relative;
+        overflow: hidden;
+        transform: scale(1);
+    }
+
+    .gradient-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #1e40af, #0f172a);
+        opacity: 0;
+        transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: -1;
+    }
+
+    .gradient-button:hover::before {
+        opacity: 1;
+    }
+
+    .gradient-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4), 0 4px 15px rgba(30, 64, 175, 0.3);
+    }
+
+    /* Custom fancy checkboxes */
+    input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #3b82f6;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #ffffff, #f1f5f9);
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    input[type="checkbox"]:hover {
+        border-color: #2563eb;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        transform: scale(1.05);
+    }
+
+    input[type="checkbox"]:checked {
+        background: linear-gradient(135deg, #3b82f6, #1e40af);
+        border-color: #1e40af;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    input[type="checkbox"]:checked::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 6px;
+        width: 6px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        animation: checkmark 0.3s ease-in-out;
+    }
+
+    @keyframes checkmark {
+        0% {
+            opacity: 0;
+            transform: rotate(45deg) scale(0);
+        }
+        100% {
+            opacity: 1;
+            transform: rotate(45deg) scale(1);
+        }
+    }
+
+    @keyframes glow {
+        0% {
+            transform: rotate(0deg) scale(0.9);
+            opacity: 0.35;
+        }
+        100% {
+            transform: rotate(360deg) scale(1.15);
+            opacity: 0.65;
+        }
+    }
+
+    /* Plus One Animation */
+    .plus-one {
+        position: absolute;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #10b981;
+        text-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        pointer-events: none;
+        z-index: 1000;
+        animation: plusOneFloat 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes plusOneFloat {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+        }
+        10% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        90% {
+            opacity: 1;
+            transform: translate(200px, -250px) scale(0.8);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(300px, -200px) scale(0.3);
+        }
+    }
+
+    /* Results fade-in animation */
+    .results-fade-in {
+        animation: fadeInResults 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeInResults {
+        0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0px) scale(1);
+        }
+    }
 </style>
 
-<%- include("../partials/footer") -%>
+<% if (locals.darkMode) { %>
+<style>
+    /* Dark mode styles for Zetamac */
+    body {
+        background-color: #1f2937 !important;
+    }
+
+    /* Dark mode heading */
+    h1 span:last-child {
+        color: #e5e7eb !important;
+    }
+
+    /* Dark mode description text */
+    div[style*="color: #374151"] {
+        color: #d1d5db !important;
+    }
+
+    /* Dark mode jumbotron */
+    .jumbotron {
+        background: rgba(55, 65, 81, 0.95) !important;
+        box-shadow: 0 0 80px rgba(59, 130, 246, 0.3), 0 0 160px rgba(147, 51, 234, 0.2) !important;
+        border: 1px solid rgba(75, 85, 99, 0.3);
+    }
+
+    /* Dark mode operation cards */
+    div[style*="background: rgba(255, 255, 255, 0.3)"] {
+        background: rgba(75, 85, 99, 0.4) !important;
+        border: 1px solid rgba(107, 114, 128, 0.3) !important;
+    }
+
+    /* Dark mode labels */
+    label[style*="color: #1e40af"] {
+        color: #93c5fd !important;
+    }
+
+    /* Dark mode list text */
+    li[style*="color: #374151"] {
+        color: #d1d5db !important;
+    }
+
+    /* Dark mode time container */
+    div[style*="background: rgba(59, 130, 246, 0.05)"] {
+        background: rgba(59, 130, 246, 0.15) !important;
+    }
+
+    /* Dark mode form controls */
+    .form-control {
+        background-color: #374151 !important;
+        border-color: #4b5563 !important;
+        color: #e5e7eb !important;
+    }
+
+    .form-control:focus {
+        background-color: #4b5563 !important;
+        border-color: #60a5fa !important;
+        box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+    }
+
+    /* Dark mode game interface */
+    #game p {
+        color: #e5e7eb !important;
+    }
+
+    #time {
+        color: #60a5fa !important;
+    }
+
+    #score {
+        color: #34d399 !important;
+    }
+
+    /* Dark mode problem display */
+    #problemValue {
+        color: #f9fafb !important;
+    }
+
+    /* Dark mode results */
+    #results {
+        color: #e5e7eb !important;
+    }
+
+    #results h2 {
+        color: #60a5fa !important;
+    }
+
+    /* Dark mode buttons */
+    .btn-secondary {
+        background-color: #4b5563 !important;
+        border-color: #6b7280 !important;
+        color: #e5e7eb !important;
+    }
+
+    .btn-secondary:hover {
+        background-color: #6b7280 !important;
+        border-color: #9ca3af !important;
+        color: #f9fafb !important;
+    }
+
+    /* Dark mode progress bar container */
+    #timeProgressBarContainer {
+        background: #374151 !important;
+    }
+
+    /* Dark mode +1 animation */
+    .plus-one {
+        color: #34d399 !important;
+        text-shadow: 0 2px 8px rgba(52, 211, 153, 0.4) !important;
+    }
+
+    /* Dark mode checkboxes */
+    input[type="checkbox"] {
+        border-color: #60a5fa !important;
+        background: linear-gradient(135deg, #374151, #4b5563) !important;
+    }
+
+    input[type="checkbox"]:hover {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3) !important;
+    }
+
+    input[type="checkbox"]:checked {
+        background: linear-gradient(135deg, #3b82f6, #1e40af) !important;
+        border-color: #1e40af !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+    }
+
+    /* Dark mode checkbox option labels */
+    label[style*="font-size: 0.9rem"] {
+        color: #d1d5db !important;
+    }
+
+    li[style*="margin-bottom: 0.5rem"] label {
+        color: #d1d5db !important;
+    }
+
+    /* Dark mode symbol highlights */
+    span[style*="color: #3b82f6"] {
+        color: #60a5fa !important;
+    }
+</style>
+<% } %>
+
