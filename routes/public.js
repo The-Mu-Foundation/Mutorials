@@ -23,9 +23,9 @@ module.exports = (app, mongo) => {
   // PUBLIC GET
   app.get('/', expressLayouts, async (req, res) => {
     // Site data
-    let questionCount, tagCount, usaboQuestionCount, totalSolves;
+    let userCount, questionCount, tagCount, usaboQuestionCount, totalSolves;
     const siteDataQuery = getSiteData(User, Ques, SiteData).then((data) => {
-      ({ questionCount, tagCount, usaboQuestionCount, totalSolves } = data);
+      ({ userCount, questionCount, tagCount, usaboQuestionCount, totalSolves } = data);
     });
 
     // Daily question
@@ -58,6 +58,7 @@ module.exports = (app, mongo) => {
     res.render(VIEWS + 'public/indexV2.ejs', {
       user: req.user,
       layout: 'layouts/base.ejs',
+      userCount,
       questionCount: questionCount + usaboQuestionCount,
       tagCount,
       totalSolves: Array.from(Object.values(totalSolves)).reduce(
