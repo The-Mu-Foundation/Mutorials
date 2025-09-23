@@ -436,7 +436,7 @@ async function querySite(query, User, Ques, SiteData) {
     ? subjects
         .trim()
         .split(',')
-        .map((subject) => subject.trim().toProperCase())
+        .map((subject) => subject.trim())
     : [];
 
   let possibleID;
