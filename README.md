@@ -10,7 +10,7 @@ We're happy that you want to help us! Below is a quick overview of how to do so.
 
 ### Providing Feedback
 
-The development team is available for feedback at our [Discord server](https://discord.gg/nmuHMQ).
+The development team is available for feedback at our [Discord server](https://tinyurl.com/joinmutorials).
 
 ### Reporting Issues / Feature Request
 
