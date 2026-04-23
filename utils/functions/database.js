@@ -12,11 +12,15 @@ function getQuestion(Ques, id) {
 }
 
 // input a rating range (as floor and ceiling values), returns a range of questions
-async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, units) {
-  const gotQ = Ques.find({
+async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, units, excludeIds = []) {
+  const query = {
     subject: [subject],
     rating: { $gte: ratingFloor, $lte: ratingCeiling },
-  });
+  };
+  if (excludeIds && excludeIds.length > 0) {
+    query._id = { $nin: excludeIds.map((id) => mongoose.Types.ObjectId(id)) };
+  }
+  const gotQ = Ques.find(query);
 
   let tempQ = await gotQ.exec();
 

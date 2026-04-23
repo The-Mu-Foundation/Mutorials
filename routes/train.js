@@ -86,6 +86,15 @@ module.exports = (app, mongo) => {
         // clear pending question
         clearQuestionQueue(req, antsy.subject[0]);
 
+        // mark as seen for the current session (prevents in-session repeats)
+        const _seenSubjectKey = antsy.subject[0].toLowerCase();
+        if (!req.session.seenQuestions) req.session.seenQuestions = {};
+        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
+        const _seenIdStr = antsy._id.toString();
+        if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
+          req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
+        }
+
         // check answer
         if (antsy.answer[0] == req.body.answerChoice) {
           isRight = true;
@@ -147,6 +156,15 @@ module.exports = (app, mongo) => {
         // clear pending question
         clearQuestionQueue(req, antsy.subject[0]);
 
+        // mark as seen for the current session (prevents in-session repeats)
+        const _seenSubjectKey = antsy.subject[0].toLowerCase();
+        if (!req.session.seenQuestions) req.session.seenQuestions = {};
+        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
+        const _seenIdStr = antsy._id.toString();
+        if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
+          req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
+        }
+
         // check answer
         isRight = arraysEqual(antsy.answer, req.body.saChoice);
 
@@ -205,6 +223,15 @@ module.exports = (app, mongo) => {
       const antsy = getQuestion(mongo.Ques, req.body.id).then(async (antsy) => {
         // clear pending question
         clearQuestionQueue(req, antsy.subject[0]);
+
+        // mark as seen for the current session (prevents in-session repeats)
+        const _seenSubjectKey = antsy.subject[0].toLowerCase();
+        if (!req.session.seenQuestions) req.session.seenQuestions = {};
+        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
+        const _seenIdStr = antsy._id.toString();
+        if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
+          req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
+        }
 
         // check answer
         for (let j = 0; j < antsy.answer.length; j++) {
@@ -490,13 +517,23 @@ module.exports = (app, mongo) => {
     res.setHeader('Expires', '0');
     // define units and attempt to get queued question
     const units = req.query.units.split(',');
+    const subjectKey = req.params.subject.toLowerCase();
+
+    // session-scoped seen-question tracker (prevents in-session repeats)
+    if (!req.session.seenQuestions) req.session.seenQuestions = {};
+    if (!req.session.seenQuestions[subjectKey]) req.session.seenQuestions[subjectKey] = [];
+    const seenIds = req.session.seenQuestions[subjectKey];
+
     let q = '';
 
-    if (req.user.stats.toAnswer[req.params.subject.toLowerCase()]) {
-      q = await getQuestion(
-        mongo.Ques,
-        req.user.stats.toAnswer[req.params.subject.toLowerCase()]
-      );
+    if (req.user.stats.toAnswer[subjectKey]) {
+      const queuedId = req.user.stats.toAnswer[subjectKey];
+      // drop the queued question silently (no rating penalty) if it was already answered this session
+      if (seenIds.includes(queuedId.toString())) {
+        clearQuestionQueue(req, subjectKey);
+      } else {
+        q = await getQuestion(mongo.Ques, queuedId);
+      }
     }
 
     // get experience stats
@@ -522,7 +559,7 @@ module.exports = (app, mongo) => {
         skipQuestionUpdates(
           mongo.Ques,
           req,
-          req.params.subject.toLowerCase(),
+          subjectKey,
           q._id
         );
       }
@@ -533,44 +570,55 @@ module.exports = (app, mongo) => {
       }
 
       let ceilingFloor = ratingCeilingFloor(
-        req.user.rating[req.params.subject.toLowerCase()]
+        req.user.rating[subjectKey]
       );
       const floor = ceilingFloor.floor;
-      const ceiling = ceilingFloor.ceiling;
+      let ceiling = ceilingFloor.ceiling;
 
       //debugging usage
       console.log(floor);
       console.log(ceiling);
-      // get question
-      getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units).then(
-        (qs) => {
-          //console.log(qs);
 
-          // select random question
-          curQ = qs[Math.floor(Math.random() * qs.length)];
-          console.log(curQ);
-          if (!curQ) {
-            req.flash(
-              'errorFlash',
-              "We couldn't find any questions for your rating in the units you selected."
-            );
-            res.redirect('/train/' + req.params.subject + '/chooseUnits');
-            return;
-          }
-          // update pending question field
-          updateQuestionQueue(req, req.params.subject, curQ._id);
-          // push to frontend
-          res.render(VIEWS + 'private/train/displayQuestion.ejs', {
-            units: units,
-            newQues: curQ,
-            subject: req.params.subject,
-            user: req.user,
-            experienceStats,
-            pageName: 'Classic Trainer',
-            referenceSheet,
-          });
-        }
-      );
+      // retry-and-widen: push ceiling up (floor stays) until unseen questions appear
+      const STEP = 200;
+      const MAX_ITERATIONS = 5;
+      let qs = [];
+      for (let i = 0; i < MAX_ITERATIONS; i++) {
+        qs = await getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units, seenIds);
+        if (qs.length > 0) break;
+        ceiling += STEP;
+        console.log('no unseen questions; expanding ceiling to', ceiling);
+      }
+
+      // fallback: user has exhausted the unseen pool — allow a repeat rather than erroring
+      if (qs.length === 0) {
+        console.log('seen-filtered pool exhausted, falling back to full pool');
+        qs = await getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units);
+      }
+
+      // select random question
+      curQ = qs[Math.floor(Math.random() * qs.length)];
+      console.log(curQ);
+      if (!curQ) {
+        req.flash(
+          'errorFlash',
+          "We couldn't find any questions for your rating in the units you selected."
+        );
+        res.redirect('/train/' + req.params.subject + '/chooseUnits');
+        return;
+      }
+      // update pending question field
+      updateQuestionQueue(req, req.params.subject, curQ._id);
+      // push to frontend
+      res.render(VIEWS + 'private/train/displayQuestion.ejs', {
+        units: units,
+        newQues: curQ,
+        subject: req.params.subject,
+        user: req.user,
+        experienceStats,
+        pageName: 'Classic Trainer',
+        referenceSheet,
+      });
     }
   });
 
