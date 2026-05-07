@@ -126,7 +126,7 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/stats/:username', (req, res) => {
+  app.get('/stats/:username', expressLayouts, (req, res) => {
     mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
       if (obj) {
         if (
@@ -147,12 +147,13 @@ module.exports = (app, mongo) => {
                 obj.stats.units ? obj.stats.units : {}
               );
 
-              res.render(VIEWS + 'private/stats.ejs', {
+              res.render(VIEWS + 'private/statsV2.ejs', {
                 user: obj,
                 totalTags: tags,
                 userLevel,
                 analytics,
                 pageName: obj.ign + "'s Stats",
+                layout: 'layouts/base.ejs',
               });
             } else {
               req.flash(
@@ -168,12 +169,13 @@ module.exports = (app, mongo) => {
           );
           let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
 
-          res.render(VIEWS + 'private/stats.ejs', {
+          res.render(VIEWS + 'private/statsV2.ejs', {
             user: obj,
             totalTags: tags,
             userLevel,
             analytics,
             pageName: obj.ign + "'s Stats",
+            layout: 'layouts/base.ejs',
           });
         }
       } else {
