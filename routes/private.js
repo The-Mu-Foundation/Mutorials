@@ -14,6 +14,8 @@ const {
 const { tags } = require('../utils/constants/tags.js');
 const mongoose = require('mongoose');
 
+const expressLayouts = require('express-ejs-layouts');
+
 const VIEWS = __dirname + '/../views/';
 
 module.exports = (app, mongo) => {
@@ -40,12 +42,12 @@ module.exports = (app, mongo) => {
     });
   });
 
-  app.get('/homepage', async (req, res) => {
+  app.get('/homepage', expressLayouts, async (req, res) => {
     let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
     let experienceStats = await calculateLevel(req.user.stats.experience);
     const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
     let announcements = await getAnnouncements(mongo.SiteData, 3);
-    res.render(VIEWS + 'private/homepage.ejs', {
+    res.render(VIEWS + 'private/homepageV2.ejs', {
       user: req.user,
       siteStats: siteData,
       admin: adminList.includes(req.user.username),
@@ -53,6 +55,8 @@ module.exports = (app, mongo) => {
       question,
       announcements,
       subjectTags: tags,
+      pageName: 'Homepage',
+      layout: 'layouts/base.ejs',
     });
   });
 
