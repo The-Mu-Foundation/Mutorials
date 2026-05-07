@@ -24,11 +24,12 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/leaderboard', async (req, res) => {
+  app.get('/leaderboard', expressLayouts, async (req, res) => {
     const leaderboard = await generateLeaderboard(mongo.User, 10);
-    res.render(VIEWS + 'private/leaderboard.ejs', {
+    res.render(VIEWS + 'private/leaderboardV2.ejs', {
       rankings: leaderboard,
       pageName: 'Leaderboard',
+      layout: 'layouts/base.ejs',
     });
   });
 
