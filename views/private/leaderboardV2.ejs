@@ -1,0 +1,138 @@
+<%
+  const rankBg = (r) => {
+    if (r === 1) return 'bg-sky-500 text-white';
+    if (r === 2) return 'bg-yellow-400';
+    if (r === 3) return 'bg-red-500 text-white';
+    return 'bg-green-500 text-white';
+  };
+  const medalSrc = (r) => {
+    if (r === 1) return 'https://cdn.mutorials.org/images/icons/Leaderboard_First.svg';
+    if (r === 2) return 'https://cdn.mutorials.org/images/icons/Leaderboard_Second.svg';
+    if (r === 3) return 'https://cdn.mutorials.org/images/icons/Leaderboard_Third.svg';
+    return null;
+  };
+  const truncate = (s, n) => s.length <= n ? s : s.substring(0, n - 3) + '...';
+%>
+
+<%- contentFor('main') %>
+<div class="flex flex-col items-center w-full max-w-6xl px-6 py-8 gap-10">
+
+  <h1 class="text-4xl sm:text-5xl text-center">Rating Leaderboard</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 w-full">
+    <% [
+      ['Physics',   rankings.physics, (u) => u.rating.physics],
+      ['Chemistry', rankings.chem,    (u) => u.rating.chemistry],
+      ['Biology',   rankings.bio,     (u) => u.rating.biology],
+      ['USABO',     rankings.usabo,   (u) => u.rating.usabo],
+    ].forEach(([title, list, getValue]) => { %>
+      <div class="p-4 rounded-xl border-2">
+        <h3 class="text-center mb-3"><%= title %></h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-center">
+            <thead class="bg-neutral-100">
+              <tr>
+                <th>Rank</th>
+                <th>Username</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% let rank = 1; %>
+              <% list.forEach((user) => { %>
+                <tr class="<%= rankBg(rank) %>">
+                  <th scope="row">
+                    <% const medal = medalSrc(rank); %>
+                    <% if (medal) { %>
+                      <img src="<%= medal %>" width="25" height="25" class="inline-block align-top" alt="">
+                    <% } else { %>
+                      <%= rank %>
+                    <% } %>
+                  </th>
+                  <td><a class="no-underline hover:underline" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 15) %></a></td>
+                  <td><%= getValue(user) %></td>
+                </tr>
+                <% rank++; %>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <h1 class="text-4xl sm:text-5xl text-center mt-6">Problem Rush Leaderboard</h1>
+
+  <div class="w-full lg:max-w-3xl mx-auto p-4 rounded-xl border-2">
+    <h3 class="text-center mb-3">Highest Rush Scores</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-center">
+        <thead class="bg-neutral-100">
+          <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>High Score</th>
+            <th>Attempts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let rankRush = 1; %>
+          <% rankings.rush.forEach((user) => { %>
+            <tr class="<%= rankBg(rankRush) %>">
+              <th scope="row">
+                <% const medal = medalSrc(rankRush); %>
+                <% if (medal) { %>
+                  <img src="<%= medal %>" width="25" height="25" class="inline-block align-top" alt="">
+                <% } else { %>
+                  <%= rankRush %>
+                <% } %>
+              </th>
+              <td><a class="no-underline hover:underline" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 33) %></a></td>
+              <td><%= user.stats.rush.highscore %></td>
+              <td><%= user.stats.rush.attempts %></td>
+            </tr>
+            <% rankRush++; %>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h1 class="text-4xl sm:text-5xl text-center mt-6">Experience Leaderboard</h1>
+
+  <div class="w-full lg:max-w-3xl mx-auto p-4 rounded-xl border-2">
+    <h3 class="text-center mb-3">Highest Level Mutorials Users</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-center">
+        <thead class="bg-neutral-100">
+          <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Level</th>
+            <th>Experience</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let rankExp = 1; %>
+          <% rankings.experience.forEach((user) => { %>
+            <tr class="<%= rankBg(rankExp) %>">
+              <th scope="row">
+                <% const medal = medalSrc(rankExp); %>
+                <% if (medal) { %>
+                  <img src="<%= medal %>" width="25" height="25" class="inline-block align-top" alt="">
+                <% } else { %>
+                  <%= rankExp %>
+                <% } %>
+              </th>
+              <td><a class="no-underline hover:underline" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 33) %></a></td>
+              <td><%= user.level.level %></td>
+              <td><%= Math.round(user.experience) %></td>
+            </tr>
+            <% rankExp++; %>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
