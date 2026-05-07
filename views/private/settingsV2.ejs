@@ -1,0 +1,175 @@
+<%- contentFor('main') %>
+<div
+  class="flex flex-col items-stretch w-full max-w-3xl px-6 py-8 gap-6"
+  x-data="{ unsaved: false, showDeleteConfirm: false, showPwReq: false }"
+>
+  <h1 class="text-4xl sm:text-5xl">Settings</h1>
+
+  <div
+    x-show="unsaved"
+    x-cloak
+    x-transition
+    class="px-4 py-2 rounded border-2 border-orange-300 bg-orange-50 text-orange-900"
+  >
+    Careful! You have unsaved changes!
+  </div>
+
+  <%# Profile %>
+  <form action="/changeProfile" method="POST" class="p-6 rounded-xl border-2 flex flex-col gap-4">
+    <h3 class="text-xl font-medium">Profile</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="name" class="sm:col-span-3 font-medium">Name</label>
+      <input
+        type="text" id="name" name="name"
+        class="sm:col-span-9"
+        value="<%= user.profile.name %>" placeholder="Enter your name here"
+        @input="unsaved = true"
+      >
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="bio" class="sm:col-span-3 font-medium">Bio</label>
+      <input
+        type="text" id="bio" name="bio"
+        class="sm:col-span-9"
+        value="<%= user.profile.bio %>" placeholder="Introduce yourself!"
+        @input="unsaved = true"
+      >
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="location" class="sm:col-span-3 font-medium">Location</label>
+      <input
+        type="text" id="location" name="location"
+        class="sm:col-span-9"
+        value="<%= user.profile.location %>" placeholder="Where do you live?"
+        @input="unsaved = true"
+      >
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="yob" class="sm:col-span-3 font-medium">Year of Birth</label>
+      <input
+        type="number" id="yob" name="yob"
+        class="sm:col-span-9"
+        value="<%= user.profile.yob %>" placeholder="Enter your year of birth here"
+        @input="unsaved = true"
+      >
+    </div>
+
+    <input class="btn btn-primary self-start" type="submit" value="Update Profile">
+  </form>
+
+  <%# Personalization %>
+  <form action="/changePreferences" method="POST" class="p-6 rounded-xl border-2 flex flex-col gap-4">
+    <h3 class="text-xl font-medium">Personalization</h3>
+
+    <label class="flex items-center gap-2">
+      <input type="checkbox" id="darkMode" name="darkMode" <% if (locals.darkMode) { %>checked<% } %>>
+      <span>Dark Mode</span>
+    </label>
+    <label class="flex items-center gap-2">
+      <input type="checkbox" id="hideProfile" name="hideProfile" <% if (user.preferences.hideProfile) { %>checked<% } %>>
+      <span>Hide Public Profile and Stats</span>
+    </label>
+
+    <input class="btn btn-primary self-start" type="submit" value="Update Preferences">
+  </form>
+
+  <%# Account %>
+  <form action="/changeSettings" method="POST" class="p-6 rounded-xl border-2 flex flex-col gap-4">
+    <h3 class="text-xl font-medium">Account</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="ign" class="sm:col-span-3 font-medium">Username</label>
+      <input
+        type="text" id="ign" name="ign"
+        class="sm:col-span-9"
+        value="<%= user.ign %>" placeholder="Change your username"
+        @input="unsaved = true"
+      >
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="username" class="sm:col-span-3 font-medium">Email</label>
+      <input
+        type="text" id="username" name="username"
+        class="sm:col-span-9"
+        value="<%= user.username %>" placeholder="Change your linked email"
+        @input="unsaved = true"
+      >
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="plassword" class="sm:col-span-3 font-medium">Change Password</label>
+      <input
+        type="password" id="plassword" name="plassword"
+        class="sm:col-span-9"
+        placeholder="Current password"
+      >
+      <div class="hidden sm:block sm:col-span-3"></div>
+      <input
+        type="password" id="newpw" name="newpw"
+        class="sm:col-span-9"
+        placeholder="New password"
+        @focus="showPwReq = true"
+        @blur="setTimeout(() => showPwReq = false, 1000)"
+      >
+      <div class="hidden sm:block sm:col-span-3"></div>
+      <input
+        type="password" id="password" name="confirmnewpw"
+        class="sm:col-span-9"
+        placeholder="Confirm new password"
+      >
+      <p
+        x-show="showPwReq"
+        x-cloak
+        x-transition
+        class="sm:col-span-12 text-sm"
+      >
+        A valid password must have a minimum of <strong>7 characters</strong> which includes at least <strong>1 letter</strong> and at least <strong>1 number</strong>.
+      </p>
+    </div>
+
+    <input class="btn btn-primary self-start" type="submit" value="Update Account">
+  </form>
+
+  <%# Delete Account %>
+  <form id="delete-account-form" action="/deleteAccount" method="POST" class="p-6 rounded-xl border-2 flex flex-col gap-4">
+    <h3 class="text-xl font-medium">Delete Account</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-12 sm:items-center gap-2">
+      <label for="delassword" class="sm:col-span-3 font-medium">Password</label>
+      <input
+        type="password" id="delassword" name="delassword"
+        class="sm:col-span-9"
+        placeholder="Current password"
+      >
+    </div>
+
+    <button
+      type="button"
+      class="btn bg-red-600 hover:bg-red-700 text-white self-start"
+      @click="showDeleteConfirm = true"
+    >Delete Account</button>
+  </form>
+
+  <%# Confirm-delete modal %>
+  <div
+    x-show="showDeleteConfirm"
+    x-cloak
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    @click.self="showDeleteConfirm = false"
+    @keydown.escape.window="showDeleteConfirm = false"
+  >
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full mx-4 overflow-hidden">
+      <div class="px-6 py-4 border-b font-medium">Confirm Delete Account</div>
+      <div class="px-6 py-4">Are you sure you want to delete your account?</div>
+      <div class="px-6 py-4 border-t flex justify-end gap-2">
+        <button type="button" class="btn btn-outline" @click="showDeleteConfirm = false">Cancel</button>
+        <button
+          type="button"
+          class="btn bg-red-600 hover:bg-red-700 text-white"
+          @click="document.getElementById('delete-account-form').submit()"
+        >Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

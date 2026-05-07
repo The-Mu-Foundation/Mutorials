@@ -2,6 +2,8 @@
 const { genPassword, validPassword } = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
 
+const expressLayouts = require('express-ejs-layouts');
+
 const VIEWS = __dirname + '/../views/';
 
 module.exports = (app, mongo) => {
@@ -286,10 +288,11 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/settings', (req, res) => {
-    res.render(VIEWS + 'private/settings.ejs', {
+  app.get('/settings', expressLayouts, (req, res) => {
+    res.render(VIEWS + 'private/settingsV2.ejs', {
       user: req.user,
       pageName: 'Settings',
+      layout: 'layouts/base.ejs',
     });
   });
 };
