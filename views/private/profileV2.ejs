@@ -1,0 +1,210 @@
+<%- contentFor('head') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script>
+  window.addEventListener('load', function () {
+    Chart.pluginService.register({
+      beforeDraw: function (chart) {
+        if (chart.config.options.correctwrongPlugin) {
+          var width = chart.chart.width;
+          var height = chart.chart.height;
+          var ctx = chart.chart.ctx;
+          ctx.restore();
+          ctx.font = '1em sans-serif';
+          ctx.fillStyle = '#8d0f0f';
+          var text = 'Wrong: <%= Math.round(100*(user.stats.wrong)/(user.stats.correct+user.stats.wrong)) %>%';
+          var textX = Math.round((width - ctx.measureText(text).width) / 2);
+          var textY = (height / 2) + 35;
+          ctx.fillText(text, textX, textY);
+          ctx.fillStyle = '#208d0f';
+          text = 'Correct: <%= Math.round(100*(user.stats.correct)/(user.stats.correct+user.stats.wrong)) %>%';
+          textX = Math.round((width - ctx.measureText(text).width) / 2);
+          textY -= 35;
+          ctx.fillText(text, textX, textY);
+          ctx.save();
+        }
+      }
+    });
+
+    var ctxPassrate = document.getElementById('correctWrongChart');
+    new Chart(ctxPassrate, {
+      type: 'pie',
+      data: {
+        labels: ['Correct', 'Wrong'],
+        datasets: [{
+          label: 'User Correct/Wrong Counts',
+          data: [$('#correctcount').val(), $('#wrongcount').val()],
+          backgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
+          hoverBackgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
+          borderColor: ['rgba(255, 255, 255, 0.5)', 'rgba(255, 255, 255, 0.5)'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        correctwrongPlugin: true,
+        title: { display: true, text: 'User Correct/Wrong Counts' },
+        legend: { display: false },
+        cutoutPercentage: 60,
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+
+    let ratingData = { Physics: [], Chemistry: [], Biology: [], Labels: [] };
+    ['Physics', 'Chemistry', 'Biology'].forEach((subject) => {
+      let tracker = $('#ratingTrackerArray-' + subject).val().split('@');
+      if (tracker.length < 2) tracker.unshift(tracker[0]);
+      ratingData[subject] = tracker;
+    });
+    const labelLength = Math.max(ratingData.Physics.length, ratingData.Chemistry.length, ratingData.Biology.length);
+    let labels = ratingData.Labels;
+    for (let i = labelLength; i > 0; i--) labels.push(i + ' Ago');
+    labels.push('');
+    ratingData.Labels = labels;
+
+    var ctxTracker = document.getElementById('ratingTrackerChart');
+    new Chart(ctxTracker, {
+      type: 'line',
+      data: {
+        labels: ratingData.Labels,
+        datasets: [
+          { label: 'Physics',   data: ratingData.Physics,   backgroundColor: 'rgba(100, 200, 230, 1)', borderColor: 'rgba(100, 200, 230, 1)', fill: false, borderWidth: 4 },
+          { label: 'Chemistry', data: ratingData.Chemistry, backgroundColor: 'rgba(245, 170,  40, 1)', borderColor: 'rgba(245, 170,  40, 1)', fill: false, borderWidth: 4 },
+          { label: 'Biology',   data: ratingData.Biology,   backgroundColor: 'rgba( 40, 240, 110, 1)', borderColor: 'rgba( 40, 240, 110, 1)', fill: false, borderWidth: 4 },
+        ]
+      },
+      options: {
+        title: { display: true, text: 'Rating History' },
+        legend: { display: true, position: 'bottom' },
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: Math.round((Math.min(Math.min.apply(null, ratingData.Physics), Math.min.apply(null, ratingData.Chemistry), Math.min.apply(null, ratingData.Biology)) - 50) / 50) * 50,
+              max: Math.round((Math.max(Math.max.apply(null, ratingData.Physics), Math.max.apply(null, ratingData.Chemistry), Math.max.apply(null, ratingData.Biology)) + 50) / 50) * 50,
+              stepSize: 50,
+            }
+          }],
+          xAxes: [{ ticks: { display: false } }]
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+  });
+</script>
+
+<%- contentFor('main') %>
+<div class="flex flex-col items-center w-full max-w-4xl px-6 py-8 gap-6">
+
+  <h1 class="text-4xl sm:text-5xl text-center"><strong><%= user.ign %></strong></h1>
+
+  <%# Experience bar %>
+  <% try { %>
+    <% const xp = experienceStats; %>
+    <div class="w-full">
+      <div class="w-full h-5 rounded-full bg-neutral-100 overflow-hidden">
+        <div class="h-full bg-green-500 transition-all" style="width: <%= Math.round(100 * xp.remainder / xp.totalToNext) %>%"></div>
+      </div>
+      <p class="text-center mt-2 text-sm">
+        <strong>Level <%= xp.level %></strong>
+        (<%= xp.remainder %>/<%= xp.totalToNext %> XP to Level <%= xp.level + 1 %>)
+      </p>
+    </div>
+  <% } catch (err) { %>
+    <p class="text-center text-red-600">[Experience bar unavailable]</p>
+  <% } %>
+
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
+
+    <%# Profile info card %>
+    <div class="md:col-span-4 p-6 rounded-xl border-2 flex flex-col gap-3">
+      <h3 class="text-xl font-medium">
+        <%= user.profile.name
+              ? (user.profile.name.length <= 18 ? user.profile.name : user.profile.name.substring(0, 15) + '...')
+              : (user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15) + '...') %>
+      </h3>
+      <hr class="border-neutral-200">
+      <p><%= user.profile.yob ? 'Age: ' + age : '' %></p>
+      <hr class="border-neutral-200">
+      <p><%= user.profile.location ? 'Location: ' + user.profile.location : 'Lives within 8000 miles of Antartica' %></p>
+      <hr class="border-neutral-200">
+      <p><%= user.profile.bio ? user.profile.bio : 'This is a very mysterious person who likes pink butterflies and blue cows. Mu!' %></p>
+      <hr class="border-neutral-200">
+
+      <div>
+        <h4 class="font-medium mb-2">Achievements:</h4>
+        <% let achievementCount = 0; %>
+        <% for (const achievement in allAchievements) { %>
+          <% if (user.achievements[achievement]) { %>
+            <p><%= allAchievements[achievement].name %></p>
+            <% achievementCount++; %>
+          <% } %>
+        <% } %>
+        <% if (achievementCount === 0) { %>
+          <p>None (yet)</p>
+        <% } %>
+      </div>
+    </div>
+
+    <%# Charts + tags %>
+    <div class="md:col-span-8 p-6 rounded-xl border-2 flex flex-col gap-6">
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-7 w-full" style="height: 320px;">
+          <canvas id="ratingTrackerChart"></canvas>
+        </div>
+        <div class="lg:col-span-5 w-full flex flex-col items-center">
+          <div class="w-full" style="height: 280px;">
+            <canvas id="correctWrongChart"></canvas>
+          </div>
+          <p class="text-center mt-2"><a class="prose" target="_blank" href="/stats/<%= user.ign %>">See full stats</a></p>
+        </div>
+      </div>
+
+      <input type="hidden" id="ratingTrackerArray-Physics"   value="<%= user.stats.ratingTracker.physics.join('@') %>">
+      <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
+      <input type="hidden" id="ratingTrackerArray-Biology"   value="<%= user.stats.ratingTracker.biology.join('@') %>">
+      <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
+      <input type="hidden" id="wrongcount"   value="<%= user.stats.wrong %>">
+
+      <hr class="border-neutral-200">
+
+      <h2 class="text-center">
+        Problem Rush High Score:
+        <span class="text-green-600"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></span>
+      </h2>
+
+      <hr class="border-neutral-200">
+
+      <div>
+        <h3 class="text-center mb-4">Collected Tags</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <% ['Physics', 'Chemistry', 'Biology'].forEach((subject) => { %>
+            <div>
+              <h4 class="text-center mb-3"><%= subject %></h4>
+              <div class="flex flex-wrap gap-2 justify-center">
+                <% let counter = 0; %>
+                <% user.stats.collectedTags.forEach((tag) => { %>
+                  <% if (Object.keys(totalTags[subject]['Units']).includes(tag)) { %>
+                    <button class="btn btn-primary text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
+                    <% counter++; %>
+                  <% } else if (Object.keys(totalTags[subject]['Concepts']).includes(tag)) { %>
+                    <button class="btn bg-cyan-500 hover:bg-cyan-500 text-white text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
+                    <% counter++; %>
+                  <% } %>
+                <% }) %>
+              </div>
+              <% const totalForSubject = Object.keys(totalTags[subject]['Units']).length + Object.keys(totalTags[subject]['Concepts']).length %>
+              <% if (counter === 0) { %>
+                <p class="text-center mt-3">0 out of <%= totalForSubject %> possible tags</p>
+              <% } else { %>
+                <p class="text-center mt-3"><%= counter %>/<%= totalForSubject %> tags in this subject have been collected</p>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
