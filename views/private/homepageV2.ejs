@@ -1,0 +1,238 @@
+<%- contentFor('head') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script>
+  $(document).ready(function () {
+    let ratingData = {
+      Physics: [], Chemistry: [], Biology: [], ESS: [], USABO: [], Labels: []
+    };
+
+    ['Physics', 'Chemistry', 'Biology', 'ESS', 'USABO'].forEach((subject) => {
+      let tracker = $('#ratingTrackerArray-' + subject).val().split('@');
+      if (tracker.length < 2) tracker.unshift(tracker[0]);
+      ratingData[subject] = tracker;
+    });
+
+    const labelLength = Math.max(
+      ratingData.Physics.length, ratingData.Chemistry.length,
+      ratingData.Biology.length, ratingData.ESS.length, ratingData.USABO.length
+    );
+    let labels = ratingData.Labels;
+    for (let i = labelLength; i > 0; i--) labels.push(i + ' Ago');
+    labels.push('');
+    ratingData.Labels = labels;
+
+    const ctxTracker = document.getElementById('ratingTrackerChart');
+    new Chart(ctxTracker, {
+      type: 'line',
+      data: {
+        labels: ratingData.Labels,
+        datasets: [
+          { label: 'Physics',   data: ratingData.Physics,   backgroundColor: 'rgba(100, 200, 230, 1)', borderColor: 'rgba(100, 200, 230, 1)', fill: false, borderWidth: 4 },
+          { label: 'Chemistry', data: ratingData.Chemistry, backgroundColor: 'rgba(245, 170,  40, 1)', borderColor: 'rgba(245, 170,  40, 1)', fill: false, borderWidth: 4 },
+          { label: 'Biology',   data: ratingData.Biology,   backgroundColor: 'rgba( 40, 240, 110, 1)', borderColor: 'rgba( 40, 240, 110, 1)', fill: false, borderWidth: 4 },
+          { label: 'ESS',       data: ratingData.ESS,       backgroundColor: 'rgba(184, 150, 191, 1)', borderColor: 'rgba(184, 150, 191, 1)', fill: false, borderWidth: 4 },
+          { label: 'USABO',     data: ratingData.USABO,     backgroundColor: 'rgba(113,  16,   1, 1)', borderColor: 'rgba(113,  16,   1, 1)', fill: false, borderWidth: 4 },
+        ],
+      },
+      options: {
+        title: { display: true, text: 'Rating History' },
+        legend: { display: true, position: 'bottom' },
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: Math.round((Math.min(Math.min.apply(null, ratingData.Physics), Math.min.apply(null, ratingData.Chemistry), Math.min.apply(null, ratingData.Biology), Math.min.apply(null, ratingData.ESS), Math.min.apply(null, ratingData.USABO)) - 50) / 50) * 50,
+              max: Math.round((Math.max(Math.max.apply(null, ratingData.Physics), Math.max.apply(null, ratingData.Chemistry), Math.max.apply(null, ratingData.Biology), Math.max.apply(null, ratingData.ESS), Math.max.apply(null, ratingData.USABO)) + 50) / 50) * 50,
+              stepSize: 50,
+            }
+          }],
+          xAxes: [{ ticks: { display: false } }]
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+  });
+</script>
+
+<%- contentFor('main') %>
+<div class="flex flex-col items-center w-full max-w-4xl px-6 py-8 gap-8">
+
+  <%# Welcome %>
+  <div class="flex flex-col items-center w-full">
+    <h1 class="text-4xl sm:text-5xl text-center mb-2">Welcome, <%= user.ign %></h1>
+    <% if (admin) { %>
+      <a class="btn btn-primary mt-4" href="/admin/adminHomepage">Admin Dashboard</a>
+    <% } %>
+  </div>
+
+  <%# Experience bar %>
+  <% try { %>
+    <% const xp = experienceStats; %>
+    <div class="w-full">
+      <div class="w-full h-5 rounded-full bg-neutral-100 overflow-hidden">
+        <div class="h-full bg-green-500 transition-all" style="width: <%= Math.round(100 * xp.remainder / xp.totalToNext) %>%"></div>
+      </div>
+      <p class="text-center mt-2 text-sm">
+        <strong>Level <%= xp.level %></strong>
+        (<%= xp.remainder %>/<%= xp.totalToNext %> XP to Level <%= xp.level + 1 %>)
+      </p>
+    </div>
+  <% } catch (err) { %>
+    <p class="text-center text-red-600">[Experience bar unavailable]</p>
+  <% } %>
+
+  <%# Contributor controls %>
+  <% if (user.contributor) { %>
+    <div class="flex flex-col items-stretch gap-2 w-full p-6 rounded-xl border-2">
+      <h3 class="text-center mb-2">CONTRIBUTORS: <span class="text-blue-600"><%= user.contributor %></span></h3>
+      <a class="btn btn-primary" href="/contributors/addQuestion">Write Question</a>
+      <a class="btn btn-primary" href="/contributors/addUSABOQuestion">Write a USABO Question</a>
+      <% if (user.reviewer) { %>
+        <a class="btn btn-primary" href="/reviewer/reviewQuestions">Review Questions</a>
+      <% } %>
+      <a class="btn btn-outline" href="/contributors/stats">View My Contribution Stats</a>
+    </div>
+  <% } %>
+
+  <%# Ratings + Training modes %>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
+
+    <%# Ratings + chart %>
+    <div class="lg:col-span-5 flex flex-col gap-3">
+      <% [
+        ['Physics', user.rating.physics],
+        ['Chemistry', user.rating.chemistry],
+        ['Biology', user.rating.biology],
+        ['ESS', user.rating.ess],
+        ['USABO', user.rating.usabo],
+      ].forEach(([subject, rating]) => { %>
+        <h2 class="text-center text-2xl">
+          <%= subject %>:
+          <span class="inline-block px-3 py-1 ml-1 rounded-full bg-blue-500 text-white text-base align-middle">
+            <% if (rating > 0) { %>
+              <%= Math.max(rating, 0) %>
+            <% } else { %>
+              No rating
+            <% } %>
+          </span>
+        </h2>
+      <% }) %>
+
+      <div class="w-full mt-4" style="height: 320px;">
+        <canvas id="ratingTrackerChart"></canvas>
+      </div>
+      <input type="hidden" id="ratingTrackerArray-Physics" value="<%= user.stats.ratingTracker.physics.join('@') %>">
+      <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
+      <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
+      <input type="hidden" id="ratingTrackerArray-ESS" value="<%= user.stats.ratingTracker.ess.join('@') %>">
+      <input type="hidden" id="ratingTrackerArray-USABO" value="<%= user.stats.ratingTracker.usabo.join('@') %>">
+    </div>
+
+    <%# Training modes + subjects %>
+    <div class="lg:col-span-7 flex flex-col gap-6">
+      <div>
+        <h2 class="text-center text-2xl mb-3" id="training-modes-text">Training Modes</h2>
+        <div class="grid grid-cols-3 gap-3">
+          <a href="/train/chooseSubject" class="block opacity-80 hover:opacity-100 transition" title="Classic">
+            <img class="w-full rounded-lg" src="Train_Classic.svg" alt="Classic icon">
+          </a>
+          <a href="/train/rush" class="block opacity-80 hover:opacity-100 transition" title="Rush">
+            <img class="w-full rounded-lg" src="Train_Rush.svg" alt="Rush icon">
+          </a>
+          <a href="/train/daily" class="block opacity-80 hover:opacity-100 transition" title="Daily">
+            <img class="w-full rounded-lg" src="Train_Daily.svg" alt="Daily icon">
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-center text-2xl mb-3" id="classic-subjects-text">Classic Subjects</h2>
+        <div class="grid grid-cols-3 gap-3">
+          <a href="/train/Physics/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="Physics">
+            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/Physics_Main.png" alt="Physics icon">
+          </a>
+          <a href="/train/Chemistry/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="Chemistry">
+            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/Chem_Main.png" alt="Chemistry icon">
+          </a>
+          <a href="/train/Biology/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="Biology">
+            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/Bio_Main.png" alt="Biology icon">
+          </a>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mt-3">
+          <div></div>
+          <a href="/train/ESS/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="ESS">
+            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/ESS_Main.png" alt="ESS icon">
+          </a>
+          <div></div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-center text-2xl mb-3">Train for USABO!</h2>
+        <div class="grid grid-cols-3 gap-3">
+          <div></div>
+          <a href="/usaboHomepage" class="block opacity-80 hover:opacity-100 transition" title="USABO">
+            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/USABO_Main.png" alt="USABO icon">
+          </a>
+          <div></div>
+        </div>
+      </div>
+
+      <a class="btn btn-primary w-full" href="/train">Train Now!</a>
+    </div>
+  </div>
+
+  <%# Site stats %>
+  <% try { %>
+    <% const stats = siteStats; %>
+    <div class="grid grid-cols-3 gap-4 w-full mt-4">
+      <div class="flex flex-col items-center">
+        <h1 class="font-extrabold text-blue-500"><%= stats.questionCount %></h1>
+        <p class="text-center">Questions in Database</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <h1 class="font-extrabold text-blue-500"><%= stats.tagCount %></h1>
+        <p class="text-center">Question Tags</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <h1 class="font-extrabold text-blue-500"><%= stats.totalSolves.physics + stats.totalSolves.chemistry + stats.totalSolves.biology %></h1>
+        <p class="text-center">Total Solves</p>
+      </div>
+    </div>
+  <% } catch (err) { %>
+    <p class="text-center text-red-600">[Site stats unavailable]</p>
+  <% } %>
+
+  <%# Daily question + announcements %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+    <div class="p-6 rounded-xl border-2">
+      <%- include('../partials/components/dailySnippetV2.ejs') %>
+    </div>
+
+    <div class="p-6 rounded-xl border-2 flex flex-col">
+      <h2 class="text-center mb-4">Latest Announcements</h2>
+      <% try { %>
+        <% announcements.forEach((announcement) => { %>
+          <div class="mb-4">
+            <h3 class="text-lg mb-1"><%= announcement.title %></h3>
+            <p class="text-sm text-neutral-500 mb-1">Posted <%= announcement.date.split('T')[0] %></p>
+            <p class="text-sm"><%- announcement.text %></p>
+          </div>
+        <% }) %>
+        <p class="text-center mt-auto"><a class="prose" href="/announcements">See more announcements</a></p>
+      <% } catch (err) { %>
+        <p class="text-center text-red-600">[Announcements unavailable]</p>
+      <% } %>
+    </div>
+  </div>
+
+  <%# Social links %>
+  <div class="flex items-center justify-center gap-6 text-2xl mt-4">
+    <a href="https://instagram.com/mutorials_/" target="_blank" rel="noopener" class="hover:text-pink-600 transition" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://discord.com/invite/ccbZu4q" target="_blank" rel="noopener" class="hover:text-indigo-600 transition" aria-label="Discord"><i class="fab fa-discord"></i></a>
+    <a href="https://www.youtube.com/channel/UCb2kCg0v44GJm2Xc8dzHvsA" target="_blank" rel="noopener" class="hover:text-red-600 transition" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+    <a href="https://github.com/The-Mu-Foundation/Mutorials/" target="_blank" rel="noopener" class="hover:text-neutral-700 transition" aria-label="GitHub"><i class="fab fa-github"></i></a>
+  </div>
+
+</div>

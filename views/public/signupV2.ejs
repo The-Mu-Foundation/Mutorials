@@ -12,6 +12,7 @@
         class="form-control"
         id="ign" name="ign"
         autocomplete="username"
+        value="<%= formData ? formData.ign : '' %>"
         required="true"
       >
       <p class="text-sm" id="username-characters">You may use only <strong>letters</strong>, <strong>numbers</strong>, underscore (_), hyphen (-), period (.), and tilde (~).</p>
@@ -23,6 +24,7 @@
         class="form-control"
         id="signupEmail"
         name="username"
+        value="<%= formData ? formData.username : '' %>"
         required="true"
       >
     </div>
@@ -56,6 +58,7 @@
         class="form-control"
         id="yob"
         name="yob"
+        value="<%= formData ? formData.yob : '' %>"
         required="true"
       >
     </div>
@@ -68,7 +71,8 @@
             type="checkbox"
             id="agreeTOS"
             name="agreeTOS"
-            required="true">
+            required="true"
+            <%= formData && formData.agreeTOS ? 'checked' : '' %>>
         </div>
         <label for="agreeTOS">I have read and agreed to the <a href='/termsOfService#terms-of-service'>Terms of Service</a>.</label><br>
       </div>

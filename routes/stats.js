@@ -7,6 +7,8 @@ const { tags } = require('../utils/constants/tags');
 const { achievementDescriptions } = require('../utils/constants/achievements');
 const { generateLeaderboard } = require('../utils/functions/database');
 
+const expressLayouts = require('express-ejs-layouts');
+
 const VIEWS = __dirname + '/../views/';
 
 module.exports = (app, mongo) => {
@@ -22,11 +24,12 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/leaderboard', async (req, res) => {
+  app.get('/leaderboard', expressLayouts, async (req, res) => {
     const leaderboard = await generateLeaderboard(mongo.User, 10);
-    res.render(VIEWS + 'private/leaderboard.ejs', {
+    res.render(VIEWS + 'private/leaderboardV2.ejs', {
       rankings: leaderboard,
       pageName: 'Leaderboard',
+      layout: 'layouts/base.ejs',
     });
   });
 
@@ -34,7 +37,7 @@ module.exports = (app, mongo) => {
     res.redirect('/profile/' + req.user.ign);
   });
 
-  app.get('/profile/:username', (req, res) => {
+  app.get('/profile/:username', expressLayouts, (req, res) => {
     mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
       if (obj) {
         if (
@@ -51,13 +54,14 @@ module.exports = (app, mongo) => {
           const experienceStats = await calculateLevel(
             obj.stats.experience ? obj.stats.experience : 0
           );
-          res.render(VIEWS + 'private/profile.ejs', {
+          res.render(VIEWS + 'private/profileV2.ejs', {
             age: thisAge,
             user: obj,
             totalTags: tags,
             pageName: obj.ign + "'s Profile",
             experienceStats,
             allAchievements: achievementDescriptions,
+            layout: 'layouts/base.ejs',
           });
         }
       } else {
@@ -122,7 +126,7 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/stats/:username', (req, res) => {
+  app.get('/stats/:username', expressLayouts, (req, res) => {
     mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
       if (obj) {
         if (
@@ -143,12 +147,13 @@ module.exports = (app, mongo) => {
                 obj.stats.units ? obj.stats.units : {}
               );
 
-              res.render(VIEWS + 'private/stats.ejs', {
+              res.render(VIEWS + 'private/statsV2.ejs', {
                 user: obj,
                 totalTags: tags,
                 userLevel,
                 analytics,
                 pageName: obj.ign + "'s Stats",
+                layout: 'layouts/base.ejs',
               });
             } else {
               req.flash(
@@ -164,12 +169,13 @@ module.exports = (app, mongo) => {
           );
           let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
 
-          res.render(VIEWS + 'private/stats.ejs', {
+          res.render(VIEWS + 'private/statsV2.ejs', {
             user: obj,
             totalTags: tags,
             userLevel,
             analytics,
             pageName: obj.ign + "'s Stats",
+            layout: 'layouts/base.ejs',
           });
         }
       } else {

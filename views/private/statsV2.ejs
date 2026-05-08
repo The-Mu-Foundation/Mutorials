@@ -1,0 +1,247 @@
+<%
+  // [displayName, ratingKey, analyticsKey, proficiencyPathSegment, hasCollectedTags]
+  const subjects = [
+    ['Physics',   'physics',   'physics',   'physics',   true],
+    ['Chemistry', 'chemistry', 'chemistry', 'chemistry', true],
+    ['Biology',   'biology',   'biology',   'biology',   true],
+    ['ESS',       'ess',       'ess',       'ess',       true],
+    ['USABO',     'usabo',     'usabo',     'USABO',     false],
+  ];
+%>
+
+<%- contentFor('head') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script>
+  $(document).ready(function () {
+    let physicsRating   = parseInt('<%= user.rating.physics %>');
+    let chemistryRating = parseInt('<%= user.rating.chemistry %>');
+    let biologyRating   = parseInt('<%= user.rating.biology %>');
+    let essRating       = parseInt('<%= user.rating.ess %>');
+    let usaboRating     = parseInt('<%= user.rating.usabo %>');
+    let experience      = parseInt('<%= user.stats.experience ? user.stats.experience : 0 %>');
+    let rushHighscore   = parseInt('<%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %>');
+
+    $.get('/statsAdditional', { physicsRating, chemistryRating, biologyRating, essRating, usaboRating, experience, rushHighscore }, (data) => {
+      if (data.status == 'Success') {
+        $('#physics-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.physics + '</span>');
+        $('#chemistry-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.chemistry + '</span>');
+        $('#biology-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.biology + '</span>');
+        $('#ess-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.ess + '</span>');
+        $('#usabo-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.usabo + '</span>');
+        $('#experience-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.experience + '</span>');
+        $('#rush-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.rush + '</span>');
+      }
+    });
+  });
+
+  window.addEventListener('load', function () {
+    Chart.pluginService.register({
+      beforeDraw: function (chart) {
+        if (chart.config.options.correctwrongPlugin) {
+          var width = chart.chart.width;
+          var height = chart.chart.height;
+          var ctx = chart.chart.ctx;
+          ctx.restore();
+          ctx.font = '1.5em sans-serif';
+          ctx.fillStyle = '#8d0f0f';
+          var text = 'Wrong: <%= user.stats.correct + user.stats.wrong != 0 ? Math.round(100 * user.stats.wrong / (user.stats.correct + user.stats.wrong)) : 0 %>%';
+          var textX = Math.round((width - ctx.measureText(text).width) / 2);
+          var textY = (height / 2) + 25;
+          ctx.fillText(text, textX, textY);
+          ctx.fillStyle = '#208d0f';
+          text = 'Correct: <%= user.stats.correct + user.stats.wrong != 0 ? Math.round(100 * user.stats.correct / (user.stats.correct + user.stats.wrong)) : 0 %>%';
+          textX = Math.round((width - ctx.measureText(text).width) / 2);
+          textY -= 30;
+          ctx.fillText(text, textX, textY);
+          ctx.save();
+        }
+      }
+    });
+
+    var ctxPassrate = document.getElementById('correctWrongChart');
+    new Chart(ctxPassrate, {
+      type: 'pie',
+      data: {
+        labels: ['Correct', 'Wrong'],
+        datasets: [{
+          label: 'User Correct/Wrong Counts',
+          data: [
+            parseInt($('#correctcount').val()) + parseInt($('#wrongcount').val()) != 0 ? $('#correctcount').val() : 1,
+            $('#wrongcount').val()
+          ],
+          backgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
+          hoverBackgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
+          borderColor: ['rgba(255, 255, 255, 0.5)', 'rgba(255, 255, 255, 0.5)'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        correctwrongPlugin: true,
+        title: { display: true, text: 'User Correct/Wrong Counts' },
+        legend: { display: false },
+        cutoutPercentage: 60,
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+
+    ['Physics', 'Chemistry', 'Biology', 'ESS', 'USABO'].forEach((subject) => {
+      var ctxTracker = document.getElementById('ratingTrackerChart-' + subject);
+      var tracker = $('#ratingTrackerArray-' + subject).val().split('@');
+      if (tracker.length < 2) tracker.unshift(tracker[0]);
+      var labels = [];
+      for (var i = tracker.length; i > 0; i--) labels.push(i + ' Problems Ago');
+      labels.push('');
+
+      let color = (subject == 'Physics')   ? 'rgba(100, 200, 230, 1)' :
+                  (subject == 'Chemistry') ? 'rgba(245, 170,  40, 1)' :
+                  (subject == 'Biology')   ? 'rgba( 40, 240, 110, 1)' :
+                  (subject == 'ESS')       ? 'rgba(184, 150, 191, 1)' :
+                                             'rgba(113,  16,   1, 1)';
+
+      new Chart(ctxTracker, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Rating History',
+            data: tracker,
+            backgroundColor: color,
+            borderColor: color,
+            fill: false,
+            borderWidth: 4,
+          }]
+        },
+        options: {
+          title: { display: true, text: subject + ' Rating Tracker' },
+          legend: { display: false },
+          scales: {
+            yAxes: [{
+              ticks: {
+                min: Math.round((Math.min.apply(null, tracker) - 50) / 50) * 50,
+                max: Math.round((Math.max.apply(null, tracker) + 50) / 50) * 50,
+                stepSize: 50,
+              }
+            }],
+            xAxes: [{ ticks: { display: false } }]
+          },
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+    });
+  });
+</script>
+
+<%- contentFor('main') %>
+<div class="flex flex-col items-stretch w-full max-w-4xl px-6 py-8 gap-6">
+
+  <h1 class="text-3xl sm:text-4xl">
+    <strong><a class="prose" target="_blank" href="/profile/<%= user.ign %>"><%= user.ign %></a></strong>'s Stats
+  </h1>
+
+  <% subjects.forEach(([display, ratingKey, akey, profPath, hasTags]) => { %>
+    <div class="p-6 rounded-xl border-2 flex flex-col gap-4">
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+        <%# Left: rating + global rank + tags + analytics tags %>
+        <div class="lg:col-span-7 flex flex-col gap-2">
+          <h2 class="text-3xl"><%= display %>:
+            <span class="text-green-600"><%= user.rating[ratingKey] != -1 ? user.rating[ratingKey] : 'Unrated' %></span>
+          </h2>
+          <h3 class="text-xl" id="<%= akey %>-global-rank">Global Rank: XXX</h3>
+
+          <% if (hasTags) { %>
+            <h4 class="text-base font-medium mt-2">Collected <%= display %> Tags:</h4>
+            <div class="flex flex-wrap gap-2">
+              <% let counter = 0; %>
+              <% user.stats.collectedTags.forEach((tag) => { %>
+                <% if (Object.keys(totalTags[display]['Units']).includes(tag)) { %>
+                  <button class="btn btn-primary text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
+                  <% counter++; %>
+                <% } else if (Object.keys(totalTags[display]['Concepts']).includes(tag)) { %>
+                  <button class="btn bg-cyan-500 hover:bg-cyan-500 text-white text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
+                  <% counter++; %>
+                <% } %>
+              <% }); %>
+            </div>
+            <% const totalCount = Object.keys(totalTags[display]['Units']).length + Object.keys(totalTags[display]['Concepts']).length %>
+            <% if (counter === 0) { %>
+              <p>0 out of <%= totalCount %> possible tags</p>
+            <% } else { %>
+              <p><%= counter %>/<%= totalCount %> tags in this subject have been collected</p>
+            <% } %>
+          <% } %>
+
+          <% [
+            ['Areas of Mastery',     analytics.strengths[akey]],
+            ['Currently Studying',   analytics.studying[akey]],
+            ['Recommended Training', analytics.weaknesses[akey]],
+            ['Favorite Units',       analytics.favorites[akey]],
+          ].forEach(([heading, units]) => { %>
+            <% if (units && units.length > 0) { %>
+              <h3 class="text-lg font-medium mt-3"><%= heading %>:</h3>
+              <div class="flex flex-wrap gap-2">
+                <% units.forEach((unit) => { %>
+                  <span class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full"><%= unit.split(' ')[2] %></span>
+                <% }) %>
+              </div>
+            <% } %>
+          <% }) %>
+        </div>
+
+        <%# Right: rating tracker chart %>
+        <div class="lg:col-span-5 flex flex-col items-center">
+          <div class="w-full" style="height: 300px;">
+            <canvas id="ratingTrackerChart-<%= display %>"></canvas>
+          </div>
+          <input type="hidden" id="ratingTrackerArray-<%= display %>" value="<%= user.stats.ratingTracker[ratingKey].join('@') %>">
+        </div>
+
+      </div>
+
+      <a href="/train/<%= profPath %>/proficiency" class="btn btn-primary w-full">Change <%= display %> Proficiency</a>
+    </div>
+  <% }) %>
+
+  <%# Performance + site experience + rush %>
+  <div class="p-6 rounded-xl border-2 flex flex-col gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <div class="lg:col-span-4 flex flex-col items-center">
+        <h2 class="text-center text-2xl mb-2">Performance</h2>
+        <div class="w-full" style="height: 300px;">
+          <canvas id="correctWrongChart"></canvas>
+        </div>
+        <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
+        <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
+      </div>
+
+      <div class="lg:col-span-8 flex flex-col gap-3">
+        <h2 class="text-center text-2xl">Site Experience</h2>
+        <h3 class="text-center text-lg" id="experience-global-rank">Global Rank: XXX</h3>
+
+        <div class="w-full h-5 rounded-full bg-neutral-200 overflow-hidden">
+          <div class="h-full bg-green-500 transition-all" style="width: <%= Math.round(100 * userLevel.remainder / userLevel.totalToNext) %>%"></div>
+        </div>
+        <p class="text-center text-sm">
+          <strong>Level <%= userLevel.level %></strong>
+          (<%= userLevel.remainder %>/<%= userLevel.totalToNext %> XP to Level <%= userLevel.level + 1 %>)
+        </p>
+
+        <hr class="border-neutral-200 my-2">
+
+        <h2 class="text-center text-2xl">Problem Rush</h2>
+        <h3 class="text-center text-lg" id="rush-global-rank">Global Rank: XXX</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+          <h3 class="text-center text-lg">Attempts: <span class="text-green-600"><%= user.stats.rush.attempts ? user.stats.rush.attempts : 0 %></span></h3>
+          <h3 class="text-center text-lg">High Score: <span class="text-green-600"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></span></h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
