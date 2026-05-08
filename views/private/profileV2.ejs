@@ -1,6 +1,17 @@
+<%
+  const subjectMeta = {
+    Physics:   { textNum: 'text-sky-600',     accentBar: 'bg-sky-500',     ring: 'ring-sky-500/30' },
+    Chemistry: { textNum: 'text-amber-600',   accentBar: 'bg-amber-500',   ring: 'ring-amber-500/30' },
+    Biology:   { textNum: 'text-emerald-600', accentBar: 'bg-emerald-500', ring: 'ring-emerald-500/30' },
+  };
+%>
+
 <%- contentFor('head') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<style>
+  .stat-num { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+</style>
 <script>
   window.addEventListener('load', function () {
     Chart.pluginService.register({
@@ -10,41 +21,36 @@
           var height = chart.chart.height;
           var ctx = chart.chart.ctx;
           ctx.restore();
-          ctx.font = '1em sans-serif';
-          ctx.fillStyle = '#8d0f0f';
-          var text = 'Wrong: <%= Math.round(100*(user.stats.wrong)/(user.stats.correct+user.stats.wrong)) %>%';
-          var textX = Math.round((width - ctx.measureText(text).width) / 2);
-          var textY = (height / 2) + 35;
-          ctx.fillText(text, textX, textY);
-          ctx.fillStyle = '#208d0f';
-          text = 'Correct: <%= Math.round(100*(user.stats.correct)/(user.stats.correct+user.stats.wrong)) %>%';
-          textX = Math.round((width - ctx.measureText(text).width) / 2);
-          textY -= 35;
-          ctx.fillText(text, textX, textY);
+          ctx.font = '600 0.95em Inter, sans-serif';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#10b981';
+          var t1 = 'Correct <%= Math.round(100*(user.stats.correct)/(user.stats.correct+user.stats.wrong)) %>%';
+          var x1 = Math.round((width - ctx.measureText(t1).width) / 2);
+          ctx.fillText(t1, x1, (height / 2) - 12);
+          ctx.fillStyle = '#ef4444';
+          var t2 = 'Wrong <%= Math.round(100*(user.stats.wrong)/(user.stats.correct+user.stats.wrong)) %>%';
+          var x2 = Math.round((width - ctx.measureText(t2).width) / 2);
+          ctx.fillText(t2, x2, (height / 2) + 12);
           ctx.save();
         }
       }
     });
 
-    var ctxPassrate = document.getElementById('correctWrongChart');
-    new Chart(ctxPassrate, {
+    new Chart(document.getElementById('correctWrongChart'), {
       type: 'pie',
       data: {
         labels: ['Correct', 'Wrong'],
         datasets: [{
-          label: 'User Correct/Wrong Counts',
           data: [$('#correctcount').val(), $('#wrongcount').val()],
-          backgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
-          hoverBackgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
-          borderColor: ['rgba(255, 255, 255, 0.5)', 'rgba(255, 255, 255, 0.5)'],
-          borderWidth: 2
+          backgroundColor: ['rgba( 16, 185, 129, 1)', 'rgba(239,  68,  68, 1)'],
+          borderColor: ['#fff', '#fff'],
+          borderWidth: 3,
         }]
       },
       options: {
         correctwrongPlugin: true,
-        title: { display: true, text: 'User Correct/Wrong Counts' },
         legend: { display: false },
-        cutoutPercentage: 60,
+        cutoutPercentage: 65,
         responsive: true,
         maintainAspectRatio: false,
       }
@@ -62,29 +68,28 @@
     labels.push('');
     ratingData.Labels = labels;
 
-    var ctxTracker = document.getElementById('ratingTrackerChart');
-    new Chart(ctxTracker, {
+    new Chart(document.getElementById('ratingTrackerChart'), {
       type: 'line',
       data: {
         labels: ratingData.Labels,
         datasets: [
-          { label: 'Physics',   data: ratingData.Physics,   backgroundColor: 'rgba(100, 200, 230, 1)', borderColor: 'rgba(100, 200, 230, 1)', fill: false, borderWidth: 4 },
-          { label: 'Chemistry', data: ratingData.Chemistry, backgroundColor: 'rgba(245, 170,  40, 1)', borderColor: 'rgba(245, 170,  40, 1)', fill: false, borderWidth: 4 },
-          { label: 'Biology',   data: ratingData.Biology,   backgroundColor: 'rgba( 40, 240, 110, 1)', borderColor: 'rgba( 40, 240, 110, 1)', fill: false, borderWidth: 4 },
+          { label: 'Physics',   data: ratingData.Physics,   backgroundColor: 'rgba( 14, 165, 233, 1)', borderColor: 'rgba( 14, 165, 233, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
+          { label: 'Chemistry', data: ratingData.Chemistry, backgroundColor: 'rgba(245, 158,  11, 1)', borderColor: 'rgba(245, 158,  11, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
+          { label: 'Biology',   data: ratingData.Biology,   backgroundColor: 'rgba( 16, 185, 129, 1)', borderColor: 'rgba( 16, 185, 129, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
         ]
       },
       options: {
-        title: { display: true, text: 'Rating History' },
-        legend: { display: true, position: 'bottom' },
+        legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
         scales: {
           yAxes: [{
+            gridLines: { color: 'rgba(0,0,0,0.04)' },
             ticks: {
               min: Math.round((Math.min(Math.min.apply(null, ratingData.Physics), Math.min.apply(null, ratingData.Chemistry), Math.min.apply(null, ratingData.Biology)) - 50) / 50) * 50,
               max: Math.round((Math.max(Math.max.apply(null, ratingData.Physics), Math.max.apply(null, ratingData.Chemistry), Math.max.apply(null, ratingData.Biology)) + 50) / 50) * 50,
               stepSize: 50,
             }
           }],
-          xAxes: [{ ticks: { display: false } }]
+          xAxes: [{ gridLines: { display: false }, ticks: { display: false } }]
         },
         responsive: true,
         maintainAspectRatio: false,
@@ -94,117 +99,147 @@
 </script>
 
 <%- contentFor('main') %>
-<div class="flex flex-col items-center w-full max-w-4xl px-6 py-8 gap-6">
+<div class="w-full">
 
-  <h1 class="text-4xl sm:text-5xl text-center"><strong><%= user.ign %></strong></h1>
-
-  <%# Experience bar %>
-  <% try { %>
-    <% const xp = experienceStats; %>
-    <div class="w-full">
-      <div class="w-full h-5 rounded-full bg-neutral-100 overflow-hidden">
-        <div class="h-full bg-green-500 transition-all" style="width: <%= Math.round(100 * xp.remainder / xp.totalToNext) %>%"></div>
-      </div>
-      <p class="text-center mt-2 text-sm">
-        <strong>Level <%= xp.level %></strong>
-        (<%= xp.remainder %>/<%= xp.totalToNext %> XP to Level <%= xp.level + 1 %>)
-      </p>
-    </div>
-  <% } catch (err) { %>
-    <p class="text-center text-red-600">[Experience bar unavailable]</p>
-  <% } %>
-
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
-
-    <%# Profile info card %>
-    <div class="md:col-span-4 p-6 rounded-xl border-2 flex flex-col gap-3">
-      <h3 class="text-xl font-medium">
-        <%= user.profile.name
-              ? (user.profile.name.length <= 18 ? user.profile.name : user.profile.name.substring(0, 15) + '...')
-              : (user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15) + '...') %>
-      </h3>
-      <hr class="border-neutral-200">
-      <p><%= user.profile.yob ? 'Age: ' + age : '' %></p>
-      <hr class="border-neutral-200">
-      <p><%= user.profile.location ? 'Location: ' + user.profile.location : 'Lives within 8000 miles of Antartica' %></p>
-      <hr class="border-neutral-200">
-      <p><%= user.profile.bio ? user.profile.bio : 'This is a very mysterious person who likes pink butterflies and blue cows. Mu!' %></p>
-      <hr class="border-neutral-200">
-
-      <div>
-        <h4 class="font-medium mb-2">Achievements:</h4>
-        <% let achievementCount = 0; %>
-        <% for (const achievement in allAchievements) { %>
-          <% if (user.achievements[achievement]) { %>
-            <p><%= allAchievements[achievement].name %></p>
-            <% achievementCount++; %>
-          <% } %>
-        <% } %>
-        <% if (achievementCount === 0) { %>
-          <p>None (yet)</p>
-        <% } %>
-      </div>
-    </div>
-
-    <%# Charts + tags %>
-    <div class="md:col-span-8 p-6 rounded-xl border-2 flex flex-col gap-6">
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <div class="lg:col-span-7 w-full" style="height: 320px;">
-          <canvas id="ratingTrackerChart"></canvas>
-        </div>
-        <div class="lg:col-span-5 w-full flex flex-col items-center">
-          <div class="w-full" style="height: 280px;">
-            <canvas id="correctWrongChart"></canvas>
+  <%# Hero %>
+  <section class="w-full">
+    <div class="max-w-5xl mx-auto px-6 pt-10 pb-6">
+      <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-2">Profile</p>
+      <h1 class="text-4xl sm:text-5xl tracking-tight">
+        <span class="bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-indigo-600"><%= user.ign %></span>
+      </h1>
+      <% try { %>
+        <% const xp = experienceStats; %>
+        <% const xpPct = Math.round(100 * xp.remainder / xp.totalToNext); %>
+        <div class="mt-6 max-w-xl">
+          <div class="flex items-baseline justify-between mb-2">
+            <p class="text-sm font-medium">Level <span class="stat-num"><%= xp.level %></span></p>
+            <p class="text-xs text-neutral-500 stat-num"><%= xp.remainder %> / <%= xp.totalToNext %> XP</p>
           </div>
-          <p class="text-center mt-2"><a class="prose" target="_blank" href="/stats/<%= user.ign %>">See full stats</a></p>
+          <div class="w-full h-2 rounded-full bg-neutral-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all" style="width: <%= xpPct %>%"></div>
+          </div>
         </div>
-      </div>
+      <% } catch (err) { %><% } %>
+    </div>
+  </section>
 
-      <input type="hidden" id="ratingTrackerArray-Physics"   value="<%= user.stats.ratingTracker.physics.join('@') %>">
-      <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
-      <input type="hidden" id="ratingTrackerArray-Biology"   value="<%= user.stats.ratingTracker.biology.join('@') %>">
-      <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
-      <input type="hidden" id="wrongcount"   value="<%= user.stats.wrong %>">
+  <section class="w-full bg-neutral-50 border-y border-neutral-200">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-      <hr class="border-neutral-200">
+        <%# Info card %>
+        <aside class="lg:col-span-4">
+          <div class="rounded-2xl border border-neutral-200 bg-white p-6">
+            <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500">About</p>
+            <h3 class="text-2xl font-bold tracking-tight mt-1">
+              <%= user.profile.name
+                    ? (user.profile.name.length <= 18 ? user.profile.name : user.profile.name.substring(0, 15) + '...')
+                    : (user.ign.length <= 18 ? user.ign : user.ign.substring(0, 15) + '...') %>
+            </h3>
 
-      <h2 class="text-center">
-        Problem Rush High Score:
-        <span class="text-green-600"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></span>
-      </h2>
-
-      <hr class="border-neutral-200">
-
-      <div>
-        <h3 class="text-center mb-4">Collected Tags</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <% ['Physics', 'Chemistry', 'Biology'].forEach((subject) => { %>
-            <div>
-              <h4 class="text-center mb-3"><%= subject %></h4>
-              <div class="flex flex-wrap gap-2 justify-center">
-                <% let counter = 0; %>
-                <% user.stats.collectedTags.forEach((tag) => { %>
-                  <% if (Object.keys(totalTags[subject]['Units']).includes(tag)) { %>
-                    <button class="btn btn-primary text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
-                    <% counter++; %>
-                  <% } else if (Object.keys(totalTags[subject]['Concepts']).includes(tag)) { %>
-                    <button class="btn bg-cyan-500 hover:bg-cyan-500 text-white text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
-                    <% counter++; %>
-                  <% } %>
-                <% }) %>
+            <dl class="mt-6 space-y-4 text-sm">
+              <% if (user.profile.yob) { %>
+                <div>
+                  <dt class="text-xs uppercase tracking-wider text-neutral-500">Age</dt>
+                  <dd class="mt-1 stat-num"><%= age %></dd>
+                </div>
+              <% } %>
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-neutral-500">Location</dt>
+                <dd class="mt-1"><%= user.profile.location ? user.profile.location : 'Lives within 8000 miles of Antarctica' %></dd>
               </div>
-              <% const totalForSubject = Object.keys(totalTags[subject]['Units']).length + Object.keys(totalTags[subject]['Concepts']).length %>
-              <% if (counter === 0) { %>
-                <p class="text-center mt-3">0 out of <%= totalForSubject %> possible tags</p>
-              <% } else { %>
-                <p class="text-center mt-3"><%= counter %>/<%= totalForSubject %> tags in this subject have been collected</p>
+              <div>
+                <dt class="text-xs uppercase tracking-wider text-neutral-500">Bio</dt>
+                <dd class="mt-1 text-neutral-700"><%= user.profile.bio ? user.profile.bio : 'A very mysterious person who likes pink butterflies and blue cows. Mu!' %></dd>
+              </div>
+            </dl>
+
+            <div class="mt-6 pt-6 border-t border-neutral-200">
+              <p class="text-xs uppercase tracking-wider text-neutral-500 mb-3">Achievements</p>
+              <% let achievementCount = 0; %>
+              <ul class="space-y-1.5 text-sm">
+                <% for (const achievement in allAchievements) { %>
+                  <% if (user.achievements[achievement]) { %>
+                    <li class="flex items-center gap-2"><i class="fas fa-medal text-amber-500 text-xs"></i> <%= allAchievements[achievement].name %></li>
+                    <% achievementCount++; %>
+                  <% } %>
+                <% } %>
+              </ul>
+              <% if (achievementCount === 0) { %>
+                <p class="text-sm text-neutral-400 italic">None yet</p>
               <% } %>
             </div>
-          <% }) %>
+          </div>
+        </aside>
+
+        <%# Charts + tags %>
+        <div class="lg:col-span-8 flex flex-col gap-6">
+
+          <div class="grid grid-cols-1 sm:grid-cols-5 gap-6">
+            <div class="sm:col-span-3 rounded-2xl border border-neutral-200 bg-white p-5">
+              <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-4">Rating history</p>
+              <div class="w-full" style="height: 240px;">
+                <canvas id="ratingTrackerChart"></canvas>
+              </div>
+            </div>
+            <div class="sm:col-span-2 rounded-2xl border border-neutral-200 bg-white p-5 flex flex-col">
+              <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-4">Performance</p>
+              <div class="w-full flex-1 min-h-[180px]" style="height: 200px;">
+                <canvas id="correctWrongChart"></canvas>
+              </div>
+              <a class="mt-3 text-sm text-blue-600 hover:underline text-center" target="_blank" href="/stats/<%= user.ign %>">See full stats →</a>
+            </div>
+          </div>
+
+          <input type="hidden" id="ratingTrackerArray-Physics"   value="<%= user.stats.ratingTracker.physics.join('@') %>">
+          <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
+          <input type="hidden" id="ratingTrackerArray-Biology"   value="<%= user.stats.ratingTracker.biology.join('@') %>">
+          <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
+          <input type="hidden" id="wrongcount"   value="<%= user.stats.wrong %>">
+
+          <div class="rounded-2xl border border-neutral-200 bg-white p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-medium tracking-[0.2em] uppercase text-rose-600">Problem Rush</p>
+                <h3 class="text-2xl font-bold tracking-tight mt-1">High Score</h3>
+              </div>
+              <p class="text-5xl font-extrabold stat-num text-rose-600"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-neutral-200 bg-white p-6">
+            <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-4">Collected tags</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <% ['Physics', 'Chemistry', 'Biology'].forEach((subject) => { %>
+                <% const meta = subjectMeta[subject]; %>
+                <div>
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="w-2 h-2 rounded-full <%= meta.accentBar %>"></span>
+                    <h4 class="text-sm font-medium"><%= subject %></h4>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    <% let counter = 0; %>
+                    <% user.stats.collectedTags.forEach((tag) => { %>
+                      <% if (Object.keys(totalTags[subject]['Units']).includes(tag)) { %>
+                        <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-blue-50 text-blue-700 border border-blue-200"><%= tag %></span>
+                        <% counter++; %>
+                      <% } else if (Object.keys(totalTags[subject]['Concepts']).includes(tag)) { %>
+                        <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-cyan-50 text-cyan-700 border border-cyan-200"><%= tag %></span>
+                        <% counter++; %>
+                      <% } %>
+                    <% }) %>
+                  </div>
+                  <% const totalForSubject = Object.keys(totalTags[subject]['Units']).length + Object.keys(totalTags[subject]['Concepts']).length %>
+                  <p class="text-xs text-neutral-500 mt-3 stat-num"><%= counter %> / <%= totalForSubject %> collected</p>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+
         </div>
       </div>
-
     </div>
-  </div>
+  </section>
+
 </div>

@@ -1,17 +1,24 @@
 <%
-  // [displayName, ratingKey, analyticsKey, proficiencyPathSegment, hasCollectedTags]
   const subjects = [
-    ['Physics',   'physics',   'physics',   'physics',   true],
-    ['Chemistry', 'chemistry', 'chemistry', 'chemistry', true],
-    ['Biology',   'biology',   'biology',   'biology',   true],
-    ['ESS',       'ess',       'ess',       'ess',       true],
-    ['USABO',     'usabo',     'usabo',     'USABO',     false],
+    { display: 'Physics',   ratingKey: 'physics',   akey: 'physics',   profPath: 'physics',   hasTags: true,
+      topBar: 'bg-sky-500',     accentText: 'text-sky-600',     accentDot: 'bg-sky-500',     ringChart: 'ring-sky-200',     ratingColor: 'rgba( 14, 165, 233, 1)' },
+    { display: 'Chemistry', ratingKey: 'chemistry', akey: 'chemistry', profPath: 'chemistry', hasTags: true,
+      topBar: 'bg-amber-500',   accentText: 'text-amber-600',   accentDot: 'bg-amber-500',   ringChart: 'ring-amber-200',   ratingColor: 'rgba(245, 158,  11, 1)' },
+    { display: 'Biology',   ratingKey: 'biology',   akey: 'biology',   profPath: 'biology',   hasTags: true,
+      topBar: 'bg-emerald-500', accentText: 'text-emerald-600', accentDot: 'bg-emerald-500', ringChart: 'ring-emerald-200', ratingColor: 'rgba( 16, 185, 129, 1)' },
+    { display: 'ESS',       ratingKey: 'ess',       akey: 'ess',       profPath: 'ess',       hasTags: true,
+      topBar: 'bg-violet-500',  accentText: 'text-violet-600',  accentDot: 'bg-violet-500',  ringChart: 'ring-violet-200',  ratingColor: 'rgba(139,  92, 246, 1)' },
+    { display: 'USABO',     ratingKey: 'usabo',     akey: 'usabo',     profPath: 'USABO',     hasTags: false,
+      topBar: 'bg-rose-500',    accentText: 'text-rose-600',    accentDot: 'bg-rose-500',    ringChart: 'ring-rose-200',    ratingColor: 'rgba(244,  63,  94, 1)' },
   ];
 %>
 
 <%- contentFor('head') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<style>
+  .stat-num { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+</style>
 <script>
   $(document).ready(function () {
     let physicsRating   = parseInt('<%= user.rating.physics %>');
@@ -24,13 +31,14 @@
 
     $.get('/statsAdditional', { physicsRating, chemistryRating, biologyRating, essRating, usaboRating, experience, rushHighscore }, (data) => {
       if (data.status == 'Success') {
-        $('#physics-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.physics + '</span>');
-        $('#chemistry-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.chemistry + '</span>');
-        $('#biology-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.biology + '</span>');
-        $('#ess-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.ess + '</span>');
-        $('#usabo-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.usabo + '</span>');
-        $('#experience-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.experience + '</span>');
-        $('#rush-global-rank').html('Global Rank: <span class="text-blue-600">#' + data.globalRank.rush + '</span>');
+        const fmt = (n) => n != null ? '#' + n : '—';
+        $('#physics-global-rank').text(fmt(data.globalRank.physics));
+        $('#chemistry-global-rank').text(fmt(data.globalRank.chemistry));
+        $('#biology-global-rank').text(fmt(data.globalRank.biology));
+        $('#ess-global-rank').text(fmt(data.globalRank.ess));
+        $('#usabo-global-rank').text(fmt(data.globalRank.usabo));
+        $('#experience-global-rank').text(fmt(data.globalRank.experience));
+        $('#rush-global-rank').text(fmt(data.globalRank.rush));
       }
     });
   });
@@ -43,88 +51,86 @@
           var height = chart.chart.height;
           var ctx = chart.chart.ctx;
           ctx.restore();
-          ctx.font = '1.5em sans-serif';
-          ctx.fillStyle = '#8d0f0f';
-          var text = 'Wrong: <%= user.stats.correct + user.stats.wrong != 0 ? Math.round(100 * user.stats.wrong / (user.stats.correct + user.stats.wrong)) : 0 %>%';
-          var textX = Math.round((width - ctx.measureText(text).width) / 2);
-          var textY = (height / 2) + 25;
-          ctx.fillText(text, textX, textY);
-          ctx.fillStyle = '#208d0f';
-          text = 'Correct: <%= user.stats.correct + user.stats.wrong != 0 ? Math.round(100 * user.stats.correct / (user.stats.correct + user.stats.wrong)) : 0 %>%';
-          textX = Math.round((width - ctx.measureText(text).width) / 2);
-          textY -= 30;
-          ctx.fillText(text, textX, textY);
+          ctx.font = '600 1em Inter, sans-serif';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#10b981';
+          var t1 = 'Correct <%= user.stats.correct + user.stats.wrong != 0 ? Math.round(100 * user.stats.correct / (user.stats.correct + user.stats.wrong)) : 0 %>%';
+          var x1 = Math.round((width - ctx.measureText(t1).width) / 2);
+          ctx.fillText(t1, x1, (height / 2) - 14);
+          ctx.fillStyle = '#ef4444';
+          var t2 = 'Wrong <%= user.stats.correct + user.stats.wrong != 0 ? Math.round(100 * user.stats.wrong / (user.stats.correct + user.stats.wrong)) : 0 %>%';
+          var x2 = Math.round((width - ctx.measureText(t2).width) / 2);
+          ctx.fillText(t2, x2, (height / 2) + 14);
           ctx.save();
         }
       }
     });
 
-    var ctxPassrate = document.getElementById('correctWrongChart');
-    new Chart(ctxPassrate, {
+    new Chart(document.getElementById('correctWrongChart'), {
       type: 'pie',
       data: {
         labels: ['Correct', 'Wrong'],
         datasets: [{
-          label: 'User Correct/Wrong Counts',
           data: [
             parseInt($('#correctcount').val()) + parseInt($('#wrongcount').val()) != 0 ? $('#correctcount').val() : 1,
             $('#wrongcount').val()
           ],
-          backgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
-          hoverBackgroundColor: ['rgba(80, 185, 20, 1)', 'rgba(215, 80, 80, 1)'],
-          borderColor: ['rgba(255, 255, 255, 0.5)', 'rgba(255, 255, 255, 0.5)'],
-          borderWidth: 2
+          backgroundColor: ['rgba( 16, 185, 129, 1)', 'rgba(239,  68,  68, 1)'],
+          borderColor: ['#fff', '#fff'],
+          borderWidth: 3,
         }]
       },
       options: {
         correctwrongPlugin: true,
-        title: { display: true, text: 'User Correct/Wrong Counts' },
         legend: { display: false },
-        cutoutPercentage: 60,
+        cutoutPercentage: 65,
         responsive: true,
         maintainAspectRatio: false,
       }
     });
 
-    ['Physics', 'Chemistry', 'Biology', 'ESS', 'USABO'].forEach((subject) => {
-      var ctxTracker = document.getElementById('ratingTrackerChart-' + subject);
-      var tracker = $('#ratingTrackerArray-' + subject).val().split('@');
-      if (tracker.length < 2) tracker.unshift(tracker[0]);
-      var labels = [];
-      for (var i = tracker.length; i > 0; i--) labels.push(i + ' Problems Ago');
-      labels.push('');
+    const trackerColors = {
+      Physics:   'rgba( 14, 165, 233, 1)',
+      Chemistry: 'rgba(245, 158,  11, 1)',
+      Biology:   'rgba( 16, 185, 129, 1)',
+      ESS:       'rgba(139,  92, 246, 1)',
+      USABO:     'rgba(244,  63,  94, 1)',
+    };
 
-      let color = (subject == 'Physics')   ? 'rgba(100, 200, 230, 1)' :
-                  (subject == 'Chemistry') ? 'rgba(245, 170,  40, 1)' :
-                  (subject == 'Biology')   ? 'rgba( 40, 240, 110, 1)' :
-                  (subject == 'ESS')       ? 'rgba(184, 150, 191, 1)' :
-                                             'rgba(113,  16,   1, 1)';
+    ['Physics', 'Chemistry', 'Biology', 'ESS', 'USABO'].forEach((subject) => {
+      const ctxTracker = document.getElementById('ratingTrackerChart-' + subject);
+      let tracker = $('#ratingTrackerArray-' + subject).val().split('@');
+      if (tracker.length < 2) tracker.unshift(tracker[0]);
+      let labels = [];
+      for (let i = tracker.length; i > 0; i--) labels.push(i + ' Ago');
+      labels.push('');
 
       new Chart(ctxTracker, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [{
-            label: 'Rating History',
+            label: 'Rating',
             data: tracker,
-            backgroundColor: color,
-            borderColor: color,
+            backgroundColor: trackerColors[subject],
+            borderColor: trackerColors[subject],
             fill: false,
-            borderWidth: 4,
+            borderWidth: 3,
+            pointRadius: 2,
           }]
         },
         options: {
-          title: { display: true, text: subject + ' Rating Tracker' },
           legend: { display: false },
           scales: {
             yAxes: [{
+              gridLines: { color: 'rgba(0,0,0,0.04)' },
               ticks: {
                 min: Math.round((Math.min.apply(null, tracker) - 50) / 50) * 50,
                 max: Math.round((Math.max.apply(null, tracker) + 50) / 50) * 50,
                 stepSize: 50,
               }
             }],
-            xAxes: [{ ticks: { display: false } }]
+            xAxes: [{ gridLines: { display: false }, ticks: { display: false } }]
           },
           responsive: true,
           maintainAspectRatio: false,
@@ -135,113 +141,173 @@
 </script>
 
 <%- contentFor('main') %>
-<div class="flex flex-col items-stretch w-full max-w-4xl px-6 py-8 gap-6">
+<div class="w-full">
 
-  <h1 class="text-3xl sm:text-4xl">
-    <strong><a class="prose" target="_blank" href="/profile/<%= user.ign %>"><%= user.ign %></a></strong>'s Stats
-  </h1>
+  <%# Hero %>
+  <section class="w-full">
+    <div class="max-w-5xl mx-auto px-6 pt-10 pb-6">
+      <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-2">Detailed view</p>
+      <h1 class="text-4xl sm:text-5xl tracking-tight">
+        <a class="prose hover:opacity-80 transition" target="_blank" href="/profile/<%= user.ign %>"><span class="bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-indigo-600"><%= user.ign %></span></a>'s Stats
+      </h1>
+    </div>
+  </section>
 
-  <% subjects.forEach(([display, ratingKey, akey, profPath, hasTags]) => { %>
-    <div class="p-6 rounded-xl border-2 flex flex-col gap-4">
+  <%# Subjects %>
+  <section class="w-full bg-neutral-50 border-y border-neutral-200">
+    <div class="max-w-5xl mx-auto px-6 py-10 flex flex-col gap-5">
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <% subjects.forEach((s) => { %>
+        <article class="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
+          <div class="h-1 <%= s.topBar %>"></div>
 
-        <%# Left: rating + global rank + tags + analytics tags %>
-        <div class="lg:col-span-7 flex flex-col gap-2">
-          <h2 class="text-3xl"><%= display %>:
-            <span class="text-green-600"><%= user.rating[ratingKey] != -1 ? user.rating[ratingKey] : 'Unrated' %></span>
-          </h2>
-          <h3 class="text-xl" id="<%= akey %>-global-rank">Global Rank: XXX</h3>
-
-          <% if (hasTags) { %>
-            <h4 class="text-base font-medium mt-2">Collected <%= display %> Tags:</h4>
-            <div class="flex flex-wrap gap-2">
-              <% let counter = 0; %>
-              <% user.stats.collectedTags.forEach((tag) => { %>
-                <% if (Object.keys(totalTags[display]['Units']).includes(tag)) { %>
-                  <button class="btn btn-primary text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
-                  <% counter++; %>
-                <% } else if (Object.keys(totalTags[display]['Concepts']).includes(tag)) { %>
-                  <button class="btn bg-cyan-500 hover:bg-cyan-500 text-white text-sm py-1 px-2 cursor-default" disabled><%= tag %></button>
-                  <% counter++; %>
-                <% } %>
-              <% }); %>
+          <div class="p-6">
+            <%# Header strip %>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+              <div class="flex items-center gap-3">
+                <span class="w-2 h-2 rounded-full <%= s.accentDot %>"></span>
+                <h2 class="text-2xl font-bold tracking-tight"><%= s.display %></h2>
+              </div>
+              <div class="flex items-baseline gap-6">
+                <div>
+                  <p class="text-xs uppercase tracking-wider text-neutral-500">Rating</p>
+                  <p class="text-3xl font-extrabold stat-num <%= s.accentText %>">
+                    <%= user.rating[s.ratingKey] != -1 ? user.rating[s.ratingKey] : '—' %>
+                  </p>
+                </div>
+                <div>
+                  <p class="text-xs uppercase tracking-wider text-neutral-500">Global rank</p>
+                  <p class="text-3xl font-extrabold stat-num text-neutral-700" id="<%= s.akey %>-global-rank">…</p>
+                </div>
+              </div>
             </div>
-            <% const totalCount = Object.keys(totalTags[display]['Units']).length + Object.keys(totalTags[display]['Concepts']).length %>
-            <% if (counter === 0) { %>
-              <p>0 out of <%= totalCount %> possible tags</p>
-            <% } else { %>
-              <p><%= counter %>/<%= totalCount %> tags in this subject have been collected</p>
-            <% } %>
-          <% } %>
 
-          <% [
-            ['Areas of Mastery',     analytics.strengths[akey]],
-            ['Currently Studying',   analytics.studying[akey]],
-            ['Recommended Training', analytics.weaknesses[akey]],
-            ['Favorite Units',       analytics.favorites[akey]],
-          ].forEach(([heading, units]) => { %>
-            <% if (units && units.length > 0) { %>
-              <h3 class="text-lg font-medium mt-3"><%= heading %>:</h3>
-              <div class="flex flex-wrap gap-2">
-                <% units.forEach((unit) => { %>
-                  <span class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full"><%= unit.split(' ')[2] %></span>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+              <%# Left: tags + analytics %>
+              <div class="lg:col-span-7 flex flex-col gap-5">
+
+                <% if (s.hasTags) { %>
+                  <div>
+                    <p class="text-xs uppercase tracking-wider text-neutral-500 mb-2">Collected tags</p>
+                    <div class="flex flex-wrap gap-1.5">
+                      <% let counter = 0; %>
+                      <% user.stats.collectedTags.forEach((tag) => { %>
+                        <% if (Object.keys(totalTags[s.display]['Units']).includes(tag)) { %>
+                          <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-blue-50 text-blue-700 border border-blue-200"><%= tag %></span>
+                          <% counter++; %>
+                        <% } else if (Object.keys(totalTags[s.display]['Concepts']).includes(tag)) { %>
+                          <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-cyan-50 text-cyan-700 border border-cyan-200"><%= tag %></span>
+                          <% counter++; %>
+                        <% } %>
+                      <% }); %>
+                    </div>
+                    <% const totalCount = Object.keys(totalTags[s.display]['Units']).length + Object.keys(totalTags[s.display]['Concepts']).length %>
+                    <p class="text-xs text-neutral-500 mt-2 stat-num"><%= counter %> / <%= totalCount %> collected</p>
+                  </div>
+                <% } %>
+
+                <% [
+                  ['Areas of Mastery',     analytics.strengths[s.akey],  'bg-emerald-50 text-emerald-700 border-emerald-200'],
+                  ['Currently Studying',   analytics.studying[s.akey],   'bg-blue-50 text-blue-700 border-blue-200'],
+                  ['Recommended Training', analytics.weaknesses[s.akey], 'bg-amber-50 text-amber-700 border-amber-200'],
+                  ['Favorite Units',       analytics.favorites[s.akey],  'bg-violet-50 text-violet-700 border-violet-200'],
+                ].forEach(([heading, units, pillCls]) => { %>
+                  <% if (units && units.length > 0) { %>
+                    <div>
+                      <p class="text-xs uppercase tracking-wider text-neutral-500 mb-2"><%= heading %></p>
+                      <div class="flex flex-wrap gap-1.5">
+                        <% units.forEach((unit) => { %>
+                          <span class="inline-flex items-center px-2 py-0.5 text-xs rounded border <%= pillCls %>"><%= unit.split(' ')[2] %></span>
+                        <% }) %>
+                      </div>
+                    </div>
+                  <% } %>
                 <% }) %>
               </div>
-            <% } %>
-          <% }) %>
-        </div>
 
-        <%# Right: rating tracker chart %>
-        <div class="lg:col-span-5 flex flex-col items-center">
-          <div class="w-full" style="height: 300px;">
-            <canvas id="ratingTrackerChart-<%= display %>"></canvas>
+              <%# Right: chart %>
+              <div class="lg:col-span-5">
+                <p class="text-xs uppercase tracking-wider text-neutral-500 mb-2">Rating tracker</p>
+                <div class="rounded-xl bg-neutral-50 p-3 ring-1 <%= s.ringChart %>">
+                  <div class="w-full" style="height: 180px;">
+                    <canvas id="ratingTrackerChart-<%= s.display %>"></canvas>
+                  </div>
+                </div>
+                <input type="hidden" id="ratingTrackerArray-<%= s.display %>" value="<%= user.stats.ratingTracker[s.ratingKey].join('@') %>">
+              </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-neutral-200">
+              <a href="/train/<%= s.profPath %>/proficiency" class="inline-flex items-center gap-2 text-sm font-medium <%= s.accentText %> hover:gap-3 transition-all">
+                Change <%= s.display %> proficiency <i class="fas fa-arrow-right text-xs"></i>
+              </a>
+            </div>
           </div>
-          <input type="hidden" id="ratingTrackerArray-<%= display %>" value="<%= user.stats.ratingTracker[ratingKey].join('@') %>">
-        </div>
+        </article>
+      <% }) %>
 
-      </div>
-
-      <a href="/train/<%= profPath %>/proficiency" class="btn btn-primary w-full">Change <%= display %> Proficiency</a>
     </div>
-  <% }) %>
+  </section>
 
-  <%# Performance + site experience + rush %>
-  <div class="p-6 rounded-xl border-2 flex flex-col gap-4">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <div class="lg:col-span-4 flex flex-col items-center">
-        <h2 class="text-center text-2xl mb-2">Performance</h2>
-        <div class="w-full" style="height: 300px;">
-          <canvas id="correctWrongChart"></canvas>
+  <%# Performance / experience / rush %>
+  <section class="w-full">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500">Across the site</p>
+          <h2 class="text-3xl tracking-tight mt-1">Overall</h2>
         </div>
-        <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
-        <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
       </div>
 
-      <div class="lg:col-span-8 flex flex-col gap-3">
-        <h2 class="text-center text-2xl">Site Experience</h2>
-        <h3 class="text-center text-lg" id="experience-global-rank">Global Rank: XXX</h3>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <div class="w-full h-5 rounded-full bg-neutral-200 overflow-hidden">
-          <div class="h-full bg-green-500 transition-all" style="width: <%= Math.round(100 * userLevel.remainder / userLevel.totalToNext) %>%"></div>
+        <div class="lg:col-span-4 rounded-2xl border border-neutral-200 bg-white p-6 flex flex-col">
+          <p class="text-xs uppercase tracking-wider text-neutral-500">Performance</p>
+          <div class="w-full flex-1 min-h-[200px] mt-2" style="height: 220px;">
+            <canvas id="correctWrongChart"></canvas>
+          </div>
+          <input type="hidden" id="correctcount" value="<%= user.stats.correct %>">
+          <input type="hidden" id="wrongcount" value="<%= user.stats.wrong %>">
         </div>
-        <p class="text-center text-sm">
-          <strong>Level <%= userLevel.level %></strong>
-          (<%= userLevel.remainder %>/<%= userLevel.totalToNext %> XP to Level <%= userLevel.level + 1 %>)
-        </p>
 
-        <hr class="border-neutral-200 my-2">
+        <div class="lg:col-span-8 rounded-2xl border border-neutral-200 bg-white p-6 flex flex-col gap-6">
+          <div>
+            <div class="flex items-baseline justify-between">
+              <p class="text-xs uppercase tracking-wider text-neutral-500">Experience</p>
+              <p class="text-xs text-neutral-500">Global rank <span class="font-bold stat-num text-neutral-700" id="experience-global-rank">…</span></p>
+            </div>
+            <div class="flex items-baseline gap-3 mt-1">
+              <p class="text-5xl font-extrabold stat-num text-emerald-600">L<%= userLevel.level %></p>
+              <p class="text-sm text-neutral-500 stat-num"><%= userLevel.remainder %> / <%= userLevel.totalToNext %> XP</p>
+            </div>
+            <div class="mt-3 w-full h-2 rounded-full bg-neutral-100 overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all" style="width: <%= Math.round(100 * userLevel.remainder / userLevel.totalToNext) %>%"></div>
+            </div>
+          </div>
 
-        <h2 class="text-center text-2xl">Problem Rush</h2>
-        <h3 class="text-center text-lg" id="rush-global-rank">Global Rank: XXX</h3>
+          <hr class="border-neutral-200">
 
-        <div class="grid grid-cols-2 gap-4">
-          <h3 class="text-center text-lg">Attempts: <span class="text-green-600"><%= user.stats.rush.attempts ? user.stats.rush.attempts : 0 %></span></h3>
-          <h3 class="text-center text-lg">High Score: <span class="text-green-600"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></span></h3>
+          <div>
+            <div class="flex items-baseline justify-between">
+              <p class="text-xs uppercase tracking-wider text-neutral-500">Problem Rush</p>
+              <p class="text-xs text-neutral-500">Global rank <span class="font-bold stat-num text-neutral-700" id="rush-global-rank">…</span></p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mt-3">
+              <div>
+                <p class="text-xs text-neutral-500">High score</p>
+                <p class="text-3xl font-extrabold stat-num text-rose-600"><%= user.stats.rush.highscore ? user.stats.rush.highscore : 0 %></p>
+              </div>
+              <div>
+                <p class="text-xs text-neutral-500">Attempts</p>
+                <p class="text-3xl font-extrabold stat-num text-neutral-700"><%= user.stats.rush.attempts ? user.stats.rush.attempts : 0 %></p>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
-  </div>
+  </section>
 
 </div>

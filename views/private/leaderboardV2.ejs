@@ -1,9 +1,16 @@
 <%
-  const rankBg = (r) => {
-    if (r === 1) return 'bg-sky-500 text-white';
-    if (r === 2) return 'bg-yellow-400';
-    if (r === 3) return 'bg-red-500 text-white';
-    return 'bg-green-500 text-white';
+  const subjectMeta = {
+    Physics:   { topBar: 'bg-sky-500',     valueColor: 'text-sky-600' },
+    Chemistry: { topBar: 'bg-amber-500',   valueColor: 'text-amber-600' },
+    Biology:   { topBar: 'bg-emerald-500', valueColor: 'text-emerald-600' },
+    USABO:     { topBar: 'bg-rose-500',    valueColor: 'text-rose-600' },
+  };
+
+  const rankCellClass = (r) => {
+    if (r === 1) return 'bg-gradient-to-br from-amber-300 to-amber-500 text-white shadow-sm';
+    if (r === 2) return 'bg-gradient-to-br from-neutral-300 to-neutral-400 text-white shadow-sm';
+    if (r === 3) return 'bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-sm';
+    return 'bg-neutral-100 text-neutral-700';
   };
   const medalSrc = (r) => {
     if (r === 1) return 'https://cdn.mutorials.org/images/icons/Leaderboard_First.svg';
@@ -14,125 +21,166 @@
   const truncate = (s, n) => s.length <= n ? s : s.substring(0, n - 3) + '...';
 %>
 
+<%- contentFor('head') %>
+<style>
+  .stat-num { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+</style>
+
 <%- contentFor('main') %>
-<div class="flex flex-col items-center w-full max-w-6xl px-6 py-8 gap-10">
+<div class="w-full">
 
-  <h1 class="text-4xl sm:text-5xl text-center">Rating Leaderboard</h1>
+  <%# Hero %>
+  <section class="w-full">
+    <div class="max-w-6xl mx-auto px-6 pt-10 pb-6">
+      <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-2">Top trainers</p>
+      <h1 class="text-4xl sm:text-5xl tracking-tight">Leaderboard</h1>
+      <p class="text-neutral-600 mt-3">Where the best in each subject — and the all-around grinders — show up.</p>
+    </div>
+  </section>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 w-full">
-    <% [
-      ['Physics',   rankings.physics, (u) => u.rating.physics],
-      ['Chemistry', rankings.chem,    (u) => u.rating.chemistry],
-      ['Biology',   rankings.bio,     (u) => u.rating.biology],
-      ['USABO',     rankings.usabo,   (u) => u.rating.usabo],
-    ].forEach(([title, list, getValue]) => { %>
-      <div class="p-4 rounded-xl border-2">
-        <h3 class="text-center mb-3"><%= title %></h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm text-center">
-            <thead class="bg-neutral-100">
+  <%# Rating leaderboard (4 subjects) %>
+  <section class="w-full bg-neutral-50 border-y border-neutral-200">
+    <div class="max-w-6xl mx-auto px-6 py-10">
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">By subject</p>
+          <h2 class="text-3xl tracking-tight mt-1">Rating leaderboard</h2>
+        </div>
+        <p class="hidden sm:block text-sm text-neutral-500">Top 10 per subject</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        <% [
+          ['Physics',   rankings.physics, (u) => u.rating.physics],
+          ['Chemistry', rankings.chem,    (u) => u.rating.chemistry],
+          ['Biology',   rankings.bio,     (u) => u.rating.biology],
+          ['USABO',     rankings.usabo,   (u) => u.rating.usabo],
+        ].forEach(([title, list, getValue]) => { %>
+          <% const meta = subjectMeta[title]; %>
+          <div class="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
+            <div class="h-1 <%= meta.topBar %>"></div>
+            <div class="p-5">
+              <h3 class="text-base font-bold tracking-tight"><%= title %></h3>
+              <table class="w-full mt-3 text-sm">
+                <tbody class="divide-y divide-neutral-100">
+                  <% let rank = 1; %>
+                  <% list.forEach((user) => { %>
+                    <tr>
+                      <td class="py-2 pr-2 w-10">
+                        <% const medal = medalSrc(rank); %>
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold stat-num <%= rankCellClass(rank) %>">
+                          <% if (medal) { %>
+                            <img src="<%= medal %>" width="14" height="14" alt="">
+                          <% } else { %>
+                            <%= rank %>
+                          <% } %>
+                        </span>
+                      </td>
+                      <td class="py-2 pr-2">
+                        <a class="font-medium hover:text-blue-600 transition-colors" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 13) %></a>
+                      </td>
+                      <td class="py-2 text-right font-bold stat-num <%= meta.valueColor %>"><%= getValue(user) %></td>
+                    </tr>
+                    <% rank++; %>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <%# Rush + Experience %>
+  <section class="w-full">
+    <div class="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <div class="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
+        <div class="h-1 bg-rose-500"></div>
+        <div class="p-6">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-rose-600">Speed</p>
+          <h2 class="text-2xl font-bold tracking-tight mt-1 mb-4">Problem Rush</h2>
+
+          <table class="w-full text-sm">
+            <thead class="text-xs uppercase tracking-wider text-neutral-500 border-b border-neutral-200">
               <tr>
-                <th>Rank</th>
-                <th>Username</th>
-                <th>Rating</th>
+                <th class="py-2 pr-2 text-left">Rank</th>
+                <th class="py-2 pr-2 text-left">User</th>
+                <th class="py-2 pr-2 text-right">Score</th>
+                <th class="py-2 text-right">Attempts</th>
               </tr>
             </thead>
-            <tbody>
-              <% let rank = 1; %>
-              <% list.forEach((user) => { %>
-                <tr class="<%= rankBg(rank) %>">
-                  <th scope="row">
-                    <% const medal = medalSrc(rank); %>
-                    <% if (medal) { %>
-                      <img src="<%= medal %>" width="25" height="25" class="inline-block align-top" alt="">
-                    <% } else { %>
-                      <%= rank %>
-                    <% } %>
-                  </th>
-                  <td><a class="no-underline hover:underline" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 15) %></a></td>
-                  <td><%= getValue(user) %></td>
+            <tbody class="divide-y divide-neutral-100">
+              <% let rankRush = 1; %>
+              <% rankings.rush.forEach((user) => { %>
+                <tr>
+                  <td class="py-3 pr-2 w-12">
+                    <% const medal = medalSrc(rankRush); %>
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold stat-num <%= rankCellClass(rankRush) %>">
+                      <% if (medal) { %>
+                        <img src="<%= medal %>" width="14" height="14" alt="">
+                      <% } else { %>
+                        <%= rankRush %>
+                      <% } %>
+                    </span>
+                  </td>
+                  <td class="py-3 pr-2">
+                    <a class="font-medium hover:text-blue-600 transition-colors" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 24) %></a>
+                  </td>
+                  <td class="py-3 pr-2 text-right font-bold stat-num text-rose-600"><%= user.stats.rush.highscore %></td>
+                  <td class="py-3 text-right text-neutral-500 stat-num"><%= user.stats.rush.attempts %></td>
                 </tr>
-                <% rank++; %>
+                <% rankRush++; %>
               <% }) %>
             </tbody>
           </table>
         </div>
       </div>
-    <% }) %>
-  </div>
 
-  <h1 class="text-4xl sm:text-5xl text-center mt-6">Problem Rush Leaderboard</h1>
+      <div class="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
+        <div class="h-1 bg-emerald-500"></div>
+        <div class="p-6">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-emerald-600">XP grind</p>
+          <h2 class="text-2xl font-bold tracking-tight mt-1 mb-4">Experience leaders</h2>
 
-  <div class="w-full lg:max-w-3xl mx-auto p-4 rounded-xl border-2">
-    <h3 class="text-center mb-3">Highest Rush Scores</h3>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm text-center">
-        <thead class="bg-neutral-100">
-          <tr>
-            <th>Rank</th>
-            <th>Username</th>
-            <th>High Score</th>
-            <th>Attempts</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% let rankRush = 1; %>
-          <% rankings.rush.forEach((user) => { %>
-            <tr class="<%= rankBg(rankRush) %>">
-              <th scope="row">
-                <% const medal = medalSrc(rankRush); %>
-                <% if (medal) { %>
-                  <img src="<%= medal %>" width="25" height="25" class="inline-block align-top" alt="">
-                <% } else { %>
-                  <%= rankRush %>
-                <% } %>
-              </th>
-              <td><a class="no-underline hover:underline" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 33) %></a></td>
-              <td><%= user.stats.rush.highscore %></td>
-              <td><%= user.stats.rush.attempts %></td>
-            </tr>
-            <% rankRush++; %>
-          <% }) %>
-        </tbody>
-      </table>
+          <table class="w-full text-sm">
+            <thead class="text-xs uppercase tracking-wider text-neutral-500 border-b border-neutral-200">
+              <tr>
+                <th class="py-2 pr-2 text-left">Rank</th>
+                <th class="py-2 pr-2 text-left">User</th>
+                <th class="py-2 pr-2 text-right">Level</th>
+                <th class="py-2 text-right">XP</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100">
+              <% let rankExp = 1; %>
+              <% rankings.experience.forEach((user) => { %>
+                <tr>
+                  <td class="py-3 pr-2 w-12">
+                    <% const medal = medalSrc(rankExp); %>
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold stat-num <%= rankCellClass(rankExp) %>">
+                      <% if (medal) { %>
+                        <img src="<%= medal %>" width="14" height="14" alt="">
+                      <% } else { %>
+                        <%= rankExp %>
+                      <% } %>
+                    </span>
+                  </td>
+                  <td class="py-3 pr-2">
+                    <a class="font-medium hover:text-blue-600 transition-colors" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 24) %></a>
+                  </td>
+                  <td class="py-3 pr-2 text-right font-bold stat-num text-emerald-600"><%= user.level.level %></td>
+                  <td class="py-3 text-right text-neutral-500 stat-num"><%= Math.round(user.experience).toLocaleString() %></td>
+                </tr>
+                <% rankExp++; %>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
-  </div>
-
-  <h1 class="text-4xl sm:text-5xl text-center mt-6">Experience Leaderboard</h1>
-
-  <div class="w-full lg:max-w-3xl mx-auto p-4 rounded-xl border-2">
-    <h3 class="text-center mb-3">Highest Level Mutorials Users</h3>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm text-center">
-        <thead class="bg-neutral-100">
-          <tr>
-            <th>Rank</th>
-            <th>Username</th>
-            <th>Level</th>
-            <th>Experience</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% let rankExp = 1; %>
-          <% rankings.experience.forEach((user) => { %>
-            <tr class="<%= rankBg(rankExp) %>">
-              <th scope="row">
-                <% const medal = medalSrc(rankExp); %>
-                <% if (medal) { %>
-                  <img src="<%= medal %>" width="25" height="25" class="inline-block align-top" alt="">
-                <% } else { %>
-                  <%= rankExp %>
-                <% } %>
-              </th>
-              <td><a class="no-underline hover:underline" href="/profile/<%= user.ign %>" target="_blank"><%= truncate(user.ign, 33) %></a></td>
-              <td><%= user.level.level %></td>
-              <td><%= Math.round(user.experience) %></td>
-            </tr>
-            <% rankExp++; %>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  </section>
 
 </div>

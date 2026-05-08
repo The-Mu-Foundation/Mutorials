@@ -1,6 +1,25 @@
+<%
+  // Tailwind JIT requires full class strings — pre-bake every variant so the scanner picks them up.
+  const subjects = [
+    { name: 'Physics',   short: 'physics',   textNum: 'text-sky-600',     borderHover: 'hover:border-sky-300',     ringHover: 'group-hover:ring-sky-500/40',     hoverBorder: 'hover:border-sky-400',     accentBar: 'bg-sky-500',     iconUrl: 'https://cdn.mutorials.org/images/icons/Physics_Main.png', href: '/train/Physics/chooseUnits' },
+    { name: 'Chemistry', short: 'chemistry', textNum: 'text-amber-600',   borderHover: 'hover:border-amber-300',   ringHover: 'group-hover:ring-amber-500/40',   hoverBorder: 'hover:border-amber-400',   accentBar: 'bg-amber-500',   iconUrl: 'https://cdn.mutorials.org/images/icons/Chem_Main.png',    href: '/train/Chemistry/chooseUnits' },
+    { name: 'Biology',   short: 'biology',   textNum: 'text-emerald-600', borderHover: 'hover:border-emerald-300', ringHover: 'group-hover:ring-emerald-500/40', hoverBorder: 'hover:border-emerald-400', accentBar: 'bg-emerald-500', iconUrl: 'https://cdn.mutorials.org/images/icons/Bio_Main.png',     href: '/train/Biology/chooseUnits' },
+    { name: 'ESS',       short: 'ess',       textNum: 'text-violet-600',  borderHover: 'hover:border-violet-300',  ringHover: 'group-hover:ring-violet-500/40',  hoverBorder: 'hover:border-violet-400',  accentBar: 'bg-violet-500',  iconUrl: 'https://cdn.mutorials.org/images/icons/ESS_Main.png',     href: '/train/ESS/chooseUnits' },
+    { name: 'USABO',     short: 'usabo',     textNum: 'text-rose-600',    borderHover: 'hover:border-rose-300',    ringHover: 'group-hover:ring-rose-500/40',    hoverBorder: 'hover:border-rose-400',    accentBar: 'bg-rose-500',    iconUrl: 'https://cdn.mutorials.org/images/icons/USABO_Main.png',   href: '/usaboHomepage' },
+  ];
+  const trainingModes = [
+    { name: 'Classic', desc: 'Pick a subject and learn at your own pace.', icon: 'fa-atom',          href: '/train/chooseSubject', accent: 'from-blue-500 to-indigo-600' },
+    { name: 'Rush',    desc: 'Race the clock. Solve as many as you can.',  icon: 'fa-bolt',          href: '/train/rush',          accent: 'from-rose-500 to-orange-500' },
+    { name: 'Daily',   desc: 'A fresh question every day. Streak it up.',  icon: 'fa-calendar-day',  href: '/train/daily',         accent: 'from-emerald-500 to-teal-500' },
+  ];
+%>
+
 <%- contentFor('head') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<style>
+  .stat-num { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+</style>
 <script>
   $(document).ready(function () {
     let ratingData = {
@@ -28,25 +47,26 @@
       data: {
         labels: ratingData.Labels,
         datasets: [
-          { label: 'Physics',   data: ratingData.Physics,   backgroundColor: 'rgba(100, 200, 230, 1)', borderColor: 'rgba(100, 200, 230, 1)', fill: false, borderWidth: 4 },
-          { label: 'Chemistry', data: ratingData.Chemistry, backgroundColor: 'rgba(245, 170,  40, 1)', borderColor: 'rgba(245, 170,  40, 1)', fill: false, borderWidth: 4 },
-          { label: 'Biology',   data: ratingData.Biology,   backgroundColor: 'rgba( 40, 240, 110, 1)', borderColor: 'rgba( 40, 240, 110, 1)', fill: false, borderWidth: 4 },
-          { label: 'ESS',       data: ratingData.ESS,       backgroundColor: 'rgba(184, 150, 191, 1)', borderColor: 'rgba(184, 150, 191, 1)', fill: false, borderWidth: 4 },
-          { label: 'USABO',     data: ratingData.USABO,     backgroundColor: 'rgba(113,  16,   1, 1)', borderColor: 'rgba(113,  16,   1, 1)', fill: false, borderWidth: 4 },
+          { label: 'Physics',   data: ratingData.Physics,   backgroundColor: 'rgba( 14, 165, 233, 1)', borderColor: 'rgba( 14, 165, 233, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
+          { label: 'Chemistry', data: ratingData.Chemistry, backgroundColor: 'rgba(245, 158,  11, 1)', borderColor: 'rgba(245, 158,  11, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
+          { label: 'Biology',   data: ratingData.Biology,   backgroundColor: 'rgba( 16, 185, 129, 1)', borderColor: 'rgba( 16, 185, 129, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
+          { label: 'ESS',       data: ratingData.ESS,       backgroundColor: 'rgba(139,  92, 246, 1)', borderColor: 'rgba(139,  92, 246, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
+          { label: 'USABO',     data: ratingData.USABO,     backgroundColor: 'rgba(244,  63,  94, 1)', borderColor: 'rgba(244,  63,  94, 1)', fill: false, borderWidth: 3, pointRadius: 2 },
         ],
       },
       options: {
-        title: { display: true, text: 'Rating History' },
-        legend: { display: true, position: 'bottom' },
+        title: { display: false },
+        legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
         scales: {
           yAxes: [{
+            gridLines: { color: 'rgba(0,0,0,0.04)' },
             ticks: {
               min: Math.round((Math.min(Math.min.apply(null, ratingData.Physics), Math.min.apply(null, ratingData.Chemistry), Math.min.apply(null, ratingData.Biology), Math.min.apply(null, ratingData.ESS), Math.min.apply(null, ratingData.USABO)) - 50) / 50) * 50,
               max: Math.round((Math.max(Math.max.apply(null, ratingData.Physics), Math.max.apply(null, ratingData.Chemistry), Math.max.apply(null, ratingData.Biology), Math.max.apply(null, ratingData.ESS), Math.max.apply(null, ratingData.USABO)) + 50) / 50) * 50,
               stepSize: 50,
             }
           }],
-          xAxes: [{ ticks: { display: false } }]
+          xAxes: [{ gridLines: { display: false }, ticks: { display: false } }]
         },
         responsive: true,
         maintainAspectRatio: false,
@@ -56,183 +76,221 @@
 </script>
 
 <%- contentFor('main') %>
-<div class="flex flex-col items-center w-full max-w-4xl px-6 py-8 gap-8">
+<div class="w-full">
 
-  <%# Welcome %>
-  <div class="flex flex-col items-center w-full">
-    <h1 class="text-4xl sm:text-5xl text-center mb-2">Welcome, <%= user.ign %></h1>
-    <% if (admin) { %>
-      <a class="btn btn-primary mt-4" href="/admin/adminHomepage">Admin Dashboard</a>
-    <% } %>
-  </div>
+  <%# Hero %>
+  <section class="w-full">
+    <div class="max-w-5xl mx-auto px-6 pt-10 pb-8">
+      <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500 mb-2">Welcome back</p>
+      <h1 class="text-4xl sm:text-5xl tracking-tight">
+        <span class="bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-indigo-600"><%= user.ign %></span>
+      </h1>
 
-  <%# Experience bar %>
-  <% try { %>
-    <% const xp = experienceStats; %>
-    <div class="w-full">
-      <div class="w-full h-5 rounded-full bg-neutral-100 overflow-hidden">
-        <div class="h-full bg-green-500 transition-all" style="width: <%= Math.round(100 * xp.remainder / xp.totalToNext) %>%"></div>
-      </div>
-      <p class="text-center mt-2 text-sm">
-        <strong>Level <%= xp.level %></strong>
-        (<%= xp.remainder %>/<%= xp.totalToNext %> XP to Level <%= xp.level + 1 %>)
-      </p>
+      <% try { %>
+        <% const xp = experienceStats; %>
+        <% const xpPct = Math.round(100 * xp.remainder / xp.totalToNext); %>
+        <div class="mt-6 max-w-xl">
+          <div class="flex items-baseline justify-between mb-2">
+            <p class="text-sm font-medium">Level <span class="stat-num"><%= xp.level %></span></p>
+            <p class="text-xs text-neutral-500 stat-num"><%= xp.remainder %> / <%= xp.totalToNext %> XP</p>
+          </div>
+          <div class="w-full h-2 rounded-full bg-neutral-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all" style="width: <%= xpPct %>%"></div>
+          </div>
+        </div>
+      <% } catch (err) { %>
+        <p class="text-sm text-red-600 mt-4">[Experience bar unavailable]</p>
+      <% } %>
+
+      <% if (admin) { %>
+        <div class="mt-6">
+          <a class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition" href="/admin/adminHomepage">
+            <i class="fas fa-shield-alt text-xs"></i> Admin Dashboard
+          </a>
+        </div>
+      <% } %>
     </div>
-  <% } catch (err) { %>
-    <p class="text-center text-red-600">[Experience bar unavailable]</p>
-  <% } %>
+  </section>
+
+  <%# Ratings strip %>
+  <section class="w-full bg-neutral-50 border-y border-neutral-200">
+    <div class="max-w-5xl mx-auto px-6 py-8">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <% subjects.forEach((s) => { %>
+          <% const r = user.rating[s.short]; %>
+          <a href="<%= s.href %>"
+             class="group relative flex flex-col items-start gap-1 p-4 rounded-xl bg-white border border-neutral-200 <%= s.borderHover %> hover:shadow-md transition">
+            <span class="text-xs font-medium tracking-wide uppercase text-neutral-500"><%= s.name %></span>
+            <% if (r > 0) { %>
+              <span class="text-3xl font-extrabold stat-num <%= s.textNum %>"><%= Math.max(r, 0) %></span>
+            <% } else { %>
+              <span class="text-lg font-medium text-neutral-400">Unrated</span>
+            <% } %>
+            <span class="absolute inset-x-4 bottom-3 h-[2px] <%= s.accentBar %> opacity-0 group-hover:opacity-100 transition-opacity"></span>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
 
   <%# Contributor controls %>
   <% if (user.contributor) { %>
-    <div class="flex flex-col items-stretch gap-2 w-full p-6 rounded-xl border-2">
-      <h3 class="text-center mb-2">CONTRIBUTORS: <span class="text-blue-600"><%= user.contributor %></span></h3>
-      <a class="btn btn-primary" href="/contributors/addQuestion">Write Question</a>
-      <a class="btn btn-primary" href="/contributors/addUSABOQuestion">Write a USABO Question</a>
-      <% if (user.reviewer) { %>
-        <a class="btn btn-primary" href="/reviewer/reviewQuestions">Review Questions</a>
-      <% } %>
-      <a class="btn btn-outline" href="/contributors/stats">View My Contribution Stats</a>
-    </div>
+    <section class="w-full">
+      <div class="max-w-5xl mx-auto px-6 py-8">
+        <div class="rounded-2xl border border-neutral-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p class="text-xs font-medium tracking-[0.2em] uppercase text-blue-700">Contributor tools</p>
+              <h3 class="text-2xl mt-1">You're a <span class="font-bold text-blue-700"><%= user.contributor %></span> contributor</h3>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <a class="btn btn-primary" href="/contributors/addQuestion">Write Question</a>
+              <a class="btn btn-outline" href="/contributors/addUSABOQuestion">Write USABO</a>
+              <% if (user.reviewer) { %>
+                <a class="btn btn-outline" href="/reviewer/reviewQuestions">Review</a>
+              <% } %>
+              <a class="btn btn-outline" href="/contributors/stats">My Stats</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   <% } %>
 
-  <%# Ratings + Training modes %>
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
-
-    <%# Ratings + chart %>
-    <div class="lg:col-span-5 flex flex-col gap-3">
-      <% [
-        ['Physics', user.rating.physics],
-        ['Chemistry', user.rating.chemistry],
-        ['Biology', user.rating.biology],
-        ['ESS', user.rating.ess],
-        ['USABO', user.rating.usabo],
-      ].forEach(([subject, rating]) => { %>
-        <h2 class="text-center text-2xl">
-          <%= subject %>:
-          <span class="inline-block px-3 py-1 ml-1 rounded-full bg-blue-500 text-white text-base align-middle">
-            <% if (rating > 0) { %>
-              <%= Math.max(rating, 0) %>
-            <% } else { %>
-              No rating
-            <% } %>
-          </span>
-        </h2>
-      <% }) %>
-
-      <div class="w-full mt-4" style="height: 320px;">
-        <canvas id="ratingTrackerChart"></canvas>
-      </div>
-      <input type="hidden" id="ratingTrackerArray-Physics" value="<%= user.stats.ratingTracker.physics.join('@') %>">
-      <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
-      <input type="hidden" id="ratingTrackerArray-Biology" value="<%= user.stats.ratingTracker.biology.join('@') %>">
-      <input type="hidden" id="ratingTrackerArray-ESS" value="<%= user.stats.ratingTracker.ess.join('@') %>">
-      <input type="hidden" id="ratingTrackerArray-USABO" value="<%= user.stats.ratingTracker.usabo.join('@') %>">
-    </div>
-
-    <%# Training modes + subjects %>
-    <div class="lg:col-span-7 flex flex-col gap-6">
-      <div>
-        <h2 class="text-center text-2xl mb-3" id="training-modes-text">Training Modes</h2>
-        <div class="grid grid-cols-3 gap-3">
-          <a href="/train/chooseSubject" class="block opacity-80 hover:opacity-100 transition" title="Classic">
-            <img class="w-full rounded-lg" src="Train_Classic.svg" alt="Classic icon">
-          </a>
-          <a href="/train/rush" class="block opacity-80 hover:opacity-100 transition" title="Rush">
-            <img class="w-full rounded-lg" src="Train_Rush.svg" alt="Rush icon">
-          </a>
-          <a href="/train/daily" class="block opacity-80 hover:opacity-100 transition" title="Daily">
-            <img class="w-full rounded-lg" src="Train_Daily.svg" alt="Daily icon">
-          </a>
+  <%# Training modes %>
+  <section class="w-full">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500">Train</p>
+          <h2 class="text-3xl tracking-tight mt-1">Pick a mode</h2>
         </div>
+        <a class="hidden sm:inline text-sm text-blue-600 hover:underline" href="/train">All training options →</a>
       </div>
 
-      <div>
-        <h2 class="text-center text-2xl mb-3" id="classic-subjects-text">Classic Subjects</h2>
-        <div class="grid grid-cols-3 gap-3">
-          <a href="/train/Physics/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="Physics">
-            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/Physics_Main.png" alt="Physics icon">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <% trainingModes.forEach((m) => { %>
+          <a href="<%= m.href %>"
+             class="group relative flex flex-col justify-between p-6 rounded-2xl bg-white border border-neutral-200 hover:border-neutral-900 hover:shadow-lg transition overflow-hidden min-h-[160px]">
+            <div class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br <%= m.accent %> opacity-10 group-hover:opacity-30 transition"></div>
+            <div class="relative">
+              <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br <%= m.accent %> text-white mb-3">
+                <i class="fas <%= m.icon %>"></i>
+              </div>
+              <h3 class="text-xl font-bold tracking-tight"><%= m.name %></h3>
+              <p class="text-sm text-neutral-600 mt-1"><%= m.desc %></p>
+            </div>
+            <div class="relative mt-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-900">
+              Start <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+            </div>
           </a>
-          <a href="/train/Chemistry/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="Chemistry">
-            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/Chem_Main.png" alt="Chemistry icon">
-          </a>
-          <a href="/train/Biology/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="Biology">
-            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/Bio_Main.png" alt="Biology icon">
-          </a>
-        </div>
-        <div class="grid grid-cols-3 gap-3 mt-3">
-          <div></div>
-          <a href="/train/ESS/chooseUnits" class="block opacity-80 hover:opacity-100 transition" title="ESS">
-            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/ESS_Main.png" alt="ESS icon">
-          </a>
-          <div></div>
-        </div>
-      </div>
-
-      <div>
-        <h2 class="text-center text-2xl mb-3">Train for USABO!</h2>
-        <div class="grid grid-cols-3 gap-3">
-          <div></div>
-          <a href="/usaboHomepage" class="block opacity-80 hover:opacity-100 transition" title="USABO">
-            <img class="w-full rounded-lg" src="https://cdn.mutorials.org/images/icons/USABO_Main.png" alt="USABO icon">
-          </a>
-          <div></div>
-        </div>
-      </div>
-
-      <a class="btn btn-primary w-full" href="/train">Train Now!</a>
-    </div>
-  </div>
-
-  <%# Site stats %>
-  <% try { %>
-    <% const stats = siteStats; %>
-    <div class="grid grid-cols-3 gap-4 w-full mt-4">
-      <div class="flex flex-col items-center">
-        <h1 class="font-extrabold text-blue-500"><%= stats.questionCount %></h1>
-        <p class="text-center">Questions in Database</p>
-      </div>
-      <div class="flex flex-col items-center">
-        <h1 class="font-extrabold text-blue-500"><%= stats.tagCount %></h1>
-        <p class="text-center">Question Tags</p>
-      </div>
-      <div class="flex flex-col items-center">
-        <h1 class="font-extrabold text-blue-500"><%= stats.totalSolves.physics + stats.totalSolves.chemistry + stats.totalSolves.biology %></h1>
-        <p class="text-center">Total Solves</p>
+        <% }) %>
       </div>
     </div>
-  <% } catch (err) { %>
-    <p class="text-center text-red-600">[Site stats unavailable]</p>
-  <% } %>
+  </section>
+
+  <%# Subjects + chart %>
+  <section class="w-full bg-neutral-50 border-y border-neutral-200">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <div class="lg:col-span-7">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500">By subject</p>
+          <h2 class="text-3xl tracking-tight mt-1 mb-6">Jump in</h2>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <% subjects.forEach((s) => { %>
+              <a href="<%= s.href %>"
+                 class="group flex flex-col items-center gap-3 p-4 rounded-xl bg-white border border-neutral-200 <%= s.hoverBorder %> hover:shadow-md transition">
+                <div class="relative w-20 h-20 rounded-xl overflow-hidden bg-neutral-100">
+                  <img class="w-full h-full object-cover transition-transform group-hover:scale-105" src="<%= s.iconUrl %>" alt="<%= s.name %>">
+                  <div class="absolute inset-0 ring-2 ring-inset ring-transparent <%= s.ringHover %> rounded-xl transition"></div>
+                </div>
+                <span class="text-sm font-medium"><%= s.name %></span>
+              </a>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-neutral-500">Rating history</p>
+          <h2 class="text-3xl tracking-tight mt-1 mb-6">All subjects</h2>
+          <div class="rounded-2xl bg-white border border-neutral-200 p-4">
+            <div class="w-full" style="height: 280px;">
+              <canvas id="ratingTrackerChart"></canvas>
+            </div>
+          </div>
+          <input type="hidden" id="ratingTrackerArray-Physics"   value="<%= user.stats.ratingTracker.physics.join('@') %>">
+          <input type="hidden" id="ratingTrackerArray-Chemistry" value="<%= user.stats.ratingTracker.chemistry.join('@') %>">
+          <input type="hidden" id="ratingTrackerArray-Biology"   value="<%= user.stats.ratingTracker.biology.join('@') %>">
+          <input type="hidden" id="ratingTrackerArray-ESS"       value="<%= user.stats.ratingTracker.ess.join('@') %>">
+          <input type="hidden" id="ratingTrackerArray-USABO"     value="<%= user.stats.ratingTracker.usabo.join('@') %>">
+        </div>
+      </div>
+    </div>
+  </section>
 
   <%# Daily question + announcements %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-    <div class="p-6 rounded-xl border-2">
-      <%- include('../partials/components/dailySnippetV2.ejs') %>
-    </div>
+  <section class="w-full">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    <div class="p-6 rounded-xl border-2 flex flex-col">
-      <h2 class="text-center mb-4">Latest Announcements</h2>
-      <% try { %>
-        <% announcements.forEach((announcement) => { %>
-          <div class="mb-4">
-            <h3 class="text-lg mb-1"><%= announcement.title %></h3>
-            <p class="text-sm text-neutral-500 mb-1">Posted <%= announcement.date.split('T')[0] %></p>
-            <p class="text-sm"><%- announcement.text %></p>
+        <div class="rounded-2xl border border-neutral-200 bg-white p-6">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-emerald-600 mb-4">Daily question</p>
+          <%- include('../partials/components/dailySnippetV2.ejs') %>
+        </div>
+
+        <div class="rounded-2xl border border-neutral-200 bg-white p-6 flex flex-col">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-blue-600 mb-4">Announcements</p>
+          <% try { %>
+            <div class="flex flex-col divide-y divide-neutral-200">
+              <% announcements.forEach((announcement) => { %>
+                <div class="py-3 first:pt-0 last:pb-0">
+                  <h3 class="text-base font-medium mb-1"><%= announcement.title %></h3>
+                  <p class="text-xs text-neutral-500 mb-2 stat-num">Posted <%= announcement.date.split('T')[0] %></p>
+                  <p class="text-sm text-neutral-700"><%- announcement.text %></p>
+                </div>
+              <% }) %>
+            </div>
+            <a class="mt-auto pt-4 text-sm text-blue-600 hover:underline" href="/announcements">See all announcements →</a>
+          <% } catch (err) { %>
+            <p class="text-sm text-red-600">[Announcements unavailable]</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%# Site stats + socials %>
+  <section class="w-full bg-neutral-900 text-white">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 items-center">
+        <% try { %>
+          <% const stats = siteStats; %>
+          <div>
+            <p class="text-3xl font-extrabold stat-num"><%= stats.questionCount.toLocaleString() %></p>
+            <p class="text-xs text-neutral-400 uppercase tracking-wider mt-1">Questions</p>
           </div>
-        <% }) %>
-        <p class="text-center mt-auto"><a class="prose" href="/announcements">See more announcements</a></p>
-      <% } catch (err) { %>
-        <p class="text-center text-red-600">[Announcements unavailable]</p>
-      <% } %>
-    </div>
-  </div>
+          <div>
+            <p class="text-3xl font-extrabold stat-num"><%= stats.tagCount %></p>
+            <p class="text-xs text-neutral-400 uppercase tracking-wider mt-1">Tags</p>
+          </div>
+          <div>
+            <p class="text-3xl font-extrabold stat-num"><%= (stats.totalSolves.physics + stats.totalSolves.chemistry + stats.totalSolves.biology).toLocaleString() %></p>
+            <p class="text-xs text-neutral-400 uppercase tracking-wider mt-1">Total solves</p>
+          </div>
+        <% } catch (err) { %>
+          <div class="sm:col-span-3"><p class="text-sm text-red-400">[Site stats unavailable]</p></div>
+        <% } %>
 
-  <%# Social links %>
-  <div class="flex items-center justify-center gap-6 text-2xl mt-4">
-    <a href="https://instagram.com/mutorials_/" target="_blank" rel="noopener" class="hover:text-pink-600 transition" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-    <a href="https://discord.com/invite/ccbZu4q" target="_blank" rel="noopener" class="hover:text-indigo-600 transition" aria-label="Discord"><i class="fab fa-discord"></i></a>
-    <a href="https://www.youtube.com/channel/UCb2kCg0v44GJm2Xc8dzHvsA" target="_blank" rel="noopener" class="hover:text-red-600 transition" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-    <a href="https://github.com/The-Mu-Foundation/Mutorials/" target="_blank" rel="noopener" class="hover:text-neutral-700 transition" aria-label="GitHub"><i class="fab fa-github"></i></a>
-  </div>
+        <div class="flex items-center justify-start sm:justify-end gap-4 text-xl">
+          <a href="https://instagram.com/mutorials_/" target="_blank" rel="noopener" class="text-neutral-400 hover:text-white transition" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://discord.com/invite/ccbZu4q" target="_blank" rel="noopener" class="text-neutral-400 hover:text-white transition" aria-label="Discord"><i class="fab fa-discord"></i></a>
+          <a href="https://www.youtube.com/channel/UCb2kCg0v44GJm2Xc8dzHvsA" target="_blank" rel="noopener" class="text-neutral-400 hover:text-white transition" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="https://github.com/The-Mu-Foundation/Mutorials/" target="_blank" rel="noopener" class="text-neutral-400 hover:text-white transition" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
 
 </div>
