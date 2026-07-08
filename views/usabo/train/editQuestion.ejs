@@ -299,6 +299,10 @@
 <div class = "container mt-4 mb-5">
     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#confirmCancel" id="cancel">Cancel</button>
     <button type="button" class="btn btn-primary" id="submit">Submit</button>
+    <form class="d-inline ms-2" action="/admin/deleteUSABOQuestion" method="POST" onsubmit="return confirm('Delete this question permanently?');">
+      <input type="hidden" name="questionID" value="<%= question._id %>">
+      <button type="submit" class="btn btn-danger">Delete Question</button>
+    </form>
 </div>
 
 <%# Cancel button code %>

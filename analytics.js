@@ -35,7 +35,7 @@ async function collectDailyData() {
     { tag: 'HISTORY_MONTH' },
     { $set: { data: history.data } }
   ).exec();
-  triggerAnalytics();
+  initializeAnalytics();
 }
 
 async function collectWeeklyData() {

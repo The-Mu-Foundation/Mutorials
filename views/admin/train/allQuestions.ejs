@@ -49,6 +49,15 @@
       <div>
         <span><%= question['question'] %></span>
       </div>
+      <form
+        class="mt-3"
+        action="/admin/deleteQuestion"
+        method="POST"
+        onsubmit="return confirm('Delete this question permanently?');"
+      >
+        <input type="hidden" name="questionID" value="<%= question['_id'] %>">
+        <button type="submit" class="btn btn-danger btn-sm">Delete Question</button>
+      </form>
     </div>
     <% } %>
   </div>

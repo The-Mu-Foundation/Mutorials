@@ -132,6 +132,25 @@ module.exports = (app, mongo) => {
     });
   });
 
+  app.post('/admin/deleteQuestion', async (req, res) => {
+    try {
+      const questionID = mongoose.Types.ObjectId(req.body.questionID);
+      const deleteResult = await mongo.db
+        .collection('questions')
+        .deleteOne({ _id: questionID });
+
+      if (deleteResult.deletedCount !== 1) {
+        req.flash('errorFlash', 'Question not found.');
+      } else {
+        req.flash('successFlash', 'Question deleted successfully.');
+      }
+    } catch (err) {
+      req.flash('errorFlash', 'Question could not be deleted.');
+    }
+
+    res.redirect('/admin/allQuestions');
+  });
+
   app.post('/admin/addContributor', (req, res) => {
     console.log(req.body.contributorUsername);
     mongo.db

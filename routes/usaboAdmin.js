@@ -77,6 +77,25 @@ module.exports = (app, mongo) => {
     });
   });
 
+  app.post('/admin/deleteUSABOQuestion', async (req, res) => {
+    try {
+      const questionID = mongoose.Types.ObjectId(req.body.questionID);
+      const deleteResult = await mongo.db
+        .collection('usaboQuestions')
+        .deleteOne({ _id: questionID });
+
+      if (deleteResult.deletedCount !== 1) {
+        req.flash('errorFlash', 'Question not found.');
+      } else {
+        req.flash('successFlash', 'Question deleted successfully.');
+      }
+    } catch (err) {
+      req.flash('errorFlash', 'Question could not be deleted.');
+    }
+
+    res.redirect('/admin/allUSABOQuestions');
+  });
+
   // DATA ROUTE: Get USABO question stats
   app.get('/admin/usaboQuestionStats', async (req, res) => {
     let allQuestions = await mongo.db
