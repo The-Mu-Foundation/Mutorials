@@ -34,6 +34,16 @@
   width: 100%;
 }
 
+.person-initials {
+  display: grid;
+  place-items: center;
+  height: 300px;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 4rem;
+  font-weight: 600;
+}
+
 .text {
   padding: 12px;
 }
