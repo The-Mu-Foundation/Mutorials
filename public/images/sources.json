@@ -2,12 +2,13 @@
   "backgrounds": "Original image URLs from commit 26dc5ff^, downloaded from Unsplash and Science.edu.",
   "icons_and_portraits": "Recovered from https://f000.backblazeb2.com/file/mutorials/ (the former asset store).",
   "png_logo": "https://avatars.githubusercontent.com/u/68785866?s=460 (The Mu Foundation organization logo).",
-  "unavailable_portraits": [
-    "brian.jpg",
-    "devesh.jpeg",
-    "nihal.png",
-    "patrick.png"
-  ],
   "unavailable_portrait_placeholder": "/images/icons/Icon_Main.svg",
-  "earth_space_icon": "/images/background/ESS.jpg"
+  "earth_space_icon": "/images/background/ESS.jpg",
+  "provided_portraits": [
+    "patrick.png",
+    "nihal.png",
+    "brian.png",
+    "devesh.png"
+  ],
+  "provided_portrait_source": "User-supplied photos, October 31, 2026."
 }
