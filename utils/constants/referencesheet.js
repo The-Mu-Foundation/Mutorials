@@ -80,17 +80,16 @@ const referenceSheet = {
       'Hardy-Weinberg Equilibrium': '$p^2+2pq+q^2=1$',
     },
     Constants: {
-      'Avogadro\'s number': '$N_A = 6.02\\times10^{23}\\:\\mathrm{mol^{-1}}$',
+      "Avogadro's number": '$N_A = 6.02\\times10^{23}\\:\\mathrm{mol^{-1}}$',
     },
   },
   ESS: {
     Equations: {
-      'Darcy\'s Law': '$q = -\\frac{k}{\\mu} \\Delta p$',
-
+      "Darcy's Law": '$q = -\\frac{k}{\\mu} \\Delta p$',
     },
     Constants: {
-      'Earth\'s Average Density': '$\\rho = 5.51 \\:\\mathrm{g/cm^3}$',
-      'Earth\'s Radius': '$R = 6.371\\times 10^6 \\:\\mathrm{m}$',
+      "Earth's Average Density": '$\\rho = 5.51 \\:\\mathrm{g/cm^3}$',
+      "Earth's Radius": '$R = 6.371\\times 10^6 \\:\\mathrm{m}$',
     },
   },
   USABO: {

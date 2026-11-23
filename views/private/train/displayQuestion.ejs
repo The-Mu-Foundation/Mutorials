@@ -239,6 +239,10 @@
   <%# Skip question %>
 
   <% if(!(typeof disabled != 'undefined' && disabled)) { %>
+  <%- include("../../partials/aiTutor", { aiQuestionId: newQues._id, aiPhase: 'before' }) %>
+  <% } %>
+
+  <% if(!(typeof disabled != 'undefined' && disabled)) { %>
   <div class="mt-2">
     <div id="skip-dialogue-1">
       <h3 class="display-4" style="font-size: 1.5rem;">Question's content out of reach of your knowledge?</h3>

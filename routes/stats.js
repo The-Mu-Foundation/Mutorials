@@ -6,6 +6,17 @@ const {
 const { tags } = require('../utils/constants/tags');
 const { achievementDescriptions } = require('../utils/constants/achievements');
 const { generateLeaderboard } = require('../utils/functions/database');
+const { wrap } = require('../utils/functions/http');
+
+// strips credentials and reset state before a user document reaches a template
+const publicUser = (doc) => {
+  const plain = doc.toObject ? doc.toObject() : { ...doc };
+  delete plain.hash;
+  delete plain.salt;
+  delete plain.passwordReset;
+  delete plain.email_confirm_code;
+  return plain;
+};
 
 const VIEWS = __dirname + '/../views/';
 
@@ -16,7 +27,7 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
+        'Error 401: Unauthorized. You need to login to see this page.',
       );
       res.redirect('/');
     }
@@ -34,41 +45,39 @@ module.exports = (app, mongo) => {
     res.redirect('/profile/' + req.user.ign);
   });
 
-  app.get('/profile/:username', (req, res) => {
-    mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
-      if (obj) {
-        if (
-          obj.preferences.hideProfile &&
-          req.user.ign != req.params.username
-        ) {
-          req.flash('errorFlash', 'This user has made their profile private.');
-          res.redirect('/homepage');
-        } else {
-          let thisAge = 0;
-          if (req.user.profile.yob && obj.profile.yob != 2020) {
-            thisAge = new Date().getFullYear() - obj.profile.yob;
-          }
-          const experienceStats = await calculateLevel(
-            obj.stats.experience ? obj.stats.experience : 0
-          );
-          res.render(VIEWS + 'private/profile.ejs', {
-            age: thisAge,
-            user: obj,
-            totalTags: tags,
-            pageName: obj.ign + "'s Profile",
-            experienceStats,
-            allAchievements: achievementDescriptions,
-          });
-        }
-      } else {
+  app.get(
+    '/profile/:username',
+    wrap(async (req, res) => {
+      const obj = await mongo.User.findOne({
+        ign: String(req.params.username),
+      }).exec();
+      if (!obj) {
         req.flash(
           'errorFlash',
-          "Error 404: File Not Found. That username doesn't exist."
+          "Error 404: File Not Found. That username doesn't exist.",
         );
-        res.redirect('/');
+        return res.redirect('/');
       }
-    });
-  });
+      if (obj.preferences.hideProfile && req.user.ign != req.params.username) {
+        req.flash('errorFlash', 'This user has made their profile private.');
+        return res.redirect('/homepage');
+      }
+      let thisAge = 0;
+      if (req.user.profile.yob && obj.profile.yob != 2020) {
+        thisAge = new Date().getFullYear() - obj.profile.yob;
+      }
+      res.render(VIEWS + 'private/profile.ejs', {
+        age: thisAge,
+        user: publicUser(obj),
+        totalTags: tags,
+        pageName: obj.ign + "'s Profile",
+        experienceStats: calculateLevel(
+          obj.stats.experience ? obj.stats.experience : 0,
+        ),
+        allAchievements: achievementDescriptions,
+      });
+    }),
+  );
 
   app.get('/stats', (req, res) => {
     res.redirect('/stats/' + req.user.ign);
@@ -76,7 +85,7 @@ module.exports = (app, mongo) => {
 
   app.get('/statsAdditional', async (req, res) => {
     try {
-      let {
+      const {
         physicsRating,
         chemistryRating,
         biologyRating,
@@ -84,23 +93,23 @@ module.exports = (app, mongo) => {
         rushHighscore,
       } = req.query;
 
-      let globalPhysicsRank =
+      const globalPhysicsRank =
         (await mongo.User.countDocuments({
           'rating.physics': { $gt: physicsRating },
         })) + 1;
-      let globalChemistryRank =
+      const globalChemistryRank =
         (await mongo.User.countDocuments({
           'rating.chemistry': { $gt: chemistryRating },
         })) + 1;
-      let globalBiologyRank =
+      const globalBiologyRank =
         (await mongo.User.countDocuments({
           'rating.biology': { $gt: biologyRating },
         })) + 1;
-      let globalExperienceRank =
+      const globalExperienceRank =
         (await mongo.User.countDocuments({
           'stats.experience': { $gt: experience },
         })) + 1;
-      let globalRushRank =
+      const globalRushRank =
         (await mongo.User.countDocuments({
           'stats.rush.highscore': { $gt: rushHighscore },
         })) + 1;
@@ -122,63 +131,41 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/stats/:username', (req, res) => {
-    mongo.User.findOne({ ign: req.params.username }, async function (err, obj) {
-      if (obj) {
-        if (
-          obj.preferences.hideProfile &&
-          req.user.ign != req.params.username
-        ) {
-          mongo.User.findOne({
-            $and: [
-              { teachingClasses: { $in: obj.classes } },
-              { ign: req.user.ign },
-            ],
-          }).then(async (teacher) => {
-            if (teacher) {
-              let userLevel = await calculateLevel(
-                obj.stats.experience ? obj.stats.experience : 0
-              );
-              let analytics = await analyze(
-                obj.stats.units ? obj.stats.units : {}
-              );
-
-              res.render(VIEWS + 'private/stats.ejs', {
-                user: obj,
-                totalTags: tags,
-                userLevel,
-                analytics,
-                pageName: obj.ign + "'s Stats",
-              });
-            } else {
-              req.flash(
-                'errorFlash',
-                'This user has made their stats private.'
-              );
-              res.redirect('/homepage');
-            }
-          });
-        } else {
-          let userLevel = await calculateLevel(
-            obj.stats.experience ? obj.stats.experience : 0
-          );
-          let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
-
-          res.render(VIEWS + 'private/stats.ejs', {
-            user: obj,
-            totalTags: tags,
-            userLevel,
-            analytics,
-            pageName: obj.ign + "'s Stats",
-          });
-        }
-      } else {
+  app.get(
+    '/stats/:username',
+    wrap(async (req, res) => {
+      const obj = await mongo.User.findOne({
+        ign: String(req.params.username),
+      }).exec();
+      if (!obj) {
         req.flash(
           'errorFlash',
-          "Error 404: File Not Found. That username doesn't exist."
+          "Error 404: File Not Found. That username doesn't exist.",
         );
-        res.redirect('/');
+        return res.redirect('/');
       }
-    });
-  });
+      if (obj.preferences.hideProfile && req.user.ign != req.params.username) {
+        // private stats are visible only to a teacher of one of the user's classes
+        const teacher = await mongo.User.findOne({
+          $and: [
+            { teachingClasses: { $in: obj.classes } },
+            { ign: req.user.ign },
+          ],
+        }).exec();
+        if (!teacher) {
+          req.flash('errorFlash', 'This user has made their stats private.');
+          return res.redirect('/homepage');
+        }
+      }
+      res.render(VIEWS + 'private/stats.ejs', {
+        user: publicUser(obj),
+        totalTags: tags,
+        userLevel: calculateLevel(
+          obj.stats.experience ? obj.stats.experience : 0,
+        ),
+        analytics: analyze(obj.stats.units ? obj.stats.units : {}),
+        pageName: obj.ign + "'s Stats",
+      });
+    }),
+  );
 };

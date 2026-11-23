@@ -1,58 +1,56 @@
-// functions for email validation
-
-const mongoose = require('mongoose');
+// functions for email validation and transactional email
 const nodemailer = require('nodemailer');
-const db = mongoose.connection;
 
-const transporter = nodemailer.createTransport({
-  service: 'Mailgun',
-  auth: {
-    user: 'email_confirmation@noreply.mutorials.org',
-    pass: process.env.MAILGUN_CREDENTIALS,
-  },
-});
+let transporter = null;
 
-module.exports = {
-  emailCodeSend: function (username, code) {
-    const mailOptions = {
-      from: 'email_confirmation@noreply.mutorials.org',
-      to: username,
-      subject: 'Mutorials Confirmation Code',
-      text: 'Here is your code: ' + code,
-    };
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
+// builds the SMTP transport lazily so the app boots without mail credentials
+function getTransporter() {
+  if (!transporter && process.env.MAILGUN_CREDENTIALS) {
+    transporter = nodemailer.createTransport({
+      service: 'Mailgun',
+      auth: {
+        user: 'email_confirmation@noreply.mutorials.org',
+        pass: process.env.MAILGUN_CREDENTIALS,
+      },
     });
-  },
-  checkCode: function (username, entered_code) {
-    return db
-      .collection('users')
-      .findOne({ username: username })
-      .then((user) => {
-        return user.email_confirm_code === entered_code;
-      });
-  },
+  }
+  return transporter;
+}
 
-  clearConfirmCode: function (username) {
-    db.collection('users').findOneAndUpdate(
-      { username: username },
-      { $set: { email_confirm_code: '0' } }
-    );
-  },
+// sends a one-time code to a user; resolves false (never throws) on failure
+async function emailCodeSend(address, code) {
+  const mailer = getTransporter();
+  if (!mailer) {
+    console.error('MAILGUN_CREDENTIALS is not set; cannot send email.');
+    return false;
+  }
+  try {
+    await mailer.sendMail({
+      from: 'email_confirmation@noreply.mutorials.org',
+      to: address,
+      subject: 'Mutorials Confirmation Code',
+      text:
+        'Here is your Mutorials code: ' +
+        code +
+        '\n\nIt expires in 15 minutes. If you did not request it, you can ignore this email.',
+    });
+    return true;
+  } catch (err) {
+    console.error('Email send failed:', err.message);
+    return false;
+  }
+}
 
-  regexCheck: function (username) {
-    // returns true if the email conforms to RFC 5322
-    // see https://stackoverflow.com/questions/201323
+// returns true if the address is a plausible email (bounded, single @, dotted domain)
+function regexCheck(address) {
+  if (
+    typeof address !== 'string' ||
+    address.length < 3 ||
+    address.length > 254
+  ) {
+    return false;
+  }
+  return /^[^\s@]{1,64}@[^\s@.]+(\.[^\s@.]+)+$/.test(address);
+}
 
-    const regex =
-      /(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gm;
-    if (username.length < 1) {
-      return false;
-    }
-    return regex.test(username);
-  },
-};
+module.exports = { emailCodeSend, regexCheck };

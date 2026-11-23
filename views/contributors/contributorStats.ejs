@@ -58,7 +58,7 @@
 <h1 class="my-5 container display-2 text-center">Your Contributor Stats (<font color="blue"><%= contributorID %></font>)</h1>
 
 <div class="jumbotron container">
-  <% if (adminList.includes(user.username)) { %>
+  <% if (isAdmin) { %>
   <div class="container">
     <h3>Enter a Mutorials ID to query:</h3>
     <input class="form-control my-1" type="text" placeholder="MutorialsID" id="MuID">

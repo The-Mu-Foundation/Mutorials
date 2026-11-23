@@ -1,42 +1,25 @@
 // FUNCTION IMPORTS
 const {
-  calculateRatings,
   ratingCeilingFloor,
   calculateLevel,
 } = require('../utils/functions/siteAlgorithms');
-const { presetUnitOptions } = require('../utils/constants/presets');
-const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { referenceSheet } = require('../utils/constants/referencesheet');
-const { genPassword, validPassword } = require('../utils/functions/password');
-const { arraysEqual } = require('../utils/functions/general');
-const {
-  getQuestion,
-  getQuestions,
-  getRating,
-  setRating,
-  setQRating,
-  updateTracker,
-  updateCounters,
-  updateAll,
-  updateQuestionQueue,
-  addExperience,
-  clearQuestionQueue,
-  skipQuestionUpdates,
-  getDailyQuestion,
-  incrementSolveCounter,
-  updateRushStats,
-  updateTrainAchievements,
-  updateRushAchievements,
-} = require('../utils/functions/database');
+const { updateQuestionQueue } = require('../utils/functions/database');
 const {
   getUSABOQuestion,
-  getUSABOQuestions,
+  pickUSABOQuestion,
 } = require('../utils/functions/usaboDatabase');
-
-// LIBRARY IMPORTS
-let pluralize = require('pluralize');
+const {
+  gradeAnswer,
+  markServed,
+  recordAnswer,
+  recordSkip,
+} = require('../utils/functions/answers');
+const { toObjectId } = require('../utils/functions/ids');
+const { asString, safeLocalPath, wrap } = require('../utils/functions/http');
 
 const VIEWS = __dirname + '/../views/';
+const PROFICIENCY_LEVELS = [600, 1200, 2400];
 const CATEGORIES = [
   'Animal Anatomy and Physiology',
   'Plant Anatomy and Physiology',
@@ -46,270 +29,120 @@ const CATEGORIES = [
   'Ethology',
   'Biosystematics',
 ];
-const ROUNDS = ['open', 'semis'];
 
 module.exports = (app, mongo) => {
-  app.all(/^(\/private|\/usaboselQ|\/usaboTrain).*$/, (req, res, next) => {
-    if (req.isAuthenticated()) {
-      next();
-    } else {
-      req.flash(
-        'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
-      );
-      res.redirect('/');
-    }
-  });
-
-  app.post('/private/initialUSABORating', (req, res, next) => {
-    if (req.user.rating['usabo'] == -1) {
-      req.user.rating['usabo'] = req.body.level;
-      mongo.db
-        .collection('users')
-        .findOneAndUpdate(
-          { username: req.user.username },
-          { $set: { rating: req.user.rating } }
+  app.all(
+    /^(\/private|\/usaboselQ|\/usaboTrain|\/trainUSABO).*$/,
+    (req, res, next) => {
+      if (req.isAuthenticated()) {
+        next();
+      } else {
+        req.flash(
+          'errorFlash',
+          'Error 401: Unauthorized. You need to login to see this page.',
         );
-    } else {
-      req.flash(
-        'errorFlash',
-        "You've already set your proficiency for that subject"
-      );
-    }
-    res.redirect('/train/' + 'usabo' + '/chooseCategories');
-  });
-
-  app.post('/usaboselQ', (req, res, next) => {
-    let categories = null;
-    if (req.body.qNum == 1) {
-      categories = req.body.categoryChoice;
-      if (!categories) {
-        req.flash('errorFlash', 'Please choose at least one category.');
-        res.redirect('/train/usabo/chooseCategories');
+        res.redirect('/');
       }
-      if (categories) {
-        res.redirect(
-          '/train/usabo/displayUSABOQuestion?categories=' +
-            categories.toString()
+    },
+  );
+
+  app.post(
+    '/private/initialUSABORating',
+    wrap(async (req, res) => {
+      const level = Number(req.body.level);
+      if (!PROFICIENCY_LEVELS.includes(level)) {
+        req.flash('errorFlash', 'Please choose a valid proficiency.');
+        return res.redirect('/train/usabo/proficiency');
+      }
+      const result = await mongo.User.updateOne(
+        {
+          _id: req.user._id,
+          $or: [{ 'rating.usabo': -1 }, { 'rating.usabo': { $exists: false } }],
+        },
+        { $set: { 'rating.usabo': level } },
+      );
+      if (result.modifiedCount !== 1) {
+        req.flash(
+          'errorFlash',
+          "You've already set your proficiency for that subject",
         );
       }
+      res.redirect('/train/usabo/chooseCategories');
+    }),
+  );
+
+  app.post('/usaboselQ', (req, res) => {
+    const requested = [].concat(req.body.categoryChoice || []);
+    const categories = requested.filter((category) =>
+      CATEGORIES.includes(category),
+    );
+    if (categories.length === 0) {
+      req.flash('errorFlash', 'Please choose at least one category.');
+      return res.redirect('/train/usabo/chooseCategories');
     }
+    res.redirect(
+      '/train/usabo/displayUSABOQuestion?categories=' +
+        encodeURIComponent(categories.join(',')),
+    );
   });
 
-  app.post('/train/checkUSABOAnswer', (req, res, next) => {
-    if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
-      let isRight = false;
-      const antsy = getQuestion(mongo.USABOQues, req.body.id).then(
-        async (antsy) => {
-          // clear pending question
-          clearQuestionQueue(req, antsy.subject[0]);
+  app.post(
+    '/train/checkUSABOAnswer',
+    wrap(async (req, res) => {
+      const question =
+        toObjectId(req.body.id) &&
+        (await getUSABOQuestion(mongo.USABOQues, req.body.id));
+      if (!question) {
+        req.flash('errorFlash', "That question doesn't exist.");
+        return res.redirect('/trainUSABO');
+      }
 
-          // check answer
-          if (antsy.answer[0] == req.body.answerChoice) {
-            isRight = true;
-          }
+      const graded = gradeAnswer(question, req.body);
+      if (!graded) {
+        await recordSkip(mongo, {
+          user: req.user,
+          questionId: question._id,
+          subject: 'USABO',
+          bank: 'usabo',
+        });
+        req.flash(
+          'errorFlash',
+          'Please choose an answer next time... We treated that as a skip (-8 rating).',
+        );
+        return res.redirect(safeLocalPath(req.body.redirect, '/trainUSABO'));
+      }
 
-          // modify ratings
-          const oldUserRating = req.user.rating['usabo'];
-          const oldQRating = antsy.rating;
-          // update stats
-          if (req.user.stats.lastAnswered != antsy._id) {
-            setRating(
-              'usabo',
-              calculateRatings(oldUserRating, oldQRating, isRight)
-                .newUserRating,
-              req
-            );
-            setQRating(
-              antsy,
-              calculateRatings(oldUserRating, oldQRating, isRight)
-                .newQuestionRating
-            );
+      const outcome = await recordAnswer(mongo, {
+        user: req.user,
+        question,
+        correct: graded.correct,
+        bank: 'usabo',
+        mode: 'usabo',
+        session: req.session,
+      });
 
-            // update counters & tag collector
-            updateAll(req, antsy, isRight);
-
-            // update site data
-            incrementSolveCounter(mongo.SiteData, 'usabo', isRight);
-          } else {
-            // update tracker
-            updateTracker(req, antsy);
-            addExperience(req, Math.ceil(antsy.rating / 20));
-          }
-
-          // update achievements
-          updateTrainAchievements(req.user, antsy, isRight);
-
-          // render answer page
-          let experienceStats = await calculateLevel(req.user.stats.experience);
-          res.render(VIEWS + 'usabo/train/answerExplanation.ejs', {
-            categories: req.body.categories,
-            userAnswer: req.body.answerChoice,
-            userRating: getRating('USABO', req),
-            subject: 'USABO',
-            newQues: antsy,
-            correct: isRight,
-            oldUserRating: oldUserRating,
-            oldQ: oldQRating,
-            user: req.user,
-            experienceStats,
-            pageName: 'USABO Answer Explanation',
-          });
-        }
-      );
-    } else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
-      let isRight = false;
-      const antsy = getQuestion(mongo.USABOQues, req.body.id).then(
-        async (antsy) => {
-          // clear pending question
-          clearQuestionQueue(req, antsy.subject[0]);
-
-          // check answer
-          isRight = arraysEqual(antsy.answer, req.body.saChoice);
-
-          // modify ratings
-          const oldUserRating = req.user.rating['USABO'];
-          const oldQRating = antsy.rating;
-          // update stats
-          if (req.user.stats.lastAnswered != antsy._id) {
-            setRating(
-              'USABO',
-              calculateRatings(oldUserRating, oldQRating, isRight)
-                .newUserRating,
-              req
-            );
-            setQRating(
-              antsy,
-              calculateRatings(oldUserRating, oldQRating, isRight)
-                .newQuestionRating
-            );
-
-            // update counters & tag collector
-            updateAll(req, antsy, isRight);
-
-            // update site data
-            incrementSolveCounter(mongo.SiteData, 'USABO', isRight);
-          } else {
-            // update tracker
-            updateTracker(req, antsy);
-            addExperience(req, Math.ceil(antsy.rating / 20));
-          }
-
-          // update achievements
-          updateTrainAchievements(req.user, antsy, isRight);
-
-          // render answer page
-          let experienceStats = await calculateLevel(req.user.stats.experience);
-          res.render(VIEWS + 'usabo/train/answerExplanation.ejs', {
-            categories: req.body.categories,
-            userAnswer: req.body.saChoice,
-            userRating: getRating('usabo', req),
-            subject: 'USABO',
-            newQues: antsy,
-            correct: isRight,
-            oldUserRating: oldUserRating,
-            oldQ: oldQRating,
-            user: req.user,
-            experienceStats,
-            pageName: ' USABO Answer Explanation',
-          });
-        }
-      );
-    } else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
-      let isRight = false;
-      const antsy = getQuestion(mongo.USABOQues, req.body.id).then(
-        async (antsy) => {
-          // clear pending question
-          clearQuestionQueue(req, 'USABO');
-
-          // check answer
-          for (let j = 0; j < antsy.answer.length; j++) {
-            if (
-              antsy.answer[j].toLowerCase() ==
-              req.body.freeAnswer.trim().toLowerCase()
-            ) {
-              isRight = true;
-              break;
-            } else if (
-              Number(antsy.answer[j].toLowerCase()) ==
-              Number(req.body.freeAnswer.trim())
-            ) {
-              isRight = true;
-              break;
-            } else if (
-              pluralize(antsy.answer[j].toLowerCase(), 1) ==
-              pluralize(req.body.freeAnswer.trim().toLowerCase(), 1)
-            ) {
-              isRight = true;
-              break;
-            }
-          }
-          // modify ratings
-          const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
-          const oldQRating = antsy.rating;
-
-          // update stats
-          if (req.user.stats.lastAnswered != antsy._id) {
-            setRating(
-              'usabo',
-              calculateRatings(oldUserRating, oldQRating, isRight)
-                .newUserRating,
-              req
-            );
-            setQRating(
-              antsy,
-              calculateRatings(oldUserRating, oldQRating, isRight)
-                .newQuestionRating
-            );
-
-            // update counters & tag collector
-            updateAll(req, antsy, isRight);
-
-            // update site data
-            incrementSolveCounter(mongo.SiteData, 'usabo', isRight);
-          } else {
-            // update tracker
-            updateTracker(req, antsy);
-            addExperience(req, Math.ceil(antsy.rating / 20));
-          }
-
-          // update achievements
-          updateTrainAchievements(req.user, antsy, isRight);
-
-          // render answer page
-          let experienceStats = await calculateLevel(req.user.stats.experience);
-          res.render(VIEWS + 'usabo/train/answerExplanation.ejs', {
-            categories: req.body.categories,
-            userAnswer: req.body.freeAnswer,
-            userRating: getRating('USABO', req),
-            subject: 'USABO',
-            newQues: antsy,
-            correct: isRight,
-            oldUserRating: oldUserRating,
-            oldQ: oldQRating,
-            user: req.user,
-            experienceStats,
-            pageName: 'USABO Answer Explanation',
-          });
-        }
-      );
-    } else {
-      req.flash(
-        'errorFlash',
-        'Please choose an answer next time... We treated that as a skip (-8 rating).'
-      );
-      skipQuestionUpdates(mongo.USABOQues, req, 'USABO', req.body.id);
-      clearQuestionQueue(req, 'USABO');
-      res.redirect(req.body.redirect);
-    }
-  });
+      res.render(VIEWS + 'usabo/train/answerExplanation.ejs', {
+        categories: asString(req.body.categories),
+        userAnswer: graded.userAnswer,
+        userRating: req.user.rating.usabo,
+        subject: 'USABO',
+        newQues: question,
+        correct: graded.correct,
+        oldUserRating: outcome.oldUserRating,
+        oldQ: outcome.oldQRating,
+        user: req.user,
+        experienceStats: calculateLevel(req.user.stats.experience),
+        pageName: 'USABO Answer Explanation',
+      });
+    }),
+  );
 
   app.get('/trainUSABO', (req, res) => {
     res.render(VIEWS + 'usabo/train/train.ejs', { pageName: 'Train USABO' });
   });
 
   app.get('/train/usabo/proficiency', (req, res) => {
-    if (req.user.rating[req.params.round.toLowerCase()] == -1) {
+    if (req.user.rating.usabo == -1 || req.user.rating.usabo === undefined) {
       res.render(VIEWS + 'usabo/train/setProficiency.ejs', {
         subject: 'USABO',
         pageName: 'USABO Proficiency',
@@ -320,86 +153,88 @@ module.exports = (app, mongo) => {
   });
 
   app.get('/train/usabo/chooseCategories', (req, res) => {
-    const qNum = 1;
-    if (req.user.rating['usabo'] == -1) {
-      //check to see if redir needed
-      res.redirect('/train/' + 'usabo' + '/proficiency'); //ROUTING FIX
-    } else {
-      res.render(VIEWS + 'usabo/train/chooseCategories.ejs', {
-        round: req.params.round,
-        categories: CATEGORIES,
-        qNum: qNum,
-        unitPresets: presetUnitOptions[req.params.round],
-        pageName: 'Train Categories',
-      });
+    if (req.user.rating.usabo == -1 || req.user.rating.usabo === undefined) {
+      return res.redirect('/train/usabo/proficiency');
     }
+    res.render(VIEWS + 'usabo/train/chooseCategories.ejs', {
+      round: undefined,
+      categories: CATEGORIES,
+      qNum: 1,
+      unitPresets: undefined,
+      pageName: 'Train Categories',
+    });
   });
 
-  app.get('/train/usabo/displayUSABOQuestion', async (req, res) => {
-    let curQ = null;
-    // no cache
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    // define units and attempt to get queued question
-    const categories = req.query.categories.split(',');
-    let q = '';
-    if (req.user.stats.toAnswer['usabo']) {
-      q = await getUSABOQuestion(
-        mongo.USABOQues,
-        req.user.stats.toAnswer['usabo']
-      );
-    }
-    // get experience stats
-    let experienceStats = await calculateLevel(req.user.stats.experience);
-    // Test if they have a question pending to answer which is valid for their units selected
-    if (q && categories.some((r) => q.categories.includes(r))) {
-      res.render(VIEWS + 'usabo/train/displayQuestion.ejs', {
-        categories: categories,
-        newQues: q,
-        subject: 'USABO',
-        user: req.user,
-        experienceStats,
-        pageName: 'USABO Trainer',
-        referenceSheet
-      });
-    } else {
-      // deduct 8 rating if previously queued question was skipped
-      if (q) {
-        skipQuestionUpdates(mongo.USABOQues, req, 'USABO', q._id);
+  app.get(
+    '/train/usabo/displayUSABOQuestion',
+    wrap(async (req, res) => {
+      // no cache
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+
+      const categories = asString(req.query.categories)
+        .split(',')
+        .filter((category) => CATEGORIES.includes(category));
+      if (categories.length === 0) {
+        req.flash('errorFlash', 'Please choose at least one category.');
+        return res.redirect('/train/usabo/chooseCategories');
       }
-      // get parameters set up
-      let ceilingFloor = ratingCeilingFloor(req.user.rating['usabo']);
-      const floor = ceilingFloor.floor;
-      const ceiling = ceilingFloor.ceiling;
-      // get question
-      getUSABOQuestions(mongo.USABOQues, floor, ceiling, categories).then(
-        (qs) => {
-          // select random question
-          curQ = qs[Math.floor(Math.random() * qs.length)];
-          console.log(curQ);
-          if (!curQ) {
-            req.flash(
-              'errorFlash',
-              "We couldn't find any questions for your rating in the categories you selected."
-            );
-            res.redirect('/train/' + 'usabo' + '/chooseCategories');
-            return;
-          }
-          // update pending question field
-          updateQuestionQueue(req, 'usabo', curQ._id);
-          // push to frontend
-          res.render(VIEWS + 'usabo/train/displayQuestion.ejs', {
-            categories: categories,
-            newQues: curQ,
-            subject: 'USABO',
-            user: req.user,
-            experienceStats,
-            pageName: 'USABO Trainer',
-            referenceSheet
-          });
-        }
-      );
-    }
-  });
+      if (req.user.rating.usabo == -1 || req.user.rating.usabo === undefined) {
+        return res.redirect('/train/usabo/proficiency');
+      }
+
+      let queued = null;
+      const queuedId = req.user.stats.toAnswer.usabo;
+      if (queuedId) {
+        queued = await getUSABOQuestion(mongo.USABOQues, queuedId);
+      }
+      const experienceStats = calculateLevel(req.user.stats.experience);
+      const render = (question) => {
+        markServed(req.session, question._id);
+        res.render(VIEWS + 'usabo/train/displayQuestion.ejs', {
+          categories,
+          newQues: question,
+          subject: 'USABO',
+          user: req.user,
+          experienceStats,
+          pageName: 'USABO Trainer',
+          referenceSheet,
+        });
+      };
+
+      // a pending question that matches the chosen categories is simply shown again
+      if (
+        queued &&
+        categories.some((category) => queued.categories.includes(category))
+      ) {
+        return render(queued);
+      }
+      // a queued question outside the chosen categories counts as skipped
+      if (queued) {
+        await recordSkip(mongo, {
+          user: req.user,
+          questionId: queued._id,
+          subject: 'USABO',
+          bank: 'usabo',
+        });
+      }
+
+      const { floor, ceiling } = ratingCeilingFloor(req.user.rating.usabo);
+      const selected = await pickUSABOQuestion(mongo.USABOQues, {
+        floor,
+        ceiling,
+        categories,
+      });
+      if (!selected) {
+        req.flash(
+          'errorFlash',
+          "We couldn't find any questions for your rating in the categories you selected.",
+        );
+        return res.redirect('/train/usabo/chooseCategories');
+      }
+      await updateQuestionQueue(req, 'usabo', selected._id);
+      render(selected);
+    }),
+  );
 };

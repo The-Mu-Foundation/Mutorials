@@ -1,31 +1,29 @@
-const mongoose = require('mongoose');
 const { average } = require('./general');
 const { USABOPendingQues, USABOQues } = require('./mongo');
-const db = mongoose.connection;
 
 // get specific admin analytics about the database
 async function getAdminData(User, Ques, SiteData) {
-  let physicsQs = await Ques.find({ subject: 'Physics' }).exec();
-  let chemistryQs = await Ques.find({ subject: 'Chemistry' }).exec();
-  let biologyQs = await Ques.find({ subject: 'Biology' }).exec();
+  const physicsQs = await Ques.find({ subject: 'Physics' }).exec();
+  const chemistryQs = await Ques.find({ subject: 'Chemistry' }).exec();
+  const biologyQs = await Ques.find({ subject: 'Biology' }).exec();
 
-  let physicsRatings = physicsQs.map((q) => {
+  const physicsRatings = physicsQs.map((q) => {
     return q.rating;
   });
-  let chemistryRatings = chemistryQs.map((q) => {
+  const chemistryRatings = chemistryQs.map((q) => {
     return q.rating;
   });
-  let biologyRatings = biologyQs.map((q) => {
+  const biologyRatings = biologyQs.map((q) => {
     return q.rating;
   });
 
-  let physicsAverageRating = Math.round(average(physicsRatings));
-  let chemistryAverageRating = Math.round(average(chemistryRatings));
-  let biologyAverageRating = Math.round(average(biologyRatings));
+  const physicsAverageRating = Math.round(average(physicsRatings));
+  const chemistryAverageRating = Math.round(average(chemistryRatings));
+  const biologyAverageRating = Math.round(average(biologyRatings));
 
-  let physicsQuestionCount = physicsRatings.length;
-  let chemistryQuestionCount = chemistryRatings.length;
-  let biologyQuestionCount = biologyRatings.length;
+  const physicsQuestionCount = physicsRatings.length;
+  const chemistryQuestionCount = chemistryRatings.length;
+  const biologyQuestionCount = biologyRatings.length;
 
   return {
     physicsAverageRating,
@@ -39,10 +37,10 @@ async function getAdminData(User, Ques, SiteData) {
 
 // query the performance of a contributor
 async function queryContributor(id, Ques, PendingQues) {
-  let written = await Ques.find({ author: id }).exec();
-  let pendingWritten = await PendingQues.find({ author: id }).exec();
-  let curUSABO = await USABOQues.find({ author: id }).exec();
-  let pendingUSABO = await USABOPendingQues.find({ author: id }).exec();
+  const written = await Ques.find({ author: id }).exec();
+  const pendingWritten = await PendingQues.find({ author: id }).exec();
+  const curUSABO = await USABOQues.find({ author: id }).exec();
+  const pendingUSABO = await USABOPendingQues.find({ author: id }).exec();
 
   if (
     ((!written && !curUSABO) || (written.length < 1 && curUSABO.length < 1)) &&
@@ -55,7 +53,7 @@ async function queryContributor(id, Ques, PendingQues) {
   let physicsWritten = 0;
   let chemistryWritten = 0;
   let biologyWritten = 0;
-  let usaboWritten = curUSABO.length;
+  const usaboWritten = curUSABO.length;
   let essWritten = 0;
   let physicsRatingSum = 0;
   let chemistryRatingSum = 0;
@@ -101,31 +99,31 @@ async function queryContributor(id, Ques, PendingQues) {
       hourSum += calcUSABOHours(
         question.round[0],
         question.rating,
-        question.hourRefactor
+        question.hourRefactor,
       );
     });
   }
 
-  let ratingAverage = Math.round(ratingSum / Math.max(1, written.length));
-  let physicsRatingAverage = Math.round(
-    physicsRatingSum / Math.max(1, physicsWritten)
+  const ratingAverage = Math.round(ratingSum / Math.max(1, written.length));
+  const physicsRatingAverage = Math.round(
+    physicsRatingSum / Math.max(1, physicsWritten),
   );
-  let chemistryRatingAverage = Math.round(
-    chemistryRatingSum / Math.max(1, chemistryWritten)
+  const chemistryRatingAverage = Math.round(
+    chemistryRatingSum / Math.max(1, chemistryWritten),
   );
-  let biologyRatingAverage = Math.round(
-    biologyRatingSum / Math.max(1, biologyWritten)
+  const biologyRatingAverage = Math.round(
+    biologyRatingSum / Math.max(1, biologyWritten),
   );
-  let essRatingAverage = Math.round(essRatingSum / Math.max(1, essWritten));
-  let usaboRatingAverage = Math.round(
-    usaboRatingSum / Math.max(1, usaboWritten)
+  const essRatingAverage = Math.round(essRatingSum / Math.max(1, essWritten));
+  const usaboRatingAverage = Math.round(
+    usaboRatingSum / Math.max(1, usaboWritten),
   );
 
   let pendingPhysicsWritten = 0;
   let pendingChemistryWritten = 0;
   let pendingBiologyWritten = 0;
   let pendingESSWritten = 0;
-  let pendingUSABOWritten = pendingUSABO.length;
+  const pendingUSABOWritten = pendingUSABO.length;
   let pendingHourSum = 0;
 
   if (pendingWritten.length > 1) {
@@ -139,7 +137,7 @@ async function queryContributor(id, Ques, PendingQues) {
         pendingHourSum += calculateHours(
           'Physics',
           physicsRatingAverage,
-          refactor
+          refactor,
         );
       }
       if (question.subject.includes('Chemistry')) {
@@ -147,7 +145,7 @@ async function queryContributor(id, Ques, PendingQues) {
         pendingHourSum += calculateHours(
           'Chemistry',
           chemistryRatingAverage,
-          refactor
+          refactor,
         );
       }
       if (question.subject.includes('Biology')) {
@@ -155,7 +153,7 @@ async function queryContributor(id, Ques, PendingQues) {
         pendingHourSum += calculateHours(
           'Biology',
           biologyRatingAverage,
-          refactor
+          refactor,
         );
       }
       if (question.subject.includes('ESS')) {
@@ -174,7 +172,7 @@ async function queryContributor(id, Ques, PendingQues) {
       pendingHourSum += calcUSABOHours(
         question.round[0],
         question.rating,
-        refactor
+        refactor,
       );
     });
   }
