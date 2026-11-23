@@ -3,7 +3,7 @@ const {
   calculateLevel,
   analyze,
 } = require('../utils/functions/siteAlgorithms');
-const { adminList } = require('../utils/constants/sitesettings');
+const { isAdmin } = require('../utils/constants/sitesettings');
 const {
   generateLeaderboard,
   getDailyQuestion,
@@ -12,7 +12,8 @@ const {
   querySite,
 } = require('../utils/functions/database');
 const { tags } = require('../utils/constants/tags.js');
-const mongoose = require('mongoose');
+const { toObjectId } = require('../utils/functions/ids');
+const { wrap } = require('../utils/functions/http');
 
 const VIEWS = __dirname + '/../views/';
 
@@ -48,7 +49,7 @@ module.exports = (app, mongo) => {
     res.render(VIEWS + 'private/homepage.ejs', {
       user: req.user,
       siteStats: siteData,
-      admin: adminList.includes(req.user.username),
+      admin: isAdmin(req.user),
       experienceStats,
       question,
       announcements,
@@ -56,12 +57,16 @@ module.exports = (app, mongo) => {
     });
   });
 
-  app.get('/question/:id', (req, res) => {
-    mongo.Ques.findOne({ _id: req.params.id }, async function (err, obj) {
-      if (obj) {
+  app.get(
+    '/question/:id',
+    wrap(async (req, res) => {
+      const question =
+        toObjectId(req.params.id) &&
+        (await mongo.Ques.findById(req.params.id).exec());
+      if (question) {
         res.render(VIEWS + 'private/question.ejs', {
-          question: obj,
-          pageName: 'Question ' + obj._id,
+          question,
+          pageName: 'Question ' + question._id,
         });
       } else {
         req.flash(
@@ -70,19 +75,14 @@ module.exports = (app, mongo) => {
         );
         res.redirect('/');
       }
-    });
-  });
+    }),
+  );
 
   app.get('/search', async (req, res) => {
     let query = req.query;
 
     if (query) {
-      let results = await querySite(
-        query,
-        mongo.User,
-        mongo.Ques,
-        mongo.siteData,
-      );
+      let results = await querySite(query, mongo.User, mongo.Ques);
       res.render(VIEWS + 'private/search.ejs', {
         results,
         query,
@@ -99,10 +99,13 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.get('/logout', (req, res) => {
-    if (req.isAuthenticated()) {
-      req.logout();
+  app.get('/logout', (req, res, next) => {
+    if (!req.isAuthenticated()) {
+      return res.redirect('/');
     }
-    res.redirect('/');
+    req.logout((err) => {
+      if (err) return next(err);
+      res.redirect('/');
+    });
   });
 };

@@ -8,7 +8,17 @@ const filter = new Filter();
 
 // FUNCTION IMPORTS
 const emailValidation = require('../utils/functions/emailValidation');
-const { genPassword } = require('../utils/functions/password');
+const {
+  hashPassword,
+  passwordPolicyError,
+} = require('../utils/functions/password');
+const { asString, safeLocalPath, wrap } = require('../utils/functions/http');
+const {
+  authLimiter,
+  passwordResetLimiter,
+  contactLimiter,
+} = require('../utils/middleware/security');
+const crypto = require('crypto');
 const {
   getSiteData,
   getDailyQuestion,
@@ -158,159 +168,104 @@ module.exports = (app, mongo) => {
   });
 
   // PUBLIC POST
-  app.post('/register', (req, res, next) => {
-    req.body.username = req.body.username.toLowerCase();
-    req.body.ign = req.body.ign.toLowerCase();
-    let registerInputProblems1 = false;
+  app.post(
+    '/register',
+    authLimiter,
+    wrap(async (req, res) => {
+      const username = asString(req.body.username).trim().toLowerCase();
+      const ign = asString(req.body.ign).trim().toLowerCase();
+      const password = asString(req.body.password);
+      const confirmPassword = asString(req.body.confirmPassword);
+      const yob = asString(req.body.yob);
+      const problems = [];
 
-    if (req.body.ign.length > 30) {
-      req.flash('errorFlash', 'Your username is too long.');
-      registerInputProblems1 = true;
-    }
-    if (req.body.ign.length < 1) {
-      req.flash('errorFlash', 'Please enter a username.');
-      registerInputProblems1 = true;
-    }
+      if (ign.length > 30) problems.push('Your username is too long.');
+      if (ign.length < 1) problems.push('Please enter a username.');
+      if (ign && !/^[\w\-\.\~]+$/.test(ign)) {
+        problems.push(
+          'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',
+        );
+      }
+      if (ign && ign != filter.clean(ign))
+        problems.push('Keep it appropriate.');
+      const passwordProblem = passwordPolicyError(password);
+      if (passwordProblem) problems.push(passwordProblem);
+      if (password != confirmPassword) {
+        problems.push('The passwords did not match. Please try again.');
+      }
+      if (!emailValidation.regexCheck(username)) {
+        problems.push('The email you entered is not valid.');
+      }
+      if (!req.body.agreeTOS) {
+        problems.push(
+          'You must agree to the Terms of Service and Privacy Policy to register an account with us.',
+        );
+      }
+      if (
+        !/^(19|20)\d{2}$/.test(yob) ||
+        Number(yob) < 1900 ||
+        Number(yob) > new Date().getFullYear()
+      ) {
+        problems.push('Please enter a valid year of birth!');
+      }
+      if (problems.length > 0) {
+        problems.forEach((message) => req.flash('errorFlash', message));
+        return res.redirect('/signup');
+      }
 
-    if (!/^[\w\-\.\~]+$/.test(req.body.ign)) {
-      req.flash(
-        'errorFlash',
-        'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',
-      );
-      registerInputProblems1 = true;
-    }
-    if (req.body.ign && req.body.ign != filter.clean(req.body.ign)) {
-      req.flash('errorFlash', 'Keep it appropriate.');
-      registerInputProblems1 = true;
-    }
-    if (
-      req.body.password &&
-      (req.body.password.length < 7 ||
-        !/\d/.test(req.body.password) ||
-        !/[a-zA-Z]/.test(req.body.password))
-    ) {
-      req.flash(
-        'errorFlash',
-        'The password you entered does not meet the requirements.',
-      );
-      registerInputProblems1 = true;
-    }
-    if (req.body.password != req.body.confirmPassword) {
-      req.flash('errorFlash', 'The passwords did not match. Please try again.');
-      registerInputProblems1 = true;
-    }
-    if (!emailValidation.regexCheck(req.body.username)) {
-      console.log(req.body.username);
-      req.flash('errorFlash', 'The email you entered is not valid.');
-      registerInputProblems1 = true;
-    }
-    if (!req.body.agreeTOS) {
-      req.flash(
-        'errorFlash',
-        'You must agree to the Terms of Service and Privacy Policy to register an account with us.',
-      );
-      registerInputProblems1 = true;
-    }
+      const existing = await mongo.User.findOne({
+        $or: [{ ign }, { username }],
+      }).lean();
+      if (existing) {
+        req.flash(
+          'errorFlash',
+          existing.ign == ign
+            ? 'This username is already taken.'
+            : 'This email is already in use.',
+        );
+        return res.redirect('/signup');
+      }
 
-    if (
-      !/^(19|20)\d{2}$/.test(req.body.yob) ||
-      req.body.yob.length != 4 ||
-      req.body.yob < 1900 ||
-      req.body.yob > new Date().getFullYear()
-    ) {
-      req.flash('errorFlash', 'Please enter a valid year of birth!');
-      registerInputProblems1 = true;
-    }
-    if (registerInputProblems1) {
-      res.redirect('/signup');
-      return; // to prevent ERRHTTPHEADERSSENT
-    }
-
-    const saltHash = genPassword(req.body.password);
-
-    const salt = saltHash.salt;
-    const hash = saltHash.hash;
-    let thisYob = req.body.yob;
-    if (!thisYob) {
-      thisYob = new Date().getFullYear();
-    }
-    const newUser = new mongo.User({
-      username: req.body.username,
-      ign: req.body.ign,
-      hash: hash,
-      salt: salt,
-      profile: {
-        name: req.body.ign,
-        location: 'Earth',
-        yob: thisYob,
-        bio: '',
-      },
-      // if emailConfirmCode == 0, then email is confirmed
-      stats: {
-        experience: 0,
-        correct: 0,
-        wrong: 0,
-        collectedTags: [],
-      },
-      rating: {
-        physics: -1,
-        chemistry: -1,
-        biology: -1,
-        usabo: -1,
-        ess: -1,
-      },
-      preferences: {
-        hideProfile: new Date().getFullYear() - thisYob < 13 ? true : false,
-        dark_mode: true,
-      },
-      achievements: {
-        join_mutorials: true,
-      },
-    });
-
-    // check for duplicate username AND email
-    mongo.db
-      .collection('users')
-      .findOne({
-        $or: [{ ign: req.body.ign }, { username: req.body.username }],
-      })
-      .then((user) => {
-        if (user) {
-          console.log('used');
-          let registerInputProblems2 = false;
-          if (user.ign == req.body.ign) {
-            req.flash('errorFlash', 'This username is already taken.');
-            registerInputProblems2 = true;
-          } else {
-            // has to be matching email
-            req.flash('errorFlash', 'This email is already in use.');
-            registerInputProblems2 = true;
-          }
-          if (registerInputProblems2) {
-            res.redirect('/signup');
-            return; // to prevent ERRHTTPHEADERSSENT
-          }
-        } else {
-          console.log('new one');
-          newUser.save().then((user) => {
-            //passport.authenticate('local', {failureRedirect: '/signin', successRedirect: '/train'});
-            console.log(user);
-          });
-          req.flash('successFlash', 'We successfully signed you up!');
-          // var confirmCode;
-          // require('crypto').randomBytes(6, function (ex, buf) {
-          //     confirmCode = buf.toString('hex');
-          //     mongo.db.collection('users').findOneAndUpdate({ username: req.body.username }, { $set: { emailConfirmCode: confirmCode } });
-          //     emailValidation.emailCodeSend(req.body.username, confirmCode);
-          //     req.flash('errorFlash', 'You need to confirm your email. Please check your email for instructions.');
-          // });
+      const { salt, hash } = await hashPassword(password);
+      const thisYob = Number(yob);
+      try {
+        await new mongo.User({
+          username,
+          ign,
+          hash,
+          salt,
+          profile: { name: ign, location: 'Earth', yob: thisYob, bio: '' },
+          stats: { experience: 0, correct: 0, wrong: 0, collectedTags: [] },
+          rating: {
+            physics: -1,
+            chemistry: -1,
+            biology: -1,
+            usabo: -1,
+            ess: -1,
+          },
+          preferences: {
+            hideProfile: new Date().getFullYear() - thisYob < 13,
+            dark_mode: true,
+          },
+          achievements: { join_mutorials: true },
+          emailVerified: false,
+        }).save();
+      } catch (err) {
+        if (err && err.code === 11000) {
+          // lost a race against a concurrent registration
+          req.flash('errorFlash', 'This username or email is already in use.');
+          return res.redirect('/signup');
         }
-        res.redirect('/signin');
-      });
-  });
+        throw err;
+      }
+      req.flash('successFlash', 'We successfully signed you up!');
+      res.redirect('/signin');
+    }),
+  );
 
   app.post(
     '/login',
+    authLimiter,
     passport.authenticate('local', {
       failureRedirect: '/signin',
       successRedirect: '/homepage',
@@ -320,122 +275,156 @@ module.exports = (app, mongo) => {
       },
       successFlash: 'Welcome!',
     }),
-    (req, res, next) => {
-      console.log('routes/publicjs: User just signed in');
-    },
   );
 
-  app.post('/forgotPassword', (req, res) => {
-    console.log(req.body.forgotEmail);
-    if (req.body.forgotEmail) {
-      mongo.db
-        .collection('users')
-        .findOne({ username: req.body.forgotEmail })
-        .then((user) => {
-          if (user) {
-            require('crypto').randomBytes(6, function (ex, buf) {
-              mongo.db
-                .collection('users')
-                .findOneAndUpdate(
-                  { username: req.body.forgotEmail },
-                  { $set: { email_confirm_code: buf.toString('hex') } },
-                )
-                .then((success) => {
-                  emailValidation.emailCodeSend(
-                    req.body.forgotEmail,
-                    buf.toString('hex'),
-                  );
-                  req.flash(
-                    'successFlash',
-                    "You've been emailed a confirmation code.",
-                  );
-                  res.locals.forgotPassUser = req.body.forgotEmail;
-                  res.render(VIEWS + 'public/forgotPassword.ejs', {
-                    pageName: 'Forgot Password',
-                  });
-                });
-            });
-          } else {
-            req.flash('errorFlash', "That email isn't registered with us.");
-            res.redirect('/signin');
-          }
-        });
-    } else if (req.body.newpw) {
-      mongo.db
-        .collection('users')
-        .findOne({
-          username: req.body.username,
-          email_confirm_code: req.body.enteredCode,
-        })
-        .then((user) => {
-          if (user) {
-            if (
-              req.body.newpw.length < 7 ||
-              !/\d/.test(req.body.newpw) ||
-              !/[a-zA-Z]/.test(req.body.newpw)
-            ) {
-              req.flash(
-                'errorFlash',
-                'The password you entered does not meet the requirements.',
-              );
-              res.locals.forgotPassUser = req.body.username;
-              res.render(VIEWS + 'public/forgotPassword.ejs', {
-                pageName: 'Forgot Password',
-              });
-            } else if (req.body.newpw != req.body.confirmnewpw) {
-              req.flash('errorFlash', "The passwords don't match.");
-              res.locals.forgotPassUser = req.body.username;
-              res.render(VIEWS + 'public/forgotPassword.ejs', {
-                pageName: 'Forgot Password',
-              });
-            } else {
-              const saltHash = genPassword(req.body.newpw);
-              const salt = saltHash.salt;
-              const hash = saltHash.hash;
-              mongo.db
-                .collection('users')
-                .findOneAndUpdate(
-                  { username: req.body.username },
-                  { $set: { email_confirm_code: '', salt: salt, hash: hash } },
-                )
-                .then((success) => {
-                  req.flash('successFlash', 'Your password has been changed.');
-                  res.redirect('/signin');
-                });
-            }
-          } else {
-            req.flash('errorFlash', "That isn't the right code.");
-            res.locals.forgotPassUser = req.body.username;
-            res.render(VIEWS + 'public/forgotPassword.ejs', {
-              pageName: 'Forgot Password',
-            });
-          }
-        });
-    } else {
-      res.flash('errorFlash', 'Error 404: Page not found.');
-      res.redirect('/');
+  const RESET_CODE_TTL_MS = 15 * 60 * 1000;
+  const RESET_MAX_ATTEMPTS = 5;
+  const hashResetCode = (code) =>
+    crypto.createHash('sha256').update(code).digest('hex');
+  // 10 characters from an unambiguous alphabet (~50 bits of entropy)
+  const generateResetCode = () => {
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 10; i++) {
+      code += alphabet[crypto.randomInt(alphabet.length)];
     }
-  });
+    return code;
+  };
 
-  app.post('/contact', (req, res) => {
-    req.isAuthenticated()
-      ? sendDiscordWebhook(
-          req.body.comment,
+  app.post(
+    '/forgotPassword',
+    passwordResetLimiter,
+    wrap(async (req, res) => {
+      const renderReset = (email) => {
+        res.locals.forgotPassUser = email;
+        res.render(VIEWS + 'public/forgotPassword.ejs', {
+          pageName: 'Forgot Password',
+        });
+      };
+
+      // step 1: request a code. The response never reveals whether the email exists.
+      if (req.body.forgotEmail !== undefined) {
+        const email = asString(req.body.forgotEmail).trim().toLowerCase();
+        if (!emailValidation.regexCheck(email)) {
+          req.flash('errorFlash', 'The email you entered is not valid.');
+          return res.redirect('/signin');
+        }
+        const user = await mongo.User.findOne({ username: email });
+        if (user) {
+          const code = generateResetCode();
+          await mongo.User.updateOne(
+            { _id: user._id },
+            {
+              $set: {
+                passwordReset: {
+                  codeHash: hashResetCode(code),
+                  expiresAt: new Date(Date.now() + RESET_CODE_TTL_MS),
+                  attempts: 0,
+                },
+              },
+            },
+          );
+          await emailValidation.emailCodeSend(email, code);
+        }
+        req.flash(
+          'successFlash',
+          "If that email is registered, we've sent it a confirmation code.",
+        );
+        return renderReset(email);
+      }
+
+      // step 2: submit the code with a new password
+      if (req.body.newpw !== undefined) {
+        const email = asString(req.body.username).trim().toLowerCase();
+        const enteredCode = asString(req.body.enteredCode).trim().toUpperCase();
+        const newpw = asString(req.body.newpw);
+        const genericFailure = () => {
+          req.flash('errorFlash', "That isn't the right code.");
+          return renderReset(email);
+        };
+
+        const user = email
+          ? await mongo.User.findOne({ username: email })
+          : null;
+        const reset = user && user.passwordReset;
+        if (
+          !reset ||
+          !reset.codeHash ||
+          !reset.expiresAt ||
+          reset.expiresAt < new Date() ||
+          reset.attempts >= RESET_MAX_ATTEMPTS
+        ) {
+          return genericFailure();
+        }
+
+        const codeMatches =
+          enteredCode.length > 0 &&
+          crypto.timingSafeEqual(
+            Buffer.from(hashResetCode(enteredCode)),
+            Buffer.from(reset.codeHash),
+          );
+        if (!codeMatches) {
+          await mongo.User.updateOne(
+            { _id: user._id },
+            { $inc: { 'passwordReset.attempts': 1 } },
+          );
+          return genericFailure();
+        }
+
+        const passwordProblem = passwordPolicyError(newpw);
+        if (passwordProblem) {
+          req.flash('errorFlash', passwordProblem);
+          return renderReset(email);
+        }
+        if (newpw != asString(req.body.confirmnewpw)) {
+          req.flash('errorFlash', "The passwords don't match.");
+          return renderReset(email);
+        }
+
+        const { salt, hash } = await hashPassword(newpw);
+        await mongo.User.updateOne(
+          { _id: user._id },
+          {
+            $set: { salt, hash, emailVerified: true },
+            $unset: { passwordReset: '' },
+          },
+        );
+        req.flash('successFlash', 'Your password has been changed.');
+        return res.redirect('/signin');
+      }
+
+      req.flash('errorFlash', 'Error 404: Page not found.');
+      res.redirect('/');
+    }),
+  );
+
+  app.post(
+    '/contact',
+    contactLimiter,
+    wrap(async (req, res) => {
+      const comment = asString(req.body.comment).trim();
+      if (!comment) {
+        req.flash('errorFlash', 'Please write a message before sending.');
+        return res.redirect(safeLocalPath(req.body.redirect));
+      }
+      const questionId = asString(req.body.questionId);
+      if (req.isAuthenticated()) {
+        await sendDiscordWebhook(
+          comment,
           req.user.username,
           req.user.ign,
-          req.body.questionId,
-        )
-      : sendDiscordWebhook(
-          req.body.comment,
+          questionId,
+        );
+      } else {
+        await sendDiscordWebhook(
+          comment,
           'N/A',
           'User not signed in.',
-          req.body.questionId,
+          questionId,
         );
-    req.flash('successFlash', 'Thanks for your feedback!');
-    if (req.body.redirect) {
-      res.redirect(req.body.redirect);
-    } else {
-      res.redirect('/');
-    }
-  });
+      }
+      req.flash('successFlash', 'Thanks for your feedback!');
+      res.redirect(safeLocalPath(req.body.redirect));
+    }),
+  );
 };

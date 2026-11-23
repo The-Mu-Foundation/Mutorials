@@ -1,36 +1,60 @@
 // FUNCTION IMPORTS
-const { tags } = require('../utils/constants/tags');
 const {
   subjectUnitDictionary,
   subjects,
 } = require('../utils/constants/subjects');
-const { adminList } = require('../utils/constants/sitesettings');
-const { parseDelimiter } = require('../utils/functions/general');
+const { isAdmin } = require('../utils/constants/sitesettings');
 const {
-  getSiteData,
-  getAnnouncements,
-} = require('../utils/functions/database');
-const { getAdminData, queryContributor } = require('../utils/functions/admin');
-const mongoose = require('mongoose');
-const { userSchema } = require('../database/models/user');
-const db = mongoose.connection;
-//const user = require('../database/models/user');
-//const userInfo = mongoose.model('userInfo', user);
+  parseQuestionForm,
+  parseUsaboForm,
+} = require('../utils/functions/questionInput');
+const { skippedIds, promoteReviewed } = require('../utils/functions/review');
+const { toObjectId } = require('../utils/functions/ids');
+const { asString, redirectBack, wrap } = require('../utils/functions/http');
 
 const VIEWS = '../views/';
+
+// Bank-specific wiring so the standard and USABO flows share one implementation.
+const BANKS = {
+  standard: {
+    pending: 'pendingQuestions',
+    live: 'questions',
+    parse: (body) =>
+      parseQuestionForm(body, { requireAuthor: true, requireTags: true }),
+    reviewView: VIEWS + 'admin/train/editQuestion.ejs',
+    listView: VIEWS + 'admin/train/reviewHomepage.ejs',
+    empty: '/homepage',
+    pageName: 'ADMIN Review Question',
+    withDictionary: true,
+  },
+  usabo: {
+    pending: 'usaboPendingQuestions',
+    live: 'usaboQuestions',
+    parse: (body) => parseUsaboForm(body, { requireAuthor: true }),
+    reviewView: VIEWS + 'usabo/train/editQuestion.ejs',
+    listView: VIEWS + 'usabo/train/reviewHomepage.ejs',
+    empty: '/usaboHomepage',
+    pageName: 'ADMIN Review USABO Question',
+    withDictionary: false,
+  },
+};
+
+// A refactor multiplier scales the estimated hours credited for a question.
+function parseHours(body) {
+  const current = Number(body.curFactor);
+  const multiplier = Number(body.multiplier);
+  const value = current * multiplier;
+  return Number.isFinite(value) && value > 0 && value < 1000 ? value : null;
+}
 
 module.exports = (app, mongo) => {
   app.all(/^(\/reviewer).*$/, (req, res, next) => {
     if (
       req.isAuthenticated() &&
-      (adminList.includes(req.user.username) || req.user.reviewer == true)
+      (isAdmin(req.user) || req.user.reviewer === true)
     ) {
       next();
-    } else if (
-      req.isAuthenticated() &&
-      !adminList.includes(req.user.username) &&
-      (!req.user.reviewer || req.user.reviewer == false)
-    ) {
+    } else if (req.isAuthenticated()) {
       req.flash(
         'errorFlash',
         "Error 403: You don't have permission to access this resource.",
@@ -45,449 +69,133 @@ module.exports = (app, mongo) => {
     }
   });
 
-  app.post('/reviewer/editQuestion', (req, res) => {
-    if (
-      req.body.question.length < 1 ||
-      parseDelimiter(req.body.tags).length < 1 ||
-      req.body.rating.length < 1 ||
-      parseDelimiter(req.body.answer)[0].length < 1 ||
-      req.body.answerExplanation.length < 1 ||
-      req.body.author.length < 1 ||
-      req.body.type.length < 1 ||
-      req.body.externalSource.length < 1 ||
-      !req.body.subject ||
-      !req.body.units ||
-      (req.user.contributor != req.body.reviewerID) ==
-        ('isEdit' != req.body.reviewerID)
-    ) {
-      res.json({
-        success: false,
-      });
-      return;
-    }
-
-    // append unique unit tags to taglist
-    req.body.subject.forEach((subject) => {
-      Object.keys(tags[subject]['Units']).forEach((unitTag) => {
-        if (
-          req.body.units.includes(
-            subject + ' - ' + tags[subject]['Units'][unitTag],
-          )
-        ) {
-          if (req.body.tags.length >= 1) {
-            req.body.tags = unitTag + '@' + req.body.tags;
-          } else {
-            req.body.tags = unitTag;
-          }
-        }
-      });
-    });
-
-    // remove duplicate tags
-    req.body.tags = [...new Set(req.body.tags.split('@'))].join('@');
-
-    mongo.db
-      .collection(
-        req.body.reviewerID != 'isEdit' ? 'pendingQuestions' : 'questions',
-      )
-      .findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        {
-          $set: {
-            question: req.body.question,
-            choices: parseDelimiter(req.body.choices),
-            tags: parseDelimiter(req.body.tags),
-            rating: req.body.rating,
-            answer: parseDelimiter(req.body.answer),
-            answer_ex: req.body.answerExplanation,
-            author: req.body.author,
-            type: req.body.type,
-            ext_source: req.body.externalSource,
-            source_statement: req.body.sourceStatement,
-            subject: req.body.subject,
-            units: req.body.units,
-          },
-          $addToSet: {
-            reviewers: req.body.reviewerID,
-          },
-        },
-        { new: true },
-      )
-      .then((err, question) => {
-        question = question ? question : err.value;
-        if (
-          req.body.reviewerID != 'isEdit' &&
-          question &&
-          question.reviewers.length > 0
-        ) {
-          // 2 reviews complete, move to questions collection
-          mongo.db
-            .collection('pendingQuestions')
-            .deleteOne({ _id: question._id }, (err, _) => {
-              if (err) {
-                console.log(err);
-              } else {
-                const newQ = new mongo.Ques({
-                  question: req.body.question,
-                  choices: parseDelimiter(req.body.choices),
-                  tags: parseDelimiter(req.body.tags),
-                  rating: req.body.rating,
-                  answer: parseDelimiter(req.body.answer),
-                  answer_ex: req.body.answerExplanation,
-                  author: req.body.author,
-                  type: req.body.type,
-                  ext_source: req.body.externalSource,
-                  source_statement: req.body.sourceStatement,
-                  subject: req.body.subject,
-                  units: req.body.units,
-                  hourRefactor: question.hourRefactor,
-                  writtenDate: question.writtenDate,
-                  reviewers: question.reviewers,
-                  stats: {
-                    pass: 0,
-                    fail: 0,
-                  },
-                });
-                newQ.save();
-              }
-            });
-        } else {
-          res.json({
-            success: err ? true : false,
-          });
-        }
-      });
-  });
-
-  app.post('/reviewer/editUSABOQuestion', (req, res) => {
-    if (
-      req.body.question.length < 1 ||
-      req.body.rating.length < 1 ||
-      parseDelimiter(req.body.answer)[0].length < 1 ||
-      req.body.answerExplanation.length < 1 ||
-      req.body.author.length < 1 ||
-      req.body.type.length < 1 ||
-      !req.body.year ||
-      !req.body.round ||
-      !req.body.categories ||
-      //|| !req.body.problemNumber
-      (req.user.contributor != req.body.reviewerID) ==
-        ('isEdit' != req.body.reviewerID)
-    ) {
-      res.json({
-        success: false,
-      });
-      return;
-    }
-
-    mongo.db
-      .collection(
-        req.body.reviewerID != 'isEdit'
-          ? 'usaboPendingQuestions'
-          : 'usaboQuestions',
-      )
-      .findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        {
-          $set: {
-            question: req.body.question,
-            choices: parseDelimiter(req.body.choices),
-            year: req.body.year,
-            rating: req.body.rating,
-            answer: parseDelimiter(req.body.answer),
-            answer_ex: req.body.answerExplanation,
-            author: req.body.author,
-            type: req.body.type,
-            problemNumber: req.body.problemNumber,
-            round: req.body.round,
-            categories: req.body.categories,
-          },
-          $addToSet: {
-            reviewers: req.body.reviewerID,
-          },
-        },
-        { new: true },
-      )
-      .then((err, question) => {
-        question = question ? question : err.value;
-        if (
-          req.body.reviewerID != 'isEdit' &&
-          question &&
-          question.reviewers.length > 0
-        ) {
-          // 2 reviews complete, move to questions collection
-          mongo.db
-            .collection('usaboPendingQuestions')
-            .deleteOne({ _id: question._id }, (err, _) => {
-              if (err) {
-                console.log(err);
-              } else {
-                const newQ = new mongo.USABOQues({
-                  question: req.body.question,
-                  choices: parseDelimiter(req.body.choices),
-                  year: req.body.year,
-                  rating: req.body.rating,
-                  answer: parseDelimiter(req.body.answer),
-                  answer_ex: req.body.answerExplanation,
-                  author: req.body.author,
-                  type: req.body.type,
-                  problemNumber: req.body.problemNumber,
-                  round: req.body.round,
-                  categories: req.body.categories,
-                  hourRefactor: question.hourRefactor,
-                  writtenDate: question.writtenDate,
-                  reviewers: question.reviewers,
-                  stats: {
-                    pass: 0,
-                    fail: 0,
-                  },
-                });
-                newQ.save();
-              }
-            });
-        } else {
-          res.json({
-            success: err ? true : false,
-          });
-        }
-      });
-  });
-
-  app.post('/reviewer/hourRefactor', (req, res) => {
-    console.log('refactoring hours...');
-    console.log('old hours: ' + req.body.curFactor);
-    let newHours = req.body.curFactor * req.body.multiplier;
-    console.log('new hours: ' + newHours);
-    console.log('questionID: ' + req.body.questionID);
-    mongo.db
-      .collection('questions')
-      .findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } },
-      );
-    mongo.db
-      .collection('pendingQuestions')
-      .findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } },
-      );
-    res.redirect('back');
-  });
-
-  app.post('/reviewer/usaboHourRefactor', (req, res) => {
-    console.log('refactoring hours...');
-    let newHours = req.body.curFactor * req.body.multiplier;
-    console.log('new hours: ' + newHours);
-    console.log('questionID: ' + req.body.questionID);
-    mongo.db
-      .collection('usaboQuestions')
-      .findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } },
-      );
-    mongo.db
-      .collection('usaboPendingQuestions')
-      .findOneAndUpdate(
-        { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } },
-      );
-    res.redirect('back');
-  });
-
-  app.get('/reviewer/reviewQuestion', async (req, res) => {
-    c = req.cookies['skipQuestions'];
-    if (!c) {
-      c = [];
-    } else {
-      c = c.map(mongoose.Types.ObjectId);
-    }
-    mongo.db
-      .collection('pendingQuestions')
-      .findOne({
-        $and: [
-          { reviewers: { $ne: req.user.contributor } },
-          { _id: { $nin: c } },
-          { _id: mongoose.Types.ObjectId(req.query.id) },
-        ],
-      })
-      .then((question) => {
-        if (question) {
-          res.render(VIEWS + 'admin/train/editQuestion.ejs', {
-            isReview: true,
-            subjectUnitDictionary: subjectUnitDictionary,
-            question: question,
-            pageName: 'ADMIN Review Question',
-          });
-        } else {
-          req.flash('errorFlash', 'No questions to review');
-          res.redirect('/homepage');
-        }
-      });
-  });
-
-  app.get('/reviewer/reviewQuestions', async (req, res) => {
-    /*let questionArray = await mongo.db.collection('usaboPendingQuestions').find().toArray();
-        for (question of questionArray){
-            for (let i = 0; i < question.categories.length; i++){
-                question.categories[i] = "USABO - " + question.categories[i];
-            }
-            mongo.db.collection("pendingQuestions").insertOne({
-                question: question.question,
-                choices: question.choices,
-                tags: [question.year, "Problem: " + question.problemNumber, question.round[0]],
-                rating: question.rating,
-                answer: question.answer,
-                answer_ex: question.answer_ex,
-                author: question.author,
-                type: question.type,
-                ext_source: 'Competition',
-                source_statement: 'USABO',
-                subject: ['USABO'],
-                units: question.categories,
-                reviewers: question.reviewers,
-                stats: question.stats
-            });
-            mongo.db.collection("usaboPendingQuestions").deleteOne({ _id: question._id });
-        }*/
-    let pendingQuestions = await mongo.db
-      .collection('pendingQuestions')
-      .find()
-      .toArray();
-    for (let question of pendingQuestions) {
-      if (question.reviewers.length > 1) {
-        mongo.db
-          .collection('pendingQuestions')
-          .deleteOne({ _id: question._id }, () => {
-            mongo.db.collection('questions').insertOne({
-              question: question.question,
-              choices: question.choices,
-              tags: question.tags,
-              rating: question.rating,
-              answer: question.answer,
-              answer_ex: question.answer_ex,
-              author: question.author,
-              type: question.type,
-              ext_source: question.ext_source,
-              source_statement: question.source_statement,
-              subject: question.subject,
-              units: question.units,
-              reviewers: question.reviewers,
-              writtenDate: question.writtenDate,
-              hourRefactor: question.hourRefactor,
-            });
-          });
+  /**
+   * Saves a reviewer's edit. `reviewerID` is either the reviewer's own
+   * contributor id (a review of a pending question, which counts toward
+   * publication) or the literal 'isEdit' (an edit of an already live question).
+   */
+  const editHandler = (bank) =>
+    wrap(async (req, res) => {
+      const reviewerID = asString(req.body.reviewerID);
+      const isEdit = reviewerID === 'isEdit';
+      const isReview =
+        Boolean(req.user.contributor) && reviewerID === req.user.contributor;
+      const questionID = toObjectId(req.body.questionID);
+      const { data } = bank.parse(req.body);
+      if (!data || !questionID || (!isEdit && !isReview)) {
+        return res.json({ success: false });
       }
-      /*if (!question.hourRefactor) {
-                let newQ = new PendingQues({
-                    question: question.question,
-                    choices: question.choices,
-                    tags: question.tags,
-                    rating: question.rating,
-                    answer: question.answer,
-                    answer_ex: question.answer_ex,
-                    author: question.author,
-                    type: question.type,
-                    ext_source: question.ext_source,
-                    source_statement: question.source_statement,
-                    subject: question.subject,
-                    units: question.units,
-                    reviewers: question.reviewers,
-                    stats: question.stats,
-                    hourRefactor: 1
-                });
-                newQ.save();
-                mongo.db.collection("pendingQuestions").deleteOne({ _id: question._id });
-            }*/
-    }
-    pendingQuestions = await mongo.db
-      .collection('pendingQuestions')
-      .find()
-      .toArray();
-    res.render(VIEWS + 'admin/train/reviewHomepage.ejs', {
-      questions: pendingQuestions,
-      subjects: subjects,
-    });
-  });
 
-  app.get('/reviewer/reviewQuestions/:subject', async (req, res) => {
-    const pendingQuestions = await mongo.db
-      .collection('pendingQuestions')
-      .find()
-      .toArray();
-    res.render(VIEWS + 'admin/train/reviewSubjects.ejs', {
-      questions: pendingQuestions,
-      subject: req.params.subject,
-    });
-  });
+      const collection = mongo.db.collection(isEdit ? bank.live : bank.pending);
+      const filter = { _id: questionID };
+      // authors may not review their own questions
+      if (isReview) filter.author = { $ne: reviewerID };
 
-  app.get('/reviewer/reviewUSABOQuestion', async (req, res) => {
-    c = req.cookies['skipQuestions'];
-    if (!c) {
-      c = [];
-    } else {
-      c = c.map(mongoose.Types.ObjectId);
-    }
-    mongo.db
-      .collection('usaboPendingQuestions')
-      .findOne({
-        $and: [
-          { reviewers: { $ne: req.user.contributor } },
-          { _id: { $nin: c } },
-          { _id: mongoose.Types.ObjectId(req.query.id) },
-        ],
-      })
-      .then((question) => {
-        if (question) {
-          res.render(VIEWS + 'usabo/train/editQuestion.ejs', {
-            isReview: true,
-            question: question,
-            pageName: 'ADMIN Review USABO Question',
-          });
-        } else {
-          req.flash('errorFlash', 'No questions to review');
-          res.redirect('/usaboHomepage');
-        }
+      const update = { $set: data };
+      if (isReview) update.$addToSet = { reviewers: reviewerID };
+
+      const updated = await collection.findOneAndUpdate(filter, update, {
+        returnDocument: 'after',
       });
-  });
-
-  app.get('/reviewer/reviewUSABOQuestions', async (req, res) => {
-    let pendingQuestions = await mongo.db
-      .collection('usaboPendingQuestions')
-      .find()
-      .toArray();
-    for (let question of pendingQuestions) {
-      if (question.reviewers.length > 1) {
-        mongo.db
-          .collection('usaboPendingQuestions')
-          .deleteOne({ _id: question._id }, () => {
-            mongo.db.collection('usaboQuestions').insertOne({
-              question: question.question,
-              choices: question.choices,
-              year: question.year,
-              rating: question.rating,
-              answer: question.answer,
-              answer_ex: question.answer_ex,
-              author: question.author,
-              type: question.type,
-              problemNumber: question.problemNumber,
-              round: question.round,
-              categories: question.categories,
-              reviewers: question.reviewers,
-              writtenDate: question.writtenDate,
-              hourRefactor: question.hourRefactor,
-            });
-          });
+      if (!updated) {
+        return res.json({ success: false });
       }
-      /*if (!question.hourRefactor) {
-                question.hourRefactor = 1;
-            }*/
-    }
-    pendingQuestions = await mongo.db
-      .collection('usaboPendingQuestions')
-      .find()
-      .toArray();
-    res.render(VIEWS + 'usabo/train/reviewHomepage.ejs', {
-      questions: pendingQuestions,
+      if (isReview) {
+        await promoteReviewed(mongo, bank.pending, bank.live);
+      }
+      res.json({ success: true });
     });
-  });
+
+  app.post('/reviewer/editQuestion', editHandler(BANKS.standard));
+  app.post('/reviewer/editUSABOQuestion', editHandler(BANKS.usabo));
+
+  const hourHandler = (collections) =>
+    wrap(async (req, res) => {
+      const questionID = toObjectId(req.body.questionID);
+      const hours = parseHours(req.body);
+      if (questionID && hours !== null) {
+        await Promise.all(
+          collections.map((name) =>
+            mongo.db
+              .collection(name)
+              .updateOne(
+                { _id: questionID },
+                { $set: { hourRefactor: hours } },
+              ),
+          ),
+        );
+      }
+      redirectBack(req, res, '/homepage');
+    });
+
+  app.post(
+    '/reviewer/hourRefactor',
+    hourHandler(['questions', 'pendingQuestions']),
+  );
+  app.post(
+    '/reviewer/usaboHourRefactor',
+    hourHandler(['usaboQuestions', 'usaboPendingQuestions']),
+  );
+
+  const reviewOneHandler = (bank) =>
+    wrap(async (req, res) => {
+      const id = toObjectId(req.query.id);
+      const question =
+        id &&
+        (await mongo.db.collection(bank.pending).findOne({
+          _id: { $eq: id, $nin: skippedIds(req) },
+          reviewers: { $ne: req.user.contributor },
+        }));
+      if (!question) {
+        req.flash('errorFlash', 'No questions to review');
+        return res.redirect(bank.empty);
+      }
+      res.render(bank.reviewView, {
+        isReview: true,
+        ...(bank.withDictionary ? { subjectUnitDictionary } : {}),
+        question,
+        pageName: bank.pageName,
+      });
+    });
+
+  app.get('/reviewer/reviewQuestion', reviewOneHandler(BANKS.standard));
+  app.get('/reviewer/reviewUSABOQuestion', reviewOneHandler(BANKS.usabo));
+
+  app.get(
+    '/reviewer/reviewQuestions',
+    wrap(async (req, res) => {
+      await promoteReviewed(mongo, BANKS.standard.pending, BANKS.standard.live);
+      const questions = await mongo.db
+        .collection(BANKS.standard.pending)
+        .find()
+        .toArray();
+      res.render(BANKS.standard.listView, { questions, subjects });
+    }),
+  );
+
+  app.get(
+    '/reviewer/reviewQuestions/:subject',
+    wrap(async (req, res) => {
+      const questions = await mongo.db
+        .collection(BANKS.standard.pending)
+        .find()
+        .toArray();
+      res.render(VIEWS + 'admin/train/reviewSubjects.ejs', {
+        questions,
+        subject: req.params.subject,
+      });
+    }),
+  );
+
+  app.get(
+    '/reviewer/reviewUSABOQuestions',
+    wrap(async (req, res) => {
+      await promoteReviewed(mongo, BANKS.usabo.pending, BANKS.usabo.live);
+      const questions = await mongo.db
+        .collection(BANKS.usabo.pending)
+        .find()
+        .toArray();
+      res.render(BANKS.usabo.listView, { questions });
+    }),
+  );
 };
