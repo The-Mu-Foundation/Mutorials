@@ -1,10 +1,11 @@
-const { tags } = require('../utils/constants/tags');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
-const { parseDelimiter } = require('../utils/functions/general');
+const { isAdmin } = require('../utils/constants/sitesettings');
 const { queryContributor } = require('../utils/functions/admin');
-const mongoose = require('mongoose');
-const { adminList } = require('../utils/constants/sitesettings');
-const db = mongoose.connection;
+const {
+  parseQuestionForm,
+  parseUsaboForm,
+} = require('../utils/functions/questionInput');
+const { asString, wrap } = require('../utils/functions/http');
 
 const VIEWS = __dirname + '/../views/';
 
@@ -15,67 +16,48 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        "Error 404: File Not Found. That page doesn't exist."
+        "Error 404: File Not Found. That page doesn't exist.",
       );
       res.redirect('/');
     }
   });
 
-  // prefix all contributor routes with /contributor
-  app.post('/contributors/addQuestion', (req, res, next) => {
-    if (
-      req.body.question.length < 1 ||
-      parseDelimiter(req.body.answer)[0].length < 1 ||
-      req.body.rating.length < 1 ||
-      req.body.answerExplanation.length < 1 ||
-      req.body.type.length < 1 ||
-      req.body.externalSource.length < 1 ||
-      !req.body.subject ||
-      !req.body.units
-    ) {
-      res.json({
-        success: false,
-      });
-      return;
-    }
+  app.post(
+    '/contributors/addQuestion',
+    wrap(async (req, res) => {
+      const { data } = parseQuestionForm(req.body);
+      if (!data) {
+        return res.json({ success: false });
+      }
+      await new mongo.PendingQues({
+        ...data,
+        author: req.user.contributor, // never trust a client-supplied author
+        reviewers: [],
+      }).save();
+      res.json({ success: true });
+    }),
+  );
 
-    // append unique unit tags to taglist
-    req.body.subject.forEach((subject) => {
-      Object.keys(tags[subject]['Units']).forEach((unitTag) => {
-        if (
-          req.body.units.includes(
-            subject + ' - ' + tags[subject]['Units'][unitTag]
-          )
-        ) {
-          if (req.body.tags.length >= 1) {
-            req.body.tags = unitTag + '@' + req.body.tags;
-          } else {
-            req.body.tags = unitTag;
-          }
-        }
-      });
-    });
+  app.post(
+    '/contributors/addUSABOQuestion',
+    wrap(async (req, res) => {
+      const { data } = parseUsaboForm(req.body);
+      if (!data) {
+        return res.json({ success: false });
+      }
+      await new mongo.USABOPendingQues({
+        ...data,
+        author: req.user.contributor,
+        reviewers: [],
+        stats: { pass: 0, fail: 0 },
+      }).save();
+      res.json({ success: true });
+    }),
+  );
 
-    const newQ = new mongo.PendingQues({
-      question: req.body.question,
-      choices: parseDelimiter(req.body.choices),
-      tags: parseDelimiter(req.body.tags),
-      rating: req.body.rating,
-      answer: parseDelimiter(req.body.answer),
-      answer_ex: req.body.answerExplanation,
-      author: req.user.contributor,
-      type: req.body.type,
-      ext_source: req.body.externalSource,
-      source_statement: req.body.sourceStatement,
-      subject: req.body.subject,
-      units: req.body.units,
-      reviewers: [],
-    });
-
-    newQ.save();
-
-    res.json({
-      success: true,
+  app.get('/contributors/addUSABOQuestion', (req, res) => {
+    res.render(VIEWS + 'usabo/contributorAddQuestion.ejs', {
+      pageName: 'CONTRIBUTOR Add USABO Question',
     });
   });
 
@@ -86,18 +68,20 @@ module.exports = (app, mongo) => {
     });
   });
 
-  app.get('/contributors/getContributorStats', async (req, res) => {
-    let contributor = await queryContributor(
-      req.query.id,
-      mongo.Ques,
-      mongo.PendingQues
-    );
-    res.json(contributor);
-  });
+  // Contributors may only query their own statistics; admins may query anyone.
+  app.get(
+    '/contributors/getContributorStats',
+    wrap(async (req, res) => {
+      const id = isAdmin(req.user)
+        ? asString(req.query.id)
+        : req.user.contributor;
+      res.json(await queryContributor(id, mongo.Ques, mongo.PendingQues));
+    }),
+  );
 
   app.get('/contributors/stats', (req, res) => {
     res.render(VIEWS + 'contributors/contributorStats.ejs', {
-      adminList,
+      isAdmin: isAdmin(req.user),
       user: req.user,
       contributorID: req.user.contributor,
       pageName: 'CONTRIBUTOR Stats',

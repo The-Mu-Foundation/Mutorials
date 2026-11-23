@@ -1,0 +1,107 @@
+[
+  {
+    "id": "p1",
+    "type": "mc",
+    "subject": ["Physics"],
+    "units": ["Physics - Kinematics"],
+    "question": "A car accelerates uniformly from rest at 3 m/s^2 for 4 s. How far does it travel?",
+    "choices": ["12 m", "24 m", "48 m", "6 m"],
+    "answer": ["2"],
+    "answer_ex": "Starting from rest, d = (1/2) a t^2 = 0.5 * 3 * 4^2 = 24 m."
+  },
+  {
+    "id": "p2",
+    "type": "mc",
+    "subject": ["Physics"],
+    "units": ["Physics - Linear Dynamics"],
+    "question": "A 2 kg block slides down a frictionless 30 degree incline. What is its acceleration?",
+    "choices": ["4.9 m/s^2", "9.8 m/s^2", "8.5 m/s^2", "2.5 m/s^2"],
+    "answer": ["1"],
+    "answer_ex": "On a frictionless incline only the component of gravity along the slope accelerates the block: a = g sin(30) = 9.8 * 0.5 = 4.9 m/s^2. The mass cancels."
+  },
+  {
+    "id": "p3",
+    "type": "mc",
+    "subject": ["Physics"],
+    "units": ["Physics - Energy and Momentum"],
+    "question": "A 1 kg ball is dropped from rest from a height of 20 m. Ignoring air resistance, what is its speed just before it lands? Use g = 10 m/s^2.",
+    "choices": ["10 m/s", "20 m/s", "40 m/s", "200 m/s"],
+    "answer": ["2"],
+    "answer_ex": "Energy conservation gives mgh = (1/2) m v^2, so v = sqrt(2 g h) = sqrt(2 * 10 * 20) = sqrt(400) = 20 m/s."
+  },
+  {
+    "id": "p4",
+    "type": "fr",
+    "subject": ["Physics"],
+    "units": ["Physics - Oscillations"],
+    "question": "A mass-spring system has k = 100 N/m and m = 1 kg. What is its angular frequency in rad/s?",
+    "choices": [],
+    "answer": ["10"],
+    "answer_ex": "The angular frequency of a mass on a spring is omega = sqrt(k/m) = sqrt(100/1) = 10 rad/s."
+  },
+  {
+    "id": "c1",
+    "type": "mc",
+    "subject": ["Chemistry"],
+    "units": ["Chemistry - Stoichiometry"],
+    "question": "How many moles of water are produced when 2 mol of hydrogen gas react completely with excess oxygen in 2 H2 + O2 -> 2 H2O?",
+    "choices": ["1 mol", "2 mol", "4 mol", "0.5 mol"],
+    "answer": ["2"],
+    "answer_ex": "The balanced equation shows 2 mol of H2 giving 2 mol of H2O, a 1:1 mole ratio, so 2 mol of water form."
+  },
+  {
+    "id": "c2",
+    "type": "mc",
+    "subject": ["Chemistry"],
+    "units": ["Chemistry - Acids and Bases"],
+    "question": "What is the pH of a 0.01 M solution of the strong acid HCl?",
+    "choices": ["1", "2", "7", "12"],
+    "answer": ["2"],
+    "answer_ex": "HCl dissociates completely, so [H+] = 0.01 M = 10^-2 M and pH = -log(10^-2) = 2."
+  },
+  {
+    "id": "c3",
+    "type": "fr",
+    "subject": ["Chemistry"],
+    "units": ["Chemistry - Gases"],
+    "question": "At constant temperature a gas at 2 atm occupies 3 L. What volume in liters does it occupy at 6 atm?",
+    "choices": [],
+    "answer": ["1"],
+    "answer_ex": "Boyle's law gives P1 V1 = P2 V2, so V2 = (2 * 3) / 6 = 1 L."
+  },
+  {
+    "id": "b1",
+    "type": "mc",
+    "subject": ["Biology"],
+    "units": ["Biology - Cell Biology"],
+    "question": "Which organelle produces most of the ATP in a eukaryotic cell?",
+    "choices": ["Golgi apparatus", "Mitochondrion", "Lysosome", "Ribosome"],
+    "answer": ["2"],
+    "answer_ex": "The mitochondrion makes most cellular ATP through oxidative phosphorylation across its inner membrane."
+  },
+  {
+    "id": "b2",
+    "type": "mc",
+    "subject": ["Biology"],
+    "units": ["Biology - Genetics"],
+    "question": "Two heterozygous (Aa) parents are crossed. What fraction of the offspring is expected to be homozygous recessive (aa)?",
+    "choices": ["1/2", "1/4", "3/4", "1/8"],
+    "answer": ["2"],
+    "answer_ex": "A monohybrid cross Aa x Aa gives AA, Aa, Aa and aa in a 1:2:1 ratio, so 1/4 of offspring are aa."
+  },
+  {
+    "id": "b3",
+    "type": "sa",
+    "subject": ["Biology"],
+    "units": ["Biology - Cell Biology"],
+    "question": "Select all processes that occur in the mitochondrion.",
+    "choices": [
+      "Citric acid cycle",
+      "Glycolysis",
+      "Oxidative phosphorylation",
+      "Transcription of nuclear genes"
+    ],
+    "answer": ["1", "3"],
+    "answer_ex": "The citric acid cycle and oxidative phosphorylation occur in the mitochondrion. Glycolysis happens in the cytosol and nuclear genes are transcribed in the nucleus."
+  }
+]

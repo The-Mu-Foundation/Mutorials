@@ -1,6 +1,9 @@
 // LIBRARY IMPORTS
-const mongoose = require('mongoose');
 const { nanoid } = require('nanoid');
+
+// FUNCTION IMPORTS
+const { toObjectId } = require('../utils/functions/ids');
+const { asString, wrap } = require('../utils/functions/http');
 
 const VIEWS = __dirname + '/../views/';
 
@@ -11,158 +14,162 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
+        'Error 401: Unauthorized. You need to login to see this page.',
       );
       res.redirect('/');
     }
   });
 
-  app.post('/class/verifyClassCode', (req, res, next) => {
-    if ((!req.body.classCode != req.body.classCode) == '') {
-      req.flash('errorFlash', 'Please enter a code.');
+  // true if the signed-in user teaches the class with this ObjectId
+  const teachesClass = (req, classId) =>
+    Boolean(classId) &&
+    req.user.teachingClasses.some((id) => String(id) === String(classId));
+
+  const notFound = (req, res) => {
+    req.flash('errorFlash', 'Error 404: Class not found.');
+    res.redirect('/');
+  };
+
+  app.post(
+    '/class/verifyClassCode',
+    wrap(async (req, res) => {
+      const classCode = asString(req.body.classCode).trim();
+      if (!classCode) {
+        req.flash('errorFlash', 'Please enter a code.');
+        return res.redirect('/class/join');
+      }
+      req.session.classCode = classCode;
+      const found = await mongo.Class.findOne({ classCode }).lean();
+      if (found) {
+        req.session.currentClass = found;
+      } else {
+        req.flash('errorFlash', "There isn't a class with that code.");
+      }
       res.redirect('/class/join');
-    } else {
-      req.session.classCode = req.body.classCode;
-      mongo.db
-        .collection('classes')
-        .findOne({ classCode: req.body.classCode }, async (err, obj) => {
-          if (obj) {
-            req.session.currentClass = obj;
-          } else {
-            req.flash('errorFlash', "There isn't a class with that code.");
-          }
-          res.redirect('/class/join');
-        });
-    }
-  });
+    }),
+  );
 
-  app.post('/class/joinClass', (req, res, next) => {
-    mongo.db
-      .collection('classes')
-      .findOne({ classCode: req.body.classCode }, async (err, obj) => {
-        mongo.db
-          .collection('users')
-          .findOneAndUpdate(
-            { _id: req.user._id },
-            { $addToSet: { classes: obj._id } }
-          );
-        req.flash(
-          'successFlash',
-          "You've successfully been added to " + req.body.name + '.'
-        );
-        res.redirect('/');
-      });
-  });
-
-  app.post('/class/createClass', (req, res, next) => {
-    mongo.Class.findOne({
-      $and: [{ name: req.body.name }, { teacher: req.user.ign }],
-    }).then((currentClass) => {
-      if (currentClass) {
-        req.flash('errorFlash', 'You already have a class with that name.');
-        res.redirect('/');
-      } else {
-        const newClass = new mongo.Class({
-          name: req.body.name,
-          school: req.body.school,
-          city: req.body.city,
-          classCode: nanoid(8),
-        });
-        newClass.save();
-        mongo.db
-          .collection('users')
-          .findOneAndUpdate(
-            { _id: req.user._id },
-            { $push: { teachingClasses: newClass._id } }
-          );
-        req.flash(
-          'successFlash',
-          'We successfully created class ' + req.body.name + '.'
-        );
-        res.redirect('/class/dash');
+  app.post(
+    '/class/joinClass',
+    wrap(async (req, res) => {
+      const found = await mongo.Class.findOne({
+        classCode: asString(req.body.classCode).trim(),
+      }).lean();
+      if (!found) {
+        req.flash('errorFlash', "There isn't a class with that code.");
+        return res.redirect('/class/join');
       }
-    });
-  });
-
-  app.post('/class/generateNewClassCode', (req, res, next) => {
-    mongo.User.findOne({
-      $and: [{ _id: req.user._id }, { teachingClasses: req.body.classId }],
-    }).then(async (teacher) => {
-      if (teacher) {
-        let newClassCode = nanoid(8);
-        console.log(newClassCode);
-        reqClassId = mongoose.Types.ObjectId(req.body.classId);
-        mongo.db
-          .collection('classes')
-          .findOneAndUpdate(
-            { _id: reqClassId },
-            { $set: { classCode: newClassCode } },
-            { new: true }
-          )
-          .then((err, currentClass) => {
-            req.flash('successFlash', 'New class code generated.');
-            res.redirect('/class/manage/' + newClassCode);
-          });
-      } else {
-        req.flash('errorFlash', 'Error 404: Class not found.');
-        res.redirect('/');
-      }
-    });
-  });
-
-  app.post('/class/leave', (req, res, next) => {
-    reqClassId = mongoose.Types.ObjectId(req.body.classId);
-    mongo.User.findOneAndUpdate(
-      { _id: req.user._id },
-      { $pull: { classes: { $in: [reqClassId] } } }
-    ).then((err, students) => {
-      req.flash('successFlash', "You've left " + req.body.className + '.');
+      await mongo.User.updateOne(
+        { _id: req.user._id },
+        { $addToSet: { classes: found._id } },
+      );
+      req.flash(
+        'successFlash',
+        "You've successfully been added to " + found.name + '.',
+      );
       res.redirect('/');
-    });
-  });
+    }),
+  );
 
-  app.post('/class/removeStudent', (req, res, next) => {
-    reqClassId = mongoose.Types.ObjectId(req.body.classId);
-    console.log(req.body.ign);
-    mongo.User.findOneAndUpdate(
-      { ign: req.body.ign },
-      { $pull: { classes: { $in: [reqClassId] } } }
-    ).then((err, students) => {
-      res.json({ status: 'Success' });
-    });
-  });
-
-  app.post('/class/delete', (req, res, next) => {
-    reqClassId = mongoose.Types.ObjectId(req.body.classId);
-    mongo.User.findOne({
-      $and: [{ _id: req.user._id }, { teachingClasses: reqClassId }],
-    }).then(async (teacher) => {
-      if (teacher) {
-        console.log(reqClassId);
-        mongo.Class.deleteOne({ _id: reqClassId }).then((err, deletedClass) => {
-          console.log(deletedClass);
-          mongo.User.updateMany(
-            {},
-            { $pull: { classes: { $in: [reqClassId] } } }
-          ).then((err, students) => {
-            mongo.User.updateMany(
-              {},
-              { $pull: { teachingClasses: { $in: [reqClassId] } } }
-            ).then((err, teachers) => {
-              req.flash(
-                'successFlash',
-                'Class ' + req.body.className + ' has been deleted.'
-              );
-              res.redirect('/');
-            });
-          });
-        });
-      } else {
-        req.flash('errorFlash', 'Error 404: Class not found.');
-        res.redirect('/');
+  app.post(
+    '/class/createClass',
+    wrap(async (req, res) => {
+      const name = asString(req.body.name).trim().slice(0, 100);
+      if (!name) {
+        req.flash('errorFlash', 'Please name your class.');
+        return res.redirect('/class/create');
       }
-    });
-  });
+      const existing = await mongo.Class.findOne({
+        name,
+        teacher: req.user.ign,
+      }).lean();
+      if (existing) {
+        req.flash('errorFlash', 'You already have a class with that name.');
+        return res.redirect('/');
+      }
+      const newClass = await new mongo.Class({
+        name,
+        teacher: req.user.ign,
+        school: asString(req.body.school).trim().slice(0, 100),
+        city: asString(req.body.city).trim().slice(0, 100),
+        classCode: nanoid(8),
+      }).save();
+      await mongo.User.updateOne(
+        { _id: req.user._id },
+        { $push: { teachingClasses: newClass._id } },
+      );
+      req.flash('successFlash', 'We successfully created class ' + name + '.');
+      res.redirect('/class/dash');
+    }),
+  );
+
+  app.post(
+    '/class/generateNewClassCode',
+    wrap(async (req, res) => {
+      const classId = toObjectId(req.body.classId);
+      if (!teachesClass(req, classId)) return notFound(req, res);
+      const newClassCode = nanoid(8);
+      await mongo.Class.updateOne(
+        { _id: classId },
+        { $set: { classCode: newClassCode } },
+      );
+      req.flash('successFlash', 'New class code generated.');
+      res.redirect('/class/manage/' + newClassCode);
+    }),
+  );
+
+  app.post(
+    '/class/leave',
+    wrap(async (req, res) => {
+      const classId = toObjectId(req.body.classId);
+      if (classId) {
+        await mongo.User.updateOne(
+          { _id: req.user._id },
+          { $pull: { classes: classId } },
+        );
+      }
+      req.flash(
+        'successFlash',
+        "You've left " + asString(req.body.className).slice(0, 100) + '.',
+      );
+      res.redirect('/');
+    }),
+  );
+
+  // only the teacher of a class may remove a student from it
+  app.post(
+    '/class/removeStudent',
+    wrap(async (req, res) => {
+      const classId = toObjectId(req.body.classId);
+      if (!teachesClass(req, classId)) {
+        return res.status(403).json({ status: 'Forbidden' });
+      }
+      await mongo.User.updateOne(
+        { ign: asString(req.body.ign) },
+        { $pull: { classes: classId } },
+      );
+      res.json({ status: 'Success' });
+    }),
+  );
+
+  app.post(
+    '/class/delete',
+    wrap(async (req, res) => {
+      const classId = toObjectId(req.body.classId);
+      if (!teachesClass(req, classId)) return notFound(req, res);
+      const doomed = await mongo.Class.findById(classId).lean();
+      await mongo.Class.deleteOne({ _id: classId });
+      await mongo.User.updateMany(
+        { $or: [{ classes: classId }, { teachingClasses: classId }] },
+        { $pull: { classes: classId, teachingClasses: classId } },
+      );
+      req.flash(
+        'successFlash',
+        'Class ' + (doomed ? doomed.name : '') + ' has been deleted.',
+      );
+      res.redirect('/');
+    }),
+  );
 
   app.get('/class/join', (req, res) => {
     res.locals.classCode = req.session.classCode;
@@ -176,81 +183,51 @@ module.exports = (app, mongo) => {
     res.render(VIEWS + 'private/class/create.ejs', { name: req.user.ign });
   });
 
-  app.get('/class/dash', (req, res) => {
-    mongo.User.findOne({ _id: req.user._id })
-      .populate('teachingClasses')
-      .populate('classes')
-      .then((user) => {
-        res.render(VIEWS + 'private/class/dash.ejs', {
-          classes: user.classes,
-          teachingClasses: user.teachingClasses,
-        });
+  app.get(
+    '/class/dash',
+    wrap(async (req, res) => {
+      const user = await mongo.User.findById(req.user._id)
+        .populate('teachingClasses')
+        .populate('classes')
+        .exec();
+      res.render(VIEWS + 'private/class/dash.ejs', {
+        classes: user.classes,
+        teachingClasses: user.teachingClasses,
       });
-  });
+    }),
+  );
 
-  app.get('/class/manage/:classCode', (req, res) => {
-    if (req.params.classCode) {
-      mongo.db
-        .collection('classes')
-        .findOne({ classCode: req.params.classCode })
-        .then((currentClass) => {
-          if (currentClass) {
-            mongo.User.findOne({ teachingClasses: currentClass._id }).then(
-              (teacher) => {
-                if (teacher.ign == req.user.ign) {
-                  mongo.User.find({ classes: currentClass._id }).then(
-                    (students) => {
-                      let physicsAvg = 0,
-                        chemistryAvg = 0,
-                        biologyAvg = 0;
-                      if (!students || students.length == 0) {
-                        req.flash(
-                          'errorFlash',
-                          "There aren't any students in your class yet."
-                        );
-                      } else {
-                        // calculate averages
-                        // students is just a list of users
-                        if (students.length != 0) {
-                          students.forEach((student, studentIndex) => {
-                            if (student.rating.physics != -1) {
-                              physicsAvg += student.rating.physics;
-                            }
-                            if (student.rating.chemistry != -1) {
-                              chemistryAvg += student.rating.chemistry;
-                            }
-                            if (student.rating.chemistry != -1) {
-                              biologyAvg += student.rating.biology + 1;
-                            }
-                          });
-                          physicsAvg = physicsAvg / students.length;
-                          chemistryAvg = chemistryAvg / students.length;
-                          biologyAvg = biologyAvg / students.length;
-                        }
-                      }
-                      res.render(VIEWS + 'private/class/details.ejs', {
-                        currentClass: currentClass,
-                        students: students,
-                        physicsAvg: physicsAvg,
-                        chemistryAvg: chemistryAvg,
-                        biologyAvg: biologyAvg,
-                      });
-                    }
-                  );
-                } else {
-                  req.flash('errorFlash', 'Error 404: Class not found.');
-                  res.redirect('/');
-                }
-              }
-            );
-          } else {
-            req.flash('errorFlash', 'Error 404: Class not found.');
-            res.redirect('/');
-          }
-        });
-    } else {
-      req.flash('errorFlash', "That URL doesn't contain a class code.");
-      res.redirect('/');
-    }
-  });
+  app.get(
+    '/class/manage/:classCode',
+    wrap(async (req, res) => {
+      const currentClass = await mongo.Class.findOne({
+        classCode: asString(req.params.classCode),
+      }).lean();
+      if (!currentClass || !teachesClass(req, currentClass._id)) {
+        return notFound(req, res);
+      }
+      const students = await mongo.User.find({
+        classes: currentClass._id,
+      }).exec();
+      if (students.length === 0) {
+        req.flash('errorFlash', "There aren't any students in your class yet.");
+      }
+      // average only over students who have actually rated that subject
+      const average = (subject) => {
+        const ratings = students
+          .map((s) => s.rating[subject])
+          .filter((r) => Number.isFinite(r) && r !== -1);
+        return ratings.length
+          ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+          : 0;
+      };
+      res.render(VIEWS + 'private/class/details.ejs', {
+        currentClass,
+        students,
+        physicsAvg: average('physics'),
+        chemistryAvg: average('chemistry'),
+        biologyAvg: average('biology'),
+      });
+    }),
+  );
 };

@@ -1,39 +1,62 @@
 const mongoose = require('mongoose');
-const db = mongoose.connection;
 
 const { calculateLevel } = require('./siteAlgorithms');
-
-const { updateUSABOCounters } = require('./usaboDatabase');
 const mongo = require('./mongo');
+
+// default SiteData documents the application expects to exist
+const SITE_DATA_DEFAULTS = {
+  QUESTIONS: {
+    attempts: { physics: 0, chemistry: 0, biology: 0, usabo: 0, ess: 0 },
+    solves: { physics: 0, chemistry: 0, biology: 0, usabo: 0, ess: 0 },
+  },
+  HISTORY_MONTH: { userbase: [], questioncount: [], attempts: [], solves: [] },
+  HISTORY_YEAR: { userbase: [], questioncount: [], attempts: [], solves: [] },
+  ANNOUNCEMENTS: { site: [] },
+};
+
+// creates any missing SiteData documents (safe to run on every start)
+async function ensureSiteData(SiteData) {
+  await Promise.all(
+    Object.entries(SITE_DATA_DEFAULTS).map(([tag, data]) =>
+      SiteData.updateOne(
+        { tag },
+        { $setOnInsert: { tag, data } },
+        { upsert: true },
+      ),
+    ),
+  );
+}
 
 // input a string (the question ID), returns question entry
 function getQuestion(Ques, id) {
   return Ques.findById(id).exec();
 }
 
-// input a rating range (as floor and ceiling values), returns a range of questions
-async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, units, excludeIds = []) {
+/**
+ * Picks one random question whose rating lies in [floor, ceiling] and which
+ * belongs to at least one of the given units. Filtering happens in MongoDB and
+ * only ids are transferred before the single chosen document is loaded.
+ */
+async function pickQuestion(
+  Ques,
+  { floor, ceiling, subject, units, excludeIds = [] },
+) {
   const query = {
     subject: [subject],
-    rating: { $gte: ratingFloor, $lte: ratingCeiling },
+    rating: { $gte: floor, $lte: ceiling },
+    units: { $in: units },
   };
-  if (excludeIds && excludeIds.length > 0) {
-    query._id = { $nin: excludeIds.map((id) => mongoose.Types.ObjectId(id)) };
+  if (excludeIds.length > 0) {
+    query._id = {
+      $nin: excludeIds.filter((id) => mongoose.isValidObjectId(id)),
+    };
   }
-  const gotQ = Ques.find(query);
-
-  let tempQ = await gotQ.exec();
-
-  console.log(tempQ.length);
-
-  for (i = 0; i < tempQ.length; i++) {
-    const found = units.some((r) => tempQ[i].units.includes(r));
-    if (!found) {
-      tempQ.splice(i, 1);
-      i--;
-    }
-  }
-  return tempQ;
+  const [picked] = await Ques.aggregate([
+    { $match: query },
+    { $sample: { size: 1 } },
+    { $project: { _id: 1 } },
+  ]);
+  return picked ? Ques.findById(picked._id).exec() : null;
 }
 
 // return rating of the user logged in right now
@@ -41,444 +64,252 @@ function getRating(subject, req) {
   return req.user.rating[subject.toLowerCase()];
 }
 
-// set the rating of the user logged in right now
-function setRating(subject, newRating, req) {
-  req.user.rating[subject.toLowerCase()] = newRating;
-  db.collection('users').findOneAndUpdate(
-    { username: req.user.username },
-    { $set: { rating: req.user.rating } }
+// update "to answer" queue field in user db (atomic, touches only this field)
+async function updateQuestionQueue(req, subject, id) {
+  const key = subject.toLowerCase();
+  await mongo.User.updateOne(
+    { _id: req.user._id },
+    { $set: { ['stats.toAnswer.' + key]: String(id) } },
   );
+  req.user.stats.toAnswer[key] = String(id);
 }
 
-// modify the correct/wrong counter for users, and the pass/fail counter for questions, as well as tag collector tags
-
-function updateAll(req, question, correct) {
-  if (question.subject == 'USABO') {
-    updateUSABOCounters(req, question, correct);
-  } else {
-    updateCounters(req, question, correct);
-  }
-  updateTracker(req, question);
-  updateLastAnswered(req, question);
-  addExperience(
-    req,
-    correct ? question.rating : Math.ceil(question.rating / 2)
+async function clearQuestionQueue(req, subject) {
+  const key = subject.toLowerCase();
+  await mongo.User.updateOne(
+    { _id: req.user._id },
+    { $set: { ['stats.toAnswer.' + key]: '' } },
   );
-}
-function updateCounters(req, question, correct) {
-  // configure general counters
-  if (correct) {
-    // update counters
-    req.user.stats.correct++;
-    question.stats.pass++;
-    // update tag collector
-    question.tags.forEach((tag) => {
-      if (!req.user.stats.collectedTags.includes(tag)) {
-        req.user.stats.collectedTags.push(tag);
-      }
-    });
-  } else if (!correct) {
-    req.user.stats.wrong++;
-    question.stats.fail++;
-  }
-
-  // unit-specific counters
-  if (!req.user.stats.units) {
-    req.user.stats.units = {};
-  }
-  question.units.forEach((unit) => {
-    if (!req.user.stats.units['' + unit]) {
-      req.user.stats.units['' + unit] = {
-        correct: 0,
-        wrong: 0,
-        highestQRating: 100,
-        highestQCorrectRating: 100,
-        pastResults: [],
-        pastRatings: [],
-        lastTouched: '',
-      };
-    }
-
-    // temporary tracker
-    let tempUnit = req.user.stats.units['' + unit];
-
-    if (question.rating > tempUnit.highestQRating) {
-      tempUnit.highestQRating = question.rating;
-    }
-
-    if (correct) {
-      tempUnit.correct++;
-      tempUnit.pastResults.push(1);
-      if (question.rating > tempUnit.highestQCorrectRating) {
-        tempUnit.highestQCorrectRating = question.rating;
-      }
-    } else {
-      tempUnit.wrong++;
-      tempUnit.pastResults.push(-1);
-    }
-
-    tempUnit.pastRatings.push(question.rating);
-
-    while (tempUnit.pastRatings.length > 15) {
-      tempUnit.pastRatings.shift();
-    }
-    while (tempUnit.pastResults.length > 15) {
-      tempUnit.pastResults.shift();
-    }
-
-    tempUnit.lastTouched = new Date().toISOString().split('T')[0];
-
-    req.user.stats.units['' + unit] = tempUnit;
-  });
-
-  db.collection('users').findOneAndUpdate(
-    { username: req.user.username },
-    { $set: { stats: req.user.stats } }
-  );
-  db.collection('questions').findOneAndUpdate(
-    { _id: question._id },
-    {
-      $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } },
-    }
-  );
-}
-function updateTracker(req, question) {
-  // update rating tracker
-  let tracker;
-  if (req.user.stats.ratingTracker === undefined) {
-    req.user.stats.ratingTracker = {};
-  }
-  try {
-    // try to update the tracker
-    tracker = req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
-    tracker.push(req.user.rating[question.subject[0].toLowerCase()]);
-    while (tracker.length > 20) {
-      tracker.shift();
-    }
-  } catch (err) {
-    // tracker doesn"t exist (yet), so create one!
-    tracker = [req.user.rating[question.subject[0].toLowerCase()]];
-    req.user.stats.ratingTracker[question.subject[0].toLowerCase()];
-  }
-  req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
-  db.collection('users').findOneAndUpdate(
-    { username: req.user.username },
-    { $set: { stats: req.user.stats } }
-  );
-}
-function updateLastAnswered(req, question) {
-  // updated "last answered" field with question ID
-  req.user.stats.lastAnswered = question._id;
-  db.collection('users').findOneAndUpdate(
-    { username: req.user.username },
-    { $set: { stats: req.user.stats } }
-  );
-}
-function addExperience(req, amount) {
-  // add experience points to user
-  if (req.user.stats.experience) {
-    req.user.stats.experience += amount;
-  } else {
-    req.user.stats.experience = amount;
-  }
-  db.collection('users').findOneAndUpdate(
-    { username: req.user.username },
-    { $set: { stats: req.user.stats } }
-  );
+  req.user.stats.toAnswer[key] = '';
 }
 
+// atomically sets one subject rating without touching any other user field
+async function setRating(subject, newRating, req) {
+  const key = subject.toLowerCase();
+  await mongo.User.updateOne(
+    { _id: req.user._id },
+    { $set: { ['rating.' + key]: newRating } },
+  );
+  req.user.rating[key] = newRating;
+}
+
+// adds experience points to the signed-in user atomically
+async function addExperience(req, amount) {
+  const gained = Math.round(amount);
+  await mongo.User.updateOne(
+    { _id: req.user._id },
+    { $inc: { 'stats.experience': gained } },
+  );
+  req.user.stats.experience = (req.user.stats.experience || 0) + gained;
+}
+
+// bumps the site-wide attempt/solve counters atomically
 async function incrementSolveCounter(SiteData, subject, correct) {
-  let data = await SiteData.findOne({ tag: 'QUESTIONS' }).exec();
-  let counts = data.data;
-  counts.attempts[subject] += 1;
-  if (correct) {
-    counts.solves[subject] += 1;
-  }
-  db.collection('sitedatas').findOneAndUpdate(
+  const key = subject.toLowerCase();
+  await SiteData.updateOne(
     { tag: 'QUESTIONS' },
-    { $set: { data: counts } }
+    {
+      $inc: {
+        ['data.attempts.' + key]: 1,
+        ...(correct ? { ['data.solves.' + key]: 1 } : {}),
+      },
+    },
+    { upsert: true },
   );
 }
 
-// update "to answer" queue field in user db
-function updateQuestionQueue(req, subject, id) {
-  req.user.stats.toAnswer[subject.toLowerCase()] = id;
-  db.collection('users').findOneAndUpdate(
-    { username: req.user.username },
-    { $set: { stats: req.user.stats } }
-  );
-}
-function clearQuestionQueue(req, subject) {
-  req.user.stats.toAnswer[subject.toLowerCase()] = '';
-  db.collection('users').findOneAndUpdate(
-    { username: req.user.username },
-    { $set: { stats: req.user.stats } }
-  );
-}
-
-// things to update when skipping question
-async function skipQuestionUpdates(Ques, req, subject, id) {
-  // deduct 8 rating for skipping
-  const originalRating = getRating(subject, req);
-  const deduction = originalRating > 8 ? originalRating - 8 : 0;
-  setRating(subject, deduction, req);
-
-  // update rating tracker
-  let q = await getQuestion(Ques, id);
-  updateTracker(req, q);
-
-  // add +1 wrong for question and give question one rating
-  q.rating += 1;
-  q.stats.fail += 1;
-  db.collection('questions').findOneAndUpdate(
-    { _id: q._id },
-    { $set: { stats: q.stats, rating: q.rating } }
-  );
-}
-
-// set question rating
-function setQRating(antsy, newQRate) {
-  antsy.rating = newQRate;
-  db.collection('questions').findOneAndUpdate(
-    { _id: antsy._id },
-    { $set: { rating: antsy.rating } }
-  );
-}
-
-// generate a leaderboard for a certain subject; count is the number of people on board
+// top users per category; count is the number of people on each board
 async function generateLeaderboard(User, count) {
-  // NOTE: change the $gte to a higher number once we get more users
-  let physics = await User.find({ 'rating.physics': { $gte: 1000 } })
-    .sort({ 'rating.physics': -1 })
-    .limit(count)
-    .exec();
-  let chem = await User.find({ 'rating.chemistry': { $gte: 1000 } })
-    .sort({ 'rating.chemistry': -1 })
-    .limit(count)
-    .exec();
-  let bio = await User.find({ 'rating.biology': { $gte: 1000 } })
-    .sort({ 'rating.biology': -1 })
-    .limit(count)
-    .exec();
-  let usabo = await User.find({ 'rating.usabo': { $gte: 1000 } })
-    .sort({ 'rating.usabo': -1 })
-    .limit(count)
-    .exec();
-
-  let rush = await User.find({ 'stats.rush.highscore': { $gte: 10 } })
-    .sort({ 'stats.rush.highscore': -1 })
-    .limit(count)
-    .exec();
-  let experience = await User.find({ 'stats.experience': { $gte: 10000 } })
-    .sort({ 'stats.experience': -1 })
-    .limit(count)
-    .exec();
-
-  experience = experience.map((user) => {
-    return {
-      level: calculateLevel(user.stats.experience),
-      experience: user.stats.experience,
-      ign: user.ign,
-    };
-  });
-
+  const top = (field, min) =>
+    User.find({ [field]: { $gte: min } })
+      .sort({ [field]: -1 })
+      .limit(count)
+      .exec();
+  const [physics, chem, bio, usabo, rush, experienceUsers] = await Promise.all([
+    top('rating.physics', 1000),
+    top('rating.chemistry', 1000),
+    top('rating.biology', 1000),
+    top('rating.usabo', 1000),
+    top('stats.rush.highscore', 10),
+    top('stats.experience', 10000),
+  ]);
+  const experience = experienceUsers.map((user) => ({
+    level: calculateLevel(user.stats.experience),
+    experience: user.stats.experience,
+    ign: user.ign,
+  }));
   return { physics, chem, bio, usabo, rush, experience };
 }
 
+// today's challenge question; created once per day even under concurrent requests
 async function getDailyQuestion(Daily, Ques) {
-  // attempt to get daily object
-  const date = await new Date().toISOString().split('T')[0];
-  let question = await Daily.findOne({ date }).exec();
-
-  if (question) {
-    // if daily object exists
-    let content = await Ques.findById(question.question).exec();
-
-    return content;
-  } else {
-    // if daily object does not exist, create a new one
-    const questions = await Ques.find({
-      rating: { $gte: 2500, $lte: 4000 },
-    }).exec();
-    const selection = await questions[
-      Math.floor(Math.random() * questions.length)
-    ];
-
-    // Manually set daily question date, maybe the defaults are weird?
-    let question = await new Daily({
-      question: selection._id,
-      date: date,
-    });
-
-    await question.save();
-
-    return selection;
+  const date = new Date().toISOString().split('T')[0];
+  const existing = await Daily.findOne({ date }).exec();
+  if (existing) {
+    return Ques.findById(existing.question).exec();
   }
+
+  let [selection] = await Ques.aggregate([
+    { $match: { rating: { $gte: 2500, $lte: 4000 } } },
+    { $sample: { size: 1 } },
+  ]);
+  if (!selection) {
+    [selection] = await Ques.aggregate([{ $sample: { size: 1 } }]);
+  }
+  if (!selection) {
+    return null;
+  }
+
+  // another request may have created today's entry first; whichever won is the answer
+  const daily = await Daily.findOneAndUpdate(
+    { date },
+    { $setOnInsert: { date, question: selection._id } },
+    { upsert: true, returnDocument: 'after' },
+  ).exec();
+  return Ques.findById(daily.question).exec();
 }
+
+const countTags = () => {
+  const { tags } = require('../constants/tags');
+  let counter = 0;
+  Object.values(tags).forEach((subject) =>
+    Object.values(subject).forEach((type) => {
+      counter += Object.keys(type).length;
+    }),
+  );
+  return counter;
+};
 
 async function getSiteData(User, Ques, SiteData) {
-  let userCount = await User.estimatedDocumentCount({});
-  let questionCount = await Ques.estimatedDocumentCount({});
-  let usaboQuestionCount = await mongo.db
-    .collection('usaboQuestions')
-    .estimatedDocumentCount({});
-  questionCount += usaboQuestionCount;
-
-  let tagCounter = () => {
-    let { tags } = require('../constants/tags');
-    let counter = 0;
-    Object.entries(tags).forEach((subjEntry) => {
-      Object.entries(subjEntry[1]).forEach((typeEntry) => {
-        Object.entries(typeEntry[1]).forEach((tagEntry) => {
-          counter += 1;
-        });
-      });
-    });
-    return counter;
-  };
-
-  let tagCount = await tagCounter();
-  let proficientCount = await User.countDocuments({
-    // any users with at least 3000 rating
-    $or: [
-      { 'rating.physics': { $gte: 3000 } },
-      { 'rating.chemistry': { $gte: 3000 } },
-      { 'rating.biology': { $gte: 3000 } },
-      { 'rating.usabo': { $gte: 3000 } },
-      { 'rating.ess': { $gte: 3000 } },
-    ],
-  });
-
-  let totalQuestionData = await SiteData.findOne({ tag: 'QUESTIONS' }).exec();
-  let totalSolves = totalQuestionData.data.solves;
-  let totalAttempts = totalQuestionData.data.attempts;
-
-  let historyMonth = await SiteData.findOne({ tag: 'HISTORY_MONTH' }).exec();
-  let historyYear = await SiteData.findOne({ tag: 'HISTORY_YEAR' }).exec();
-  let historyData = {
-    userbase_month: historyMonth.data.userbase,
-    questioncount_month: historyMonth.data.questioncount,
-    attempts_month: historyMonth.data.attempts,
-    solves_month: historyMonth.data.solves,
-
-    userbase_year: historyYear.data.userbase,
-    questioncount_year: historyYear.data.questioncount,
-    attempts_year: historyYear.data.attempts,
-    solves_year: historyYear.data.solves,
-  };
-
-  let siteData = {
+  const [
     userCount,
-    questionCount,
+    standardQuestionCount,
     usaboQuestionCount,
-    tagCount,
     proficientCount,
-    totalSolves,
-    totalAttempts,
-    historyData,
+    totalQuestionData,
+    historyMonth,
+    historyYear,
+  ] = await Promise.all([
+    User.estimatedDocumentCount(),
+    Ques.estimatedDocumentCount(),
+    mongo.db.collection('usaboQuestions').estimatedDocumentCount(),
+    User.countDocuments({
+      // any users with at least 3000 rating
+      $or: ['physics', 'chemistry', 'biology', 'usabo', 'ess'].map(
+        (subject) => ({
+          ['rating.' + subject]: { $gte: 3000 },
+        }),
+      ),
+    }),
+    SiteData.findOne({ tag: 'QUESTIONS' }).exec(),
+    SiteData.findOne({ tag: 'HISTORY_MONTH' }).exec(),
+    SiteData.findOne({ tag: 'HISTORY_YEAR' }).exec(),
+  ]);
+
+  const questions =
+    (totalQuestionData && totalQuestionData.data) ||
+    SITE_DATA_DEFAULTS.QUESTIONS;
+  const month =
+    (historyMonth && historyMonth.data) || SITE_DATA_DEFAULTS.HISTORY_MONTH;
+  const year =
+    (historyYear && historyYear.data) || SITE_DATA_DEFAULTS.HISTORY_YEAR;
+
+  return {
+    userCount,
+    questionCount: standardQuestionCount + usaboQuestionCount,
+    usaboQuestionCount,
+    tagCount: countTags(),
+    proficientCount,
+    totalSolves: questions.solves,
+    totalAttempts: questions.attempts,
+    historyData: {
+      userbase_month: month.userbase,
+      questioncount_month: month.questioncount,
+      attempts_month: month.attempts,
+      solves_month: month.solves,
+
+      userbase_year: year.userbase,
+      questioncount_year: year.questioncount,
+      attempts_year: year.attempts,
+      solves_year: year.solves,
+    },
   };
-
-  return siteData;
 }
 
-// returns 10 most recent announcements
+// returns the most recent announcements, newest first
 async function getAnnouncements(SiteData, numberToFetch) {
-  let announcements = await SiteData.findOne({ tag: 'ANNOUNCEMENTS' }).exec();
-  let siteAnnouncements = announcements.data.site;
-
-  let recentAnnouncements = siteAnnouncements.reverse().slice(0, numberToFetch);
-
-  return recentAnnouncements;
+  const announcements = await SiteData.findOne({ tag: 'ANNOUNCEMENTS' }).exec();
+  const siteAnnouncements =
+    (announcements && announcements.data && announcements.data.site) || [];
+  return [...siteAnnouncements].reverse().slice(0, numberToFetch);
 }
 
-// updates problem rush stats
+// updates problem rush stats atomically
 async function updateRushStats(user, score) {
-  if (!user.stats.rush) {
-    user.stats.rush = {
-      attempts: 0,
-      highscore: 0,
-    };
-  }
-
-  if (!user.stats.rush.highscore) {
-    user.stats.rush.highscore = 0;
-  }
-
-  if (!user.stats.rush.attempts) {
-    user.stats.rush.attempts = 0;
-  }
-
-  user.stats.rush.attempts += 1;
-
-  if (user.stats.rush.highscore < score) {
-    user.stats.rush.highscore = score;
-  }
-
-  db.collection('users').findOneAndUpdate(
-    { username: user.username },
-    { $set: { stats: user.stats } }
+  await mongo.User.updateOne(
+    { _id: user._id },
+    { $inc: { 'stats.rush.attempts': 1 } },
+  );
+  await mongo.User.updateOne(
+    { _id: user._id },
+    { $max: { 'stats.rush.highscore': score } },
   );
 }
 
-async function querySite(query, User, Ques, SiteData) {
-  results = [];
-  let { text, units, tags, subjects } = query;
-  text = text ? text.trim() : '';
-  units = units
-    ? units
-        .trim()
-        .split(',')
-        .map((unit) => unit.trim())
-    : [];
-  tags = tags
-    ? tags
-        .trim()
-        .split(',')
-        .map((tag) => tag.trim())
-    : [];
-  subjects = subjects
-    ? subjects
-        .trim()
-        .split(',')
-        .map((subject) => subject.trim())
-    : [];
+async function updateRushAchievements(user, score) {
+  const set = { 'achievements.join_mutorials': true };
+  if (score >= 20) set['achievements.rush_20'] = true;
+  if (score >= 10) set['achievements.rush_10'] = true;
+  await mongo.User.updateOne({ _id: user._id }, { $set: set });
+}
 
-  let possibleID;
-  try {
-    possibleID = mongoose.Types.ObjectId(text);
-  } catch (err) {
-    possibleID = mongoose.Types.ObjectId('000000000000000000000000');
-  }
+// escapes user input so it is matched literally inside a RegExp
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-  // find matches
-  let userMatches = await User.find({
-    $or: [
-      { _id: possibleID },
-      { ign: { $regex: new RegExp(text), $options: 'ix' } },
-      { 'profile.name': { $regex: new RegExp(text), $options: 'i' } },
-    ],
-  }).exec();
+// site-wide search over users and questions
+async function querySite(query, User, Ques) {
+  const results = [];
+  const clean = (value) => (typeof value === 'string' ? value.trim() : '');
+  const list = (value) =>
+    clean(value)
+      ? clean(value)
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [];
+  const text = clean(query.text).slice(0, 100);
+  const units = list(query.units);
+  const tags = list(query.tags);
+  const subjects = list(query.subjects);
 
-  // Put units and tags in an and query
-  let andQuery = [];
-  if (units.length > 0) {
-    andQuery.push({ units: { $all: units } });
-  }
-  if (tags.length > 0) {
-    andQuery.push({ tags: { $all: tags } });
-  }
-  if (subjects.length > 0) {
-    andQuery.push({ subject: { $all: subjects } });
-  }
+  const possibleID =
+    mongoose.isValidObjectId(text) && text.length === 24
+      ? new mongoose.Types.ObjectId(text)
+      : null;
+  const pattern = new RegExp(escapeRegex(text), 'i');
 
-  let questionMatches = await Ques.find({
+  const idMatch = possibleID ? [{ _id: possibleID }] : [];
+  const userMatches = await User.find({
+    $or: [...idMatch, { ign: pattern }, { 'profile.name': pattern }],
+  })
+    .limit(50)
+    .exec();
+
+  const andQuery = [];
+  if (units.length > 0) andQuery.push({ units: { $all: units } });
+  if (tags.length > 0) andQuery.push({ tags: { $all: tags } });
+  if (subjects.length > 0) andQuery.push({ subject: { $all: subjects } });
+
+  const questionMatches = await Ques.find({
     $and: [
       {
         $or: [
-          { _id: possibleID },
-          { question: { $regex: new RegExp(text), $options: 'i' } },
-          { choices: { $regex: new RegExp(text), $options: 'i' } },
-          { answer_ex: { $regex: new RegExp(text), $options: 'i' } },
+          ...idMatch,
+          { question: pattern },
+          { choices: pattern },
+          { answer_ex: pattern },
           { ext_source: text },
         ],
       },
@@ -486,176 +317,64 @@ async function querySite(query, User, Ques, SiteData) {
     ],
   })
     .sort({ rating: -1 })
+    .limit(100)
     .exec();
 
-  // load matches into results
   questionMatches.forEach((question) => {
-    if (
+    const exactMatch =
       text.toUpperCase() == question.question.toUpperCase() ||
       question.tags.includes(text.toUpperCase()) ||
-      question._id.toString() == text
-    ) {
-      results.unshift({
-        exactMatch: true,
-        type: 'QUESTION',
-        id: question._id,
-        title: question.subject[0] + ' (' + question.rating + ' Rated)',
-        preview:
-          'ID: ' + question._id + ', Relevant Tags: ' + question.tags.join(' '),
-      });
-    } else {
-      results.push({
-        exactMatch: false,
-        type: 'QUESTION',
-        id: question._id,
-        title: question.subject[0] + ' (' + question.rating + ' Rated)',
-        preview:
-          'ID: ' + question._id + ', Relevant Tags: ' + question.tags.join(' '),
-      });
-    }
+      question._id.toString() == text;
+    const entry = {
+      exactMatch,
+      type: 'QUESTION',
+      id: question._id,
+      title: question.subject[0] + ' (' + question.rating + ' Rated)',
+      preview:
+        'ID: ' + question._id + ', Relevant Tags: ' + question.tags.join(' '),
+    };
+    exactMatch ? results.unshift(entry) : results.push(entry);
   });
 
   userMatches.forEach((user) => {
-    if (
+    const exactMatch =
       text.toUpperCase() == user.ign.toUpperCase() ||
-      user._id.toString() == text
-    ) {
-      results.unshift({
-        exactMatch: true,
-        type: 'USER',
-        id: user.ign,
-        title:
-          user.ign + (user.profile.name ? ' (' + user.profile.name + ')' : ''),
-        preview:
-          (user.profile.bio ? user.profile.bio + ' ' : '') +
-          'Experience: ' +
-          user.stats.experience +
-          ', ' +
-          user.stats.collectedTags.length +
-          ' tags collected',
-      });
-    } else {
-      results.push({
-        exactMatch: false,
-        type: 'USER',
-        id: user.ign,
-        title:
-          user.ign + (user.profile.name ? ' (' + user.profile.name + ')' : ''),
-        preview:
-          (user.profile.bio ? user.profile.bio + ', ' : '') +
-          'Experience: ' +
-          user.stats.experience +
-          ', ' +
-          user.stats.collectedTags.length +
-          ' tags collected',
-      });
-    }
+      user._id.toString() == text;
+    const entry = {
+      exactMatch,
+      type: 'USER',
+      id: user.ign,
+      title:
+        user.ign + (user.profile.name ? ' (' + user.profile.name + ')' : ''),
+      preview:
+        (user.profile.bio ? user.profile.bio + (exactMatch ? ' ' : ', ') : '') +
+        'Experience: ' +
+        user.stats.experience +
+        ', ' +
+        user.stats.collectedTags.length +
+        ' tags collected',
+    };
+    exactMatch ? results.unshift(entry) : results.push(entry);
   });
 
   return results;
 }
 
-async function updateTrainAchievements(user, question, correct) {
-  if (!user.achievements) {
-    user.achievements = {};
-  }
-  user.achievements['join_mutorials'] = true;
-
-  if (correct) {
-    user.achievements['first_' + question.subject[0].toLowerCase()] = true;
-  }
-
-  let solves = user.stats.correct;
-  if (solves >= 500) {
-    user.achievements['solves_500'] = true;
-  }
-  if (solves >= 300) {
-    user.achievements['solves_300'] = true;
-  }
-
-  let rating = user.rating[question.subject[0].toLowerCase()];
-  if (rating >= 3500) {
-    user.achievements['rating_expert'] = true;
-  }
-  if (rating >= 2750) {
-    user.achievements['rating_advanced'] = true;
-  }
-  if (rating >= 2000) {
-    user.achievements['rating_intermediate'] = true;
-  }
-  if (rating >= 1500) {
-    user.achievements['rating_beginner'] = true;
-  }
-
-  let tagsCollected = user.stats.collectedTags.length;
-  if (tagsCollected >= 180) {
-    user.achievements['tags_180'] = true;
-  }
-  if (tagsCollected >= 100) {
-    user.achievements['tags_100'] = true;
-  }
-  if (tagsCollected >= 50) {
-    user.achievements['tags_50'] = true;
-  }
-  if (tagsCollected >= 20) {
-    user.achievements['tags_20'] = true;
-  }
-
-  db.collection('users').findOneAndUpdate(
-    { username: user.username },
-    { $set: { achievements: user.achievements } }
-  );
-}
-
-async function updateRushAchievements(user, score) {
-  if (!user.achievements) {
-    user.achievements = {};
-  }
-  user.achievements['join_mutorials'] = true;
-
-  if (score >= 20) {
-    user.achievements['rush_20'] = true;
-  }
-  if (score >= 10) {
-    user.achievements['rush_10'] = true;
-  }
-
-  db.collection('users').findOneAndUpdate(
-    { username: user.username },
-    { $set: { achievements: user.achievements } }
-  );
-}
-
-async function updateFields() {
-  //replace the parameters as needed for different purposes
-  db.collection('users').updateMany(
-    { age: { $exists: true } },
-    { $rename: { age: 'yob' } }
-  );
-}
-
 module.exports = {
+  ensureSiteData,
   getQuestion,
-  getQuestions,
+  pickQuestion,
   getRating,
   setRating,
-  setQRating,
-  updateCounters,
-  updateTracker,
-  updateLastAnswered,
-  updateAll,
   updateQuestionQueue,
   addExperience,
   clearQuestionQueue,
-  skipQuestionUpdates,
   generateLeaderboard,
   getDailyQuestion,
   getSiteData,
   incrementSolveCounter,
   getAnnouncements,
   updateRushStats,
-  querySite,
-  updateTrainAchievements,
   updateRushAchievements,
-  updateFields,
+  querySite,
 };

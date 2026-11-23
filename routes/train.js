@@ -1,40 +1,53 @@
 // FUNCTION IMPORTS
 const {
-  calculateRatings,
   ratingCeilingFloor,
   calculateLevel,
 } = require('../utils/functions/siteAlgorithms');
 const { presetUnitOptions } = require('../utils/constants/presets');
 const { subjectUnitDictionary } = require('../utils/constants/subjects');
 const { referenceSheet } = require('../utils/constants/referencesheet');
-const { genPassword, validPassword } = require('../utils/functions/password');
-const { arraysEqual } = require('../utils/functions/general');
 const {
   getQuestion,
-  getQuestions,
-  getRating,
-  setRating,
-  setQRating,
-  updateTracker,
-  updateCounters,
-  updateAll,
-  updateQuestionQueue,
-  addExperience,
-  clearQuestionQueue,
-  skipQuestionUpdates,
+  pickQuestion,
   getDailyQuestion,
-  incrementSolveCounter,
+  updateQuestionQueue,
   updateRushStats,
-  updateTrainAchievements,
   updateRushAchievements,
 } = require('../utils/functions/database');
-const mongoose = require('mongoose');
-const db = mongoose.connection;
-
-// LIBRARY IMPORTS
-let pluralize = require('pluralize');
+const {
+  gradeAnswer,
+  markServed,
+  recordAnswer,
+  recordSkip,
+} = require('../utils/functions/answers');
+const { toObjectId } = require('../utils/functions/ids');
+const { asString, safeLocalPath, wrap } = require('../utils/functions/http');
 
 const VIEWS = __dirname + '/../views/';
+const PROFICIENCY_LEVELS = [600, 1200, 2400];
+const RUSH_DURATION_MS = 300000;
+
+// maps any casing of a subject name onto its canonical key, or null
+function canonicalSubject(value) {
+  const wanted = asString(value).toLowerCase();
+  return (
+    Object.keys(subjectUnitDictionary).find(
+      (name) => name.toLowerCase() === wanted,
+    ) || null
+  );
+}
+
+// The unit picker submits "<Subject> - <Unit>" and questions store their units
+// in that same form. Bare unit names are accepted and normalised to it.
+function validUnits(subject, requested) {
+  const known = (subjectUnitDictionary[subject] || []).map(
+    (unit) => `${subject} - ${unit}`,
+  );
+  const wanted = (Array.isArray(requested) ? requested : [requested])
+    .filter((unit) => typeof unit === 'string')
+    .map((unit) => (known.includes(unit) ? unit : `${subject} - ${unit}`));
+  return [...new Set(wanted.filter((unit) => known.includes(unit)))];
+}
 
 module.exports = (app, mongo) => {
   app.all(/^(\/private|\/selQ|\/train).*$/, (req, res, next) => {
@@ -43,603 +56,465 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
+        'Error 401: Unauthorized. You need to login to see this page.',
       );
       res.redirect('/signin');
     }
   });
 
-  app.post('/private/initialRating', (req, res, next) => {
-    req.user.rating[req.body.subject.toLowerCase()] = req.body.level;
-    mongo.db
-      .collection('users')
-      .findOneAndUpdate(
-        { username: req.user.username },
-        { $set: { rating: req.user.rating } }
-      );
-    res.redirect('/homepage' /* + req.body.subject + '/chooseUnits'*/);
-  });
-
-  app.post('/selQ', (req, res, next) => {
-    let units = null;
-    if (req.body.qNum == 1) {
-      units = req.body.unitChoice;
-      if (!units) {
-        req.flash('errorFlash', 'Please choose at least one unit.');
-        res.redirect('/train/' + req.body.subj + '/chooseUnits');
-      }
-      if (units) {
-        res.redirect(
-          '/train/' +
-            req.body.subj +
-            '/displayQuestion?units=' +
-            units.toString()
+  // initial proficiency; only settable while the subject is still unrated
+  app.post(
+    '/private/initialRating',
+    wrap(async (req, res) => {
+      const subject = canonicalSubject(req.body.subject);
+      const level = Number(req.body.level);
+      if (
+        !subject ||
+        subject === 'USABO' ||
+        !PROFICIENCY_LEVELS.includes(level)
+      ) {
+        req.flash(
+          'errorFlash',
+          'Please choose a valid subject and proficiency.',
         );
+        return res.redirect('/homepage');
       }
-    }
-  });
-
-  app.post('/train/checkAnswer', (req, res, next) => {
-    if (req.body.type == 'mc' && req.body.answerChoice != undefined) {
-      let isRight = false;
-      const antsy = getQuestion(mongo.Ques, req.body.id).then(async (antsy) => {
-        // clear pending question
-        clearQuestionQueue(req, antsy.subject[0]);
-
-        // mark as seen for the current session (prevents in-session repeats)
-        const _seenSubjectKey = antsy.subject[0].toLowerCase();
-        if (!req.session.seenQuestions) req.session.seenQuestions = {};
-        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
-        const _seenIdStr = antsy._id.toString();
-        if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
-          req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
-        }
-
-        // check answer
-        if (antsy.answer[0] == req.body.answerChoice) {
-          isRight = true;
-        }
-
-        // modify ratings
-        const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
-        const oldQRating = antsy.rating;
-        // update stats
-        if (req.user.stats.lastAnswered != antsy._id) {
-          setRating(
-            antsy.subject[0],
-            calculateRatings(oldUserRating, oldQRating, isRight).newUserRating,
-            req
-          );
-          setQRating(
-            antsy,
-            calculateRatings(oldUserRating, oldQRating, isRight)
-              .newQuestionRating
-          );
-
-          // update counters & tag collector
-          updateAll(req, antsy, isRight);
-
-          // update site data
-          incrementSolveCounter(
-            mongo.SiteData,
-            antsy.subject[0].toLowerCase(),
-            isRight
-          );
-        } else {
-          // update tracker
-          updateTracker(req, antsy);
-          addExperience(req, Math.ceil(antsy.rating / 20));
-        }
-
-        // update achievements
-        updateTrainAchievements(req.user, antsy, isRight);
-
-        // render answer page
-        let experienceStats = await calculateLevel(req.user.stats.experience);
-        res.render(VIEWS + 'private/train/answerExplanation.ejs', {
-          units: req.body.units,
-          userAnswer: req.body.answerChoice,
-          userRating: getRating(req.body.subject, req),
-          subject: req.body.subject,
-          newQues: antsy,
-          correct: isRight,
-          oldUserRating: oldUserRating,
-          oldQ: oldQRating,
-          user: req.user,
-          experienceStats,
-          pageName: 'Answer Explanation',
-        });
-      });
-    } else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
-      let isRight = false;
-      const antsy = getQuestion(mongo.Ques, req.body.id).then(async (antsy) => {
-        // clear pending question
-        clearQuestionQueue(req, antsy.subject[0]);
-
-        // mark as seen for the current session (prevents in-session repeats)
-        const _seenSubjectKey = antsy.subject[0].toLowerCase();
-        if (!req.session.seenQuestions) req.session.seenQuestions = {};
-        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
-        const _seenIdStr = antsy._id.toString();
-        if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
-          req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
-        }
-
-        // check answer
-        isRight = arraysEqual(antsy.answer, req.body.saChoice);
-
-        // modify ratings
-        const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
-        const oldQRating = antsy.rating;
-        // update stats
-        if (req.user.stats.lastAnswered != antsy._id) {
-          setRating(
-            antsy.subject[0],
-            calculateRatings(oldUserRating, oldQRating, isRight).newUserRating,
-            req
-          );
-          setQRating(
-            antsy,
-            calculateRatings(oldUserRating, oldQRating, isRight)
-              .newQuestionRating
-          );
-
-          // update counters & tag collector
-          updateAll(req, antsy, isRight);
-
-          // update site data
-          incrementSolveCounter(
-            mongo.SiteData,
-            antsy.subject[0].toLowerCase(),
-            isRight
-          );
-        } else {
-          // update tracker
-          updateTracker(req, antsy);
-          addExperience(req, Math.ceil(antsy.rating / 20));
-        }
-
-        // update achievements
-        updateTrainAchievements(req.user, antsy, isRight);
-
-        // render answer page
-        let experienceStats = await calculateLevel(req.user.stats.experience);
-        res.render(VIEWS + 'private/train/answerExplanation.ejs', {
-          units: req.body.units,
-          userAnswer: req.body.saChoice,
-          userRating: getRating(req.body.subject, req),
-          subject: req.body.subject,
-          newQues: antsy,
-          correct: isRight,
-          oldUserRating: oldUserRating,
-          oldQ: oldQRating,
-          user: req.user,
-          experienceStats,
-          pageName: 'Answer Explanation',
-        });
-      });
-    } else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
-      let isRight = false;
-      const antsy = getQuestion(mongo.Ques, req.body.id).then(async (antsy) => {
-        // clear pending question
-        clearQuestionQueue(req, antsy.subject[0]);
-
-        // mark as seen for the current session (prevents in-session repeats)
-        const _seenSubjectKey = antsy.subject[0].toLowerCase();
-        if (!req.session.seenQuestions) req.session.seenQuestions = {};
-        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
-        const _seenIdStr = antsy._id.toString();
-        if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
-          req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
-        }
-
-        // check answer
-        for (let j = 0; j < antsy.answer.length; j++) {
-          if (
-            antsy.answer[j].toLowerCase() ==
-            req.body.freeAnswer.trim().toLowerCase()
-          ) {
-            isRight = true;
-            break;
-          } else if (
-            Number(antsy.answer[j].toLowerCase()) ==
-            Number(req.body.freeAnswer.trim())
-          ) {
-            isRight = true;
-            break;
-          } else if (
-            pluralize(antsy.answer[j].toLowerCase(), 1) ==
-            pluralize(req.body.freeAnswer.trim().toLowerCase(), 1)
-          ) {
-            isRight = true;
-            break;
-          }
-        }
-        // modify ratings
-        const oldUserRating = req.user.rating[antsy.subject[0].toLowerCase()];
-        const oldQRating = antsy.rating;
-
-        // update stats
-        if (req.user.stats.lastAnswered != antsy._id) {
-          setRating(
-            antsy.subject[0],
-            calculateRatings(oldUserRating, oldQRating, isRight).newUserRating,
-            req
-          );
-          setQRating(
-            antsy,
-            calculateRatings(oldUserRating, oldQRating, isRight)
-              .newQuestionRating
-          );
-
-          // update counters & tag collector
-          updateAll(req, antsy, isRight);
-
-          // update site data
-          incrementSolveCounter(
-            mongo.SiteData,
-            antsy.subject[0].toLowerCase(),
-            isRight
-          );
-        } else {
-          // update tracker
-          updateTracker(req, antsy);
-          addExperience(req, Math.ceil(antsy.rating / 20));
-        }
-
-        // update achievements
-        updateTrainAchievements(req.user, antsy, isRight);
-
-        // render answer page
-        let experienceStats = await calculateLevel(req.user.stats.experience);
-        res.render(VIEWS + 'private/train/answerExplanation.ejs', {
-          units: req.body.units,
-          userAnswer: req.body.freeAnswer,
-          userRating: getRating(req.body.subject, req),
-          subject: req.body.subject,
-          newQues: antsy,
-          correct: isRight,
-          oldUserRating: oldUserRating,
-          oldQ: oldQRating,
-          user: req.user,
-          experienceStats,
-          pageName: 'Answer Explanation',
-        });
-      });
-    } else {
-      req.flash(
-        'errorFlash',
-        'Please choose an answer next time... We treated that as a skip (-8 rating).'
+      const field = 'rating.' + subject.toLowerCase();
+      await mongo.User.updateOne(
+        {
+          _id: req.user._id,
+          $or: [{ [field]: -1 }, { [field]: { $exists: false } }],
+        },
+        { $set: { [field]: level } },
       );
-      skipQuestionUpdates(mongo.Ques, req, req.body.subject, req.body.id);
-      clearQuestionQueue(req, req.body.subject);
-      res.redirect(req.body.redirect);
+      res.redirect('/homepage');
+    }),
+  );
+
+  app.post('/selQ', (req, res) => {
+    const subject = canonicalSubject(req.body.subj);
+    if (!subject) {
+      req.flash('errorFlash', 'Please choose a subject.');
+      return res.redirect('/train/chooseSubject');
     }
+    const units = validUnits(subject, req.body.unitChoice);
+    if (units.length === 0) {
+      req.flash('errorFlash', 'Please choose at least one unit.');
+      return res.redirect('/train/' + subject + '/chooseUnits');
+    }
+    res.redirect(
+      '/train/' +
+        subject +
+        '/displayQuestion?units=' +
+        encodeURIComponent(units.join(',')),
+    );
   });
 
-  app.post('/train/skipQuestion', async (req, res, next) => {
-    const { subject, id, redirect } = req.body;
-    skipQuestionUpdates(mongo.Ques, req, subject, id);
-    clearQuestionQueue(req, subject);
-    res.redirect(redirect);
-  });
+  app.post(
+    '/train/checkAnswer',
+    wrap(async (req, res) => {
+      const question =
+        toObjectId(req.body.id) && (await getQuestion(mongo.Ques, req.body.id));
+      if (!question) {
+        req.flash('errorFlash', "That question doesn't exist.");
+        return res.redirect('/train');
+      }
+      const subjectName = question.subject[0];
+      const subjectKey = subjectName.toLowerCase();
+
+      const graded = gradeAnswer(question, req.body);
+      if (!graded) {
+        await recordSkip(mongo, {
+          user: req.user,
+          questionId: question._id,
+          subject: subjectName,
+        });
+        req.flash(
+          'errorFlash',
+          'Please choose an answer next time... We treated that as a skip (-8 rating).',
+        );
+        return res.redirect(safeLocalPath(req.body.redirect, '/train'));
+      }
+
+      // mark as seen for the current session (prevents in-session repeats)
+      req.session.seenQuestions = req.session.seenQuestions || {};
+      const seen = (req.session.seenQuestions[subjectKey] =
+        req.session.seenQuestions[subjectKey] || []);
+      if (!seen.includes(String(question._id))) {
+        seen.push(String(question._id));
+      }
+
+      const outcome = await recordAnswer(mongo, {
+        user: req.user,
+        question,
+        correct: graded.correct,
+        mode: 'classic',
+        session: req.session,
+      });
+
+      const experienceStats = calculateLevel(req.user.stats.experience);
+      res.render(VIEWS + 'private/train/answerExplanation.ejs', {
+        units: asString(req.body.units),
+        userAnswer: graded.userAnswer,
+        userRating: req.user.rating[subjectKey],
+        subject: subjectName,
+        newQues: question,
+        correct: graded.correct,
+        oldUserRating: outcome.oldUserRating,
+        oldQ: outcome.oldQRating,
+        user: req.user,
+        experienceStats,
+        pageName: 'Answer Explanation',
+      });
+    }),
+  );
+
+  app.post(
+    '/train/skipQuestion',
+    wrap(async (req, res) => {
+      const subject = canonicalSubject(req.body.subject);
+      if (subject && toObjectId(req.body.id)) {
+        await recordSkip(mongo, {
+          user: req.user,
+          questionId: req.body.id,
+          subject,
+        });
+      }
+      res.redirect(safeLocalPath(req.body.redirect, '/train'));
+    }),
+  );
 
   app.get('/train', (req, res) => {
     res.render(VIEWS + 'private/train/train.ejs', { pageName: 'Train' });
   });
 
   app.get('/train/chooseSubject', (req, res) => {
-    const qNum = 0;
     res.render(VIEWS + 'private/train/chooseSubject.ejs', {
       subjects: subjectUnitDictionary,
-      qNum: qNum,
+      qNum: 0,
       pageName: 'Train Subject',
     });
   });
 
-  app.get('/train/daily', async (req, res) => {
-    const date = await new Date().toISOString().split('T')[0];
-    const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
-    res.render(VIEWS + 'private/train/dailyQuestion.ejs', {
-      question,
-      pageName: date + ' Challenge',
-    });
-  });
+  app.get(
+    '/train/daily',
+    wrap(async (req, res) => {
+      const date = new Date().toISOString().split('T')[0];
+      const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
+      res.render(VIEWS + 'private/train/dailyQuestion.ejs', {
+        question,
+        pageName: date + ' Challenge',
+      });
+    }),
+  );
 
-  //this stores data about the user
-  let userProblemRushData = new Map();
-
-  app.get('/train/rush', async (req, res) => {
+  // ---- Problem Rush: state lives in the session, so it survives restarts and
+  // works across multiple server instances.
+  app.get('/train/rush', (req, res) => {
     res.render(VIEWS + 'private/train/rush.ejs', { pageName: 'Problem Rush' });
   });
 
-  app.get('/train/rush/loadQuestion', async (req, res) => {
-    try {
-      let score = parseInt(req.query.score);
-
-      //if the score is -1 (as a flag)
-      if (score == -1) {
-        userProblemRushData.set(req.user._id.toString(), {
-          start: Date.now(),
-          score: 0,
-          wrong: 0,
-          submitted: false,
-        });
-        score++;
-      } else {
-        score = userProblemRushData.get(req.user._id.toString()).score;
-      }
-      let lowerBound = 500 + score * 100;
-      let upperBound = 500 + (score + 1) * 100 - 1;
-      if (score == 0) {
-        lowerBound = 0;
-      }
-
-      let selection = undefined;
-      while (!selection) {
-        let questions = await mongo.Ques.find({
-          type: 'mc',
-          rating: { $gte: lowerBound, $lte: upperBound },
-        }).exec();
-        selection = questions[Math.floor(questions.length * Math.random())];
-        lowerBound -= 50;
-        upperBound += 50;
-      }
-      userProblemRushData.get(req.user._id.toString()).questionID =
-        selection._id;
-      userProblemRushData.get(req.user._id.toString()).freshQuestion = true;
-      res.json({
-        status: 'Success',
-        id: selection._id,
-        subject: selection.subject[0],
-        rating: selection.rating,
-        statement: selection.question,
-        choices: selection.choices,
-      });
-    } catch (err) {
-      res.json({
-        status: 'Error',
-      });
-    }
-  });
-
-  app.get('/train/rush/checkAnswer', async (req, res) => {
-    try {
-      let choice = req.query.index;
-      let id = req.query.id;
-
-      //if user has: not clicked "start"/(300000 ms) 5 minutes is over/trying a different question than the one they got/3 or more wrong/already answered the question, stop them from getting a response
-      if (
-        userProblemRushData.has(req.user._id.toString()) &&
-        Date.now() - userProblemRushData.get(req.user._id.toString()).start <
-          300000 &&
-        userProblemRushData.get(req.user._id.toString()).questionID == id &&
-        userProblemRushData.get(req.user._id.toString()).wrong < 3 &&
-        userProblemRushData.get(req.user._id.toString()).freshQuestion
-      ) {
-        let question = await mongo.Ques.findOne({ _id: id }).exec();
-
-        let correct = question.answer[0] == choice;
-
-        //prevent them from getting credit from the same question 2 times
-        userProblemRushData.get(req.user._id.toString()).freshQuestion = false;
-
-        //increase score if it is correct
-        if (correct) {
-          userProblemRushData.get(req.user._id.toString()).score++;
-        } else {
-          userProblemRushData.get(req.user._id.toString()).wrong++;
+  app.get(
+    '/train/rush/loadQuestion',
+    wrap(async (req, res) => {
+      try {
+        if (parseInt(req.query.score) === -1 || !req.session.rush) {
+          req.session.rush = {
+            start: Date.now(),
+            score: 0,
+            wrong: 0,
+            submitted: false,
+          };
         }
-        // backend site data updates
-        incrementSolveCounter(
-          mongo.SiteData,
-          question.subject[0].toLowerCase(),
-          correct
-        );
-        addExperience(req, correct ? question.rating / 2 : question.rating / 4);
-        updateCounters(req, question, correct);
-        setQRating(
-          question,
-          correct ? Math.max(0, question.rating - 1) : question.rating + 1
-        );
+        const rush = req.session.rush;
+        const score = rush.score;
+        let lowerBound = score === 0 ? 0 : 500 + score * 100;
+        let upperBound = 500 + (score + 1) * 100 - 1;
 
+        let selection = null;
+        // widen the rating window a bounded number of times instead of looping forever
+        for (let attempt = 0; attempt < 40 && !selection; attempt++) {
+          const [picked] = await mongo.Ques.aggregate([
+            {
+              $match: {
+                type: 'mc',
+                rating: { $gte: lowerBound, $lte: upperBound },
+              },
+            },
+            { $sample: { size: 1 } },
+          ]);
+          selection = picked;
+          lowerBound -= 50;
+          upperBound += 50;
+        }
+        if (!selection) {
+          return res.json({ status: 'Error' });
+        }
+        rush.questionID = String(selection._id);
+        rush.freshQuestion = true;
         res.json({
           status: 'Success',
-          correct,
+          id: selection._id,
+          subject: selection.subject[0],
+          rating: selection.rating,
+          statement: selection.question,
+          choices: selection.choices,
         });
-      } else {
-        res.status(403).json({
-          status: 'Forbidden',
-        });
+      } catch (err) {
+        console.error('rush loadQuestion failed:', err);
+        res.json({ status: 'Error' });
       }
-    } catch (err) {
-      res.json({
-        status: 'Error',
-      });
-    }
-  });
+    }),
+  );
 
-  app.get('/train/rush/results', async (req, res) => {
-    try {
-      //if they already submited then return
-      if (!userProblemRushData.get(req.user._id.toString()).submitted) {
-        userProblemRushData.get(req.user._id.toString()).submitted = true;
-        //use the server side data to get the score
-        let score = userProblemRushData.get(req.user._id.toString()).score;
-        await updateRushStats(req.user, score);
-        updateRushAchievements(req.user, score);
-        let user = await mongo.User.findOne({ _id: req.user._id }).exec();
-        let highscore = user.stats.rush.highscore;
-        res.json({
-          status: 'Success',
-          highscore,
-        });
-      } else {
-        res.status(403).json({
-          status: 'Forbidden',
-        });
+  app.get(
+    '/train/rush/checkAnswer',
+    wrap(async (req, res) => {
+      try {
+        const rush = req.session.rush;
+        const id = asString(req.query.id);
+        // not started / time is up / different question / 3 wrong / already answered
+        if (
+          !rush ||
+          Date.now() - rush.start >= RUSH_DURATION_MS ||
+          rush.questionID !== id ||
+          rush.wrong >= 3 ||
+          !rush.freshQuestion
+        ) {
+          return res.status(403).json({ status: 'Forbidden' });
+        }
+        const question = await mongo.Ques.findById(id).exec();
+        if (!question) {
+          return res.status(403).json({ status: 'Forbidden' });
+        }
+        const correct = String(question.answer[0]) === String(req.query.index);
+
+        // prevent credit from the same question twice
+        rush.freshQuestion = false;
+        if (correct) {
+          rush.score++;
+        } else {
+          rush.wrong++;
+        }
+
+        const subjectKey = question.subject[0].toLowerCase();
+        const xp = Math.round(
+          correct ? question.rating / 2 : question.rating / 4,
+        );
+        const solved = correct ? 'stats.correct' : 'stats.wrong';
+        await Promise.all([
+          mongo.SiteData.updateOne(
+            { tag: 'QUESTIONS' },
+            {
+              $inc: {
+                ['data.attempts.' + subjectKey]: 1,
+                ...(correct ? { ['data.solves.' + subjectKey]: 1 } : {}),
+              },
+            },
+          ),
+          mongo.User.updateOne(
+            { _id: req.user._id },
+            { $inc: { 'stats.experience': xp, [solved]: 1 } },
+          ),
+          mongo.Ques.updateOne(
+            { _id: question._id },
+            {
+              $inc: { [correct ? 'stats.pass' : 'stats.fail']: 1 },
+              $set: {
+                rating: correct
+                  ? Math.max(0, question.rating - 1)
+                  : question.rating + 1,
+              },
+            },
+          ),
+        ]);
+        res.json({ status: 'Success', correct });
+      } catch (err) {
+        console.error('rush checkAnswer failed:', err);
+        res.json({ status: 'Error' });
       }
-    } catch (err) {
-      res.json({
-        status: 'Error',
-      });
-    }
-  });
+    }),
+  );
+
+  app.get(
+    '/train/rush/results',
+    wrap(async (req, res) => {
+      try {
+        const rush = req.session.rush;
+        if (!rush || rush.submitted) {
+          return res.status(403).json({ status: 'Forbidden' });
+        }
+        rush.submitted = true;
+        // the server-side score is the only one trusted
+        await updateRushStats(req.user, rush.score);
+        await updateRushAchievements(req.user, rush.score);
+        const user = await mongo.User.findById(req.user._id).exec();
+        res.json({ status: 'Success', highscore: user.stats.rush.highscore });
+      } catch (err) {
+        console.error('rush results failed:', err);
+        res.json({ status: 'Error' });
+      }
+    }),
+  );
 
   app.get('/train/:subject/proficiency', (req, res) => {
+    const subject = canonicalSubject(req.params.subject);
+    if (!subject) return res.redirect('/train/chooseSubject');
     res.render(VIEWS + 'private/train/setProficiency.ejs', {
-      subject: req.params.subject,
-      pageName: req.params.subject + ' Proficiency',
+      subject,
+      pageName: subject + ' Proficiency',
     });
   });
 
   app.get('/train/:subject/chooseUnits', (req, res) => {
-    const qNum = 1;
-    if (req.user.rating[req.params.subject.toLowerCase()] == -1) {
-      //check to see if redir needed
-      res.redirect('/train/' + req.params.subject + '/proficiency'); //ROUTING FIX
-    } else {
-      res.render(VIEWS + 'private/train/chooseUnits.ejs', {
-        subject: req.params.subject,
-        units: subjectUnitDictionary[req.params.subject],
-        qNum: qNum,
-        unitPresets: presetUnitOptions[req.params.subject],
-        pageName: 'Train Units',
-      });
+    const subject = canonicalSubject(req.params.subject);
+    if (!subject) return res.redirect('/train/chooseSubject');
+    if (req.user.rating[subject.toLowerCase()] == -1) {
+      // proficiency has to be chosen first
+      return res.redirect('/train/' + subject + '/proficiency');
     }
+    res.render(VIEWS + 'private/train/chooseUnits.ejs', {
+      subject,
+      units: subjectUnitDictionary[subject],
+      qNum: 1,
+      unitPresets: presetUnitOptions[subject],
+      pageName: 'Train Units',
+    });
   });
 
-  app.get('/train/:subject/displayQuestion', async (req, res) => {
-    let curQ = null;
-    // no cache
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    // define units and attempt to get queued question
-    const units = req.query.units.split(',');
-    const subjectKey = req.params.subject.toLowerCase();
+  app.get(
+    '/train/:subject/displayQuestion',
+    wrap(async (req, res) => {
+      const subject = canonicalSubject(req.params.subject);
+      if (!subject) return res.redirect('/train/chooseSubject');
+      const subjectKey = subject.toLowerCase();
 
-    // session-scoped seen-question tracker (prevents in-session repeats)
-    if (!req.session.seenQuestions) req.session.seenQuestions = {};
-    if (!req.session.seenQuestions[subjectKey]) req.session.seenQuestions[subjectKey] = [];
-    const seenIds = req.session.seenQuestions[subjectKey];
+      // no cache
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
 
-    let q = '';
+      const units = validUnits(subject, asString(req.query.units).split(','));
+      if (units.length === 0) {
+        req.flash('errorFlash', 'Please choose at least one unit.');
+        return res.redirect('/train/' + subject + '/chooseUnits');
+      }
+      if (
+        req.user.rating[subjectKey] === undefined ||
+        req.user.rating[subjectKey] === -1
+      ) {
+        return res.redirect('/train/' + subject + '/proficiency');
+      }
 
-    if (req.user.stats.toAnswer[subjectKey]) {
+      // session-scoped seen-question tracker (prevents in-session repeats)
+      req.session.seenQuestions = req.session.seenQuestions || {};
+      const seenIds = (req.session.seenQuestions[subjectKey] =
+        req.session.seenQuestions[subjectKey] || []);
+
+      let queued = null;
       const queuedId = req.user.stats.toAnswer[subjectKey];
-      // drop the queued question silently (no rating penalty) if it was already answered this session
-      if (seenIds.includes(queuedId.toString())) {
-        clearQuestionQueue(req, subjectKey);
-      } else {
-        q = await getQuestion(mongo.Ques, queuedId);
-      }
-    }
-
-    // get experience stats
-    let experienceStats = await calculateLevel(req.user.stats.experience);
-    // Test if they have a question pending to answer which is valid for their units selected
-    if (q && units.some((r) => q.units.includes(r))) {
-      console.log('in the if statement');
-
-      res.render(VIEWS + 'private/train/displayQuestion.ejs', {
-        units: units,
-        newQues: q,
-        subject: req.params.subject,
-        user: req.user,
-        experienceStats,
-        pageName: 'Classic Trainer',
-        referenceSheet,
-      });
-    } else {
-      console.log('in the else statement');
-
-      // deduct 8 rating if previously queued question was skipped
-      if (q) {
-        skipQuestionUpdates(
-          mongo.Ques,
-          req,
-          subjectKey,
-          q._id
-        );
-      }
-      // get parameters set up
-      if (req.user.rating['ess'] === undefined) {
-        console.log('setting ess rating from undefined to -1');
-        setRating('ESS', -1, req);
+      if (queuedId) {
+        // a question already answered this session is dropped without penalty
+        if (seenIds.includes(String(queuedId))) {
+          await mongo.User.updateOne(
+            { _id: req.user._id },
+            { $set: { ['stats.toAnswer.' + subjectKey]: '' } },
+          );
+          req.user.stats.toAnswer[subjectKey] = '';
+        } else {
+          queued = await getQuestion(mongo.Ques, queuedId);
+        }
       }
 
-      let ceilingFloor = ratingCeilingFloor(
-        req.user.rating[subjectKey]
+      const experienceStats = calculateLevel(req.user.stats.experience);
+      const render = (question) => {
+        markServed(req.session, question._id);
+        res.render(VIEWS + 'private/train/displayQuestion.ejs', {
+          units,
+          newQues: question,
+          subject,
+          user: req.user,
+          experienceStats,
+          pageName: 'Classic Trainer',
+          referenceSheet,
+        });
+      };
+
+      // a pending question that matches the chosen units is simply shown again
+      if (queued && units.some((unit) => queued.units.includes(unit))) {
+        return render(queued);
+      }
+
+      // a queued question outside the chosen units counts as skipped
+      if (queued) {
+        await recordSkip(mongo, {
+          user: req.user,
+          questionId: queued._id,
+          subject,
+        });
+      }
+
+      const { floor, ceiling } = ratingCeilingFloor(
+        req.user.rating[subjectKey],
       );
-      const floor = ceilingFloor.floor;
-      let ceiling = ceilingFloor.ceiling;
-
-      //debugging usage
-      console.log(floor);
-      console.log(ceiling);
-
-      // retry-and-widen: push ceiling up (floor stays) until unseen questions appear
-      const STEP = 200;
-      const MAX_ITERATIONS = 5;
-      let qs = [];
-      for (let i = 0; i < MAX_ITERATIONS; i++) {
-        qs = await getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units, seenIds);
-        if (qs.length > 0) break;
-        ceiling += STEP;
-        console.log('no unseen questions; expanding ceiling to', ceiling);
+      // retry-and-widen: push ceiling up until unseen questions appear
+      let selected = null;
+      let currentCeiling = ceiling;
+      for (let i = 0; i < 5 && !selected; i++) {
+        selected = await pickQuestion(mongo.Ques, {
+          floor,
+          ceiling: currentCeiling,
+          subject,
+          units,
+          excludeIds: seenIds,
+        });
+        currentCeiling += 200;
       }
-
-      // fallback: user has exhausted the unseen pool — allow a repeat rather than erroring
-      if (qs.length === 0) {
-        console.log('seen-filtered pool exhausted, falling back to full pool');
-        qs = await getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units);
+      // the user has exhausted the unseen pool: allow a repeat rather than erroring
+      if (!selected) {
+        selected = await pickQuestion(mongo.Ques, {
+          floor,
+          ceiling: currentCeiling,
+          subject,
+          units,
+        });
       }
-
-      // select random question
-      curQ = qs[Math.floor(Math.random() * qs.length)];
-      console.log(curQ);
-      if (!curQ) {
+      if (!selected) {
         req.flash(
           'errorFlash',
-          "We couldn't find any questions for your rating in the units you selected."
+          "We couldn't find any questions for your rating in the units you selected.",
         );
-        res.redirect('/train/' + req.params.subject + '/chooseUnits');
-        return;
+        return res.redirect('/train/' + subject + '/chooseUnits');
       }
-      // update pending question field
-      updateQuestionQueue(req, req.params.subject, curQ._id);
-      // push to frontend
+
+      await updateQuestionQueue(req, subject, selected._id);
+      render(selected);
+    }),
+  );
+
+  app.get(
+    '/train/displayQuestion/:id',
+    wrap(async (req, res) => {
+      const question =
+        toObjectId(req.params.id) &&
+        (await getQuestion(mongo.Ques, req.params.id));
+      if (!question) {
+        req.flash(
+          'errorFlash',
+          "Error 404: File Not Found. That question doesn't exist.",
+        );
+        return res.redirect('/');
+      }
       res.render(VIEWS + 'private/train/displayQuestion.ejs', {
-        units: units,
-        newQues: curQ,
-        subject: req.params.subject,
+        units: question.units,
+        newQues: question,
+        subject: question.subject[0],
         user: req.user,
-        experienceStats,
+        experienceStats: calculateLevel(req.user.stats.experience),
         pageName: 'Classic Trainer',
+        disabled: true,
         referenceSheet,
       });
-    }
-  });
-
-  app.get('/train/displayQuestion/:id', async (req, res) => {
-    let experienceStats = await calculateLevel(req.user.stats.experience);
-    mongo.db
-      .collection('questions')
-      .findOne({ _id: mongoose.Types.ObjectId(req.params.id) })
-      .then((question, err) => {
-        if (!err) {
-          res.render(VIEWS + 'private/train/displayQuestion.ejs', {
-            units: question.units,
-            newQues: question,
-            subject: question.subject[0],
-            user: req.user,
-            experienceStats,
-            pageName: 'Classic Trainer',
-            disabled: true,
-            referenceSheet,
-          });
-        }
-      });
-  });
+    }),
+  );
 };

@@ -12,3 +12,6 @@ CODEOWNERS
 
 # Built files
 public/css/style.css
+
+# Downloaded model weights
+/.cache/
