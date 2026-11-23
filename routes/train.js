@@ -37,12 +37,16 @@ function canonicalSubject(value) {
   );
 }
 
-// keeps only units that exist for the subject
+// The unit picker submits "<Subject> - <Unit>" and questions store their units
+// in that same form. Bare unit names are accepted and normalised to it.
 function validUnits(subject, requested) {
-  const known = subjectUnitDictionary[subject] || [];
-  return (Array.isArray(requested) ? requested : [requested]).filter(
-    (unit) => typeof unit === 'string' && known.includes(unit),
+  const known = (subjectUnitDictionary[subject] || []).map(
+    (unit) => `${subject} - ${unit}`,
   );
+  const wanted = (Array.isArray(requested) ? requested : [requested])
+    .filter((unit) => typeof unit === 'string')
+    .map((unit) => (known.includes(unit) ? unit : `${subject} - ${unit}`));
+  return [...new Set(wanted.filter((unit) => known.includes(unit)))];
 }
 
 module.exports = (app, mongo) => {

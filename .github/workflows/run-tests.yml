@@ -1,21 +1,53 @@
-# This workflow runs tests as a quality gate for PRs.
-
-name: Run Tests
+# Quality gate for pushes and pull requests: lint, formatting, tests, dependency audit.
+name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, 'modernize/**']
   pull_request:
-    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Install modules
-        run: npm install
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
-      - name: Run ESLint
+      - name: Install
+        run: npm ci
+
+      - name: Lint
         run: npm run lint
+
+      - name: Formatting
+        run: npm run format:check
+
+      - name: Tests
+        run: npm test
+
+      - name: Build CSS
+        run: npm run build
+
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high

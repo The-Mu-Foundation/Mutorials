@@ -85,7 +85,7 @@ module.exports = (app, mongo) => {
 
   app.get('/statsAdditional', async (req, res) => {
     try {
-      let {
+      const {
         physicsRating,
         chemistryRating,
         biologyRating,
@@ -93,23 +93,23 @@ module.exports = (app, mongo) => {
         rushHighscore,
       } = req.query;
 
-      let globalPhysicsRank =
+      const globalPhysicsRank =
         (await mongo.User.countDocuments({
           'rating.physics': { $gt: physicsRating },
         })) + 1;
-      let globalChemistryRank =
+      const globalChemistryRank =
         (await mongo.User.countDocuments({
           'rating.chemistry': { $gt: chemistryRating },
         })) + 1;
-      let globalBiologyRank =
+      const globalBiologyRank =
         (await mongo.User.countDocuments({
           'rating.biology': { $gt: biologyRating },
         })) + 1;
-      let globalExperienceRank =
+      const globalExperienceRank =
         (await mongo.User.countDocuments({
           'stats.experience': { $gt: experience },
         })) + 1;
-      let globalRushRank =
+      const globalRushRank =
         (await mongo.User.countDocuments({
           'stats.rush.highscore': { $gt: rushHighscore },
         })) + 1;

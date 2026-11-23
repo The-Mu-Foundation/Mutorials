@@ -1,11 +1,7 @@
 // FUNCTION IMPORTS
-const {
-  calculateLevel,
-  analyze,
-} = require('../utils/functions/siteAlgorithms');
+const { calculateLevel } = require('../utils/functions/siteAlgorithms');
 const { isAdmin } = require('../utils/constants/sitesettings');
 const {
-  generateLeaderboard,
   getDailyQuestion,
   getSiteData,
   getAnnouncements,
@@ -34,7 +30,7 @@ module.exports = (app, mongo) => {
   );
 
   app.get('/announcements', async (req, res) => {
-    let announcements = await getAnnouncements(mongo.SiteData, 20);
+    const announcements = await getAnnouncements(mongo.SiteData, 20);
     res.render(VIEWS + 'private/announcements.ejs', {
       announcements,
       pageName: 'Announcements',
@@ -42,10 +38,10 @@ module.exports = (app, mongo) => {
   });
 
   app.get('/homepage', async (req, res) => {
-    let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
-    let experienceStats = await calculateLevel(req.user.stats.experience);
+    const siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
+    const experienceStats = await calculateLevel(req.user.stats.experience);
     const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
-    let announcements = await getAnnouncements(mongo.SiteData, 3);
+    const announcements = await getAnnouncements(mongo.SiteData, 3);
     res.render(VIEWS + 'private/homepage.ejs', {
       user: req.user,
       siteStats: siteData,
@@ -79,10 +75,10 @@ module.exports = (app, mongo) => {
   );
 
   app.get('/search', async (req, res) => {
-    let query = req.query;
+    const query = req.query;
 
     if (query) {
-      let results = await querySite(query, mongo.User, mongo.Ques);
+      const results = await querySite(query, mongo.User, mongo.Ques);
       res.render(VIEWS + 'private/search.ejs', {
         results,
         query,

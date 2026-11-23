@@ -127,7 +127,7 @@ module.exports = (app, mongo) => {
     wrap(async (req, res) => {
       const ign = asString(req.body.ign).trim().toLowerCase();
       if (ign && ign != req.user.ign) {
-        if (!/^[\w\-\.\~]+$/.test(ign)) {
+        if (!/^[\w.~-]+$/.test(ign)) {
           req.flash(
             'errorFlash',
             'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',

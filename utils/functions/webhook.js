@@ -2,9 +2,12 @@ const { discordWebhookUrl } = require('../config');
 
 // strips characters Discord could interpret as mentions and bounds length
 function clean(text, max) {
-  return String(text ?? '')
-    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '')
-    .slice(0, max);
+  return (
+    String(text ?? '')
+      // eslint-disable-next-line no-control-regex -- deliberately strips control characters
+      .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '')
+      .slice(0, max)
+  );
 }
 
 module.exports = {

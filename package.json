@@ -8,7 +8,12 @@
     "dev:express": "nodemon index.js",
     "dev:css": "tailwindcss -i public/css/tailwind.css -o public/css/style.css --watch",
     "build": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test --test-timeout=120000 \"tests/**/*.test.js\"",
+    "audit:prod": "npm audit --omit=dev",
+    "check": "npm run lint && npm run format:check && npm test"
   },
   "engines": {
     "node": "22.x"

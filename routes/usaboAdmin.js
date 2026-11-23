@@ -130,7 +130,7 @@ module.exports = (app, mongo) => {
         .find({ subject: ['USABO'] })
         .toArray();
       for (let i = 0; i < Math.min(20, tempQuestions.length); i++) {
-        let question = tempQuestions[i];
+        const question = tempQuestions[i];
 
         // Extract units from "USABO - " format
         question.units = question.units.map((unit) => {
@@ -153,7 +153,7 @@ module.exports = (app, mongo) => {
           if (problemNumberMatch) problemNumber = problemNumberMatch[1];
         });
 
-        let newQ = new mongo.USABOQues({
+        const newQ = new mongo.USABOQues({
           question: question.question,
           choices: question.choices,
           rating: question.rating,

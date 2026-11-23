@@ -85,7 +85,11 @@ module.exports = (app, mongo) => {
 
   app.get('/index2', async (req, res) => {
     if (!req.isAuthenticated()) {
-      let siteData = await getSiteData(mongo.User, mongo.Ques, mongo.SiteData);
+      const siteData = await getSiteData(
+        mongo.User,
+        mongo.Ques,
+        mongo.SiteData,
+      );
       const question = await getDailyQuestion(mongo.Daily, mongo.Ques);
 
       let experience = await mongo.User.find({
@@ -181,7 +185,7 @@ module.exports = (app, mongo) => {
 
       if (ign.length > 30) problems.push('Your username is too long.');
       if (ign.length < 1) problems.push('Please enter a username.');
-      if (ign && !/^[\w\-\.\~]+$/.test(ign)) {
+      if (ign && !/^[\w.~-]+$/.test(ign)) {
         problems.push(
           'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',
         );
