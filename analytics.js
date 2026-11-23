@@ -10,11 +10,11 @@ async function collectData() {
   let sitedata = await mongo.SiteData.findOne({ tag: 'QUESTIONS' }).exec();
   let currentAttempts = 0;
   Object.keys(sitedata.data.attempts).forEach(
-    (element) => (currentAttempts += sitedata.data.attempts[element])
+    (element) => (currentAttempts += sitedata.data.attempts[element]),
   );
   let currentSolves = 0;
   Object.keys(sitedata.data.solves).forEach(
-    (element) => (currentSolves += sitedata.data.solves[element])
+    (element) => (currentSolves += sitedata.data.solves[element]),
   );
   return { currentUsers, currentQuestions, currentAttempts, currentSolves };
 }
@@ -33,7 +33,7 @@ async function collectDailyData() {
   });
   await mongo.SiteData.updateOne(
     { tag: 'HISTORY_MONTH' },
-    { $set: { data: history.data } }
+    { $set: { data: history.data } },
   ).exec();
   initializeAnalytics();
 }
@@ -52,7 +52,7 @@ async function collectWeeklyData() {
   });
   await mongo.SiteData.updateOne(
     { tag: 'HISTORY_YEAR' },
-    { $set: { data: history.data } }
+    { $set: { data: history.data } },
   ).exec();
   initializeAnalytics();
 }

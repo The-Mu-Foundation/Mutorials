@@ -11,7 +11,7 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
+        'Error 401: Unauthorized. You need to login to see this page.',
       );
       res.redirect('/');
     }
@@ -44,11 +44,11 @@ module.exports = (app, mongo) => {
           .collection('users')
           .findOneAndUpdate(
             { _id: req.user._id },
-            { $addToSet: { classes: obj._id } }
+            { $addToSet: { classes: obj._id } },
           );
         req.flash(
           'successFlash',
-          "You've successfully been added to " + req.body.name + '.'
+          "You've successfully been added to " + req.body.name + '.',
         );
         res.redirect('/');
       });
@@ -73,11 +73,11 @@ module.exports = (app, mongo) => {
           .collection('users')
           .findOneAndUpdate(
             { _id: req.user._id },
-            { $push: { teachingClasses: newClass._id } }
+            { $push: { teachingClasses: newClass._id } },
           );
         req.flash(
           'successFlash',
-          'We successfully created class ' + req.body.name + '.'
+          'We successfully created class ' + req.body.name + '.',
         );
         res.redirect('/class/dash');
       }
@@ -97,7 +97,7 @@ module.exports = (app, mongo) => {
           .findOneAndUpdate(
             { _id: reqClassId },
             { $set: { classCode: newClassCode } },
-            { new: true }
+            { new: true },
           )
           .then((err, currentClass) => {
             req.flash('successFlash', 'New class code generated.');
@@ -114,7 +114,7 @@ module.exports = (app, mongo) => {
     reqClassId = mongoose.Types.ObjectId(req.body.classId);
     mongo.User.findOneAndUpdate(
       { _id: req.user._id },
-      { $pull: { classes: { $in: [reqClassId] } } }
+      { $pull: { classes: { $in: [reqClassId] } } },
     ).then((err, students) => {
       req.flash('successFlash', "You've left " + req.body.className + '.');
       res.redirect('/');
@@ -126,7 +126,7 @@ module.exports = (app, mongo) => {
     console.log(req.body.ign);
     mongo.User.findOneAndUpdate(
       { ign: req.body.ign },
-      { $pull: { classes: { $in: [reqClassId] } } }
+      { $pull: { classes: { $in: [reqClassId] } } },
     ).then((err, students) => {
       res.json({ status: 'Success' });
     });
@@ -143,15 +143,15 @@ module.exports = (app, mongo) => {
           console.log(deletedClass);
           mongo.User.updateMany(
             {},
-            { $pull: { classes: { $in: [reqClassId] } } }
+            { $pull: { classes: { $in: [reqClassId] } } },
           ).then((err, students) => {
             mongo.User.updateMany(
               {},
-              { $pull: { teachingClasses: { $in: [reqClassId] } } }
+              { $pull: { teachingClasses: { $in: [reqClassId] } } },
             ).then((err, teachers) => {
               req.flash(
                 'successFlash',
-                'Class ' + req.body.className + ' has been deleted.'
+                'Class ' + req.body.className + ' has been deleted.',
               );
               res.redirect('/');
             });
@@ -206,7 +206,7 @@ module.exports = (app, mongo) => {
                       if (!students || students.length == 0) {
                         req.flash(
                           'errorFlash',
-                          "There aren't any students in your class yet."
+                          "There aren't any students in your class yet.",
                         );
                       } else {
                         // calculate averages
@@ -235,13 +235,13 @@ module.exports = (app, mongo) => {
                         chemistryAvg: chemistryAvg,
                         biologyAvg: biologyAvg,
                       });
-                    }
+                    },
                   );
                 } else {
                   req.flash('errorFlash', 'Error 404: Class not found.');
                   res.redirect('/');
                 }
-              }
+              },
             );
           } else {
             req.flash('errorFlash', 'Error 404: Class not found.');

@@ -28,7 +28,7 @@ async function transferReviewedQuestions() {
       reviewers: 1,
       writtenDate: 1,
       hourRefactor: 1,
-    }
+    },
   )
     .lean()
     .exec();

@@ -13,11 +13,11 @@ module.exports = (app, mongo) => {
       } else {
         req.flash(
           'errorFlash',
-          'Error 401: Unauthorized. You need to login to see this page.'
+          'Error 401: Unauthorized. You need to login to see this page.',
         );
         res.redirect('/');
       }
-    }
+    },
   );
 
   // change profile settings
@@ -31,7 +31,7 @@ module.exports = (app, mongo) => {
     if (age < 0 || age > 150) {
       req.flash(
         'errorFlash',
-        "You've got to be at least 0 and younger than 150 to use Mutorials ;)"
+        "You've got to be at least 0 and younger than 150 to use Mutorials ;)",
       );
     } else {
       req.user.profile.yob = req.body.yob; //entered age is adjusted in settings.ejs
@@ -45,7 +45,7 @@ module.exports = (app, mongo) => {
           } else {
             req.flash(
               'errorFlash',
-              'Please keep your name under 50 characters long.'
+              'Please keep your name under 50 characters long.',
             );
           }
         } else {
@@ -60,7 +60,7 @@ module.exports = (app, mongo) => {
             } else {
               req.flash(
                 'errorFlash',
-                'Please keep your bio under 150 characters long.'
+                'Please keep your bio under 150 characters long.',
               );
             }
           } else {
@@ -77,7 +77,7 @@ module.exports = (app, mongo) => {
           } else {
             req.flash(
               'errorFlash',
-              'Please keep your location under 50 characters long.'
+              'Please keep your location under 50 characters long.',
             );
           }
         } else {
@@ -97,7 +97,7 @@ module.exports = (app, mongo) => {
     ) {
       req.flash(
         'errorFlash',
-        'You have to be over 13 to give us your name or location or to have a bio.'
+        'You have to be over 13 to give us your name or location or to have a bio.',
       );
     }
     mongo.db.collection('users').findOneAndUpdate(
@@ -112,7 +112,7 @@ module.exports = (app, mongo) => {
           },
         },
       },
-      { upsert: true }
+      { upsert: true },
     );
     console.log(req.user);
 
@@ -135,7 +135,7 @@ module.exports = (app, mongo) => {
           },
         },
       },
-      { upsert: true }
+      { upsert: true },
     );
 
     console.log('Updated preferences');
@@ -149,12 +149,12 @@ module.exports = (app, mongo) => {
       if (!/^[\w\-\.\~]+$/.test(req.body.ign)) {
         req.flash(
           'errorFlash',
-          'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.'
+          'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',
         );
       } else if (req.body.ign.length > 30) {
         req.flash(
           'errorFlash',
-          'Please keep your username under 30 characters long.'
+          'Please keep your username under 30 characters long.',
         );
       } else {
         mongo.User.countDocuments({ ign: req.body.ign }, function (err, count) {
@@ -167,7 +167,7 @@ module.exports = (app, mongo) => {
               .collection('users')
               .findOneAndUpdate(
                 { _id: req.user._id },
-                { $set: { ign: req.body.ign } }
+                { $set: { ign: req.body.ign } },
               );
             req.flash('successFlash', 'We successfully changed your username.');
           }
@@ -188,7 +188,7 @@ module.exports = (app, mongo) => {
               console.log('email exists');
               req.flash(
                 'errorFlash',
-                'We already have an account with that email. Try signing in with that one.'
+                'We already have an account with that email. Try signing in with that one.',
               );
             } else {
               console.log('email does not exist');
@@ -199,22 +199,22 @@ module.exports = (app, mongo) => {
                   .collection('users')
                   .findOneAndUpdate(
                     { username: req.body.username },
-                    { $set: { emailConfirmCode: confirmCode } }
+                    { $set: { emailConfirmCode: confirmCode } },
                   );
               });
               req.flash(
                 'successFlash',
-                'You need to confirm your email. Please check your email to confirm it.'
+                'You need to confirm your email. Please check your email to confirm it.',
               );
               mongo.db
                 .collection('users')
                 .findOneAndUpdate(
                   { _id: req.user._id },
-                  { $set: { username: req.body.username } }
+                  { $set: { username: req.body.username } },
                 );
               console.log('email updated');
             }
-          }
+          },
         );
       }
     } else {
@@ -226,7 +226,7 @@ module.exports = (app, mongo) => {
         const isValid = validPassword(
           req.body.plassword,
           req.user.hash,
-          req.user.salt
+          req.user.salt,
         );
         if (
           /\d/.test(req.body.newpw) &&
@@ -242,12 +242,12 @@ module.exports = (app, mongo) => {
                 .collection('users')
                 .findOneAndUpdate(
                   { _id: req.user._id },
-                  { $set: { hash: req.user.hash, salt: req.user.salt } }
+                  { $set: { hash: req.user.hash, salt: req.user.salt } },
                 );
             } else {
               req.flash(
                 'errorFlash',
-                'Your current password must match what you type into the field below for any changes to these settings!'
+                'Your current password must match what you type into the field below for any changes to these settings!',
               );
             }
           } else {
@@ -259,7 +259,7 @@ module.exports = (app, mongo) => {
       } else {
         req.flash(
           'errorFlash',
-          'To change your password you must enter your current password first!'
+          'To change your password you must enter your current password first!',
         );
       }
     }
@@ -272,7 +272,7 @@ module.exports = (app, mongo) => {
     const isValid = validPassword(
       req.body.delassword,
       req.user.hash,
-      req.user.salt
+      req.user.salt,
     );
     if (isValid) {
       mongo.db.collection('users').deleteOne({ _id: req.user._id });

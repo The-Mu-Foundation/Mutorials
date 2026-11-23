@@ -33,13 +33,13 @@ module.exports = (app, mongo) => {
     ) {
       req.flash(
         'errorFlash',
-        "Error 403: You don't have permission to access this resource."
+        "Error 403: You don't have permission to access this resource.",
       );
       res.redirect('/');
     } else {
       req.flash(
         'errorFlash',
-        "Error 404: File Not Found. That page doesn't exist."
+        "Error 404: File Not Found. That page doesn't exist.",
       );
       res.redirect('/');
     }
@@ -71,7 +71,7 @@ module.exports = (app, mongo) => {
       Object.keys(tags[subject]['Units']).forEach((unitTag) => {
         if (
           req.body.units.includes(
-            subject + ' - ' + tags[subject]['Units'][unitTag]
+            subject + ' - ' + tags[subject]['Units'][unitTag],
           )
         ) {
           if (req.body.tags.length >= 1) {
@@ -88,7 +88,7 @@ module.exports = (app, mongo) => {
 
     mongo.db
       .collection(
-        req.body.reviewerID != 'isEdit' ? 'pendingQuestions' : 'questions'
+        req.body.reviewerID != 'isEdit' ? 'pendingQuestions' : 'questions',
       )
       .findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(req.body.questionID) },
@@ -111,7 +111,7 @@ module.exports = (app, mongo) => {
             reviewers: req.body.reviewerID,
           },
         },
-        { new: true }
+        { new: true },
       )
       .then((err, question) => {
         question = question ? question : err.value;
@@ -128,25 +128,25 @@ module.exports = (app, mongo) => {
                 console.log(err);
               } else {
                 const newQ = new mongo.Ques({
-                    question: req.body.question,
-                    choices: parseDelimiter(req.body.choices),
-                    tags: parseDelimiter(req.body.tags),
-                    rating: req.body.rating,
-                    answer: parseDelimiter(req.body.answer),
-                    answer_ex: req.body.answerExplanation,
-                    author: req.body.author,
-                    type: req.body.type,
-                    ext_source: req.body.externalSource,
-                    source_statement: req.body.sourceStatement,
-                    subject: req.body.subject,
-                    units: req.body.units,
-                    hourRefactor: question.hourRefactor,
-                    writtenDate: question.writtenDate,
-                    reviewers: question.reviewers,
-                    stats: {
-                      pass: 0,
-                      fail: 0
-                    }
+                  question: req.body.question,
+                  choices: parseDelimiter(req.body.choices),
+                  tags: parseDelimiter(req.body.tags),
+                  rating: req.body.rating,
+                  answer: parseDelimiter(req.body.answer),
+                  answer_ex: req.body.answerExplanation,
+                  author: req.body.author,
+                  type: req.body.type,
+                  ext_source: req.body.externalSource,
+                  source_statement: req.body.sourceStatement,
+                  subject: req.body.subject,
+                  units: req.body.units,
+                  hourRefactor: question.hourRefactor,
+                  writtenDate: question.writtenDate,
+                  reviewers: question.reviewers,
+                  stats: {
+                    pass: 0,
+                    fail: 0,
+                  },
                 });
                 newQ.save();
               }
@@ -184,7 +184,7 @@ module.exports = (app, mongo) => {
       .collection(
         req.body.reviewerID != 'isEdit'
           ? 'usaboPendingQuestions'
-          : 'usaboQuestions'
+          : 'usaboQuestions',
       )
       .findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(req.body.questionID) },
@@ -206,7 +206,7 @@ module.exports = (app, mongo) => {
             reviewers: req.body.reviewerID,
           },
         },
-        { new: true }
+        { new: true },
       )
       .then((err, question) => {
         question = question ? question : err.value;
@@ -223,24 +223,24 @@ module.exports = (app, mongo) => {
                 console.log(err);
               } else {
                 const newQ = new mongo.USABOQues({
-                    question: req.body.question,
-                    choices: parseDelimiter(req.body.choices),
-                    year: req.body.year,
-                    rating: req.body.rating,
-                    answer: parseDelimiter(req.body.answer),
-                    answer_ex: req.body.answerExplanation,
-                    author: req.body.author,
-                    type: req.body.type,
-                    problemNumber: req.body.problemNumber,
-                    round: req.body.round,
-                    categories: req.body.categories,
-                    hourRefactor: question.hourRefactor,
-                    writtenDate: question.writtenDate,
-                    reviewers: question.reviewers,
-                    stats: {
-                      pass: 0,
-                      fail: 0
-                    }
+                  question: req.body.question,
+                  choices: parseDelimiter(req.body.choices),
+                  year: req.body.year,
+                  rating: req.body.rating,
+                  answer: parseDelimiter(req.body.answer),
+                  answer_ex: req.body.answerExplanation,
+                  author: req.body.author,
+                  type: req.body.type,
+                  problemNumber: req.body.problemNumber,
+                  round: req.body.round,
+                  categories: req.body.categories,
+                  hourRefactor: question.hourRefactor,
+                  writtenDate: question.writtenDate,
+                  reviewers: question.reviewers,
+                  stats: {
+                    pass: 0,
+                    fail: 0,
+                  },
                 });
                 newQ.save();
               }
@@ -263,13 +263,13 @@ module.exports = (app, mongo) => {
       .collection('questions')
       .findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } }
+        { $set: { hourRefactor: newHours } },
       );
     mongo.db
       .collection('pendingQuestions')
       .findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } }
+        { $set: { hourRefactor: newHours } },
       );
     res.redirect('back');
   });
@@ -283,13 +283,13 @@ module.exports = (app, mongo) => {
       .collection('usaboQuestions')
       .findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } }
+        { $set: { hourRefactor: newHours } },
       );
     mongo.db
       .collection('usaboPendingQuestions')
       .findOneAndUpdate(
         { _id: mongoose.Types.ObjectId(req.body.questionID) },
-        { $set: { hourRefactor: newHours } }
+        { $set: { hourRefactor: newHours } },
       );
     res.redirect('back');
   });

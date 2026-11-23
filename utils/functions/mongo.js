@@ -23,7 +23,7 @@ const USABOQues = db.model('USABOQues', usaboQSchema, 'usaboQuestions');
 const USABOPendingQues = db.model(
   'USABOPendingQues',
   usaboPendingQSchema,
-  'usaboPendingQuestions'
+  'usaboPendingQuestions',
 );
 const User = db.model('User', userSchema);
 const Daily = db.model('Daily', dailySchema);

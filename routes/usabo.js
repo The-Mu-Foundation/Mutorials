@@ -25,11 +25,11 @@ module.exports = (app, mongo) => {
       } else {
         req.flash(
           'errorFlash',
-          'Error 401: Unauthorized. You need to login to see this page.'
+          'Error 401: Unauthorized. You need to login to see this page.',
         );
         res.redirect('/');
       }
-    }
+    },
   );
 
   app.get('/usaboHomepage', async (req, res) => {
@@ -57,7 +57,7 @@ module.exports = (app, mongo) => {
       } else {
         req.flash(
           'errorFlash',
-          "Error 404: File Not Found. That question doesn't exist."
+          "Error 404: File Not Found. That question doesn't exist.",
         );
         res.redirect('/');
       }

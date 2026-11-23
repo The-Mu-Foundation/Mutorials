@@ -55,7 +55,7 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
+        'Error 401: Unauthorized. You need to login to see this page.',
       );
       res.redirect('/');
     }
@@ -68,12 +68,12 @@ module.exports = (app, mongo) => {
         .collection('users')
         .findOneAndUpdate(
           { username: req.user.username },
-          { $set: { rating: req.user.rating } }
+          { $set: { rating: req.user.rating } },
         );
     } else {
       req.flash(
         'errorFlash',
-        "You've already set your proficiency for that subject"
+        "You've already set your proficiency for that subject",
       );
     }
     res.redirect('/train/' + 'usabo' + '/chooseCategories');
@@ -90,7 +90,7 @@ module.exports = (app, mongo) => {
       if (categories) {
         res.redirect(
           '/train/usabo/displayUSABOQuestion?categories=' +
-            categories.toString()
+            categories.toString(),
         );
       }
     }
@@ -118,12 +118,12 @@ module.exports = (app, mongo) => {
               'usabo',
               calculateRatings(oldUserRating, oldQRating, isRight)
                 .newUserRating,
-              req
+              req,
             );
             setQRating(
               antsy,
               calculateRatings(oldUserRating, oldQRating, isRight)
-                .newQuestionRating
+                .newQuestionRating,
             );
 
             // update counters & tag collector
@@ -155,7 +155,7 @@ module.exports = (app, mongo) => {
             experienceStats,
             pageName: 'USABO Answer Explanation',
           });
-        }
+        },
       );
     } else if (req.body.type == 'sa' && req.body.saChoice != undefined) {
       let isRight = false;
@@ -176,12 +176,12 @@ module.exports = (app, mongo) => {
               'USABO',
               calculateRatings(oldUserRating, oldQRating, isRight)
                 .newUserRating,
-              req
+              req,
             );
             setQRating(
               antsy,
               calculateRatings(oldUserRating, oldQRating, isRight)
-                .newQuestionRating
+                .newQuestionRating,
             );
 
             // update counters & tag collector
@@ -213,7 +213,7 @@ module.exports = (app, mongo) => {
             experienceStats,
             pageName: ' USABO Answer Explanation',
           });
-        }
+        },
       );
     } else if (req.body.type == 'fr' && req.body.freeAnswer != '') {
       let isRight = false;
@@ -254,12 +254,12 @@ module.exports = (app, mongo) => {
               'usabo',
               calculateRatings(oldUserRating, oldQRating, isRight)
                 .newUserRating,
-              req
+              req,
             );
             setQRating(
               antsy,
               calculateRatings(oldUserRating, oldQRating, isRight)
-                .newQuestionRating
+                .newQuestionRating,
             );
 
             // update counters & tag collector
@@ -291,12 +291,12 @@ module.exports = (app, mongo) => {
             experienceStats,
             pageName: 'USABO Answer Explanation',
           });
-        }
+        },
       );
     } else {
       req.flash(
         'errorFlash',
-        'Please choose an answer next time... We treated that as a skip (-8 rating).'
+        'Please choose an answer next time... We treated that as a skip (-8 rating).',
       );
       skipQuestionUpdates(mongo.USABOQues, req, 'USABO', req.body.id);
       clearQuestionQueue(req, 'USABO');
@@ -347,7 +347,7 @@ module.exports = (app, mongo) => {
     if (req.user.stats.toAnswer['usabo']) {
       q = await getUSABOQuestion(
         mongo.USABOQues,
-        req.user.stats.toAnswer['usabo']
+        req.user.stats.toAnswer['usabo'],
       );
     }
     // get experience stats
@@ -361,7 +361,7 @@ module.exports = (app, mongo) => {
         user: req.user,
         experienceStats,
         pageName: 'USABO Trainer',
-        referenceSheet
+        referenceSheet,
       });
     } else {
       // deduct 8 rating if previously queued question was skipped
@@ -381,7 +381,7 @@ module.exports = (app, mongo) => {
           if (!curQ) {
             req.flash(
               'errorFlash',
-              "We couldn't find any questions for your rating in the categories you selected."
+              "We couldn't find any questions for your rating in the categories you selected.",
             );
             res.redirect('/train/' + 'usabo' + '/chooseCategories');
             return;
@@ -396,9 +396,9 @@ module.exports = (app, mongo) => {
             user: req.user,
             experienceStats,
             pageName: 'USABO Trainer',
-            referenceSheet
+            referenceSheet,
           });
-        }
+        },
       );
     }
   });

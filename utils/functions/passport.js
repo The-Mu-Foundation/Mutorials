@@ -34,8 +34,8 @@ module.exports = (app, mongo) => {
           .catch((err) => {
             cb(err);
           });
-      }
-    )
+      },
+    ),
   );
   passport.serializeUser(function (user, cb) {
     cb(null, user.id);

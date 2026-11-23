@@ -40,7 +40,7 @@ module.exports = {
   clearConfirmCode: function (username) {
     db.collection('users').findOneAndUpdate(
       { username: username },
-      { $set: { email_confirm_code: '0' } }
+      { $set: { email_confirm_code: '0' } },
     );
   },
 

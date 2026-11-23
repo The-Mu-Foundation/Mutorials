@@ -25,14 +25,17 @@ module.exports = (app, mongo) => {
     // Site data
     let userCount, questionCount, tagCount, usaboQuestionCount, totalSolves;
     const siteDataQuery = getSiteData(User, Ques, SiteData).then((data) => {
-      ({ userCount, questionCount, tagCount, usaboQuestionCount, totalSolves } = data);
+      ({ userCount, questionCount, tagCount, usaboQuestionCount, totalSolves } =
+        data);
     });
 
     // Daily question
     let question;
-    const dailyQuestionQuery = getDailyQuestion(mongo.Daily, mongo.Ques).then((data) => {
-      question = data;
-    });
+    const dailyQuestionQuery = getDailyQuestion(mongo.Daily, mongo.Ques).then(
+      (data) => {
+        question = data;
+      },
+    );
 
     // Leaderboard
     let leaderboard;
@@ -63,7 +66,7 @@ module.exports = (app, mongo) => {
       tagCount,
       totalSolves: Array.from(Object.values(totalSolves)).reduce(
         (a, b) => a + (b || 0), // Catch if b is NaN
-        0
+        0,
       ),
       question,
       leaderboard,
@@ -149,7 +152,9 @@ module.exports = (app, mongo) => {
   });
 
   app.get('/zetamac', (req, res) => {
-    res.render(VIEWS + 'public/zetamac.ejs', { isAuthenticated: req.isAuthenticated(), });
+    res.render(VIEWS + 'public/zetamac.ejs', {
+      isAuthenticated: req.isAuthenticated(),
+    });
   });
 
   // PUBLIC POST
@@ -170,7 +175,7 @@ module.exports = (app, mongo) => {
     if (!/^[\w\-\.\~]+$/.test(req.body.ign)) {
       req.flash(
         'errorFlash',
-        'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.'
+        'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',
       );
       registerInputProblems1 = true;
     }
@@ -186,7 +191,7 @@ module.exports = (app, mongo) => {
     ) {
       req.flash(
         'errorFlash',
-        'The password you entered does not meet the requirements.'
+        'The password you entered does not meet the requirements.',
       );
       registerInputProblems1 = true;
     }
@@ -202,7 +207,7 @@ module.exports = (app, mongo) => {
     if (!req.body.agreeTOS) {
       req.flash(
         'errorFlash',
-        'You must agree to the Terms of Service and Privacy Policy to register an account with us.'
+        'You must agree to the Terms of Service and Privacy Policy to register an account with us.',
       );
       registerInputProblems1 = true;
     }
@@ -317,7 +322,7 @@ module.exports = (app, mongo) => {
     }),
     (req, res, next) => {
       console.log('routes/publicjs: User just signed in');
-    }
+    },
   );
 
   app.post('/forgotPassword', (req, res) => {
@@ -333,16 +338,16 @@ module.exports = (app, mongo) => {
                 .collection('users')
                 .findOneAndUpdate(
                   { username: req.body.forgotEmail },
-                  { $set: { email_confirm_code: buf.toString('hex') } }
+                  { $set: { email_confirm_code: buf.toString('hex') } },
                 )
                 .then((success) => {
                   emailValidation.emailCodeSend(
                     req.body.forgotEmail,
-                    buf.toString('hex')
+                    buf.toString('hex'),
                   );
                   req.flash(
                     'successFlash',
-                    "You've been emailed a confirmation code."
+                    "You've been emailed a confirmation code.",
                   );
                   res.locals.forgotPassUser = req.body.forgotEmail;
                   res.render(VIEWS + 'public/forgotPassword.ejs', {
@@ -371,7 +376,7 @@ module.exports = (app, mongo) => {
             ) {
               req.flash(
                 'errorFlash',
-                'The password you entered does not meet the requirements.'
+                'The password you entered does not meet the requirements.',
               );
               res.locals.forgotPassUser = req.body.username;
               res.render(VIEWS + 'public/forgotPassword.ejs', {
@@ -391,7 +396,7 @@ module.exports = (app, mongo) => {
                 .collection('users')
                 .findOneAndUpdate(
                   { username: req.body.username },
-                  { $set: { email_confirm_code: '', salt: salt, hash: hash } }
+                  { $set: { email_confirm_code: '', salt: salt, hash: hash } },
                 )
                 .then((success) => {
                   req.flash('successFlash', 'Your password has been changed.');
@@ -415,17 +420,17 @@ module.exports = (app, mongo) => {
   app.post('/contact', (req, res) => {
     req.isAuthenticated()
       ? sendDiscordWebhook(
-        req.body.comment,
-        req.user.username,
-        req.user.ign,
-        req.body.questionId
-      )
+          req.body.comment,
+          req.user.username,
+          req.user.ign,
+          req.body.questionId,
+        )
       : sendDiscordWebhook(
-        req.body.comment,
-        'N/A',
-        'User not signed in.',
-        req.body.questionId
-      );
+          req.body.comment,
+          'N/A',
+          'User not signed in.',
+          req.body.questionId,
+        );
     req.flash('successFlash', 'Thanks for your feedback!');
     if (req.body.redirect) {
       res.redirect(req.body.redirect);

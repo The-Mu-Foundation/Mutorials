@@ -29,13 +29,13 @@ module.exports = (app, mongo) => {
     ) {
       req.flash(
         'errorFlash',
-        "Error 403: You don't have permission to access this resource."
+        "Error 403: You don't have permission to access this resource.",
       );
       res.redirect('/');
     } else {
       req.flash(
         'errorFlash',
-        "Error 404: File Not Found. That page doesn't exist."
+        "Error 404: File Not Found. That page doesn't exist.",
       );
       res.redirect('/');
     }
@@ -61,7 +61,7 @@ module.exports = (app, mongo) => {
       announcements.data.site = siteAnnouncements;
       db.collection('sitedatas').findOneAndUpdate(
         { tag: 'ANNOUNCEMENTS' },
-        { $set: { data: announcements.data } }
+        { $set: { data: announcements.data } },
       );
     } catch (err) {
       res.json({ status: 'Error' });
@@ -93,7 +93,7 @@ module.exports = (app, mongo) => {
       Object.keys(tags[subject]['Units']).forEach((unitTag) => {
         if (
           req.body.units.includes(
-            subject + ' - ' + tags[subject]['Units'][unitTag]
+            subject + ' - ' + tags[subject]['Units'][unitTag],
           )
         ) {
           if (req.body.tags.length >= 1) {
@@ -157,7 +157,7 @@ module.exports = (app, mongo) => {
       .collection('users')
       .findOneAndUpdate(
         { ign: req.body.contributorUsername },
-        { $set: { contributor: req.body.contributorID } }
+        { $set: { contributor: req.body.contributorID } },
       )
       .then((result) => {
         !result.value
@@ -196,7 +196,7 @@ module.exports = (app, mongo) => {
       .collection('users')
       .findOneAndUpdate(
         { contributor: req.body.contributorID },
-        { $set: { reviewer: true } }
+        { $set: { reviewer: true } },
       )
       .then((result) => {
         !result.value
@@ -300,7 +300,7 @@ module.exports = (app, mongo) => {
     let contributor = await queryContributor(
       req.query.id,
       mongo.Ques,
-      mongo.PendingQues
+      mongo.PendingQues,
     );
     res.json(contributor);
   });

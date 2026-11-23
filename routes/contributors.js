@@ -15,7 +15,7 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        "Error 404: File Not Found. That page doesn't exist."
+        "Error 404: File Not Found. That page doesn't exist.",
       );
       res.redirect('/');
     }
@@ -44,7 +44,7 @@ module.exports = (app, mongo) => {
       Object.keys(tags[subject]['Units']).forEach((unitTag) => {
         if (
           req.body.units.includes(
-            subject + ' - ' + tags[subject]['Units'][unitTag]
+            subject + ' - ' + tags[subject]['Units'][unitTag],
           )
         ) {
           if (req.body.tags.length >= 1) {
@@ -90,7 +90,7 @@ module.exports = (app, mongo) => {
     let contributor = await queryContributor(
       req.query.id,
       mongo.Ques,
-      mongo.PendingQues
+      mongo.PendingQues,
     );
     res.json(contributor);
   });

@@ -101,24 +101,24 @@ async function queryContributor(id, Ques, PendingQues) {
       hourSum += calcUSABOHours(
         question.round[0],
         question.rating,
-        question.hourRefactor
+        question.hourRefactor,
       );
     });
   }
 
   let ratingAverage = Math.round(ratingSum / Math.max(1, written.length));
   let physicsRatingAverage = Math.round(
-    physicsRatingSum / Math.max(1, physicsWritten)
+    physicsRatingSum / Math.max(1, physicsWritten),
   );
   let chemistryRatingAverage = Math.round(
-    chemistryRatingSum / Math.max(1, chemistryWritten)
+    chemistryRatingSum / Math.max(1, chemistryWritten),
   );
   let biologyRatingAverage = Math.round(
-    biologyRatingSum / Math.max(1, biologyWritten)
+    biologyRatingSum / Math.max(1, biologyWritten),
   );
   let essRatingAverage = Math.round(essRatingSum / Math.max(1, essWritten));
   let usaboRatingAverage = Math.round(
-    usaboRatingSum / Math.max(1, usaboWritten)
+    usaboRatingSum / Math.max(1, usaboWritten),
   );
 
   let pendingPhysicsWritten = 0;
@@ -139,7 +139,7 @@ async function queryContributor(id, Ques, PendingQues) {
         pendingHourSum += calculateHours(
           'Physics',
           physicsRatingAverage,
-          refactor
+          refactor,
         );
       }
       if (question.subject.includes('Chemistry')) {
@@ -147,7 +147,7 @@ async function queryContributor(id, Ques, PendingQues) {
         pendingHourSum += calculateHours(
           'Chemistry',
           chemistryRatingAverage,
-          refactor
+          refactor,
         );
       }
       if (question.subject.includes('Biology')) {
@@ -155,7 +155,7 @@ async function queryContributor(id, Ques, PendingQues) {
         pendingHourSum += calculateHours(
           'Biology',
           biologyRatingAverage,
-          refactor
+          refactor,
         );
       }
       if (question.subject.includes('ESS')) {
@@ -174,7 +174,7 @@ async function queryContributor(id, Ques, PendingQues) {
       pendingHourSum += calcUSABOHours(
         question.round[0],
         question.rating,
-        refactor
+        refactor,
       );
     });
   }

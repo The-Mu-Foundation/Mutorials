@@ -13,7 +13,7 @@ async function getUSABOQuestions(
   USABOQues,
   ratingFloor,
   ratingCeiling,
-  categories
+  categories,
 ) {
   const gotQ = USABOQues.find({
     rating: { $gte: ratingFloor, $lte: ratingCeiling },
@@ -91,13 +91,13 @@ function updateUSABOCounters(req, question, correct) {
 
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { stats: req.user.stats } }
+    { $set: { stats: req.user.stats } },
   );
   db.collection('usaboQuestions').findOneAndUpdate(
     { _id: question._id },
     {
       $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } },
-    }
+    },
   );
 }
 

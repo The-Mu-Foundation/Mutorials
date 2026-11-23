@@ -3,7 +3,7 @@ try {
   console.log('Loaded env vars from .env file.');
 } catch {
   console.log(
-    'Not in development environment. Skipping loading from .env file.'
+    'Not in development environment. Skipping loading from .env file.',
   );
 }
 
@@ -37,7 +37,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     store: mongo.sessionStore,
-  })
+  }),
 );
 
 require('./utils/functions/passport.js')(app, mongo);
@@ -82,7 +82,7 @@ require('./routes/reviewers.js')(app, mongo);
 app.get('*', (req, res) => {
   req.flash(
     'errorFlash',
-    "Error 404: File Not Found. That page doesn't exist."
+    "Error 404: File Not Found. That page doesn't exist.",
   );
   res.redirect('/');
 });
@@ -96,7 +96,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   req.flash(
     'errorFlash',
-    'Error 500: Internal Server Error. Something broke on our end, sorry about that.'
+    'Error 500: Internal Server Error. Something broke on our end, sorry about that.',
   );
   res.redirect('/');
 });

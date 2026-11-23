@@ -12,7 +12,14 @@ function getQuestion(Ques, id) {
 }
 
 // input a rating range (as floor and ceiling values), returns a range of questions
-async function getQuestions(Ques, ratingFloor, ratingCeiling, subject, units, excludeIds = []) {
+async function getQuestions(
+  Ques,
+  ratingFloor,
+  ratingCeiling,
+  subject,
+  units,
+  excludeIds = [],
+) {
   const query = {
     subject: [subject],
     rating: { $gte: ratingFloor, $lte: ratingCeiling },
@@ -46,7 +53,7 @@ function setRating(subject, newRating, req) {
   req.user.rating[subject.toLowerCase()] = newRating;
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { rating: req.user.rating } }
+    { $set: { rating: req.user.rating } },
   );
 }
 
@@ -62,7 +69,7 @@ function updateAll(req, question, correct) {
   updateLastAnswered(req, question);
   addExperience(
     req,
-    correct ? question.rating : Math.ceil(question.rating / 2)
+    correct ? question.rating : Math.ceil(question.rating / 2),
   );
 }
 function updateCounters(req, question, correct) {
@@ -133,13 +140,13 @@ function updateCounters(req, question, correct) {
 
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { stats: req.user.stats } }
+    { $set: { stats: req.user.stats } },
   );
   db.collection('questions').findOneAndUpdate(
     { _id: question._id },
     {
       $set: { stats: { pass: question.stats.pass, fail: question.stats.fail } },
-    }
+    },
   );
 }
 function updateTracker(req, question) {
@@ -163,7 +170,7 @@ function updateTracker(req, question) {
   req.user.stats.ratingTracker[question.subject[0].toLowerCase()] = tracker;
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { stats: req.user.stats } }
+    { $set: { stats: req.user.stats } },
   );
 }
 function updateLastAnswered(req, question) {
@@ -171,7 +178,7 @@ function updateLastAnswered(req, question) {
   req.user.stats.lastAnswered = question._id;
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { stats: req.user.stats } }
+    { $set: { stats: req.user.stats } },
   );
 }
 function addExperience(req, amount) {
@@ -183,7 +190,7 @@ function addExperience(req, amount) {
   }
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { stats: req.user.stats } }
+    { $set: { stats: req.user.stats } },
   );
 }
 
@@ -196,7 +203,7 @@ async function incrementSolveCounter(SiteData, subject, correct) {
   }
   db.collection('sitedatas').findOneAndUpdate(
     { tag: 'QUESTIONS' },
-    { $set: { data: counts } }
+    { $set: { data: counts } },
   );
 }
 
@@ -205,14 +212,14 @@ function updateQuestionQueue(req, subject, id) {
   req.user.stats.toAnswer[subject.toLowerCase()] = id;
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { stats: req.user.stats } }
+    { $set: { stats: req.user.stats } },
   );
 }
 function clearQuestionQueue(req, subject) {
   req.user.stats.toAnswer[subject.toLowerCase()] = '';
   db.collection('users').findOneAndUpdate(
     { username: req.user.username },
-    { $set: { stats: req.user.stats } }
+    { $set: { stats: req.user.stats } },
   );
 }
 
@@ -232,7 +239,7 @@ async function skipQuestionUpdates(Ques, req, subject, id) {
   q.stats.fail += 1;
   db.collection('questions').findOneAndUpdate(
     { _id: q._id },
-    { $set: { stats: q.stats, rating: q.rating } }
+    { $set: { stats: q.stats, rating: q.rating } },
   );
 }
 
@@ -241,7 +248,7 @@ function setQRating(antsy, newQRate) {
   antsy.rating = newQRate;
   db.collection('questions').findOneAndUpdate(
     { _id: antsy._id },
-    { $set: { rating: antsy.rating } }
+    { $set: { rating: antsy.rating } },
   );
 }
 
@@ -300,9 +307,8 @@ async function getDailyQuestion(Daily, Ques) {
     const questions = await Ques.find({
       rating: { $gte: 2500, $lte: 4000 },
     }).exec();
-    const selection = await questions[
-      Math.floor(Math.random() * questions.length)
-    ];
+    const selection =
+      await questions[Math.floor(Math.random() * questions.length)];
 
     // Manually set daily question date, maybe the defaults are weird?
     let question = await new Daily({
@@ -416,7 +422,7 @@ async function updateRushStats(user, score) {
 
   db.collection('users').findOneAndUpdate(
     { username: user.username },
-    { $set: { stats: user.stats } }
+    { $set: { stats: user.stats } },
   );
 }
 
@@ -603,7 +609,7 @@ async function updateTrainAchievements(user, question, correct) {
 
   db.collection('users').findOneAndUpdate(
     { username: user.username },
-    { $set: { achievements: user.achievements } }
+    { $set: { achievements: user.achievements } },
   );
 }
 
@@ -622,7 +628,7 @@ async function updateRushAchievements(user, score) {
 
   db.collection('users').findOneAndUpdate(
     { username: user.username },
-    { $set: { achievements: user.achievements } }
+    { $set: { achievements: user.achievements } },
   );
 }
 
@@ -630,7 +636,7 @@ async function updateFields() {
   //replace the parameters as needed for different purposes
   db.collection('users').updateMany(
     { age: { $exists: true } },
-    { $rename: { age: 'yob' } }
+    { $rename: { age: 'yob' } },
   );
 }
 

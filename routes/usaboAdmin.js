@@ -24,13 +24,13 @@ module.exports = (app, mongo) => {
     ) {
       req.flash(
         'errorFlash',
-        "Error 403: You don't have permission to access this resource."
+        "Error 403: You don't have permission to access this resource.",
       );
       res.redirect('/');
     } else {
       req.flash(
         'errorFlash',
-        "Error 404: File Not Found. That page doesn't exist."
+        "Error 404: File Not Found. That page doesn't exist.",
       );
       res.redirect('/');
     }

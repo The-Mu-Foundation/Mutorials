@@ -43,7 +43,7 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
+        'Error 401: Unauthorized. You need to login to see this page.',
       );
       res.redirect('/signin');
     }
@@ -55,7 +55,7 @@ module.exports = (app, mongo) => {
       .collection('users')
       .findOneAndUpdate(
         { username: req.user.username },
-        { $set: { rating: req.user.rating } }
+        { $set: { rating: req.user.rating } },
       );
     res.redirect('/homepage' /* + req.body.subject + '/chooseUnits'*/);
   });
@@ -73,7 +73,7 @@ module.exports = (app, mongo) => {
           '/train/' +
             req.body.subj +
             '/displayQuestion?units=' +
-            units.toString()
+            units.toString(),
         );
       }
     }
@@ -89,7 +89,8 @@ module.exports = (app, mongo) => {
         // mark as seen for the current session (prevents in-session repeats)
         const _seenSubjectKey = antsy.subject[0].toLowerCase();
         if (!req.session.seenQuestions) req.session.seenQuestions = {};
-        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
+        if (!req.session.seenQuestions[_seenSubjectKey])
+          req.session.seenQuestions[_seenSubjectKey] = [];
         const _seenIdStr = antsy._id.toString();
         if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
           req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
@@ -108,12 +109,12 @@ module.exports = (app, mongo) => {
           setRating(
             antsy.subject[0],
             calculateRatings(oldUserRating, oldQRating, isRight).newUserRating,
-            req
+            req,
           );
           setQRating(
             antsy,
             calculateRatings(oldUserRating, oldQRating, isRight)
-              .newQuestionRating
+              .newQuestionRating,
           );
 
           // update counters & tag collector
@@ -123,7 +124,7 @@ module.exports = (app, mongo) => {
           incrementSolveCounter(
             mongo.SiteData,
             antsy.subject[0].toLowerCase(),
-            isRight
+            isRight,
           );
         } else {
           // update tracker
@@ -159,7 +160,8 @@ module.exports = (app, mongo) => {
         // mark as seen for the current session (prevents in-session repeats)
         const _seenSubjectKey = antsy.subject[0].toLowerCase();
         if (!req.session.seenQuestions) req.session.seenQuestions = {};
-        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
+        if (!req.session.seenQuestions[_seenSubjectKey])
+          req.session.seenQuestions[_seenSubjectKey] = [];
         const _seenIdStr = antsy._id.toString();
         if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
           req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
@@ -176,12 +178,12 @@ module.exports = (app, mongo) => {
           setRating(
             antsy.subject[0],
             calculateRatings(oldUserRating, oldQRating, isRight).newUserRating,
-            req
+            req,
           );
           setQRating(
             antsy,
             calculateRatings(oldUserRating, oldQRating, isRight)
-              .newQuestionRating
+              .newQuestionRating,
           );
 
           // update counters & tag collector
@@ -191,7 +193,7 @@ module.exports = (app, mongo) => {
           incrementSolveCounter(
             mongo.SiteData,
             antsy.subject[0].toLowerCase(),
-            isRight
+            isRight,
           );
         } else {
           // update tracker
@@ -227,7 +229,8 @@ module.exports = (app, mongo) => {
         // mark as seen for the current session (prevents in-session repeats)
         const _seenSubjectKey = antsy.subject[0].toLowerCase();
         if (!req.session.seenQuestions) req.session.seenQuestions = {};
-        if (!req.session.seenQuestions[_seenSubjectKey]) req.session.seenQuestions[_seenSubjectKey] = [];
+        if (!req.session.seenQuestions[_seenSubjectKey])
+          req.session.seenQuestions[_seenSubjectKey] = [];
         const _seenIdStr = antsy._id.toString();
         if (!req.session.seenQuestions[_seenSubjectKey].includes(_seenIdStr)) {
           req.session.seenQuestions[_seenSubjectKey].push(_seenIdStr);
@@ -264,12 +267,12 @@ module.exports = (app, mongo) => {
           setRating(
             antsy.subject[0],
             calculateRatings(oldUserRating, oldQRating, isRight).newUserRating,
-            req
+            req,
           );
           setQRating(
             antsy,
             calculateRatings(oldUserRating, oldQRating, isRight)
-              .newQuestionRating
+              .newQuestionRating,
           );
 
           // update counters & tag collector
@@ -279,7 +282,7 @@ module.exports = (app, mongo) => {
           incrementSolveCounter(
             mongo.SiteData,
             antsy.subject[0].toLowerCase(),
-            isRight
+            isRight,
           );
         } else {
           // update tracker
@@ -309,7 +312,7 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Please choose an answer next time... We treated that as a skip (-8 rating).'
+        'Please choose an answer next time... We treated that as a skip (-8 rating).',
       );
       skipQuestionUpdates(mongo.Ques, req, req.body.subject, req.body.id);
       clearQuestionQueue(req, req.body.subject);
@@ -434,13 +437,13 @@ module.exports = (app, mongo) => {
         incrementSolveCounter(
           mongo.SiteData,
           question.subject[0].toLowerCase(),
-          correct
+          correct,
         );
         addExperience(req, correct ? question.rating / 2 : question.rating / 4);
         updateCounters(req, question, correct);
         setQRating(
           question,
-          correct ? Math.max(0, question.rating - 1) : question.rating + 1
+          correct ? Math.max(0, question.rating - 1) : question.rating + 1,
         );
 
         res.json({
@@ -521,7 +524,8 @@ module.exports = (app, mongo) => {
 
     // session-scoped seen-question tracker (prevents in-session repeats)
     if (!req.session.seenQuestions) req.session.seenQuestions = {};
-    if (!req.session.seenQuestions[subjectKey]) req.session.seenQuestions[subjectKey] = [];
+    if (!req.session.seenQuestions[subjectKey])
+      req.session.seenQuestions[subjectKey] = [];
     const seenIds = req.session.seenQuestions[subjectKey];
 
     let q = '';
@@ -556,12 +560,7 @@ module.exports = (app, mongo) => {
 
       // deduct 8 rating if previously queued question was skipped
       if (q) {
-        skipQuestionUpdates(
-          mongo.Ques,
-          req,
-          subjectKey,
-          q._id
-        );
+        skipQuestionUpdates(mongo.Ques, req, subjectKey, q._id);
       }
       // get parameters set up
       if (req.user.rating['ess'] === undefined) {
@@ -569,9 +568,7 @@ module.exports = (app, mongo) => {
         setRating('ESS', -1, req);
       }
 
-      let ceilingFloor = ratingCeilingFloor(
-        req.user.rating[subjectKey]
-      );
+      let ceilingFloor = ratingCeilingFloor(req.user.rating[subjectKey]);
       const floor = ceilingFloor.floor;
       let ceiling = ceilingFloor.ceiling;
 
@@ -584,7 +581,14 @@ module.exports = (app, mongo) => {
       const MAX_ITERATIONS = 5;
       let qs = [];
       for (let i = 0; i < MAX_ITERATIONS; i++) {
-        qs = await getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units, seenIds);
+        qs = await getQuestions(
+          mongo.Ques,
+          floor,
+          ceiling,
+          req.params.subject,
+          units,
+          seenIds,
+        );
         if (qs.length > 0) break;
         ceiling += STEP;
         console.log('no unseen questions; expanding ceiling to', ceiling);
@@ -593,7 +597,13 @@ module.exports = (app, mongo) => {
       // fallback: user has exhausted the unseen pool — allow a repeat rather than erroring
       if (qs.length === 0) {
         console.log('seen-filtered pool exhausted, falling back to full pool');
-        qs = await getQuestions(mongo.Ques, floor, ceiling, req.params.subject, units);
+        qs = await getQuestions(
+          mongo.Ques,
+          floor,
+          ceiling,
+          req.params.subject,
+          units,
+        );
       }
 
       // select random question
@@ -602,7 +612,7 @@ module.exports = (app, mongo) => {
       if (!curQ) {
         req.flash(
           'errorFlash',
-          "We couldn't find any questions for your rating in the units you selected."
+          "We couldn't find any questions for your rating in the units you selected.",
         );
         res.redirect('/train/' + req.params.subject + '/chooseUnits');
         return;

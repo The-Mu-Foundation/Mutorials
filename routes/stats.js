@@ -16,7 +16,7 @@ module.exports = (app, mongo) => {
     } else {
       req.flash(
         'errorFlash',
-        'Error 401: Unauthorized. You need to login to see this page.'
+        'Error 401: Unauthorized. You need to login to see this page.',
       );
       res.redirect('/');
     }
@@ -49,7 +49,7 @@ module.exports = (app, mongo) => {
             thisAge = new Date().getFullYear() - obj.profile.yob;
           }
           const experienceStats = await calculateLevel(
-            obj.stats.experience ? obj.stats.experience : 0
+            obj.stats.experience ? obj.stats.experience : 0,
           );
           res.render(VIEWS + 'private/profile.ejs', {
             age: thisAge,
@@ -63,7 +63,7 @@ module.exports = (app, mongo) => {
       } else {
         req.flash(
           'errorFlash',
-          "Error 404: File Not Found. That username doesn't exist."
+          "Error 404: File Not Found. That username doesn't exist.",
         );
         res.redirect('/');
       }
@@ -137,10 +137,10 @@ module.exports = (app, mongo) => {
           }).then(async (teacher) => {
             if (teacher) {
               let userLevel = await calculateLevel(
-                obj.stats.experience ? obj.stats.experience : 0
+                obj.stats.experience ? obj.stats.experience : 0,
               );
               let analytics = await analyze(
-                obj.stats.units ? obj.stats.units : {}
+                obj.stats.units ? obj.stats.units : {},
               );
 
               res.render(VIEWS + 'private/stats.ejs', {
@@ -153,14 +153,14 @@ module.exports = (app, mongo) => {
             } else {
               req.flash(
                 'errorFlash',
-                'This user has made their stats private.'
+                'This user has made their stats private.',
               );
               res.redirect('/homepage');
             }
           });
         } else {
           let userLevel = await calculateLevel(
-            obj.stats.experience ? obj.stats.experience : 0
+            obj.stats.experience ? obj.stats.experience : 0,
           );
           let analytics = await analyze(obj.stats.units ? obj.stats.units : {});
 
@@ -175,7 +175,7 @@ module.exports = (app, mongo) => {
       } else {
         req.flash(
           'errorFlash',
-          "Error 404: File Not Found. That username doesn't exist."
+          "Error 404: File Not Found. That username doesn't exist.",
         );
         res.redirect('/');
       }
