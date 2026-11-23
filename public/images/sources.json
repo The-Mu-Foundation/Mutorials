@@ -4,11 +4,6 @@
   "png_logo": "https://avatars.githubusercontent.com/u/68785866?s=460 (The Mu Foundation organization logo).",
   "unavailable_portrait_placeholder": "/images/icons/Icon_Main.svg",
   "earth_space_icon": "/images/background/ESS.jpg",
-  "provided_portraits": [
-    "patrick.png",
-    "nihal.png",
-    "brian.png",
-    "devesh.png"
-  ],
+  "provided_portraits": ["patrick.png", "nihal.png", "brian.png", "devesh.png"],
   "provided_portrait_source": "User-supplied photos, October 31, 2026."
 }

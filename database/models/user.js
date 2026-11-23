@@ -37,8 +37,17 @@ const userSchema = new mongoose.Schema({
       attempts: Number,
     },
     units: Object,
+    categories: Object,
   },
   email_confirm_code: String,
+  // false until the owner proves control of the address; undefined = legacy account
+  emailVerified: Boolean,
+  // password reset state: only a hash of the emailed code is stored
+  passwordReset: {
+    codeHash: String,
+    expiresAt: Date,
+    attempts: { type: Number, default: 0 },
+  },
   rating: {
     physics: Number,
     chemistry: Number,
@@ -90,5 +99,11 @@ const userSchema = new mongoose.Schema({
     tags_180: Boolean,
   },
 });
+
+// uniqueness is enforced by the database, not just by a check-then-insert race
+userSchema.index({ username: 1 }, { unique: true, sparse: true });
+userSchema.index({ ign: 1 }, { unique: true, sparse: true });
+// leaderboard queries
+userSchema.index({ 'stats.experience': -1 });
 
 module.exports = { userSchema };

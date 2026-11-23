@@ -1,10 +1,10 @@
 // params: ratings are numbers, correct is boolean (true = player got it right)
 function calculateRatings(userRating, questionRating, correct) {
   // important values: 1000 is spread of elo change, 25 is scale of change
-  let chanceOfCorrect =
+  const chanceOfCorrect =
     1 / (1 + Math.pow(9, (questionRating - userRating) / 1000));
-  let userRatingChange = Math.round(16 * (correct - chanceOfCorrect));
-  let questionRatingChange = -Math.round(userRatingChange / 25);
+  const userRatingChange = Math.round(16 * (correct - chanceOfCorrect));
+  const questionRatingChange = -Math.round(userRatingChange / 25);
 
   // assign rating changes
   userRating += userRatingChange;
@@ -27,7 +27,7 @@ function ratingCeilingFloor(userRating) {
   spread += Math.round(userRating / 10);
 
   let floor = userRating - spread;
-  let ceiling = userRating + spread;
+  const ceiling = userRating + spread;
   if (floor < 0) {
     floor = 0;
   }
@@ -59,28 +59,28 @@ function calculateLevel(experience) {
 }
 
 function analyze(unitData) {
-  let strengths = {
+  const strengths = {
     physics: [],
     biology: [],
     chemistry: [],
     usabo: [],
     ess: [],
   };
-  let weaknesses = {
+  const weaknesses = {
     physics: [],
     biology: [],
     chemistry: [],
     usabo: [],
     ess: [],
   };
-  let studying = {
+  const studying = {
     physics: [],
     biology: [],
     chemistry: [],
     usabo: [],
     ess: [],
   };
-  let favorites = {
+  const favorites = {
     physics: [],
     biology: [],
     chemistry: [],
@@ -89,8 +89,8 @@ function analyze(unitData) {
   };
 
   for (const [unit, data] of Object.entries(unitData)) {
-    let performance = data.pastResults.reduce((a, b) => a + b, 0);
-    let averageRating =
+    const performance = data.pastResults.reduce((a, b) => a + b, 0);
+    const averageRating =
       data.pastRatings.reduce((a, b) => a + b, 0) / data.pastRatings.length;
 
     if (

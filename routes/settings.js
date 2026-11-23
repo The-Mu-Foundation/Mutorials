@@ -1,6 +1,16 @@
+// MODULE IMPORTS
+const Filter = require('bad-words');
+const filter = new Filter();
+
 // FUNCTION IMPORTS
-const { genPassword, validPassword } = require('../utils/functions/password');
+const {
+  hashPassword,
+  verifyPassword,
+  passwordPolicyError,
+} = require('../utils/functions/password');
 const emailValidation = require('../utils/functions/emailValidation');
+const { asString, wrap } = require('../utils/functions/http');
+const { authLimiter } = require('../utils/middleware/security');
 
 const VIEWS = __dirname + '/../views/';
 
@@ -13,278 +23,230 @@ module.exports = (app, mongo) => {
       } else {
         req.flash(
           'errorFlash',
-          'Error 401: Unauthorized. You need to login to see this page.'
+          'Error 401: Unauthorized. You need to login to see this page.',
         );
         res.redirect('/');
       }
-    }
+    },
   );
 
+  // validates one free-text profile field; returns the cleaned value or null (and flashes)
+  function profileText(req, value, label, maxLength) {
+    const text = asString(value).trim();
+    if (text !== filter.clean(text)) {
+      req.flash('errorFlash', 'Keep it appropriate.');
+      return null;
+    }
+    if (text.length > maxLength) {
+      req.flash(
+        'errorFlash',
+        `Please keep your ${label} under ${maxLength} characters long.`,
+      );
+      return null;
+    }
+    return text;
+  }
+
   // change profile settings
-  app.post('/changeProfile', (req, res) => {
-    const date = new Date().getFullYear();
-    const age = date - req.body.yob;
-    if (!/^\d+$/.test(age)) {
-      req.flash('errorFlash', 'Please enter a valid year of birth!');
-    }
+  app.post(
+    '/changeProfile',
+    wrap(async (req, res) => {
+      const profile = {
+        yob: req.user.profile.yob,
+        location: req.user.profile.location,
+        name: req.user.profile.name,
+        bio: req.user.profile.bio,
+      };
+      const yob = asString(req.body.yob);
+      const age = new Date().getFullYear() - Number(yob);
 
-    if (age < 0 || age > 150) {
-      req.flash(
-        'errorFlash',
-        "You've got to be at least 0 and younger than 150 to use Mutorials ;)"
-      );
-    } else {
-      req.user.profile.yob = req.body.yob; //entered age is adjusted in settings.ejs
-    }
+      if (!/^\d{4}$/.test(yob)) {
+        req.flash('errorFlash', 'Please enter a valid year of birth!');
+      } else if (age < 0 || age > 150) {
+        req.flash(
+          'errorFlash',
+          "You've got to be at least 0 and younger than 150 to use Mutorials ;)",
+        );
+      } else {
+        profile.yob = Number(yob);
+      }
 
-    if (age > 13) {
-      if (req.body.name) {
-        if (req.body.name == filter.clean(req.body.name)) {
-          if (req.body.name.length <= 50) {
-            req.user.profile.name = req.body.name;
-          } else {
-            req.flash(
-              'errorFlash',
-              'Please keep your name under 50 characters long.'
-            );
-          }
-        } else {
-          req.flash('errorFlash', 'Keep it appropriate.');
+      const effectiveAge = new Date().getFullYear() - profile.yob;
+      if (effectiveAge >= 13) {
+        if (req.body.name) {
+          const name = profileText(req, req.body.name, 'name', 50);
+          if (name !== null) profile.name = name;
         }
-      }
-      if (req.body.bio || req.body.bio == '') {
-        if (!req.body.bio == '') {
-          if (req.body.bio == filter.clean(req.body.bio)) {
-            if (req.body.bio.length <= 150) {
-              req.user.profile.bio = req.body.bio;
-            } else {
-              req.flash(
-                'errorFlash',
-                'Please keep your bio under 150 characters long.'
-              );
-            }
-          } else {
-            req.flash('errorFlash', 'Keep it appropriate.');
-          }
-        } else {
-          req.user.profile.bio = req.body.bio;
+        if (req.body.bio !== undefined) {
+          const bio = profileText(req, req.body.bio, 'bio', 150);
+          if (bio !== null) profile.bio = bio;
         }
-      }
-      if (req.body.location) {
-        if (req.body.location == filter.clean(req.body.location)) {
-          if (req.body.location.length <= 50) {
-            req.user.profile.location = req.body.location;
-          } else {
-            req.flash(
-              'errorFlash',
-              'Please keep your location under 50 characters long.'
-            );
-          }
-        } else {
-          req.flash('errorFlash', 'Keep it appropriate.');
+        if (req.body.location) {
+          const location = profileText(req, req.body.location, 'location', 50);
+          if (location !== null) profile.location = location;
         }
+      } else {
+        // users under 13 cannot publish personal information
+        if (req.body.name || req.body.bio || req.body.location) {
+          req.flash(
+            'errorFlash',
+            'You have to be over 13 to give us your name or location or to have a bio.',
+          );
+        }
+        profile.name = '';
+        profile.bio = '';
+        profile.location = 'Earth';
       }
-    } else {
-      req.user.profile.name = '';
-      req.user.profile.bio = '';
-      req.user.profile.location = 'Earth';
-    }
-    if (
-      age < 13 &&
-      (req.user.profile.name != req.body.name ||
-        req.user.profile.bio != req.body.bio ||
-        req.user.profile.location != req.body.location)
-    ) {
-      req.flash(
-        'errorFlash',
-        'You have to be over 13 to give us your name or location or to have a bio.'
-      );
-    }
-    mongo.db.collection('users').findOneAndUpdate(
-      { _id: req.user._id },
-      {
-        $set: {
-          profile: {
-            yob: req.user.profile.yob,
-            location: req.user.profile.location,
-            name: req.user.profile.name,
-            bio: req.user.profile.bio,
-          },
-        },
-      },
-      { upsert: true }
-    );
-    console.log(req.user);
 
-    res.redirect('/settings');
-    console.log('Profile has been updated');
-  });
+      await mongo.User.updateOne({ _id: req.user._id }, { $set: { profile } });
+      res.redirect('/settings');
+    }),
+  );
 
   // change user preferences
-  app.post('/changePreferences', (req, res) => {
-    req.user.preferences.dark_mode = !!req.body.darkMode;
-    req.user.preferences.hideProfile = !!req.body.hideProfile;
-
-    mongo.db.collection('users').findOneAndUpdate(
-      { _id: req.user._id },
-      {
-        $set: {
-          preferences: {
-            dark_mode: req.user.preferences.dark_mode,
-            hideProfile: req.user.preferences.hideProfile,
+  app.post(
+    '/changePreferences',
+    wrap(async (req, res) => {
+      await mongo.User.updateOne(
+        { _id: req.user._id },
+        {
+          $set: {
+            'preferences.dark_mode': !!req.body.darkMode,
+            'preferences.hideProfile': !!req.body.hideProfile,
           },
         },
-      },
-      { upsert: true }
-    );
+      );
+      res.redirect('/settings');
+    }),
+  );
 
-    console.log('Updated preferences');
-
-    res.redirect('/settings');
-  });
-
-  // change account settings
-  app.post('/changeSettings', (req, res) => {
-    if (req.body.ign && req.body.ign != req.user.ign) {
-      if (!/^[\w\-\.\~]+$/.test(req.body.ign)) {
-        req.flash(
-          'errorFlash',
-          'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.'
-        );
-      } else if (req.body.ign.length > 30) {
-        req.flash(
-          'errorFlash',
-          'Please keep your username under 30 characters long.'
-        );
-      } else {
-        mongo.User.countDocuments({ ign: req.body.ign }, function (err, count) {
-          if (count > 0) {
-            console.log('username exists');
-            req.flash('errorFlash', 'Sorry, this username already exists.');
-          } else {
-            console.log('username does not exist');
-            mongo.db
-              .collection('users')
-              .findOneAndUpdate(
-                { _id: req.user._id },
-                { $set: { ign: req.body.ign } }
-              );
-            req.flash('successFlash', 'We successfully changed your username.');
-          }
-        });
-      }
-    } else {
-      console.log('Empty username or no change');
-    }
-
-    if (req.body.username && req.body.username != req.user.username) {
-      if (!emailValidation.regexCheck(req.body.username)) {
-        req.flash('errorFlash', 'The email you entered is not valid.');
-      } else {
-        mongo.User.countDocuments(
-          { username: req.body.username },
-          function (err, count) {
-            if (count > 0) {
-              console.log('email exists');
-              req.flash(
-                'errorFlash',
-                'We already have an account with that email. Try signing in with that one.'
-              );
-            } else {
-              console.log('email does not exist');
-              let confirmCode;
-              require('crypto').randomBytes(6, function (ex, buf) {
-                confirmCode = buf.toString('hex');
-                mongo.db
-                  .collection('users')
-                  .findOneAndUpdate(
-                    { username: req.body.username },
-                    { $set: { emailConfirmCode: confirmCode } }
-                  );
-              });
+  // change account settings (username, email, password)
+  app.post(
+    '/changeSettings',
+    authLimiter,
+    wrap(async (req, res) => {
+      const ign = asString(req.body.ign).trim().toLowerCase();
+      if (ign && ign != req.user.ign) {
+        if (!/^[\w.~-]+$/.test(ign)) {
+          req.flash(
+            'errorFlash',
+            'Allowed username characters: letters, numbers, underscore, hyphen, period, and tilde.',
+          );
+        } else if (ign.length > 30) {
+          req.flash(
+            'errorFlash',
+            'Please keep your username under 30 characters long.',
+          );
+        } else if (ign != filter.clean(ign)) {
+          req.flash('errorFlash', 'Keep it appropriate.');
+        } else {
+          try {
+            const result = await mongo.User.updateOne(
+              { _id: req.user._id },
+              { $set: { ign } },
+            );
+            if (result.modifiedCount === 1) {
               req.flash(
                 'successFlash',
-                'You need to confirm your email. Please check your email to confirm it.'
+                'We successfully changed your username.',
               );
-              mongo.db
-                .collection('users')
-                .findOneAndUpdate(
-                  { _id: req.user._id },
-                  { $set: { username: req.body.username } }
-                );
-              console.log('email updated');
             }
-          }
-        );
-      }
-    } else {
-      console.log('Empty email or no change');
-    }
-
-    if (req.body.newpw) {
-      if (req.body.plassword) {
-        const isValid = validPassword(
-          req.body.plassword,
-          req.user.hash,
-          req.user.salt
-        );
-        if (
-          /\d/.test(req.body.newpw) &&
-          /[a-zA-Z]/.test(req.body.newpw) &&
-          req.body.newpw.length >= 7
-        ) {
-          if (req.body.newpw == req.body.confirmnewpw) {
-            if (isValid) {
-              const newPass = genPassword(req.body.newpw);
-              req.user.hash = newPass.hash;
-              req.user.salt = newPass.salt;
-              mongo.db
-                .collection('users')
-                .findOneAndUpdate(
-                  { _id: req.user._id },
-                  { $set: { hash: req.user.hash, salt: req.user.salt } }
-                );
+          } catch (err) {
+            if (err && err.code === 11000) {
+              req.flash('errorFlash', 'Sorry, this username already exists.');
             } else {
-              req.flash(
-                'errorFlash',
-                'Your current password must match what you type into the field below for any changes to these settings!'
-              );
+              throw err;
             }
-          } else {
-            req.flash('errorFlash', "Passwords don't match.");
           }
-        } else {
-          req.flash('errorFlash', 'Password does not meet requirements.');
         }
-      } else {
-        req.flash(
-          'errorFlash',
-          'To change your password you must enter your current password first!'
-        );
       }
-    }
-    //mongo.db.collection('users').findOneAndUpdate({ _id: req.user._id }, { $set: {  hash: req.user.hash, salt: req.user.salt, username: req.user.username, ign: req.user.ign} });
 
-    res.redirect('/settings');
-  });
-
-  app.post('/deleteAccount', async (req, res) => {
-    const isValid = validPassword(
-      req.body.delassword,
-      req.user.hash,
-      req.user.salt
-    );
-    if (isValid) {
-      mongo.db.collection('users').deleteOne({ _id: req.user._id });
-      req.logout();
-      console.log('Deleted Account');
-      req.flash('successFlash', 'Goodbye.');
-      res.redirect('/');
-    } else {
-      req.flash('errorFlash', 'Your current password does not match!');
+      // Changing the email or password requires the current password.
+      const email = asString(req.body.username).trim().toLowerCase();
+      const wantsEmail = email && email != req.user.username;
+      const newpw = asString(req.body.newpw);
+      if (wantsEmail || newpw) {
+        const currentOk = await verifyPassword(
+          asString(req.body.plassword),
+          req.user.hash,
+          req.user.salt,
+        );
+        if (!currentOk) {
+          req.flash(
+            'errorFlash',
+            'Your current password must match what you type into the field below for any changes to these settings!',
+          );
+        } else {
+          if (wantsEmail) {
+            if (!emailValidation.regexCheck(email)) {
+              req.flash('errorFlash', 'The email you entered is not valid.');
+            } else {
+              try {
+                await mongo.User.updateOne(
+                  { _id: req.user._id },
+                  { $set: { username: email, emailVerified: false } },
+                );
+                req.flash(
+                  'successFlash',
+                  'We successfully changed your email.',
+                );
+              } catch (err) {
+                if (err && err.code === 11000) {
+                  req.flash(
+                    'errorFlash',
+                    'We already have an account with that email. Try signing in with that one.',
+                  );
+                } else {
+                  throw err;
+                }
+              }
+            }
+          }
+          if (newpw) {
+            const problem = passwordPolicyError(newpw);
+            if (problem) {
+              req.flash('errorFlash', 'Password does not meet requirements.');
+            } else if (newpw != asString(req.body.confirmnewpw)) {
+              req.flash('errorFlash', "Passwords don't match.");
+            } else {
+              const { salt, hash } = await hashPassword(newpw);
+              await mongo.User.updateOne(
+                { _id: req.user._id },
+                { $set: { salt, hash } },
+              );
+              req.flash('successFlash', 'Your password has been changed.');
+            }
+          }
+        }
+      }
       res.redirect('/settings');
-    }
-  });
+    }),
+  );
+
+  app.post(
+    '/deleteAccount',
+    authLimiter,
+    wrap(async (req, res, next) => {
+      const valid = await verifyPassword(
+        asString(req.body.delassword),
+        req.user.hash,
+        req.user.salt,
+      );
+      if (!valid) {
+        req.flash('errorFlash', 'Your current password does not match!');
+        return res.redirect('/settings');
+      }
+      const userId = req.user._id;
+      await mongo.User.deleteOne({ _id: userId });
+      await mongo.Attempt.deleteMany({ user: userId });
+      req.logout((err) => {
+        if (err) return next(err);
+        // the session is regenerated on logout, so the flash goes on the new one
+        req.flash('successFlash', 'Goodbye.');
+        res.redirect('/');
+      });
+    }),
+  );
 
   app.get('/settings', (req, res) => {
     res.render(VIEWS + 'private/settings.ejs', {

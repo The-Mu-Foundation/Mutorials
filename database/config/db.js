@@ -1,18 +1,13 @@
 const mongoose = require('mongoose');
+const { getDatabaseUrl } = require('../../utils/config');
 
-const MONGOURI =
-  process.env.DB_URL ||
-  'mongodb+srv://Skippy:qVNOjHeNSJlEoI98@cluster0-7gibd.mongodb.net/test?retryWrites=true&w=majority';
-
+// connects to MongoDB; the URL always comes from configuration, never from source
 const InitiateMongoServer = async () => {
   try {
-    await mongoose.connect(MONGOURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(getDatabaseUrl());
     console.log('Connected to the database!');
   } catch (e) {
-    console.log(e);
+    console.error('Failed to connect to the database:', e.message);
     throw e;
   }
 };

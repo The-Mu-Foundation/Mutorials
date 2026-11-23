@@ -1,0 +1,41 @@
+<%# Lets authors check a draft against the live and pending question banks. Needs a #question textarea. %>
+<div class="my-3" id="ai-dup">
+  <button type="button" class="btn btn-outline-secondary btn-sm d-none" id="ai-dup-button">Check for similar existing questions</button>
+  <div id="ai-dup-out" class="mt-2 small" aria-live="polite"></div>
+</div>
+<script>
+  (function () {
+    var button = document.getElementById('ai-dup-button');
+    var out = document.getElementById('ai-dup-out');
+    fetch('/ai/status', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (s) { if (s.embeddings) button.classList.remove('d-none'); })
+      .catch(function () {});
+    function line(text, cls) {
+      var d = document.createElement('div');
+      if (cls) d.className = cls;
+      d.textContent = text;
+      out.appendChild(d);
+    }
+    button.addEventListener('click', function () {
+      out.textContent = '';
+      var text = (document.getElementById('question') || {}).value || '';
+      fetch('/ai/duplicates', {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: new URLSearchParams({ question: text })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j.error) return line(j.error, 'text-danger');
+          if (!j.available) return line('Similarity search is not available right now.', 'text-muted');
+          if (j.matches.length === 0) return line('No close matches found.', 'text-success');
+          line('Possible duplicates (' + j.matches.length + '):', 'fw-bold');
+          j.matches.forEach(function (m) {
+            line('[' + m.source + ', ' + Math.round(m.score * 100) + '% similar] ' + m.snippet);
+          });
+        })
+        .catch(function () { line('Could not run the check.', 'text-danger'); });
+    });
+  })();
+</script>

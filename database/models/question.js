@@ -29,4 +29,7 @@ const qSchema = new mongoose.Schema({
   },
 });
 
+// adaptive question selection filters by subject and rating range
+qSchema.index({ subject: 1, rating: 1 });
+
 module.exports = { qSchema };
