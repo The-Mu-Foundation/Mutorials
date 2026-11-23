@@ -60,7 +60,7 @@ To trade quality for speed on small hosts set `AI_LLM_MODEL=onnx-community/Qwen2
 
 ## Operations
 
-- **Memory:** the 1.5B q4 model needs roughly 1.5 GB of RAM while loaded, the embedder under 200 MB. Shared hosting plans may not allow this; the embedding features alone are lightweight.
+- **Memory:** the 1.5B q4 model is expected to need on the order of 1 to 2 GB of RAM while loaded and the embedder a few hundred MB (not precisely measured yet; check on your host). Shared hosting plans may not allow this; the embedding features alone are lightweight.
 - **First start:** the similarity index builds in the background on first use and persists vectors in the `aiEmbeddings` collection, so restarts only embed new or edited questions. The index refreshes at most every 10 minutes.
 - **Disabling:** `AI_ENABLED=0` removes every AI element from the UI (the front end checks `/ai/status`). Leaving `AI_LLM` unset keeps only the embedding features.
 - **Privacy:** only the question bank text is embedded; user answers are used only to build the "why wrong" prompt and are never stored by the AI layer except as part of the cache key.
