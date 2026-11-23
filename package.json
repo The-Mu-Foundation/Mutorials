@@ -23,6 +23,7 @@
     "url": "git+https://github.com/The-Mu-Foundation/Mutorials.git"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.2",
     "bad-words": "^3.0.4",
     "connect-mongo": "^6.0.0",
     "cookie-parser": "^1.4.7",

@@ -110,6 +110,13 @@ const contactLimiter = limiter({ windowMs: 60 * 60 * 1000, limit: 5 });
 
 const generalLimiter = limiter({ windowMs: 60 * 1000, limit: 300 });
 
+// model-backed endpoints are the most expensive ones on the site
+const aiLimiter = limiter({
+  windowMs: 60 * 1000,
+  limit: 12,
+  message: 'You are asking the AI tutor too quickly. Please wait a moment.',
+});
+
 module.exports = {
   securityHeaders,
   enforceHttps,
@@ -121,4 +128,5 @@ module.exports = {
   passwordResetLimiter,
   contactLimiter,
   generalLimiter,
+  aiLimiter,
 };

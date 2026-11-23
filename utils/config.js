@@ -40,7 +40,29 @@ function getDatabaseUrl() {
   return 'mongodb://127.0.0.1:27017/mutorials';
 }
 
+// Optional self-hosted AI features (see docs/AI.md). Everything runs locally
+// with open-weight models from Hugging Face: no third-party API, no user data
+// leaves the server.
+//  AI_ENABLED  embeddings (related questions, duplicate detection); default on
+//  AI_LLM=1    generative tutor (hints / simplified explanations); opt-in
+//  AI_OFFLINE  never download models; use only what is in AI_CACHE_DIR
+const path = require('path');
+const ai = {
+  enabled: !isTest && process.env.AI_ENABLED !== '0',
+  llmEnabled: !isTest && process.env.AI_LLM === '1',
+  offline: process.env.AI_OFFLINE === '1',
+  embedModel: process.env.AI_EMBED_MODEL || 'Xenova/all-MiniLM-L6-v2',
+  llmModel: process.env.AI_LLM_MODEL || 'onnx-community/Qwen2.5-1.5B-Instruct',
+  llmDtype: process.env.AI_LLM_DTYPE || 'q4',
+  cacheDir:
+    process.env.AI_CACHE_DIR || path.join(__dirname, '..', '.cache', 'models'),
+  maxNewTokens: Number(process.env.AI_MAX_NEW_TOKENS) || 160,
+  generationTimeoutMs: Number(process.env.AI_TIMEOUT_MS) || 120000,
+  maxQueue: Number(process.env.AI_MAX_QUEUE) || 4,
+};
+
 module.exports = {
+  ai,
   PORT,
   isProduction,
   isTest,
