@@ -228,6 +228,8 @@
         <p><%- newQues.answer_ex %></p>
       </div>
 
+      <%- include("../../partials/aiTutor", { aiQuestionId: newQues._id, aiPhase: 'after', aiUserAnswer: userAnswer, aiCorrect: correct }) %>
+
       <% if(newQues.source_statement) { %>
       <hr>
       <p class="text-center"><%= newQues.source_statement %></p>

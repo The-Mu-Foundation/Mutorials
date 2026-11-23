@@ -601,3 +601,44 @@ test('duplicate detection is for authors and finds near-identical live and pendi
     400,
   );
 });
+
+test('trainer pages embed the AI panel with the right phase and escape ids', async () => {
+  setBackend(makeFakeBackend('x'));
+  const { agent, user } = await newUser();
+  const q = await ctx.mongo.Ques.create(baseQuestion());
+  await ctx.mongo.User.updateOne(
+    { username: user.username },
+    { $set: { 'rating.physics': 1200 } },
+  );
+  const page = await agent
+    .get('/train/Physics/displayQuestion')
+    .query({ units: physicsUnit() });
+  assert.equal(page.status, 200);
+  assert.match(page.text, /id="ai-tutor"/);
+  assert.match(page.text, /phase: "before"/);
+  const served = await ctx.mongo.User.findOne({
+    username: user.username,
+  }).lean();
+  const id = served.stats.toAnswer.physics;
+  assert.ok(id);
+  const answered = await agent
+    .post('/train/checkAnswer')
+    .type('form')
+    .send({ id, type: 'mc', answerChoice: '2', units: physicsUnit() });
+  assert.equal(answered.status, 200);
+  assert.match(answered.text, /phase: "after"/);
+  assert.match(answered.text, /correct: false/);
+  assert.ok(q);
+});
+
+test('author pages include the duplicate check', async () => {
+  setBackend(makeFakeBackend('x'));
+  const { agent, user } = await newUser();
+  await ctx.mongo.User.updateOne(
+    { username: user.username },
+    { $set: { contributor: 'MU-C2' } },
+  );
+  const page = await agent.get('/contributors/addQuestion');
+  assert.equal(page.status, 200);
+  assert.match(page.text, /ai-dup-button/);
+});

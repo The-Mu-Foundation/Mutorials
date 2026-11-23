@@ -217,6 +217,19 @@ test('an unverified account with an admin address does not get admin access', as
   );
   const ok = await agent.get('/admin/adminHomepage');
   assert.equal(ok.status, 200);
+  for (const path of [
+    '/admin/addquestion',
+    '/admin/allQuestions',
+    '/admin/analytics',
+    '/admin/announcements',
+    '/admin/usaboAdminHomepage',
+    '/admin/allUSABOQuestions',
+    '/reviewer/reviewQuestions',
+    '/reviewer/reviewUSABOQuestions',
+  ]) {
+    const page = await agent.get(path);
+    assert.equal(page.status, 200, path);
+  }
 });
 
 test('legacy PBKDF2 accounts can log in and are upgraded to scrypt', async () => {
